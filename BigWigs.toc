@@ -1,0 +1,159 @@
+## Interface: 11200
+
+## Title: Big Wigs |cff7fff7fNOSTALRIUS|r
+## Title-zhCN: |cff7fff7fNOSTALRIUS|r Big Wigs 
+## Notes: Boss Mods with Timer bars.
+## Notes-zhCN: 团队首领战信息提示插件，带有计时条。
+## Notes-zhTW: 團隊首領戰訊息提示插件，帶有計時條。
+## Author: Tekkub Stoutwrithe, Ammo, Shyva, Rabbit, LYQ & Others
+## Version: 2.0
+## X-Website: http://www.wowace.com/index.php/BigWigs
+## X-Email: tekkub@gmail.com
+## X-Category: Raid
+## X-RelSite-WoWI: 5086
+## X-RelSite-Curse: 4356
+## X-AceForum: 1222
+## X-FlySpray: 1
+
+## OptionalDeps: Ace2, FuBar, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib, Surfaces, MikScrollingBattleText, sct, SpellStatusLib, SpellCacheLib, GratuityLib, Deformat, SpecialEventsEmbed
+## X-Embeds: Ace2, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib
+
+## SavedVariables: BigWigsDB, BigWigsFubarDB, BigWigsCommonAurasDB, BigWigsZombieFoodDB, BigWigsRespawnTimersDB, BigWigsContributeFlag
+## SavedVariablesPerCharacter: BigWigsDBPerChar
+
+Libs\AceLibrary\AceLibrary.lua
+
+Libs\Compost-2.0\Compost-2.0.lua
+
+Libs\AceOO-2.0\AceOO-2.0.lua
+Libs\AceAddon-2.0\AceAddon-2.0.lua
+Libs\AceConsole-2.0\AceConsole-2.0.lua
+Libs\AceHook-2.1\AceHook-2.1.lua
+Libs\AceDB-2.0\AceDB-2.0.lua
+Libs\AceDebug-2.0\AceDebug-2.0.lua
+Libs\AceEvent-2.0\AceEvent-2.0.lua
+Libs\AceLocale-2.2\AceLocale-2.2.lua
+Libs\AceModuleCore-2.0\AceModuleCore-2.0.lua
+Libs\Babble-Boss-2.2\Babble-Boss-2.2.lua
+Libs\Babble-Spell-2.2\Babble-Spell-2.2.lua
+Libs\Babble-Zone-2.2\Babble-Zone-2.2.lua
+Libs\Dewdrop-2.0\Dewdrop-2.0.lua
+Libs\Tablet-2.0\Tablet-2.0.lua
+Libs\FuBarPlugin-2.0\FuBarPlugin-2.0.lua
+Libs\PaintChips-2.0\PaintChips-2.0.lua
+Libs\CandyBar-2.0\CandyBar-2.0.lua
+Libs\Surface-1.0\Surface-1.0.lua
+Libs\Deformat-2.0\Deformat-2.0.lua
+Libs\Gratuity-2.0\Gratuity-2.0.lua
+Libs\SpellCache-1.0\SpellCache-1.0.lua
+Libs\SpellStatus-1.0\SpellStatus-1.0.lua
+Libs\SpecialEvents-Aura-2.0\SpecialEvents-Aura-2.0.lua
+
+LoadOnDemand.lua
+Core.lua
+Options.lua
+
+Plugins\Comm.lua
+Plugins\Colors.lua
+Plugins\TargetMonitor.lua
+Plugins\Bars.lua
+Plugins\Messages.lua
+Plugins\Sound.lua
+Plugins\RaidWarn.lua
+Plugins\BossBlock.lua
+Plugins\RaidIcon.lua
+Plugins\Range.lua
+Plugins\CommonAuras.lua
+Plugins\contribute.lua
+Plugins\Version.lua
+Plugins\Test.lua
+Plugins\CustomBar.lua
+Plugins\Tranq.lua
+Plugins\ZombieFood.lua
+Plugins\LoathebTactical.lua
+# Plugins\NefCount.lua
+Plugins\RespawnTimers.lua
+Plugins\WarnIcon.lua
+Plugins\BossRecords.lua
+Plugins\ReadyCheck.lua
+Plugins\RaidOfficer.lua
+Plugins\AutoReply.lua
+
+Raids\ZG\Arlokk.lua
+Raids\ZG\Jeklik.lua
+Raids\ZG\Marli.lua
+Raids\ZG\Venoxis.lua
+Raids\ZG\Hakkar.lua
+Raids\ZG\Mandokir.lua
+Raids\ZG\Jindo.lua
+Raids\ZG\Thekal.lua
+Raids\ZG\Grilek.lua
+Raids\ZG\Renataki.lua
+Raids\ZG\Hazzarah.lua
+Raids\ZG\Wushoolay.lua
+Raids\ZG\Gahzranka.lua
+
+Raids\AQ20\Ayamiss.lua
+Raids\AQ20\Buru.lua
+Raids\AQ20\GeneralRajaxx.lua
+Raids\AQ20\Guardians.lua
+Raids\AQ20\Ossirian.lua
+Raids\AQ20\Moam.lua
+Raids\AQ20\Kurinaxx.lua
+
+Raids\AQ40\Skeram.lua
+Raids\AQ40\BugFamily.lua
+Raids\AQ40\Sartura.lua
+Raids\AQ40\Fankriss.lua
+Raids\AQ40\Huhuran.lua
+Raids\AQ40\Ouro.lua
+Raids\AQ40\Defenders.lua
+Raids\AQ40\Twins.lua
+Raids\AQ40\Cthun.lua
+Raids\AQ40\Viscidus.lua
+
+Raids\BWL\Chromaggus.lua
+Raids\BWL\Ebonroc.lua
+Raids\BWL\Firemaw.lua
+Raids\BWL\Flamegor.lua
+Raids\BWL\Nefarian.lua
+Raids\BWL\Vaelastrasz.lua
+Raids\BWL\Broodlord.lua
+Raids\BWL\Razorgore.lua
+
+Raids\MC\Lucifron.lua
+Raids\MC\BaronGeddon.lua
+Raids\MC\Gehennas.lua
+Raids\MC\Magmadar.lua
+Raids\MC\Majordomo.lua
+Raids\MC\Ragnaros.lua
+Raids\MC\Shazzrah.lua
+Raids\MC\Garr.lua
+Raids\MC\Sulfuron.lua
+Raids\MC\Golemagg.lua
+
+Raids\Other\Azuregos.lua
+Raids\Other\Kazzak.lua
+Raids\Other\Emeriss.lua
+Raids\Other\Lethon.lua
+Raids\Other\Taerar.lua
+Raids\Other\Ysondre.lua
+
+Raids\Onyxia\Onyxia.lua
+
+Raids\Naxxramas\Anubrekhan.lua
+Raids\Naxxramas\Gluth.lua
+Raids\Naxxramas\Razuvious.lua
+Raids\Naxxramas\Noth.lua
+Raids\Naxxramas\Faerlina.lua
+Raids\Naxxramas\Maexxna.lua
+Raids\Naxxramas\Patchwerk.lua
+Raids\Naxxramas\Grobbulus.lua
+Raids\Naxxramas\Thaddius.lua
+Raids\Naxxramas\Heigan.lua
+Raids\Naxxramas\Gothik.lua
+Raids\Naxxramas\Loatheb.lua
+Raids\Naxxramas\Horsemen.lua
+Raids\Naxxramas\Sapphiron.lua
+Raids\Naxxramas\Kelthuzad.lua
+
