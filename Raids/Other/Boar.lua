@@ -2,8 +2,8 @@
 --      Are you local?      --
 ------------------------------
 
-local boss =  AceLibrary("Babble-Boss-2.0")("Elder Mottled Boar")
-local L = AceLibrary("AceLocale-2.0"):new("BigWigs"..boss)
+local boss =  AceLibrary("Babble-Boss-2.2")["Elder Mottled Boar"]
+local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
 ----------------------------
 --      Localization      --
@@ -49,7 +49,10 @@ L:RegisterTranslations("deDE", function() return {
 ----------------------------------
 
 BigWigsBoar = BigWigs:NewModule(boss)
-BigWigsBoar.zonename = { AceLibrary("AceLocale-2.0"):new("BigWigs")("Outdoor Raid Bosses Zone"), AceLibrary("Babble-Zone-2.0")("Durotar") }
+BigWigsBoar.zonename = { 
+    AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"], 
+    AceLibrary("Babble-Zone-2.2")["Durotar"]
+}
 BigWigsBoar.enabletrigger = boss
 BigWigsBoar.toggleoptions = {"engage", "charge", "bosskill"}
 BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
@@ -65,10 +68,10 @@ function BigWigsBoar:OnEnable()
 	--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
-    self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
+    --self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
     
-    self:RegisterEvent("BigWigs_RecvSync")
+    --self:RegisterEvent("BigWigs_RecvSync")
     self:RegisterEvent("BigWigs_RecvSync")
 end
 

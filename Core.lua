@@ -575,7 +575,7 @@ function BigWigs.modulePrototype:KTM_SetTarget(targetName, forceReset)
 end
 
 function BigWigs:KTM_ClearTarget(forceReset)
-    if IsAddOnLoaded("KLHThreatMeter") and IsRaidLeader() then
+    if IsAddOnLoaded("KLHThreatMeter") and (IsRaidLeader() or IsRaidOfficer()) then
         klhtm.net.clearmastertarget()
         if forceReset then
             self:KTM_Reset()

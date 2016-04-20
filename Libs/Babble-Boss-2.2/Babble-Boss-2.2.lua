@@ -238,6 +238,8 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Wolf Master Nandos"] = true,
 		["Rend Blackhand"] = true,
 		["Kurinnaxx"] = true,
+            
+        ["Elder Mottled Boar"] = true,
 	}
 end)
 
@@ -454,6 +456,8 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Rend Blackhand"] = "Rend Blackhand",
 		["Kurinnaxx"] = "Kurinnaxx",
 
+        ["Elder Mottled Boar"] = "Alter scheckiger Eber",
+            
 		-- OUTLANDS
 		-- XXX: These are subject to change and may not be correct.
 --		["Doom Lord Kazzak"] = true,
