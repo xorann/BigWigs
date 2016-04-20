@@ -350,8 +350,8 @@ function BigWigsRazorgore:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_Message", L["start_message"], "Attention")
 		end
 		if self.db.profile.mobs then
-			self:TriggerEvent("BigWigs_StartBar", self, L["mobs_bar"], 46, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
-			self:ScheduleEvent("BigWigs_Message", 41, L["mobs_soon"], "Important")
+			self:TriggerEvent("BigWigs_StartBar", self, L["mobs_bar"], 35, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
+			self:ScheduleEvent("BigWigs_Message", 30, L["mobs_soon"], "Important")
 		end
         self:TriggerEvent("BigWigs_StartCounterBar", self, "Eggs destroyed", 30, "Interface\\Icons\\inv_egg_01")
         self:TriggerEvent("BigWigs_SetCounterBar", self, "Eggs destroyed", (30 - 0.1))

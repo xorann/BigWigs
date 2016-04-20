@@ -111,8 +111,8 @@ function BigWigsBroodlord:Event(msg)
 		end
 	elseif string.find(msg, L["bw_trigger"]) and self.db.profile.bw then
 		if GetTime() - self.lastbw > 5 then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 8, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
-			self:ScheduleEvent("BigWigs_Message", 24, L["bw_warn"], "Urgent", true, "Alert")
+			self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 12, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
+			--self:ScheduleEvent("BigWigs_Message", 24, L["bw_warn"], "Urgent", true, "Alert")
 		end
 		self.lastbw = GetTime()
 	end

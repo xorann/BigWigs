@@ -134,8 +134,8 @@ function BigWigsNefarian:CHAT_MSG_MONSTER_YELL(msg)
 			if v[2] then
 				if self.db.profile.classcall then
 					self:TriggerEvent("BigWigs_Message", v[1], "Important")
-					self:ScheduleEvent("BigWigs_Message", 23, L["classcall_warning"], "Important", true, "Alarm")
-					self:TriggerEvent("BigWigs_StartBar", self, L["classcall_bar"], 28, "Interface\\Icons\\Spell_Shadow_Charm")
+					self:ScheduleEvent("BigWigs_Message", 25, L["classcall_warning"], "Important", true, "Alarm")
+					self:TriggerEvent("BigWigs_StartBar", self, L["classcall_bar"], 30, "Interface\\Icons\\Spell_Shadow_Charm")
 				end
 			else
 				if string.find(msg, L["landing_soon_trigger"]) then 

@@ -119,20 +119,20 @@ function BigWigsFiremaw:Event(msg)
 		self:TriggerEvent("BigWigs_SendSync", "FiremawWingBuffetX")
 	elseif msg == L["shadowflame_trigger"] then 
 		self:TriggerEvent("BigWigs_SendSync", "FiremawShadowflameX")
-	elseif (string.find(msg, L["flamebuffetafflicted_trigger"]) or string.find(msg, L["flamebuffetresisted_trigger"]) or string.find(msg, L["flamebuffetimmune_trigger"]) or string.find(msg, L["flamebuffetabsorb1_trigger"]) or string.find(msg, L["flamebuffetabsorb2_trigger"])) and self.db.profile.flamebuffet then
-		self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 5, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
+	--elseif (string.find(msg, L["flamebuffetafflicted_trigger"]) or string.find(msg, L["flamebuffetresisted_trigger"]) or string.find(msg, L["flamebuffetimmune_trigger"]) or string.find(msg, L["flamebuffetabsorb1_trigger"]) or string.find(msg, L["flamebuffetabsorb2_trigger"])) and self.db.profile.flamebuffet then
+	--	self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 5, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
 	end
 end
 
 function BigWigsFiremaw:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
 		self:TriggerEvent("BigWigs_SendSync", "FiremawStart")
-		self:TriggerEvent("BigWigs_SendSync", "FiremawFirstBuffet")
+		--self:TriggerEvent("BigWigs_SendSync", "FiremawFirstBuffet")
 	elseif sync == "FiremawStart" and not self.started then
 		self:StartFight()
 		if self.db.profile.wingbuffet then
-			self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 30, "Interface\\Icons\\INV_Misc_MonsterScales_14")
+			self:ScheduleEvent("BigWigs_Message", 20, L["wingbuffet_warning"], "Attention")
+			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 25, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 		end
         if self.db.profile.shadowflame then
             self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
@@ -146,7 +146,7 @@ function BigWigsFiremaw:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
         self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
-	elseif sync == "FiremawFirstBuffet" and self.db.profile.flamebuffet then
-		self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 4.8, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
+	--elseif sync == "FiremawFirstBuffet" and self.db.profile.flamebuffet then
+	--	self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 4.8, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
 	end
 end
