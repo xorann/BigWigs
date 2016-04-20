@@ -75,7 +75,7 @@ Plugins\LoathebTactical.lua
 Plugins\RespawnTimers.lua
 Plugins\WarnIcon.lua
 Plugins\BossRecords.lua
-Plugins\ReadyCheck.lua
+#Plugins\ReadyCheck.lua
 Plugins\RaidOfficer.lua
 Plugins\AutoReply.lua
 
