@@ -202,10 +202,10 @@ function BigWigsTest:BigWigs_Test()
 	self:TriggerEvent("BigWigs_StartBar", self, L["Test Bar 3"], 5, "Interface\\Icons\\Spell_Nature_ResistNature", true, "red")
 	self:TriggerEvent("BigWigs_StartBar", self, L["Test Bar 4"], 3, "Interface\\Icons\\Spell_Nature_ResistNature", true, "black")
     
-    self:TriggerEvent("BigWigs_StartCounterBar", self, "CounterBar Test", 10, "Interface\\Icons\\Spell_Shadow_Charm")
-    self:TriggerEvent("BigWigs_StartCounterBar", self, "CounterBar Test2", 30, "Interface\\Icons\\Spell_Shadow_Charm", true, "red")
+    --self:TriggerEvent("BigWigs_StartCounterBar", self, "CounterBar Test", 10, "Interface\\Icons\\Spell_Shadow_Charm")
+    --self:TriggerEvent("BigWigs_StartCounterBar", self, "CounterBar Test2", 30, "Interface\\Icons\\Spell_Shadow_Charm", true, "red")
 end
 
-function BigWigsTest:TestCounter()
-    self:TriggerEvent("BigWigs_SetCounterBar", self, "CounterBar Test", 5, true)
-end
+--function BigWigsTest:TestCounter()
+--    self:TriggerEvent("BigWigs_SetCounterBar", self, "CounterBar Test", 5, true)
+--end
