@@ -236,25 +236,25 @@ function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
 		if self.db.profile.inferno then
-			self:ScheduleEvent("BigWigs_Message", 11.5, L["nextinferno_message"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_bar"], 14.5, "Interface\\Icons\\Spell_Fire_Incinerate")
+			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")
+			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_bar"], 30, "Interface\\Icons\\Spell_Fire_Incinerate")
 		end
 		if self.db.profile.mana then
-			self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 30, "Interface\\Icons\\Spell_Fire_Incinerate")
+			self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 20, "Interface\\Icons\\Spell_Fire_Incinerate")
 		end
 	elseif sync == "GeddonBombX" then
 		bombstart = GetTime()
 	elseif sync == "GeddonInfernoX" then
 		if self.db.profile.inferno then
 			self:TriggerEvent("BigWigs_Message", L["inferno_message"], "Important")
-			self:ScheduleEvent("BigWigs_Message", 23, L["nextinferno_message"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_channel"], 9, "Interface\\Icons\\Spell_Fire_Incinerate")
-			self:ScheduleEvent("BigWigs_StartBar", 9, self, L["inferno_bar"], 16, "Interface\\Icons\\Spell_Fire_Incinerate")
+			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")
+			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_channel"], 8, "Interface\\Icons\\Spell_Fire_Incinerate")
+			self:ScheduleEvent("BigWigs_StartBar", 8, self, L["inferno_bar"], 22, "Interface\\Icons\\Spell_Fire_Incinerate")
 		end
 	elseif sync == "GeddonManaIgniteX" and self.db.profile.mana then
 		ignitestart = GetTime()
 		self:TriggerEvent("BigWigs_Message", L["ignite_message"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 30, "Interface\\Icons\\Spell_Fire_Incinerate")
+		self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 20, "Interface\\Icons\\Spell_Fire_Incinerate")
 	elseif sync == "GeddonBombStop" and self.db.profile.bomb then
 		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar"], bombt))
 	elseif sync == "GeddonServiceX" and self.db.profile.service then

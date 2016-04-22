@@ -161,8 +161,8 @@ function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "DomoPull")) then
         self:StartFight()
         if self.db.profile.magic or self.db.profile.dmg then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 30, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
-			self:ScheduleEvent("BigWigs_Message", 27, L["warn3"], "Urgent")
+			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
+			self:ScheduleEvent("BigWigs_Message", 10, L["warn3"], "Urgent")
 		end
         self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
         self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
@@ -189,8 +189,8 @@ function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
 		end
 		if (self.db.profile.magic or self.db.profile.dmg) then
-			self:ScheduleEvent("BigWigs_StartBar", 10, self, L["bar3text"], 20, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
-			self:ScheduleEvent("BigWigs_Message", 27, L["warn3"], "Urgent")
+			self:ScheduleEvent("BigWigs_StartBar", 10, self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
+			self:ScheduleEvent("BigWigs_Message", 20, L["warn3"], "Urgent")
 		end
 	elseif sync == "DomoAuraDamage" then
 		if self.db.profile.dmg then
@@ -198,8 +198,8 @@ function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 10, "Interface\\Icons\\Spell_Shadow_AntiShadow")
 		end
 		if (self.db.profile.magic or self.db.profile.dmg) then
-			self:ScheduleEvent("BigWigs_StartBar", 10, self, L["bar3text"], 20, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
-			self:ScheduleEvent("BigWigs_Message", 27, L["warn3"], "Urgent")
+			self:ScheduleEvent("BigWigs_StartBar", 10, self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
+			self:ScheduleEvent("BigWigs_Message", 20, L["warn3"], "Urgent")
 		end
 	end
 end

@@ -124,8 +124,8 @@ function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
         --self:ScheduleEvent("BigWigs_SendSync", 12, "MagmadarLavaBomb")
 	elseif sync == "MagmadarPanic" and self.db.profile.panic then
 		self:TriggerEvent("BigWigs_Message", L["feartime"], "Important")
-		self:ScheduleEvent("BigWigs_Message", 30, L["fearsoon"], "Urgent")		
-		self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 35, "Interface\\Icons\\Spell_Shadow_DeathScream")
+		self:ScheduleEvent("BigWigs_Message", 25, L["fearsoon"], "Urgent")		
+		self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 30, "Interface\\Icons\\Spell_Shadow_DeathScream")
 	elseif sync == "MagmadarFrenzyStart" and self.db.profile.frenzy then
 		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
