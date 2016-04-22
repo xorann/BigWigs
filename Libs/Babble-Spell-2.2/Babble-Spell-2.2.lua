@@ -2091,6 +2091,7 @@ BabbleSpell:RegisterTranslations("deDE", function()
 		["Libram"]="Buchband",
 		["Lich Slap"]="Lichohrfeige",
 		["Life Tap"]="Aderlass",
+        ["Lifegiving Gem"]="Lebensspendender Edelstein",
 		["Lightning Blast"]="Blitzschlag",
 		["Lightning Bolt"]="Blitzschlag",
 		["Lightning Breath"]="Blitzschlagatem",

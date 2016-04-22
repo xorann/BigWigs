@@ -205,7 +205,7 @@ L:RegisterTranslations("deDE", function() return {
 
 	["Important"] = "Wichtig",
 	["Personal"] = "Pers\195\182hnlich",
-	["Purple"] = "Lila",
+	--["Purple"] = "Lila",
 	["Urgent"] = "Dringend",
 	["Attention"] = "Achtung",
 	["Positive"] = "Positiv",
