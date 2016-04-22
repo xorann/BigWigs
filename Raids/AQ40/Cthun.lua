@@ -8,10 +8,10 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigs" .. cthun)
 
 local gianteye = "Giant Eye Tentacle"
 
-local timeP1Tentacle = 80      -- tentacle timers for phase 1
+local timeP1Tentacle = 90      -- tentacle timers for phase 1
 local timeP1TentacleStart = 45 -- delay for first tentacles from engage onwards
-local timeP1GlareStart = 50    -- delay for first dark glare from engage onwards
-local timeP1Glare = 80         -- interval for dark glare
+local timeP1GlareStart = 45    -- delay for first dark glare from engage onwards
+local timeP1Glare = 90         -- interval for dark glare
 local timeP1GlareDuration = 30 -- duration of dark glare
 local timeP2Offset = 11        -- delay for all timers to restart after the Eye dies
 local timeP2Tentacle = 30      -- tentacle timers for phase 2
@@ -121,6 +121,8 @@ function BigWigsCThun:OnEnable()
 	tentacletime = timeP1Tentacle
 
 	-- register events
+    self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+    
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	--self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE")
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
@@ -168,8 +170,10 @@ end
 
 function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart")) then
+        if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
         self:StartFight()
 		self:CThunStart()
+        
 	elseif sync == "CThunP2Start" then
 		self:CThunP2Start()
 	elseif sync == "CThunWeakened" then
