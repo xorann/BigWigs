@@ -29,6 +29,10 @@ L:RegisterTranslations("enUS", function() return {
 	heal_cmd = "heal",
 	heal_name = "Heal Alert",
 	heal_desc = "Warn for Twins Healing",
+            
+    blizzard_cmd = "blizzard",
+    blizzard_name = "Blizzard Warning",
+    blizzard_desc = "Shows an Icon if you are standing in a Blizzard",
 
 	porttrigger = "casts Twin Teleport.",
 	portwarn = "Teleport!",
@@ -52,7 +56,77 @@ L:RegisterTranslations("enUS", function() return {
 	warn5 = "Enrage in 60 seconds",
 	warn6 = "Enrage in 30 seconds",
 	warn7 = "Enrage in 10 seconds",
-	firewarn = "Run from Blizzard!",
+    
+    blizzard_trigger = "You are afflicted by Blizzard.",
+    blizzard_gone_trigger = "Blizzard fades from you",
+	blizzard_warn = "Run from Blizzard!",
+            
+            
+    pull_trigger1 = "Ah, lambs to the slaughter.",
+    pull_trigger2 = "Prepare to embrace oblivion!",
+    pull_trigger3 = "Join me brother, there is blood to be shed.",
+    pull_trigger4 = "To decorate our halls.",
+    pull_trigger5 = "Let none survive!",
+    pull_trigger6 = "It's too late to turn away.",
+    pull_trigger7 = "Look brother, fresh blood.",
+    pull_trigger8 = "Like a fly in a web.",
+    pull_trigger9 = "Shall be your undoing!",
+    pull_trigger10 = "Your brash arrogance",
+} end )
+
+L:RegisterTranslations("deDE", function() return {
+
+	bug_name = "Explodierende K\195\164fer",
+	bug_desc = "Warnung vor explodierenden K\195\164fern.",
+
+	teleport_name = "Teleport",
+	teleport_desc = "Warnung, wenn die Zwillings Imperatoren sich teleportieren.",
+
+	enrage_name = "Wutanfall",
+	enrage_desc = "Warnung, wenn die Zwillings Imperatoren w\195\188tend werden.",
+
+	heal_name = "Heilung",
+	heal_desc = "Warnung, wenn die Zwillings Imperatoren sich heilen.",
+
+    blizzard_name = "Blizzard Warnung",
+    blizzard_desc = "Zeigt ein Icon wenn du im Blizzard stehst",
+            
+	porttrigger = "wirkt Zwillingsteleport.",
+	portwarn = "Teleport!",
+	portdelaywarn = "Teleport in ~5 Sekunden!",
+	portdelaywarn2 = "Teleport in ~10 Sekunden!",
+	bartext = "Teleport",
+	explodebugtrigger = "bekommt 'K\195\164fer explodieren lassen'",
+	explodebugwarn = "K\195\164fer explodiert!",
+	enragetrigger = "wird w\195\188tend.", -- ? "bekommt 'Wutanfall'"
+	enragewarn = "Zwillings Imperatoren sind w\195\188tend!",
+	healtrigger1 = "'s Bruder heilen heilt",
+	healtrigger2 = " Bruder heilen heilt",
+	healwarn = "Heilung gewirkt!",
+	startwarn = "Zwillings Imperatoren angegriffen! Wutanfall in 15 Minuten!",
+	enragebartext = "Wutanfall",
+	warn1 = "Wutanfall in 10 Minuten",
+	warn2 = "Wutanfall in 5 Minuten",
+	warn3 = "Wutanfall in 3 Minuten",
+	warn4 = "Wutanfall in 90 Sekunden",
+	warn5 = "Wutanfall in 60 Sekunden",
+	warn6 = "Wutanfall in 30 Sekunden",
+	warn7 = "Wutanfall in 10 Sekunden",
+    
+    blizzard_trigger = "Ihr seid von Blizzard betroffen.",
+    blizzard_gone_trigger = "Blizzard schwindet von Euch.",
+	blizzard_warn = "Lauf aus Blizzard!",
+            
+    pull_trigger1 = "Ihr seid nichts weiter als",
+    pull_trigger2 = "Seid bereit in die",
+    pull_trigger3 = "Komm Bruder",
+    pull_trigger4 = "Um unsere Hallen",
+    pull_trigger5 = "Niemand wird",
+    pull_trigger6 = "Nun gibt es kein",
+    pull_trigger7 = "Sieh Bruder",
+    pull_trigger8 = "Wie eine Fliege",
+    pull_trigger9 = "Wird euer Untergang",
+    pull_trigger10 = "Eure unversch",
 } end )
 
 ----------------------------------
@@ -63,8 +137,18 @@ BigWigsTwins = BigWigs:NewModule(boss)
 BigWigsTwins.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsTwins.enabletrigger = {veklor, veknilash}
 BigWigsTwins.bossSync = "The Twin Emperors"
-BigWigsTwins.toggleoptions = {"bug", "teleport", "enrage", "heal", "bosskill"}
+BigWigsTwins.toggleoptions = {"bug", "teleport", "enrage", "heal", "blizzard", "bosskill"}
 BigWigsTwins.revision = tonumber(string.sub("$Revision: 16970 $", 12, -3))
+BigWigsTwins:RegisterYellEngage(L["pull_trigger1"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger2"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger3"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger4"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger5"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger6"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger7"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger8"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger9"])
+BigWigsTwins:RegisterYellEngage(L["pull_trigger10"])
 
 ------------------------------
 --      Initialization      --
@@ -72,9 +156,10 @@ BigWigsTwins.revision = tonumber(string.sub("$Revision: 16970 $", 12, -3))
 
 function BigWigsTwins:OnEnable()
 	self.started = nil
+    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
-	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
+	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
@@ -95,19 +180,20 @@ function BigWigsTwins:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 end
 
 function BigWigsTwins:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
-	if string.find(msg, L["trigger"]) then
+	if string.find(msg, L["blizzard_trigger"]) then
 		self:TriggerEvent("BigWigs_Message", L["firewarn"], "Personal", true, "Alarm")
+        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Frost_IceStorm", 10)
 	        --BigWigsThaddiusArrows:Direction("Blizzard")
 	end
 end
 
---[[function BigWigsTwins:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-	if string.find(msg, L["trigger"]) then
-            BigWigsThaddiusArrows:Blizzardstop()
+function BigWigsTwins:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+	if string.find(msg, L["blizzard_gone_trigger"]) then
+        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Frost_IceStorm")
 	end
 end
 
-function BigWigsTwins:Stopb()
+--[[function BigWigsTwins:Stopb()
             BigWigsThaddiusArrows:Blizzardstop()
 end]]
 
@@ -117,14 +203,21 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end
+        if self:IsEventRegistered("CHAT_MSG_MONSTER_YELL") then
+			self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+		end
 		if self.db.profile.teleport then
 	                --self:ScheduleEvent(function() BigWigsThaddiusArrows:Direction("Noth") end, 25)
-			self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
-			self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
+			--self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
+			--self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
 			self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+            
+            --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
+            self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
+            --self:KTM_Reset()
 		end
 		if self.db.profile.enrage then
-	                self:ScheduleRepeatingEvent("bwtwinstelebar", self.Telebar, 30.1, self)
+	                --self:ScheduleRepeatingEvent("bwtwinstelebar", self.Telebar, 30.1, self)
 			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
 			self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 900, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
 			self:ScheduleEvent("bwtwinswarn1", "BigWigs_Message", 300, L["warn1"], "Attention")
@@ -136,20 +229,25 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("bwtwinswarn7", "BigWigs_Message", 890, L["warn7"], "Important")
 		end
 	elseif sync == "TwinsTeleport" and self.db.profile.teleport then
-		self:TriggerEvent("BigWigs_Message", L["portwarn"], "Attention")
-		self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
-		self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+		self:TriggerEvent("BigWigs_Message", L["portwarn"], "Attention", true, "Alarm")
+		--self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
+		--self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
+		--self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+        self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+            
+        --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
+        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
+        self:KTM_Reset()
 	end
 end
 
-function BigWigsTwins:Telebar()
+--[[function BigWigsTwins:Telebar()
             --klhtm:ResetRaidThreat()
 	        --self:ScheduleEvent(function() BigWigsThaddiusArrows:Direction("Noth") end, 25)
 		self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
 		self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30.1, "Interface\\Icons\\Spell_Arcane_Blink")
-end	
+end	]]
 
 function BigWigsTwins:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if (string.find(msg, L["porttrigger"])) then
