@@ -94,10 +94,10 @@ end
 function BigWigsGolemagg:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
-		if health > 110000 and health <= 162000 and not earthquakeon then
+		if health > 15 and health <= 20 and not earthquakeon then
 			self:TriggerEvent("BigWigs_SendSync", "GolemaggEarthquake")
 			earthquakeon = true
-		elseif health > 162000 and earthquakeon then
+		elseif health > 20 and earthquakeon then
 			earthquakeon = nil
 		end
 	end

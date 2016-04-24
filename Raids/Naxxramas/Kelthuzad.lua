@@ -210,10 +210,10 @@ function BigWigsKelThuzad:UNIT_HEALTH(msg)
 
 	if UnitName(msg) == boss then
 		local health = UnitHealth(msg)
-		if health > 3590300 and health <= 3859573 and not self.warnedAboutPhase3Soon then
+		if health > 35 and health <= 40 and not self.warnedAboutPhase3Soon then
 			self:TriggerEvent("BigWigs_Message", L["phase3_soon_warning"], "Attention")
 			self.warnedAboutPhase3Soon = true
-		elseif health > 3859573 and self.warnedAboutPhase3Soon then
+		elseif health > 40 and self.warnedAboutPhase3Soon then
 			self.warnedAboutPhase3Soon = nil
 		end
 	end

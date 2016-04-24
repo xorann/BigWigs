@@ -165,9 +165,9 @@ end
 function BigWigsOnyxia:UNIT_HEALTH(arg1) --temporary workaround until Phase2 yell gets fixed
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
-		if health > 650000 and health <= 689635 and not transitioned then
+		if health > 60 and health <= 65 and not transitioned then
 			self:TriggerEvent("BigWigs_SendSync", "OnyPhaseTwo")
-		elseif health > 689635 then
+		elseif health > 65 then
 			transitioned = false
 		end
 	end

@@ -83,7 +83,7 @@ function BigWigsSkeram:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
-	self:RegisterEvent("UNIT_HEALTH")
+	--self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramMC", 1)
@@ -129,7 +129,7 @@ function BigWigsSkeram:CHAT_MSG_MONSTER_YELL(msg)
 	end
 end
 
-function BigWigsSkeram:UNIT_HEALTH(arg1)
+--[[function BigWigsSkeram:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		local maxhealth = UnitHealthMax(arg1)
@@ -147,7 +147,7 @@ function BigWigsSkeram:UNIT_HEALTH(arg1)
 			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit25Now")
 		end
 	end
-end
+end]]
 
 function BigWigsSkeram:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then

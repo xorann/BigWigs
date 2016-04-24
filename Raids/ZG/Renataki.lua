@@ -116,10 +116,10 @@ end
 function BigWigsRenataki:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
-		if health > 98072 and health <= 114417 and not enrageannounced then
+		if health > 25 and health <= 30 and not enrageannounced then
 			self:TriggerEvent("BigWigs_SendSync", "RenatakiEnrageSoon")
 			enrageannounced = true
-		elseif health > 114417 and enrageannounced then
+		elseif health > 30 and enrageannounced then
 			enrageannounced = nil
 		end
 	end
