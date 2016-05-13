@@ -121,11 +121,11 @@ function BigWigsShazzrah:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahBlinkX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCurseX", 10)
+	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahBlink1", 10)
+	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCurse1", 10)
 	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahDeadenMagicOn", 5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahDeadenMagicOff", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCounterspellX", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCounterspell1", 5)
 end
 
 ------------------------------
@@ -138,11 +138,11 @@ function BigWigsShazzrah:Event(msg)
 	elseif (string.find(msg, L["trigger6"])) then
 		self:TriggerEvent("BigWigs_SendSync", "ShazzrahDeadenMagicOff")
 	elseif (string.find(msg, L["trigger1"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlinkX")
-	elseif (string.find(msg, L["trigger4"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspellX")
+		self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlink1")
+	--elseif (string.find(msg, L["trigger4"])) then
+	--	self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1")
 	elseif (string.find(msg, L["trigger3"]) or string.find(msg, L["trigger5"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCurseX")
+		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCurse1")
 	end
 end
 
@@ -156,8 +156,8 @@ function BigWigsShazzrah:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("csfirsttoX", self.Counterspell, 10, self)
 		end
 		if self.db.profile.blink then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 45, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleEvent("blinkfirsttoX", self.Blink, 45, self)
+			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+			self:ScheduleEvent("blinkfirsttoX", self.Blink, 30, self)
 		end
 		if self.db.profile.curse then
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 10, "Interface\\Icons\\Spell_Shadow_AntiShadow")
@@ -165,7 +165,7 @@ function BigWigsShazzrah:BigWigs_RecvSync(sync, rest, nick)
         if self.db.profile.deaden then
             self:TriggerEvent("BigWigs_StartBar", self, "Next Deaden Magic", 24, "Interface\\Icons\\Spell_Holy_SealOfSalvation")
         end
-	elseif sync == "ShazzrahBlinkX" then
+	elseif sync == "ShazzrahBlink1" then
 		firstblink = 1
 		--klhtm:ResetRaidThreat()
 		if self.db.profile.blink then
@@ -186,19 +186,19 @@ function BigWigsShazzrah:BigWigs_RecvSync(sync, rest, nick)
         if playerClass == "SHAMAN" or playerClass == "PRIEST" then
             self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Holy_SealOfSalvation")
         end
-	elseif sync == "ShazzrahCurseX" and self.db.profile.curse then
+	elseif sync == "ShazzrahCurse1" and self.db.profile.curse then
 		self:TriggerEvent("BigWigs_Message", L["warn4"], "Attention", "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 22, "Interface\\Icons\\Spell_Shadow_AntiShadow")
-	elseif sync == "ShazzrahCounterspellX" and self.db.profile.counterspell then
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar4text"], 15, "Interface\\Icons\\Spell_Frost_IceShock")
-	    self:ScheduleRepeatingEvent("csrepeatable", self.Counterspell, 15, self)
+	elseif sync == "ShazzrahCounterspell1" and self.db.profile.counterspell then
+		self:TriggerEvent("BigWigs_StartBar", self, L["bar4text"], 12.5, "Interface\\Icons\\Spell_Frost_IceShock")
+	    self:ScheduleRepeatingEvent("csrepeatable", self.Counterspell, 12.5, self)
 	end
 end
 
 function BigWigsShazzrah:Counterspell()	
-	self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspellX");
+	self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1");
 end
 
 function BigWigsShazzrah:Blink()
-	self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlinkX");
+	self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlink1");
 end

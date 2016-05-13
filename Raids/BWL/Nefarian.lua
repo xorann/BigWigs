@@ -75,6 +75,15 @@ L:RegisterTranslations("enUS", function() return {
 	otherwarn_cmd = "otherwarn",
 	otherwarn_name = "Other alerts",
 	otherwarn_desc = "Landing and Zerg warnings",
+            
+    mc_cmd = "mc",
+	mc_name = "Mind Control Alert",
+	mc_desc = "Warn for Mind Control",
+    mcwarn = "Casting Mind Control!",
+	mcplayer = "^([^%s]+) ([^%s]+) afflicted by Shadow Command.$",
+	mcplayerwarn = " is mindcontrolled!",
+	mcyou = "You",
+	mcare = "are",
 } end)
 
 ----------------------------------
@@ -98,7 +107,10 @@ function BigWigsNefarian:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-
+    self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBosskill")
+    
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "NefarianShadowflame", 10)
 	self:TriggerEvent("BigWigs_ThrottleSync", "NefarianFear", 15)
@@ -151,6 +163,20 @@ function BigWigsNefarian:CHAT_MSG_MONSTER_YELL(msg)
 	end
 end
 
+-- mind control
+function BigWigsNefarian:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(arg1)
+	local _,_, player, type = string.find(arg1, L["mcplayer"])
+	if player and type then
+		if player == L["mcyou"] and type == L["mcare"] then
+			player = UnitName("player")
+		end
+		if self.db.profile.mc then 
+            self:TriggerEvent("BigWigs_Message", player .. L["mcplayerwarn"], "Important") 
+            self:TriggerEvent("BigWigs_StartBar", self, player .. L["mcplayerwarn"], 15, "Interface\\Icons\\Spell_Shadow_Charm", "Orange")
+        end
+	end
+end
+
 function BigWigsNefarian:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if string.find(msg, L["fear_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "NefarianFear")
@@ -163,7 +189,7 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
         self:TriggerEvent("BigWigs_Message", L["landing_soon_warning"], "Important", true, "Long")
-        self:TriggerEvent("BigWigs_StartBar", self, L["land"], 135, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
+        self:TriggerEvent("BigWigs_StartBar", self, L["land"], 159, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
         self:TriggerEvent("BigWigs_StartBar", self, L["Mob_Spawn"], 10, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
         self:ScheduleEvent("BigWigs_Message", 105, L["landing_soon_warning"], "Important", true, "Alarm")
         self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
@@ -175,14 +201,18 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
         self:TriggerEvent("BigWigs_StopBar", self, L["fear_bar"])
 		self:TriggerEvent("BigWigs_Message", L["fear_warning"], "Important", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, "Fear NOW!", 1.5, "Interface\\Icons\\Spell_Shadow_Charm")
-		self:ScheduleEvent("BigWigs_StartBar", 1.5, self, L["fear_bar"], 25, "Interface\\Icons\\Spell_Shadow_Charm")
+		self:ScheduleEvent("BigWigs_StartBar", 1.5, self, L["fear_bar"], 27, "Interface\\Icons\\Spell_Shadow_Charm")
         self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_Possession", 5)
     elseif sync == "NefarianLandingNOW" and not self.phase2 then
         self.phase2 = true
         self:TriggerEvent("BigWigs_StopBar", self, L["land"])
-        self:TriggerEvent("BigWigs_StartBar", self, "Landing NOW!", 13, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
+        self:TriggerEvent("BigWigs_StartBar", self, "Landing NOW!", 15, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
         self:TriggerEvent("BigWigs_Message", L["landing_warning"], "Important")
-	end
+        self:ScheduleEvent("BigWigs_SendSync", 15, "NefarianLanded")
+	elseif sync == "NefarianLanded" then
+        self:TriggerEvent("BigWigs_StartBar", self, L["classcall_bar"], 37, "Interface\\Icons\\Spell_Shadow_Charm")
+        self:TriggerEvent("BigWigs_StartBar", self, L["fear_bar"], 30, "Interface\\Icons\\Spell_Shadow_PsychicScream")
+    end
 end
 
 function BigWigsNefarian:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)

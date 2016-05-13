@@ -361,7 +361,7 @@ function BigWigsCThun:GroupWarning()
 		end
 		if self.db.profile.group then
 			self:TriggerEvent("BigWigs_Message", string.format( L["groupwarning"], group, target), "Important", true, "Alarm")
-			self:TriggerEvent("BigWigs_SendTell", target, L["glarewarning"])
+			--self:TriggerEvent("BigWigs_SendTell", target, L["glarewarning"])
 		end
 	end
 	if firstWarning then

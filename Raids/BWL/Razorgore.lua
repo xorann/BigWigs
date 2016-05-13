@@ -26,19 +26,19 @@ L:RegisterTranslations("enUS", function() return {
 	mindcontrol_bar = "MC: %s",
 	mindcontrolyouend_trigger = "Dominate Mind fades from you\.",
 	mindcontrolotherend_trigger = "Dominate Mind fades from (.+)\.",
-	polymorphother_trigger = "(.+) is afflicted by Weakened Soul\.",--Greater Polymorph\.",
-	polymorphyou_trigger = "You are afflicted by Weakened Soul\.",--Greater Polymorph\.",
+	polymorphother_trigger = "(.+) is afflicted by Greater Polymorph\.",
+	polymorphyou_trigger = "You are afflicted by Greater Polymorph\.",
 	polymorph_message = "%s is polymorphed! Dispel!",
 	polymorph_message_you = "You are polymorphed!",
 	polymorph_bar = "Polymorph: %s",
-	polymorphyouend_trigger = "Weakened Soul fades from you\.", --"Greater Polymorph fades from you\.",
-	polymorphotherend_trigger = "Weakened Soul fades from (.+)\.",--"Greater Polymorph fades from (.+)\.",
+	polymorphyouend_trigger = "Greater Polymorph fades from you\.",
+	polymorphotherend_trigger = "Greater Polymorph fades from (.+)\.",
 	deathyou_trigger = "You die\.",
 	deathother_trigger = "(.+) dies\.",
 	egg_trigger = "Razorgore the Untamed begins to cast Destroy Egg\.",
 	egg_message = "%d/30 eggs destroyed!",
 	egg_bar = "Destroy Egg",
-	phase2_trigger = "I'm free! That device shall never torment me again!",
+	phase2_trigger = "You'll pay for forcing me to do this.", --"I'm free! That device shall never torment me again!",
 	phase2_message = "Phase 2",
 	volley_trigger = "Razorgore the Untamed begins to cast Fireball Volley\.",
 	volley_bar = "Fireball Volley",
@@ -219,7 +219,7 @@ end
 
 function BigWigsRazorgore:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["start_trigger"]) then
-        --self:SendEngageSync()
+        self:SendEngageSync()
 	elseif msg == L["phase2_trigger"] then
 		self:TriggerEvent("BigWigs_SendSync", "RazorgorePhaseTwo")
 	elseif msg == L["destroyegg_yell1"] or msg == L["destroyegg_yell2"] or msg == L["destroyegg_yell3"] then

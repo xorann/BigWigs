@@ -150,15 +150,23 @@ function BigWigsMajordomo:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function BigWigsMajordomo:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	if string.find(msg, L["healdead"]) then
+        DEFAULT_CHAT_FRAME:AddMessage("heal dead")
 		self:TriggerEvent("BigWigs_SendSync", "DomoHealerDead " .. tostring(self.hdead + 1))
 	elseif string.find(msg, L["elitedead"]) then
-		self:TriggerEvent("BigWigs_SendSync", "DomoEliteDead " .. tostring(self.edead + 1))
+		DEFAULT_CHAT_FRAME:AddMessage("elite dead")
+        self:TriggerEvent("BigWigs_SendSync", "DomoEliteDead " .. tostring(self.edead + 1))
 	end
 end
 
 function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "DomoPull")) then
+	DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
+    if rest then
+        DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
+    end
+    
+    if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "DomoPull")) then
         self:StartFight()
         if self.db.profile.magic or self.db.profile.dmg then
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")

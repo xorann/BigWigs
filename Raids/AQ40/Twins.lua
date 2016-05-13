@@ -156,7 +156,7 @@ BigWigsTwins:RegisterYellEngage(L["pull_trigger10"])
 
 function BigWigsTwins:OnEnable()
 	self.started = nil
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+    --self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
@@ -181,7 +181,7 @@ end
 
 function BigWigsTwins:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
 	if string.find(msg, L["blizzard_trigger"]) then
-		self:TriggerEvent("BigWigs_Message", L["firewarn"], "Personal", true, "Alarm")
+		self:TriggerEvent("BigWigs_Message", L["blizzard_warn"], "Personal", true, "Alarm")
         self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Frost_IceStorm", 10)
 	        --BigWigsThaddiusArrows:Direction("Blizzard")
 	end

@@ -1,20 +1,21 @@
 # BigWigs
 BigWigs is a World of Warcraft AddOn to predict certain AI behaviour to improve the players performance.<br \>
-This Modification is build for Patch 1.12.1 and its content for use on the <b>NostalriusBegins</b> private Server.
+This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW</b> private Server.
 
-The adjustments were made by LYQ.<br \>
-<b><a href="github.com/MOUZU/BigWigs">Please refer to this repository for more information.</a></b>
+The adjustments were originally made by LYQ.<br \>
+Adjustments for Classic-WoW made by Dorann.<br \>
+<b><a href="github.com/xorann/BigWigs">Please refer to this repository for more information.</a></b>
 
 # Download
 PLEASE NOTE THIS IS STILL A WORK IN PROGRESS <br>
-<b><a href="https://github.com/MOUZU/BigWigs/releases">Download the latest Release here</a></b>
+<b><a href="https://github.com/xorann/BigWigs/releases">Download the latest Release here</a></b>
 
 ## How to install
 <b>a)</b> If you choose to download the .rar file all you have to do is extract the archive in your /World of Warcraft/Interface/AddOns/ directory.<br />
 <b>b)</b> If you download the raw code from GitHub (<b>Download ZIP</b>) you'll have to unzip the downloaded archive and rename the folder from 'BigWigs-master' to 'BigWigs' and place it in your /World of Warcraft/Interface/AddOns/ directory.
 
 ## Wiki
-<b><a href="https://github.com/MOUZU/BigWigs/wiki">For more information or help please visit the Wiki</a></b>
+<b><a href="https://github.com/xorann/BigWigs/wiki">For more information or help please visit the Wiki</a></b>
 
 ## Included AddOns/Plugins
 I've included several other BigWigs AddOns in this repository, so you only need to download and use the 'BigWigs' folder from this repository. If you happen to have any of the listed AddOns seperately I suggest removing them - in case I adjusted some of those in this repository as well.

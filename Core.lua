@@ -545,7 +545,7 @@ end
 
 function BigWigs:KTM_Reset()
 	if IsAddOnLoaded("KLHThreatMeter") then
-        if IsRaidLeader() then
+        if IsRaidLeader() or IsRaidOfficer() then
             klhtm.net.clearraidthreat()
         end
     end

@@ -1,4 +1,4 @@
-﻿------------------------------
+------------------------------
 --      Are you local?      --
 ------------------------------
 
@@ -37,6 +37,8 @@ L:RegisterTranslations("enUS", function() return {
 	["%d %s"] = true,
 	[", "] = true,
 	[" and "] = true,
+            
+    ["landingNOW_trigger"] = "courage begins to wane",
 
 	-- AceConsole
 	["cmd"] = "nefcount",
@@ -284,13 +286,19 @@ function BigWigsNefCount:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["resettrigger"]) then
 		self:TriggerEvent("BigWigs_RebootModule", self)
 
-	elseif string.find(msg, L["hidetrigger"]) then
+	--[[elseif string.find(msg, L["hidetrigger"]) then
 		self:HideBar()
 		self:HideBar(1)
 		self:HideBar(2)
 
 		if self.db.profile.print then self:PrintCounts() end
 
+		self.nefarian = true]]
+	elseif string.find(msg, L["landingNOW_trigger"]) then
+        self:HideBars()
+        
+        if self.db.profile.print then self:PrintCounts() end
+
 		self.nefarian = true
-	end
+    end
 end

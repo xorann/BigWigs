@@ -131,8 +131,8 @@ end
 function BigWigsBroodlord:CHAT_MSG_MONSTER_YELL(msg)
 	if not self.db.profile.bw then return end
 	if string.find(msg, L["engage_trigger"]) and not self.started then
-		self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 19.5, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
-		self:ScheduleEvent("BigWigs_Message", 14.5, L["bw_warn"], "Urgent", true, "Alert")
+		self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 12, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
+		--self:ScheduleEvent("BigWigs_Message", 7, L["bw_warn"], "Urgent", true, "Alert")
         self:SendEngageSync()
         self:StartFight()
 	end
