@@ -43,6 +43,10 @@ local listOfRaidZones   = {
 local unsupportedRaids  = {
     -- this is a list of unsupported raids in this version
     -- needs to be updated on future content and AddOn releases
+    "Molten Core",
+    "Onyxia's Lair",
+    "Blackwing Lair",
+    "Zul'Gurub",
     "Ruins of Ahn'Qiraj",
     "Ahn'Qiraj",
     "Naxxramas"
@@ -76,8 +80,8 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
         for i=1, table.getn(listOfRaidZones) do
             local area = AceLibrary("Babble-Zone-2.2")[listOfRaidZones[i]]
             if area and area == GetRealZoneText() then
-                if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "Endurance") then
-                    DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This |cf75DE52fNostalrius|r Version was made by |cff7f7fffLYQ|r. You can support the Author for future development by sending a couple of Gold to LYQ(Horde) or Virose(Alliance). Thank you.")
+                if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved") then
+                    DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r.")
                 end
                 BigWigsContributeFlag = true
             end
@@ -89,7 +93,7 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
         for i=1, table.getn(unsupportedRaids) do
             local area = AceLibrary("Babble-Zone-2.2")[unsupportedRaids[i]]
             if area and area == GetRealZoneText() then
-                DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This content is not yet adjusted by |cff7f7fffLYQ|r. Check for Updates or help by providing twitch/youtube footage on github.com/MOUZU.")
+                DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs ")
                 footageRequested = true
             end
         end
