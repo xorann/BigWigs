@@ -54,6 +54,7 @@ BigWigsBoar.zonename = {
     AceLibrary("Babble-Zone-2.2")["Durotar"]
 }
 BigWigsBoar.enabletrigger = boss
+BigWigsBoar.bossSync = "Boar"
 BigWigsBoar.toggleoptions = {"engage", "charge", "bosskill"}
 BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
 
@@ -64,6 +65,8 @@ BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
 function BigWigsBoar:OnEnable()
     --DEFAULT_CHAT_FRAME:AddMessage("hallo");
     started = nil
+    
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
     
 	--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
@@ -76,7 +79,7 @@ function BigWigsBoar:OnEnable()
 end
 
 function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
-	--DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
+	DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
     if sync == self:GetEngageSync() and rest and rest == boss and not started then
 		started = true
         self:KTM_SetTarget(boss)
@@ -100,11 +103,15 @@ function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
     elseif sync == "TwinsTeleport" then
         self:TriggerEvent("BigWigs_StartBar", self, L["teleport_msg"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
         
-        self:ScheduleEvent("teleCoundtdown10", "BigWigs_Message", 20, "", "Urgent", true, "Ten")
+        --[[self:ScheduleEvent("teleCoundtdown10", "BigWigs_Message", 20, "", "Urgent", true, "Ten")
         self:ScheduleEvent("teleCoundtdown3", "BigWigs_Message", 27, "", "Urgent", true, "Three")
         self:ScheduleEvent("teleCoundtdown2", "BigWigs_Message", 28, "", "Urgent", true, "Two")
         self:ScheduleEvent("teleCoundtdown1", "BigWigs_Message", 29, "", "Urgent", true, "One")
-        self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["teleport_msg"], "Urgent", true, "Alarm")
+        self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["teleport_msg"], "Urgent", true, "Alarm")]]
+        self:DelayedSound(20, "Ten")
+        self:DelayedSound(27, "Three")
+        self:DelayedSound(28, "Two")
+        self:DelayedSound(29, "One")
         self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
         
         self:KTM_Reset()
@@ -130,7 +137,7 @@ function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
         --self:TriggerEvent("BigWigs_Message", "", "Urgent", true, "One")
         
         -- countdown
-        self:TriggerEvent("BigWigs_Message", L["charge_msg"], "Urgent", true, "Ten")
+        --[[self:TriggerEvent("BigWigs_Message", L["charge_msg"], "Urgent", true, "Ten")
         self:ScheduleEvent("coundtdown9", "BigWigs_Message", 1, "", "Urgent", true, "Nine")
         self:ScheduleEvent("coundtdown8", "BigWigs_Message", 2, "", "Urgent", true, "Eight")
         self:ScheduleEvent("coundtdown7", "BigWigs_Message", 3, "", "Urgent", true, "Seven")
@@ -140,8 +147,19 @@ function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
         self:ScheduleEvent("coundtdown3", "BigWigs_Message", 7, "", "Urgent", true, "Three")
         self:ScheduleEvent("coundtdown2", "BigWigs_Message", 8, "", "Urgent", true, "Two")
         self:ScheduleEvent("coundtdown1", "BigWigs_Message", 9, "", "Urgent", true, "One")
-        self:ScheduleEvent("coundtdown0", "BigWigs_Message", 10, "Alarm", "Urgent", true, "Alarm")
-        
+        self:ScheduleEvent("coundtdown0", "BigWigs_Message", 10, "Alarm", "Urgent", true, "Beware")
+        ]]
+        self:Sound("Ten");
+        self:DelayedSound(1, "Nine")
+        self:DelayedSound(2, "Eight")
+        self:DelayedSound(3, "Seven")
+        self:DelayedSound(4, "Six")
+        self:DelayedSound(5, "Five")
+        self:DelayedSound(6, "Four")
+        self:DelayedSound(7, "Three")
+        self:DelayedSound(8, "Two")
+        self:DelayedSound(9, "One")
+        self:DelayedSound(10, "Beware")
         self:TriggerEvent("BigWigs_StartBar", self, L["charge_bar"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
     end
     

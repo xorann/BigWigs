@@ -103,7 +103,7 @@ function BigWigsBroodlord:Event(msg)
 			self:TriggerEvent("BigWigs_Message", L["ms_warn_you"], "Urgent")
 			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], UnitName("player")), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
-            self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Ability_Warrior_SavageBlow", 5)
+            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow", 5)
 		else
 			self:TriggerEvent("BigWigs_Message", string.format(L["ms_warn_other"], name), "Attention")
 			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], name), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
@@ -140,8 +140,8 @@ end
 
 function BigWigsBroodlord:PLAYER_TARGET_CHANGED()
     if (self.lastMS + 5) > GetTime() and UnitName("target") == self.MS then
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Ability_Warrior_SavageBlow", (self.lastMS + 5) - GetTime())
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow", (self.lastMS + 5) - GetTime())
     else
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Ability_Warrior_SavageBlow")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow")
     end
 end

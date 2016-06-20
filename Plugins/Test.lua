@@ -194,7 +194,7 @@ function BigWigsTest:BigWigs_Test()
 	self:ScheduleEvent("BigWigs_Message", 15, L["Victory!"], "Bosskill", true, "Victory")
     self.test = "HELLO WORLD"
     self:TriggerEvent("BigWigs_StartBar", self, "Combat", 25, "Interface\\Icons\\Inv_Hammer_Unique_Sulfuras")
-    self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Inv_Hammer_Unique_Sulfuras", 5)
+    self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Inv_Hammer_Unique_Sulfuras", 5)
     self:TriggerEvent("BigWigs_SendSync", "TestNumber 5")
     self:TriggerEvent("BigWigs_SendSync", "BossEngaged "..self:ToString())
     

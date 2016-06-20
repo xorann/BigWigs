@@ -72,6 +72,8 @@ L:RegisterTranslations("enUS", function() return {
     pull_trigger8 = "Like a fly in a web.",
     pull_trigger9 = "Shall be your undoing!",
     pull_trigger10 = "Your brash arrogance",
+            
+    kill_trigger = "My brother...NO!",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -127,6 +129,8 @@ L:RegisterTranslations("deDE", function() return {
     pull_trigger8 = "Wie eine Fliege",
     pull_trigger9 = "Wird euer Untergang",
     pull_trigger10 = "Eure unversch",
+            
+    kill_trigger = "Mein Bruder...",
 } end )
 
 ----------------------------------
@@ -156,7 +160,7 @@ BigWigsTwins:RegisterYellEngage(L["pull_trigger10"])
 
 function BigWigsTwins:OnEnable()
 	self.started = nil
-    --self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
@@ -172,6 +176,27 @@ end
 --      Event Handlers      --
 ------------------------------
 
+function BigWigsTwins:CHAT_MSG_MONSTER_YELL(msg)
+	if string.find(msg, L["pull_trigger1"]) or string.find(msg, L["pull_trigger2"]) or string.find(msg, L["pull_trigger3"]) or string.find(msg, L["pull_trigger4"]) or string.find(msg, L["pull_trigger5"]) or string.find(msg, L["pull_trigger6"]) or string.find(msg, L["pull_trigger7"]) or string.find(msg, L["pull_trigger8"]) or string.find(msg, L["pull_trigger9"]) or string.find(msg, L["pull_trigger10"]) then
+        
+        if self:IsEventRegistered("CHAT_MSG_MONSTER_YELL") then
+			self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+		end
+        
+        if self.db.profile.teleport then
+            self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
+        end
+        if self.db.profile.enrage then
+            self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 900, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
+        end
+    elseif string.find(msg, L["kill_trigger"]) then
+        if self.db.profile.bosskill then 
+            self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s have been defeated"], boss), "Bosskill", nil, "Victory") 
+        end
+		self.core:ToggleModuleActive(self, false)
+    end
+end
+
 function BigWigsTwins:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	if msg == string.format(UNITDIESOTHER, veklor) or msg == string.format(UNITDIESOTHER, veknilash) then
 		if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s have been defeated"], boss), "Bosskill", nil, "Victory") end
@@ -182,14 +207,14 @@ end
 function BigWigsTwins:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
 	if string.find(msg, L["blizzard_trigger"]) then
 		self:TriggerEvent("BigWigs_Message", L["blizzard_warn"], "Personal", true, "Alarm")
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Frost_IceStorm", 10)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Frost_IceStorm", 10)
 	        --BigWigsThaddiusArrows:Direction("Blizzard")
 	end
 end
 
 function BigWigsTwins:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
 	if string.find(msg, L["blizzard_gone_trigger"]) then
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Frost_IceStorm")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Frost_IceStorm")
 	end
 end
 

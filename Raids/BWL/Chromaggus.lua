@@ -262,7 +262,7 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
 		end
         if playerClass == "HUNTER" then
-            self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
+            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
         end
 		self.frenzied = true
         lastFrenzy = GetTime()
@@ -274,7 +274,7 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
                 self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], NextTime, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white")
             end
 		end
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Nature_Drowsy")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy")
 		self.frenzied = nil
 	end
 end

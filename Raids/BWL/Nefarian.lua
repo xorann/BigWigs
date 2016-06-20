@@ -109,7 +109,7 @@ function BigWigsNefarian:OnEnable()
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBosskill")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBosskill")
     
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "NefarianShadowflame", 10)
@@ -202,7 +202,7 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", L["fear_warning"], "Important", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, "Fear NOW!", 1.5, "Interface\\Icons\\Spell_Shadow_Charm")
 		self:ScheduleEvent("BigWigs_StartBar", 1.5, self, L["fear_bar"], 27, "Interface\\Icons\\Spell_Shadow_Charm")
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_Possession", 5)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_Possession", 5)
     elseif sync == "NefarianLandingNOW" and not self.phase2 then
         self.phase2 = true
         self:TriggerEvent("BigWigs_StopBar", self, L["land"])
@@ -217,6 +217,6 @@ end
 
 function BigWigsNefarian:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg,"Bellowing Roar") then
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Shadow_Possession")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Shadow_Possession")
     end
 end

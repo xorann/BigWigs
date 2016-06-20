@@ -202,7 +202,7 @@ function BigWigsVaelastrasz:BigWigs_RecvSync(sync, rest, nick)
 				self:SetCandyBarOnClick("BigWigsBar "..string.format(L["adrenaline_bar"], rest), function(name, button, extra) TargetByName(extra, true) end, rest)
 				if rest == UnitName("player") then
 					self:TriggerEvent("BigWigs_Message", L["adrenaline_message_you"], "Attention", true, "Alert")
-                    self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\INV_Gauntlets_03", 20)
+                    self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\INV_Gauntlets_03", 20)
 				else
 					self:TriggerEvent("BigWigs_Message", string.format(L["adrenaline_message"], rest), "Urgent")
 				end
@@ -238,7 +238,7 @@ function BigWigsVaelastrasz:Event(msg)
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["adrenaline_bar"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 			if name == UnitName("player") then
 				self:TriggerEvent("BigWigs_Message", L["adrenaline_message_you"], "Attention", true, "Alert")
-                self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\INV_Gauntlets_03", 20)
+                self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\INV_Gauntlets_03", 20)
 			else
 				self:TriggerEvent("BigWigs_Message", string.format(L["adrenaline_message"], name), "Urgent")
 			end

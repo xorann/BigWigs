@@ -149,7 +149,7 @@ function BigWigsEbonroc:Event(msg)
 	local _,_,shadowcurseother,_ = string.find(msg, L["shadowcurseother_trigger"])
 	if string.find(msg, L["shadowcurseyou_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "EbonrocShadowX "..UnitName("player"))
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_GatherShadows", 8)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_GatherShadows", 8)
 		if self.db.profile.curse then
 			self:TriggerEvent("BigWigs_Message", L["shadowfcurse_message_you"], "Attention")
 		end

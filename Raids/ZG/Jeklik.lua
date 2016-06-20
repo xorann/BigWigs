@@ -302,7 +302,7 @@ function BigWigsJeklik:Event(msg)
 	local _,_,liquidfireimmune,_ = string.find(msg, L["liquidfireimmune_trigger"])
     if string.find(msg, "Your Flames hits you") then
         -- Your Flames hits you for %d Fire damage.
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
         self:TriggerEvent("BigWigs_Message", L["firewarnyou"], "Attention", "Alarm")
 	elseif string.find(msg, L["heal_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "JeklikHeal")
@@ -337,7 +337,7 @@ function BigWigsJeklik:Event(msg)
 			if string.find(msg, L["liquidfirehitsyou_trigger"]) then
                 -- do I still need this?
 				--self:TriggerEvent("BigWigs_Message", L["firewarnyou"], "Attention", "Alarm")
-                --self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
+                --self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
 			elseif msg == L["liquidfireresistyou_trigger"] or msg == L["liquidfireabsorbyou_trigger"] or msg == L["liquidfireimmuneyou_trigger"] then
 				self:TriggerEvent("BigWigs_Message", L["firewarn"], "Attention", "Alarm")
 			elseif liquidfirehitsother and liquidfirehitsother~=L["you"] then

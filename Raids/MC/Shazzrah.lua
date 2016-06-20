@@ -179,12 +179,12 @@ function BigWigsShazzrah:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 30, "Interface\\Icons\\Spell_Holy_SealOfSalvation")
         if playerClass == "SHAMAN" or playerClass == "PRIEST" then
-            self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Holy_SealOfSalvation", 30)
+            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Holy_SealOfSalvation", 30)
         end
 	elseif sync == "ShazzrahDeadenMagicOff" and self.db.profile.deaden then
 		self:TriggerEvent("BigWigs_StopBar", self, L["bar2text"])
         if playerClass == "SHAMAN" or playerClass == "PRIEST" then
-            self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Holy_SealOfSalvation")
+            self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Holy_SealOfSalvation")
         end
 	elseif sync == "ShazzrahCurse1" and self.db.profile.curse then
 		self:TriggerEvent("BigWigs_Message", L["warn4"], "Attention", "Alarm")

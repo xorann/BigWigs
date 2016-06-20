@@ -213,7 +213,7 @@ function BigWigsVenoxis:Event(msg)
 			end
 		end
     elseif msg == L["poisoncloud_on_you"] then
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Ability_Creature_Disease_02", 5)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Creature_Disease_02", 5)
         self:TriggerEvent("BigWigs_Message", L["poisonyou_message"], "Attention", "Alarm")
 	elseif string.find(msg, L["poisoncloud_trigger"]) then
 		if self.db.profile.announce then
@@ -246,7 +246,7 @@ end
 
 function BigWigsVenoxis:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg, L["poisoncloud_trigger"]) then
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Ability_Creature_Disease_02")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Creature_Disease_02")
     end
 end
 

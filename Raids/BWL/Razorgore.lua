@@ -398,7 +398,7 @@ function BigWigsRazorgore:BigWigs_RecvSync(sync, rest, nick)
     elseif sync == "RazorgoreVolleyCast" and self.db.profile.fireballvolley then
         self:TriggerEvent("BigWigs_StartBar", self, L["volley_bar"], 2, "Interface\\Icons\\Spell_Fire_FlameBolt", true, "red")
 		self:TriggerEvent("BigWigs_Message", L["volley_message"], "Urgent")
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Fire_Flamebolt", 2)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Flamebolt", 2)
     elseif sync == "RazorgorePhaseTwo" and self.phase < 2 then
         self.phase = 2
         self:CancelScheduledEvent("destroyegg_check")

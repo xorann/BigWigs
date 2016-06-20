@@ -134,6 +134,7 @@ function BigWigsLucifron:OnEnable()
     self.started = nil
 	self.protector = 0
 	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
@@ -233,6 +234,7 @@ function BigWigsLucifron:BigWigs_RecvSync(sync, rest, nick)
 end
 
 function BigWigsLucifron:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["deadaddtrigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "LucifronAddDead " .. tostring(self.protector + 1))
 	end

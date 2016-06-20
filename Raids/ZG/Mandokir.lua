@@ -170,7 +170,7 @@ function BigWigsMandokir:CHAT_MSG_MONSTER_YELL(msg)
                 self:TriggerEvent("BigWigs_SetRaidIcon", watchedplayer)
             end
             if watchedplayer == UnitName("player") then
-                self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_Charm", 7)
+                self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_Charm", 7)
             end
         end
 	end

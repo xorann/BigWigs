@@ -52,3 +52,115 @@ If you want to browse through all the changes and their status regarding each en
 - <b>(QA)</b> BossWipe Syncs were remodelled and added dynamically for every encounter.
 - <b>(100%)</b> KTM compatibility - Bossmodules are now able to set the MasterTarget, reset the Threat or Clear the Master Target. RaidOfficers do need to have this version for that.
 - <b>()</b> to be completed later..
+
+# Provided API
+<a href="http://wow.gamepedia.com/BigWigs/API">BigWigs API</a>
+
+function BigWigs.modulePrototype:Bar(text, length, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	self:TriggerEvent("BigWigs_StartBar", self, text, time, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+end
+function BigWigs.modulePrototype:DelayedBar(text, length, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	return self:ScheduleEvent("BigWigs_StartBar", delay, self, text, time, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+end
+
+## :Bar(text, length, icon, otherColor, ...)
+Starts a timer bar that counts down for the specified length of time.
+
+### Arguments
+<ul>
+	<li><b>text</b> string<br />The text to show on the bar.</li>
+	<li><b>length</b> number<br />The length of the bar in seconds.</li>
+	<li><b>icon</b> string<br />What icon to show on the bar.</li>
+	<li><b>otherColor</b> boolean<br />Optional, if not specified, the configured colors will be used. If specified, you must provide 1 to 10 colors to use as arguments after otherColor.</li>
+	<li><b>...</b> color<br />Optional, if otherColor is specified, you must provide 1 to 10 colors.</li>
+</ul>
+### Returns
+Nothing
+		
+###	Remarks
+"Interface\\Icons\\" is automatically pre-pended to the icon path. If you have to show a bar with an icon that is not part of the default icons provided by WoW, this is still possible using the self:TriggerEvent("BigWigs_StartBar", ...) syntax.
+		
+### Example
+self:Bar("Adds incoming!", 30, "Spell_Nature_Web")
+self:Bar("Testing Colors!", 60, "Spell_Nature_Web", true, "red", "yellow", "green")
+
+
+## :Icon(name, iconnumber)
+Puts the specified raid icon on the specified player, only works if you are promoted in the raid or the raid leader.
+
+### Arguments
+<ul>
+	<li><b>name</b> string<br />The name of the player you want to put an icon on.</li>
+	<li><b>iconnumber</b> number<br />Optional, if not specified, the configured default raid icon will be used. If specified, this raid icon will be used. 1: Yellow Star, 2: Orange Circle, 3: Purple Diamond, 4: Green Triangle, 5: White Moon, 6: Blue Square, 7: Red Cross, 8: Skull</li>
+</ul>
+
+### Returns
+Nothing.
+		
+###	Remarks
+If you use GenericBossDeath or CheckForWipe the icon is removed automatically. If not, you should clear it yourself.
+		
+### Example
+self:Icon("SomePlayer")
+
+
+## :Message(text, priority, noRaidSay, sound, broadcastOnly)
+Displays a message in the configured message frame (defaults to BigWigs' own message frame) with the color configured for the given priority.
+
+### Arguments
+<ul>
+	<li><b>text</b> string<br />The message to show.</li>
+	<li><b>priority</b> string<br />Optional, one of "Important", "Personal", "Urgent", "Attention", "Positive", "Bosskill" or "Core".</li>
+	<li><b>noRaidSay</b> boolean<br />Optional, if this is non-nil, the message will not be relayed to raid warning channel, even if that option is enabled.</li>
+	<li><b>sound</b> string or boolean<br />Optional, if this is a string, it must be a valid sound name (see :Sound). If 'true' is passed, the default "RaidWarning" sound provided by WoW will be played.</li>
+	<li><b>broadcastOnly</b> boolean<br />Optional, if this is provided, the message will only be broadcasted to the raid warning channel (if that option is enabled), and not shown locally.</li>
+</ul>
+### Returns
+Nothing.
+		
+###	Remarks
+You should almost always provide a priority - if not, the message will be white. Remember that you should NOT surround the text with "***".
+Also note that priority can be a RGB tuple, like {r=1.0,g=0,b=0}, and also just a color name, like "Yellow".
+		
+### Example
+self:Message("Fear in 2sec!", "Important")
+self:Message("You have the plague", "Personal", true, "Info")
+
+## :DelayedMessage(delay, ...)
+This will schedule a delayed message to be printed after delay seconds.
+
+### Arguments
+<ul>
+	<li><b>delay</b> number<br />The number of seconds to wait before printing the message.</li>
+	<li><b>...</b><br />The rest of the arguments are exactly like the ones for :Message.</li>
+</ul>
+
+### Returns
+The scheduled event ID, which is useful if you may want to cancel the scheduled message later.
+		
+### Example
+self:DelayedMessage(55, "Something happens in 5sec!", "Important")
+		
+local x = self:DelayedMessage(55, "Something happens in 5sec!", "Important")
+-- Then, a bit later, the boss enters phase 2, and you no langer want this message to display
+self:CancelScheduledEvent(x)
+
+
+## :Sync(sync)
+Sends a communication sync to the other BigWigs users in the group.
+
+### Arguments
+<ul>
+	<li><b>sync</b> string<br />The synchronization token to send to the other people in your group. Note that these tokens are recieved by all the BigWigs modules, so you should make sure you pick something unique.</li>
+</ul>
+### Returns
+Nothing.
+		
+###	Remarks
+The tokens we use are typically prefixed by some portion of the boss name, like "HyakissWeb". When sending a sync, if you want to send more data (this will be provided by the second argument to :BigWigs_RecvSync, detailed later), you have to use string concatenation; "HyakissWeb" .. playerName (which would bekome "HyakissWeb MyToon").
+Note that synchronization throttling is done only on the first part, not the additional information you include in the sync.
+Of course, sync messages are sent using SendAddonMessage, and as such there are some restrictions inherited. Take a look at Wowpedia for more information.
+		
+### Example
+self:Sync("BossAbility")
+self:Sync("BossTargettedAbility " .. player)

@@ -73,7 +73,7 @@ Plugins\ZombieFood.lua
 Plugins\LoathebTactical.lua
 # Plugins\NefCount.lua
 Plugins\RespawnTimers.lua
-Plugins\WarnIcon.lua
+Plugins\WarningSign.lua
 Plugins\BossRecords.lua
 #Plugins\ReadyCheck.lua
 Plugins\RaidOfficer.lua

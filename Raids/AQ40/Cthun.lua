@@ -122,6 +122,9 @@ function BigWigsCThun:OnEnable()
 
 	-- register events
     self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath") -- override since we get out of combat between phases.
+
     
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	--self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE")
@@ -146,6 +149,10 @@ end
 ----------------------
 --  Event Handlers  --
 ----------------------
+
+function BigWigsCThun:GenericBossDeath(event)
+   DEFAULT_CHAT_FRAME:AddMessage("Debug: GenericBossDeath: " .. event) 
+end
 
 function BigWigsCThun:Emote( msg )
 	if string.find(msg, L["weakenedtrigger"]) then self:TriggerEvent("BigWigs_SendSync", "CThunWeakened") end

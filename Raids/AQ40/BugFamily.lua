@@ -31,10 +31,12 @@ L:RegisterTranslations("enUS", function() return {
 	toxicvolleyimmune_trigger = "Toxic Volley fail(.+) immune",
 	toxicvolley_bar = "Toxic Volley",
 	toxicvolley_message = "Toxic Volley in 3 Seconds!",
-	panic_trigger = "afflicted by Panic\.",
-	panicresist_trigger = "Princess Yauj 's Panic was resisted",
-	panicimmune_trigger = "Princess Yauj 's Panic fail(.+) immune",
-	toxicvaporsyou_trigger = "You are afflicted by Toxic Vapors\.",
+
+	panic_trigger = "is afflicted by Fear%.",
+	panicresist_trigger = "Princess Yauj 's Fear was resisted",
+	panicimmune_trigger = "Princess Yauj 's Fear fail(.+) immune",
+	
+    toxicvaporsyou_trigger = "You are afflicted by Toxic Vapors\.",
 	toxicvaporsother_trigger = "(.+) is afflicted by Toxic Vapors\.",
 	toxicvapors_message = "Move away from the Poison Cloud!",
 	enrage_bar = "Enrage",

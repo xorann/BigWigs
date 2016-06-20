@@ -123,25 +123,26 @@ end
 function BigWigsGehennas:Event(msg)
     if string.find(msg, "You suffer (%d+) (.+) from "..boss.." 's Rain of Fire.") then
         -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_RainOfFire", 2)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire", 2)
     elseif ((string.find(msg, L["trigger1"])) or (string.find(msg, L["trigger4"]))) then
 		self:TriggerEvent("BigWigs_SendSync", "GehennasCurse")
 	elseif (string.find(msg, L["trigger3"])) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
 		self:TriggerEvent("BigWigs_Message", L["firewarn"], "Attention", "Alarm")
         self:ScheduleEvent("BigWigs_StartBar", 6, self, "Next Rain", 9, "Interface\\Icons\\Spell_Shadow_RainOfFire")
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_RainOfFire", 6)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire", 6)
 	end
 end
 
 function BigWigsGehennas:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg,"Rain of Fire") then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Shadow_RainOfFire")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire")
     end
 end
 
 function BigWigsGehennas:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["dead1"]) then
 		self:TriggerEvent("BigWigs_SendSync", "GehennasAddDead " .. tostring(self.flamewaker + 1))
 	end

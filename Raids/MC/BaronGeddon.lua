@@ -192,7 +192,7 @@ function BigWigsBaronGeddon:Event(msg)
 		if self.db.profile.icon then
 			self:TriggerEvent("BigWigs_SetRaidIcon", UnitName("player"))
 		end
-        self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Shadow_MindBomb", 8)
+        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_MindBomb", 8)
 	elseif string.find(msg, L["bombyouend_trigger"]) then
 		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar1"], UnitName("player")))
 		self:TriggerEvent("BigWigs_SendSync", "GeddonBombStop")

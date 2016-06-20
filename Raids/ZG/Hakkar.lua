@@ -278,7 +278,7 @@ function BigWigsHakkar:Self(msg)
 	elseif string.find(msg, L["aspectofarlokkgeneralavoid_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokkAvoid")
     elseif string.find(msg, L["poisonousblood_trigger"]) then
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")
 	end
 end
 
@@ -342,18 +342,18 @@ function BigWigsHakkar:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.siphon then
 			self:TriggerEvent("BigWigs_StartBar", self, L["siphon_bar"], 89, "Interface\\Icons\\Spell_Shadow_LifeDrain")
 			self:ScheduleEvent("BigWigs_Message", 59, string.format(L["siphon_warning"], 30), "Urgent")
-            self:ScheduleEvent("BigWigs_ShowIcon", 59, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
+            self:ScheduleEvent("BigWigs_ShowWarningSign", 59, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
 			self:ScheduleEvent("BigWigs_Message", 79, string.format(L["siphon_warning"], 10), "Attention")
 		end
 		if self.db.profile.mc then
 			self:TriggerEvent("BigWigs_StartBar", self, L["firstmc_bar"], 17, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate")
 		end
 	elseif sync == "HakkarBloodSiphon" then
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")   -- just to be safe, shouldn't be needed
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")   -- just to be safe, shouldn't be needed
 		if self.db.profile.siphon then
 			self:TriggerEvent("BigWigs_StartBar", self, L["siphon_bar"], 90, "Interface\\Icons\\Spell_Shadow_LifeDrain")
 			self:ScheduleEvent("BigWigs_Message", 60, string.format(L["siphon_warning"], 30), "Urgent")
-            self:ScheduleEvent("BigWigs_ShowIcon", 60, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
+            self:ScheduleEvent("BigWigs_ShowWarningSign", 60, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
             -- before I display that I need to figure out, how to track when the player gained the Poisonous Blood - this should hide the icon again
 			self:ScheduleEvent("BigWigs_Message", 80, string.format(L["siphon_warning"], 10), "Attention")
 		end

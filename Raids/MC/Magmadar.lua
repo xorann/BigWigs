@@ -75,6 +75,7 @@ BigWigsMagmadar.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 ------------------------------
 
 function BigWigsMagmadar:OnEnable()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
 	firstpanic = 0
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
@@ -110,6 +111,8 @@ end
 
 function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
+		self:StartFight()
+		
 		if firstpanic == 0 then
 			self:TriggerEvent("BigWigs_SendSync", "MagmadarPanicIni")
 		end
@@ -130,11 +133,11 @@ function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
         if playerClass == "HUNTER" then
-            self:TriggerEvent("BigWigs_ShowIcon", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
+            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
         end
 	elseif sync == "MagmadarFrenzyStop" and self.db.profile.frenzy then
         self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
-        self:TriggerEvent("BigWigs_HideIcon", "Interface\\Icons\\Spell_Nature_Drowsy")
+        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy")
     elseif sync == "MagmadarLavaBomb" then
         --self:TriggerEvent("BigWigs_StartBar", self, "Lava Bomb", 11, "Interface\\Icons\\Spell_Fire_SelfDestruct")
         --self:ScheduleEvent("BigWigs_SendSync", 11, "MagmadarLavaBomb")

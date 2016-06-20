@@ -27,33 +27,33 @@ local c = {
 --      Module Declaration      --
 ----------------------------------
 
-BigWigsWarnIcon = BigWigs:NewModule("WarnIcon")
+BigWigsWarningSign = BigWigs:NewModule("WarningSign")
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsWarnIcon:OnEnable()
-    self:RegisterEvent("BigWigs_ShowIcon")
-    self:RegisterEvent("BigWigs_HideIcon")
+function BigWigsWarningSign:OnEnable()
+    self:RegisterEvent("BigWigs_ShowWarningSign")
+    self:RegisterEvent("BigWigs_HideWarningSign")
     self:RegisterEvent("PLAYER_DEAD")
 end
 
-BigWigsWarnIcon.frame = CreateFrame("Frame", nil, UIParent)
-BigWigsWarnIcon.frame:SetFrameStrata("MEDIUM")
-BigWigsWarnIcon.frame:SetWidth(100) 
-BigWigsWarnIcon.frame:SetHeight(100)
-BigWigsWarnIcon.texture = BigWigsWarnIcon.frame:CreateTexture(nil, "BACKGROUND")
-BigWigsWarnIcon.texture:SetAllPoints(BigWigsWarnIcon.frame)
-BigWigsWarnIcon.frame:SetAlpha(0.8)
-BigWigsWarnIcon.frame:SetPoint("CENTER", 0, 250)
-BigWigsWarnIcon.frame:Hide()
+BigWigsWarningSign.frame = CreateFrame("Frame", nil, UIParent)
+BigWigsWarningSign.frame:SetFrameStrata("MEDIUM")
+BigWigsWarningSign.frame:SetWidth(100) 
+BigWigsWarningSign.frame:SetHeight(100)
+BigWigsWarningSign.texture = BigWigsWarningSign.frame:CreateTexture(nil, "BACKGROUND")
+BigWigsWarningSign.texture:SetAllPoints(BigWigsWarningSign.frame)
+BigWigsWarningSign.frame:SetAlpha(0.8)
+BigWigsWarningSign.frame:SetPoint("CENTER", 0, 250)
+BigWigsWarningSign.frame:Hide()
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsWarnIcon:BigWigs_ShowIcon(texturePath, duration, force)
+function BigWigsWarningSign:BigWigs_ShowWarningSign(texturePath, duration, force)
     -- force will overwrite the current icon shown, else it will do nothing
     if not type(texturePath) == "string" or not type(duration) == "number" then return end
     
@@ -64,31 +64,31 @@ function BigWigsWarnIcon:BigWigs_ShowIcon(texturePath, duration, force)
         c.endTime   = GetTime() + duration;
         c.force     = force;
         
-        BigWigsWarnIcon.texture:SetTexture(texturePath)
-        BigWigsWarnIcon.frame:Show()
+        BigWigsWarningSign.texture:SetTexture(texturePath)
+        BigWigsWarningSign.frame:Show()
         
         -- initialize the OnUpdate
-        BigWigsWarnIcon.frame:SetScript('OnUpdate', function()
+        BigWigsWarningSign.frame:SetScript('OnUpdate', function()
                 if GetTime() > c.endTime then
                     c.texture   = "";
-                    BigWigsWarnIcon.frame:Hide()
-                    BigWigsWarnIcon.frame:SetScript('OnUpdate', nil)
+                    BigWigsWarningSign.frame:Hide()
+                    BigWigsWarningSign.frame:SetScript('OnUpdate', nil)
                 end
             end)
     end
 end
 
-function BigWigsWarnIcon:BigWigs_HideIcon(texturePath, forceHide)
+function BigWigsWarningSign:BigWigs_HideWarningSign(texturePath, forceHide)
     -- will only work if texturePath is still the icon displayed, this might not be the case when an icon gets forced
     -- forceHide is used upon BossDeath to hide no matter what is being displayed
     if forceHide or c.texture == texturePath then
         c.texture   = "";
-        BigWigsWarnIcon.frame:Hide()
-        BigWigsWarnIcon.frame:SetScript('OnUpdate', nil)
+        BigWigsWarningSign.frame:Hide()
+        BigWigsWarningSign.frame:SetScript('OnUpdate', nil)
     end
 end
 
-function BigWigsWarnIcon:PLAYER_DEAD()
+function BigWigsWarningSign:PLAYER_DEAD()
     -- this should hide all Icons upon your own death
-     self:BigWigs_HideIcon("", true)
+     self:BigWigs_HideWarningSign("", true)
 end

@@ -112,7 +112,7 @@ end
 ------------------------------
 
 function BigWigsSulfuron:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["triggeradddead"]) then
         DEFAULT_CHAT_FRAME:AddMessage("add dead")
 		self:TriggerEvent("BigWigs_SendSync", "SulfuronAddDead " .. tostring(self.deadpriests + 1))
@@ -134,10 +134,10 @@ function BigWigsSulfuron:Events(msg)
 end
 
 function BigWigsSulfuron:BigWigs_RecvSync(sync, rest, nick)
-	DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
-    if rest then
-        DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
-    end
+	--DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
+    --if rest then
+    --    DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
+    --end
     
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
