@@ -146,8 +146,16 @@ function BigWigsNefarian:CHAT_MSG_MONSTER_YELL(msg)
 			if v[2] then
 				if self.db.profile.classcall then
 					self:TriggerEvent("BigWigs_Message", v[1], "Important")
-					self:ScheduleEvent("BigWigs_Message", 25, L["classcall_warning"], "Important", true, "Alarm")
-					self:TriggerEvent("BigWigs_StartBar", self, L["classcall_bar"], 30, "Interface\\Icons\\Spell_Shadow_Charm")
+					self:ScheduleEvent("BigWigs_Message", 27, L["classcall_warning"], "Important")
+					self:TriggerEvent("BigWigs_StartBar", self, v[1], 30, "Interface\\Icons\\Spell_Shadow_Charm")
+                    self:ScheduleEvent("countdown3", "BigWigs_Message", 27, "", "Urgent", true, "Three")
+                    self:ScheduleEvent("countdown2", "BigWigs_Message", 28, "", "Urgent", true, "Two")
+                    self:ScheduleEvent("countdown1", "BigWigs_Message", 29, "", "Urgent", true, "One")
+                    
+                    local localizedClass, englishClass = UnitClass("player");
+                    if string.find(msg, localizedClass) then
+                        self:TriggerEvent("BigWigs_Message", "", "Urgent", true, "Beware")
+                    end
 				end
 			else
 				if string.find(msg, L["landing_soon_trigger"]) then 
@@ -195,7 +203,7 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
         self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
 	elseif sync == "NefarianShadowflame" and self.db.profile.shadowflame then
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
 		self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_bar"], 17, "Interface\\Icons\\Spell_Fire_Incinerate")
 	elseif sync == "NefarianFear" and self.db.profile.fear then
         self:TriggerEvent("BigWigs_StopBar", self, L["fear_bar"])
