@@ -10,7 +10,7 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	disabletrigger = "Impossible",
+	disabletrigger = "My flame! Please don",
     trigger = "Reckless mortals, none may challenge the sons of the living flame!",
 
 	trigger1 = "gains Magic Reflection",
@@ -50,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	disabletrigger = "Impossible",
+	disabletrigger = "My flame! Please don",
     trigger = "Reckless mortals, none may challenge the sons of the living flame!",
 
 	trigger1 = "bekommt \'Magiereflexion'",
@@ -161,10 +161,10 @@ function BigWigsMajordomo:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 end
 
 function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
-	DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
-    if rest then
-        DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
-    end
+	--DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
+    --if rest then
+    --    DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
+    --end
     
     if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "DomoPull")) then
         self:StartFight()
@@ -172,23 +172,23 @@ function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
 			self:ScheduleEvent("BigWigs_Message", 10, L["warn3"], "Urgent")
 		end
-        self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
-        self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
-        self:TriggerEvent("BigWigs_StartCounterBar", self, "Elites dead", 4, "Interface\\Icons\\Ability_Hunter_Harass")
-        self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - 0.1))
+        --self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
+        --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
+        --self:TriggerEvent("BigWigs_StartCounterBar", self, "Elites dead", 4, "Interface\\Icons\\Ability_Hunter_Harass")
+        --self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - 0.1))
 	elseif sync == "DomoHealerDead" and self.db.profile.adds and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.hdead < rest then
             self.hdead = rest
             self:TriggerEvent("BigWigs_Message", string.format(L["hdeadmsg"], self.hdead), "Positive")
-            self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - self.hdead))
+            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - self.hdead))
         end
 	elseif sync == "DomoEliteDead" and self.db.profile.adds and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.edead < rest then
             self.edead = rest
             self:TriggerEvent("BigWigs_Message", string.format(L["edeadmsg"], self.edead), "Positive")
-            self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - self.edead))
+            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - self.edead))
         end
 	elseif sync == "DomoAuraMagic" then
 		if self.db.profile.magic then
