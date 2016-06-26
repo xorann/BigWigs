@@ -207,7 +207,7 @@ function BigWigsCThun:CThunStart()
 
 		if self.db.profile.glare then
 			self:TriggerEvent("BigWigs_StartBar", self, L["barGlare"], timeP1GlareStart, "Interface\\Icons\\Spell_Shadow_ShadowBolt")
-			self:ScheduleEvent("BigWigs_Message", timeP1GlareStart, L["glare"], "Urgent", true, "Alarm" )
+			self:ScheduleEvent("BigWigs_Message", timeP1GlareStart, L["glare"], "Urgent", true, "Beware" )
 		end
 
 		firstGlare = true
@@ -216,7 +216,8 @@ function BigWigsCThun:CThunStart()
 		self:ScheduleEvent("bwcthuntentaclesstart", self.StartTentacleRape, timeP1TentacleStart, self )
 		self:ScheduleEvent("bwcthundarkglarestart", self.DarkGlare, timeP1GlareStart, self )
 		self:ScheduleEvent("bwcthungroupwarningstart", self.GroupWarning, timeP1GlareStart - 1, self )
-		self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, timeTarget, self )
+		--self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, timeTarget, self )
+        self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, 1, self )
 	end
 end
 
@@ -361,14 +362,26 @@ end
 
 function BigWigsCThun:GroupWarning()
 	if target then
-		local i, name, group
+		local i, name, group, glareTarget, glareGroup, playerGroup
+        local playerName = GetUnitName("player")
 		for i = 1, GetNumRaidMembers(), 1 do
 			name, _, group, _, _, _, _, _ = GetRaidRosterInfo(i)
-			if name == target then break end
+			if name == target then 
+                glareTarget = name
+                glareGroup = group
+            end
+            if name == playerName then
+                playerGroup = group
+            end
 		end
 		if self.db.profile.group then
-			self:TriggerEvent("BigWigs_Message", string.format( L["groupwarning"], group, target), "Important", true, "Alarm")
+			self:TriggerEvent("BigWigs_Message", string.format( L["groupwarning"], glareGroup, target), "Important", true, "Beware")
 			--self:TriggerEvent("BigWigs_SendTell", target, L["glarewarning"])
+            
+            -- dark glare near you?
+            if (playerGroup == glareGroup or playerGroup == glareGroup - 1 or playerGroup == glareGroup + 1 or playerGroup == glareGroup - 7 or playerGroup == glareGroup + 7) then
+                 self:Sound("RunAway")
+            end
 		end
 	end
 	if firstWarning then
