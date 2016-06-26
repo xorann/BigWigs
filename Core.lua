@@ -163,7 +163,7 @@ BigWigs.cmdtable = {type = "group", handler = BigWigs, args = {
 	},
 }}
 BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, BigWigs.cmdtable)
-BigWigs.debugFrame = ChatFrame5
+BigWigs.debugFrame = ChatFrame1
 BigWigs.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
 
 --------------------------------
@@ -171,8 +171,9 @@ BigWigs.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
 --------------------------------
 
 BigWigs.modulePrototype.core = BigWigs
-BigWigs.modulePrototype.debugFrame = ChatFrame5
+BigWigs.modulePrototype.debugFrame = ChatFrame1
 BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
+
 
 
 function BigWigs.modulePrototype:OnInitialize()
@@ -184,6 +185,12 @@ function BigWigs.modulePrototype:OnInitialize()
 	self:TriggerEvent("BigWigs_ModuleLoaded", self.name, self)
 end
 
+function BigWigs.modulePrototype:DebugMessage(msg)
+    local prefix = "|cfB34DFFf[BigWigs Debug]|r - ";
+    if self.core:IsDebugging() then
+       (self.debugFrame or DEFAULT_CHAT_FRAME):AddMessage(prefix .. msg)
+    end
+end
 
 function BigWigs.modulePrototype:IsBossModule()
 	return self.zonename and self.enabletrigger and true

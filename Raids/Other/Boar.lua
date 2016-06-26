@@ -63,7 +63,6 @@ BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
 ------------------------------
 
 function BigWigsBoar:OnEnable()
-    --DEFAULT_CHAT_FRAME:AddMessage("hallo");
     started = nil
     
     self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
@@ -79,7 +78,7 @@ function BigWigsBoar:OnEnable()
 end
 
 function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
-	DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
+    self:DebugMessage("sync: " .. sync)
     if sync == self:GetEngageSync() and rest and rest == boss and not started then
 		started = true
         self:KTM_SetTarget(boss)
@@ -132,7 +131,7 @@ end--]]
 
 function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
     if self.db.profile.charge and string.find(arg1, L["charge_trigger"]) then
-        DEFAULT_CHAT_FRAME:AddMessage("charge")
+        self:DebugMessage("charge")
         --self:TriggerEvent("BigWigs_Message", L["charge_msg"], "Urgent")
         --self:TriggerEvent("BigWigs_Message", "", "Urgent", true, "One")
         
