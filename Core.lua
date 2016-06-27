@@ -245,7 +245,7 @@ function BigWigs:CHAT_MSG_MONSTER_YELL(msg)
             -- enable and engage
             self:EnableModule(mod:ToString())
 			self:TriggerEvent("BigWigs_SendSync", "BossEngaged "..self:ToString())
-            --mod:SendEngageSync()
+            mod:SendEngageSync()
         end
     end
 end
@@ -255,11 +255,11 @@ function BigWigs.modulePrototype:GetEngageSync()
 	return "BossEngaged"
 end
 
---[[function BigWigs.modulePrototype:SendEngageSync()
+function BigWigs.modulePrototype:SendEngageSync()
     if self.bossSync then
         self:TriggerEvent("BigWigs_SendSync", "BossEngaged "..self.bossSync)
     end
-end]]
+end
 
 function BigWigs.modulePrototype:StartFight()
     if self.bossSync and not self.started then

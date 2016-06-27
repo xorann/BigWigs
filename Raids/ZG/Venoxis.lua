@@ -264,8 +264,8 @@ function BigWigsVenoxis:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.phase then
 			self:TriggerEvent("BigWigs_Message", L["phase1_message"], "Attention")
 		end
-        self:TriggerEvent("BigWigs_StartCounterBar", self, "Snakes dead", 4, "Interface\\Icons\\INV_WAEPON_BOW_ZULGRUB_D_01")
-        self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - 0.1))
+        --self:TriggerEvent("BigWigs_StartCounterBar", self, "Snakes dead", 4, "Interface\\Icons\\INV_WAEPON_BOW_ZULGRUB_D_01")
+        --self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - 0.1))
 	elseif sync == "VenoxisPhaseTwo" then
 		self:KTM_Reset()
 		if self.db.profile.phase then
@@ -304,7 +304,7 @@ function BigWigsVenoxis:BigWigs_RecvSync(sync, rest, nick)
         if rest <= 4 and self.cobra < rest then
             self.cobra = rest
             self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], self.cobra), "Positive")
-            self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - self.cobra))
+            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - self.cobra))
         end
 	elseif sync == "VenoxisVenoxisDead" then
 		venoxisdead = 1

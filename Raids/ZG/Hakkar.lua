@@ -231,6 +231,7 @@ function BigWigsHakkar:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectThekalStart", 5);
 	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectThekalStop", 5);
 	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarMC", 5);
+    self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 end
 
 ------------------------------
@@ -240,9 +241,9 @@ end
 function BigWigsHakkar:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["engage_trigger"]) then
         self:SendEngageSync()
-	elseif msg == L["flee_trigger"] then
+	--[[elseif msg == L["flee_trigger"] then
 		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self:TriggerEvent("BigWigs_RebootModule", self)
+		self:TriggerEvent("BigWigs_RebootModule", self)]]
 	end
 end
 
