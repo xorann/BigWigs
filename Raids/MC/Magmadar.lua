@@ -121,6 +121,11 @@ function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.panic then
 			self:ScheduleEvent("BigWigs_Message", 15, L["fearsoon"], "Attention")		
 			self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 20, "Interface\\Icons\\Spell_Shadow_DeathScream")
+            
+            self:DelayedSound(10, "Ten")
+            self:DelayedSound(17, "Three")
+            self:DelayedSound(18, "Two")
+            self:DelayedSound(19, "One")
 		end
         self:TriggerEvent("BigWigs_StartBar", self, "First Frenzy", 29, "Interface\\Icons\\Ability_Druid_ChallangingRoar")
         --self:TriggerEvent("BigWigs_StartBar", self, "Lava Bomb", 12, "Interface\\Icons\\Spell_Fire_SelfDestruct")
@@ -129,6 +134,11 @@ function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", L["feartime"], "Important")
 		self:ScheduleEvent("BigWigs_Message", 25, L["fearsoon"], "Urgent")		
 		self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 30, "Interface\\Icons\\Spell_Shadow_DeathScream")
+        
+        self:DelayedSound(20, "Ten")
+        self:DelayedSound(27, "Three")
+        self:DelayedSound(28, "Two")
+        self:DelayedSound(29, "One")
 	elseif sync == "MagmadarFrenzyStart" and self.db.profile.frenzy then
 		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")

@@ -10,7 +10,7 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	inferno_trigger = "Baron Geddon gains Inferno\.",
+	inferno_trigger = "is afflicted by Inferno.",
 	service_trigger = "performs one last service for Ragnaros",
 	ignitemana_trigger = "afflicted by Ignite Mana",
 	bombyou_trigger = "You are afflicted by Living Bomb.",

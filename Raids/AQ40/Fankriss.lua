@@ -18,6 +18,13 @@ L:RegisterTranslations("enUS", function() return {
 	wormtrigger = "Fankriss the Unyielding casts Summon Worm.",
 	wormwarn = "Incoming Worm! (%d)",
 	wormbar = "Sandworm Enrage (%d)",
+            
+    entangle_cmd = "entangle",
+    entangle_name = "Entangle Alert",
+    entangle_desc = "Warn for Entangle and incoming Bugs",
+    entangleplayer = "You are afflicted by Entangle.",
+	entangleplayerother = "(.*) is afflicted by Entangle.",
+    entanglewarn,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -29,43 +36,6 @@ L:RegisterTranslations("deDE", function() return {
 	wormbar = "Wurm ist w\195\188tend (%d)",
 } end )
 
-L:RegisterTranslations("zhCN", function() return {
-	worm_name = "虫子警报",
-	worm_desc = "召唤虫子出现时发出警报",
-	
-	wormtrigger = "顽强的范克瑞斯施放了召唤虫子。",
-	wormwarn = "虫子出现 - 赶快杀掉！ (%d)",
-	wormbar = "沙虫激怒 (%d)",
-} end )
-
-L:RegisterTranslations("zhTW", function() return {
-	-- Fankriss the Unyielding 頑強的范克里斯
-	worm_name = "蟲子警報",
-	worm_desc = "范克里斯召喚蟲子時發出警報",
-	
-	wormtrigger = "頑強的范克里斯施放了召喚蟲子。",
-	wormwarn = "召喚蟲子出現！注意！",
-	wormbar = "王蟲激怒(%d)",
-} end )
-
-L:RegisterTranslations("koKR", function() return {
-	worm_name = "벌레 경고",
-	worm_desc = "벌레에 대한 경고",
-
-	wormtrigger = "불굴의 판크리스|1이;가; 벌레 소환|1을;를; 시전합니다.",
-	wormwarn = "벌레 소환 - 제거! (%d)",
-	wormbar = "소환! (%d)",
-} end )
-
-L:RegisterTranslations("frFR", function() return {
-	wormtrigger = "Fankriss l'Inflexible lance Invocation d'un ver.",
-	wormwarn = "Invocation d'un ver ! (%d)",
-	wormbar = "Ver (%d) enrag\195\169 !",
-
-	worm_name = "Alerte Ver",
-	worm_desc = "Pr\195\169viens de l'arriv\195\169e des vers.",
-} end )
-
 ----------------------------------
 --      Module Declaration      --
 ----------------------------------
@@ -73,8 +43,8 @@ L:RegisterTranslations("frFR", function() return {
 BigWigsFankriss = BigWigs:NewModule(boss)
 BigWigsFankriss.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsFankriss.enabletrigger = boss
-BigWigsFankriss.toggleoptions = {"worm", "bosskill"}
-BigWigsFankriss.revision = tonumber(string.sub("$Revision: 16639 $", 12, -3))
+BigWigsFankriss.toggleoptions = {"worm", "entangle", "bosskill"}
+BigWigsFankriss.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
@@ -84,6 +54,9 @@ function BigWigsFankriss:OnEnable()
 	worms = 0
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 
+    self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Event")
+    
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "FankrissWormSpawn", .1)
 end
@@ -92,6 +65,13 @@ end
 --      Event Handlers      --
 ------------------------------
 
+function BigWigsFankriss:Event(msg)
+    if string.find(msg, L["entangleplayer"]) or string.find(msg, L["entangleplayerother"]) then 
+        
+        self:Sync("FankrissEntangle")
+    end
+end
+
 function BigWigsFankriss:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if msg == L["wormtrigger"] then
 		self:TriggerEvent("BigWigs_SendSync", "FankrissWormSpawn "..tostring(worms + 1) )
@@ -99,7 +79,11 @@ function BigWigsFankriss:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 end
 
 function BigWigsFankriss:BigWigs_RecvSync(sync, rest, nick)
-	if sync ~= "FankrissWormSpawn" then return end
+	if sync == "FankrissEntangle" then
+        self:Message(L["entanglewarn"], "Alarm", true, "Alarm")    
+    end
+    
+    if sync ~= "FankrissWormSpawn" then return end
 	if not rest then return end
 	rest = tonumber(rest)
 	if rest == (worms + 1) then

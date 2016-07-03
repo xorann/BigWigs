@@ -37,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	onyfear_name = "Fear",
 	onyfear_desc = "Warn for Bellowing Roar in phase 3.",
 
-	deepbreath_trigger = "Onyxia takes in a deep breath",
+	deepbreath_trigger = "takes in a deep breath",
 	flamebreath_trigger = "Onyxia begins to cast Flame Breath\.",
 	wingbuffet_trigger = "Onyxia begins to cast Wing Buffet\.",
 	fireball_trigger = "Onyxia begins to cast Fireball\.",
@@ -147,7 +147,9 @@ end
 ------------------------------
 
 function BigWigsOnyxia:CHAT_MSG_RAID_BOSS_EMOTE(msg)
+    self:DebugMessage('CHAT_MSG_RAID_BOSS_EMOTE: ' .. msg)
 	if string.find(msg, L["deepbreath_trigger"]) then
+        self:DebugMessage('deep breath detected')
 		self:TriggerEvent("BigWigs_SendSync", "OnyDeepBreath")
 	end
 end
@@ -197,15 +199,16 @@ function BigWigsOnyxia:BigWigs_RecvSync(sync, rest, nick)
 		transitioned = true --to stop sending new syncs
         self.phase = 2
 		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phase2text"], "Attention")
+			self:TriggerEvent("BigWigs_Message", L["phase2text"], "Alarm")
 		end
 	elseif sync == "OnyPhaseThree" and self.db.profile.phase and self.phase < 3 then
-		self:TriggerEvent("BigWigs_Message", L["phase3text"], "Attention")
+		self:TriggerEvent("BigWigs_Message", L["phase3text"], "Beware")
         self:TriggerEvent("BigWigs_StartBar", self, L["fear_next"], 8, "Interface\\Icons\\Spell_Shadow_Possession")
         self.phase = 3
         self:KTM_Reset()
 	elseif sync == "OnyDeepBreath" and self.db.profile.deepbreath then
-		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important", true, "Alarm")
+        self:DebugMessage('deep breath received')
+		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important", true, "RunAway")
 		self:TriggerEvent("BigWigs_StartBar", self, L["deepbreath_cast"], 5, "Interface\\Icons\\Spell_Fire_SelfDestruct", true, "black")
         self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 5)
 	elseif sync == "OnyFlameBreath" and self.db.profile.flamebreath then
