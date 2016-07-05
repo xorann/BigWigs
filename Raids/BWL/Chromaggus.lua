@@ -26,7 +26,11 @@ L:RegisterTranslations("enUS", function() return {
 	breath_cmd = "breath",
 	breath_name = "Breaths",
 	breath_desc = "Warn for Breaths.",
-
+    
+    breathcd_cmd = "breathcd",
+    breathcd_name = "Breath Voice Countdown",
+    breathcd_desc = "Voice warning for the Breaths.",
+            
 	vulnerability_cmd = "vulnerability",
 	vulnerability_name = "Vulnerability",
 	vulnerability_desc = "Warn for Vulnerability changes.",
@@ -162,7 +166,7 @@ BigWigsChromaggus = BigWigs:NewModule(boss)
 BigWigsChromaggus.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
 BigWigsChromaggus.enabletrigger = boss
 BigWigsChromaggus.bossSync = "Chromaggus"
-BigWigsChromaggus.toggleoptions = { "enrage", "frenzy", "breath", "vulnerability", "bosskill"}
+BigWigsChromaggus.toggleoptions = { "enrage", "frenzy", "breath", "breathcd", "vulnerability", "bosskill"}
 BigWigsChromaggus.revision = tonumber(string.sub("$Revision: 11211 $", 12, -3))
 
 ------------------------------
@@ -198,7 +202,7 @@ function BigWigsChromaggus:UNIT_HEALTH( msg )
 	if self.db.profile.enrage and UnitName(msg) == boss then
 		local health = UnitHealth(msg)
 		if health > 15 and health <= 20 and not self.twenty then
-			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important")
+			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important", true "Beware")
 			self.twenty = true
 		elseif health > 90 and self.twenty then
 			self.twenty = nil
@@ -242,8 +246,19 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("BigWigs_Message", 53.5, secondBarMSG, "Attention")
 			self:TriggerEvent("BigWigs_StartBar", self, secondBarName, 58.5, "Interface\\Icons\\INV_Misc_QuestionMark", true, "cyan")
 		end
+        if self.db.profile.breathcd then
+            self:DelayedSound(18.5, "Ten")
+            self:DelayedSound(25.5, "Three")
+            self:DelayedSound(26.5, "Two")
+            self:DelayedSound(27.5, "One")
+            
+            self:DelayedSound(48.5, "Ten")
+            self:DelayedSound(55.5, "Three")
+            self:DelayedSound(56.5, "Two")
+            self:DelayedSound(57.5, "One")
+        end
         if self.db.profile.frenzy then
-            self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], 13, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white") 
+            self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], 11, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white") 
         end
         self:TriggerEvent("BigWigs_StartBar", self, format(L["vuln_bar"], "???"), 45, "Interface\\Icons\\Spell_Shadow_BlackPlague")
 	elseif sync == "ChromaggusBreath" and self.db.profile.breath then
@@ -256,6 +271,14 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_Message", string.format(L["breath_message"], spellName), "Important")
 		self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
 		self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
+        
+        if self.db.profile.breathcd then
+            self:DelayedSound(48, "Ten")
+            self:DelayedSound(55, "Three")
+            self:DelayedSound(56, "Two")
+            self:DelayedSound(57, "One")
+        end
+        
 	elseif sync == "ChromaggusFrenzyStart" then
 		if self.db.profile.frenzy and not self.frenzied then
 			self:TriggerEvent("BigWigs_Message", L["frenzy_message"], "Attention")
@@ -270,7 +293,7 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.frenzy and self.frenzied then
 			self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
             if lastFrenzy ~= 0 then
-                local NextTime = (lastFrenzy + 15) - GetTime()
+                local NextTime = (lastFrenzy + 11) - GetTime()
                 self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], NextTime, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white")
             end
 		end

@@ -131,19 +131,23 @@ function BigWigsFiremaw:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == "FiremawStart" and not self.started then
 		self:StartFight()
 		if self.db.profile.wingbuffet then
-			self:ScheduleEvent("BigWigs_Message", 20, L["wingbuffet_warning"], "Attention")
+			--self:ScheduleEvent("BigWigs_Message", 20, L["wingbuffet_warning"], "Important")
+            self:DelayedMessage(20, L["wingbuffet_warning"], "Attention", true, "Alert")
 			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 25, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 		end
         if self.db.profile.shadowflame then
             self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
         end
 	elseif sync == "FiremawWingBuffetX" and self.db.profile.wingbuffet then
-		self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Important")
-		self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
+		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Attention")
+        self:Message(L["wingbuffet_message"], "Important")
+		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Important")
+        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "Black")
 		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 	elseif sync == "FiremawShadowflameX" and self.db.profile.shadowflame then
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
+        self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
         self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
 	--elseif sync == "FiremawFirstBuffet" and self.db.profile.flamebuffet then

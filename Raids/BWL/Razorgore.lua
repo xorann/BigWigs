@@ -38,7 +38,8 @@ L:RegisterTranslations("enUS", function() return {
 	egg_trigger = "Razorgore the Untamed begins to cast Destroy Egg\.",
 	egg_message = "%d/30 eggs destroyed!",
 	egg_bar = "Destroy Egg",
-	phase2_trigger = "You'll pay for forcing me to do this.", --"I'm free! That device shall never torment me again!",
+    -- there is no clear phase2 trigger
+	phase2_trigger = "I'm free! That device shall never torment me again!"--"You'll pay for forcing me to do this.", 
 	phase2_message = "Phase 2",
 	volley_trigger = "Razorgore the Untamed begins to cast Fireball Volley\.",
 	volley_bar = "Fireball Volley",

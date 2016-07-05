@@ -127,8 +127,9 @@ function BigWigsFlamegor:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == "FlamegorStart" and not self.started then
 		self:StartFight()
 		if self.db.profile.wingbuffet then
-			self:ScheduleEvent("BigWigs_Message", 23, L["wingbuffet_warning"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 28, "Interface\\Icons\\INV_Misc_MonsterScales_14")
+			--self:ScheduleEvent("BigWigs_Message", 28.5, L["wingbuffet_warning"], "Attention")
+            self:DelayedMessage(28.5, L["wingbuffet_warning"], "Attention", true, "Alert")
+			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 33.5, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 		end
         if self.db.profile.shadowflame then
             self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
@@ -137,12 +138,15 @@ function BigWigsFlamegor:BigWigs_RecvSync(sync, rest, nick)
             self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], 10, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white") 
         end
 	elseif sync == "FlamegorWingBuffetX" and self.db.profile.wingbuffet then
-		self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Important")
-		self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
+		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Important")
+        self:Message(L["wingbuffet_message"], "Important")
+		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
+        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "black")
 		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 	elseif sync == "FlamegorShadowflameX" and self.db.profile.shadowflame then
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+        self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate", true, "red")
         self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
 	elseif sync == "FlamegorFrenzyStart" and self.db.profile.frenzy then

@@ -122,7 +122,8 @@ function BigWigsEbonroc:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
 		if self.db.profile.wingbuffet then
-			self:ScheduleEvent("BigWigs_Message", 14, L["wingbuffet_warning"], "Attention")
+			--self:ScheduleEvent("BigWigs_Message", 14, L["wingbuffet_warning"], "Important")
+            self:DelayedMessage(14, L["wingbuffet_warning"], "Attention", true, "Alert")
 			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 		end
         if self.db.profile.curse then
@@ -132,12 +133,15 @@ function BigWigsEbonroc:BigWigs_RecvSync(sync, rest, nick)
             self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
         end
 	elseif sync == "EbonrocWingBuffetX" and self.db.profile.wingbuffet then
-		self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Important")
-		self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
+		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Attention")
+        self:Message(L["wingbuffet_message"], "Important")
+		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Important")
+        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
 		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "black")
 		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
 	elseif sync == "EbonrocShadowflameX" and self.db.profile.shadowflame then
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
+        self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate", true, "red")
         self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
 	elseif sync == "EbonrocShadowX" and self.db.profile.curse then

@@ -10,7 +10,7 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigsSound")
 
 local sounds = {
 	Long = "Interface\\AddOns\\BigWigs\\Sounds\\Long.mp3",
-	Info = "Interface\\AddOns\\BigWigs\\Sounds\\Info.mp3",
+	Info = "Interface\\AddOns\\BigWigs\\Sounds\\Info.ogg",
 	Alert = "Interface\\AddOns\\BigWigs\\Sounds\\Alert.mp3",
 	Alarm = "Interface\\AddOns\\BigWigs\\Sounds\\Alarm.mp3",
 	Victory = "Interface\\AddOns\\BigWigs\\Sounds\\Victory.mp3",

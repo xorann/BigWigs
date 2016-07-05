@@ -32,6 +32,8 @@ L:RegisterTranslations("enUS", function() return {
 
 	cmd = "Shazzrah",
 	
+            
+    -- counterspell after blink 2s later
 	counterspell_cmd = "counterspell",
 	counterspell_name = "Counterspell alert",
 	counterspell_desc = "Warn for Shazzrah's Counterspell",
