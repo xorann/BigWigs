@@ -202,7 +202,7 @@ function BigWigsChromaggus:UNIT_HEALTH( msg )
 	if self.db.profile.enrage and UnitName(msg) == boss then
 		local health = UnitHealth(msg)
 		if health > 15 and health <= 20 and not self.twenty then
-			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important", true "Beware")
+			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important", true, "Beware")
 			self.twenty = true
 		elseif health > 90 and self.twenty then
 			self.twenty = nil
