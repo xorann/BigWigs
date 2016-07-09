@@ -96,7 +96,7 @@ L:RegisterTranslations("deDE", function() return {
 	porttrigger = "wirkt Zwillingsteleport.",
 	portwarn = "Teleport!",
 	portdelaywarn = "Teleport in ~5 Sekunden!",
-	portdelaywarn2 = "Teleport in ~10 Sekunden!",
+	portdelaywarn10 = "Teleport in ~10 Sekunden!",
 	bartext = "Teleport",
 	explodebugtrigger = "bekommt 'K\195\164fer explodieren lassen'",
 	explodebugwarn = "K\195\164fer explodiert!",

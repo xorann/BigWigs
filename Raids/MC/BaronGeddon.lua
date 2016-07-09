@@ -71,7 +71,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	inferno_trigger = "Baron Geddon bekommt \'Inferno",
+	inferno_trigger = "ist von Inferno betroffen",
 	service_trigger = "performs one last service for Ragnaros",
 	ignitemana_trigger = "von Mana entz\195\188nden betroffen",
 	bombyou_trigger = "Ihr seid von Lebende Bombe betroffen.",
@@ -83,7 +83,7 @@ L:RegisterTranslations("deDE", function() return {
 	deathyou_trigger = "Du stirbst.",
 	deathother_trigger = "(.*) stirbt",
 
-	bomb_message_you = "You are the bomb!",
+	bomb_message_you = "Du bist die Bombe!",
 	bomb_message_youscreen = "Du bist die Bombe!",
 	bomb_message_other = "%s ist die Bombe!",
 
@@ -221,7 +221,7 @@ function BigWigsBaronGeddon:Event(msg)
 end
 
 function BigWigsBaronGeddon:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
-	if msg == L["inferno_trigger"] then
+	if string.find(msg, L["inferno_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "GeddonInfernoX")
 	end
 end

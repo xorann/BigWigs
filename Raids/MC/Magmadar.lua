@@ -38,7 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	trigger1 = "goes into a killing frenzy!",
+	trigger1 = "wird m\195\182rderisch wahnsinnig!",
 	trigger2 = "von Panik betroffen",
 	trigger3 = "Panik(.+)immun",
 	trigger4 = "Panik(.+)widerstanden",

@@ -55,11 +55,11 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	knockback_trigger = "^TASTE",
-	submerge_trigger = "^COME FORTH,",
-	engage_trigger = "^NOW FOR YOU",
-    engage_soon_trigger = "Imprudent whelps!",
-    hammer_trigger = "^BY FIRE BE PURGED!",
+	knockback_trigger = "DIE FLAMMEN VON SULFURON",
+	submerge_trigger = "^Kommt herbei, meine Diener!",
+	engage_trigger = "^NUN ZU EUCH,",
+    engage_soon_trigger = "Unversch\195\164mte Welpen!",
+    hammer_trigger = "^DAS FEUER WIRD EUCH!",
 
 	knockback_message = "R\195\188cksto\195\159!",
 	knockback_soon_message = "5 Sekunden bis R\195\188cksto\195\159!",
@@ -75,8 +75,8 @@ L:RegisterTranslations("deDE", function() return {
 	emerge_bar = "Ragnaros taucht auf",
 	submerge_bar = "Ragnaros taucht unter",
 
-	sonofflame = "Son of Flame",
-	sonsdeadwarn = "%d/8 Son of Flame tot!",
+	sonofflame = "Sohn der Flamme",
+	sonsdeadwarn = "%d/8 Sohn der Flamme tot!",
 
 	cmd = "Ragnaros",
 
@@ -86,7 +86,7 @@ L:RegisterTranslations("deDE", function() return {
 
 	adds_cmd = "adds",
 	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Sons of Flames Tod",
+	adds_desc = "Verk\195\188ndet Sohn der Flamme Tod",
 
 	submerge_cmd = "submerge",
 	submerge_name = "Alarm f\195\188r Untertauchen",
@@ -190,8 +190,8 @@ function BigWigsRagnaros:Submerge()
 	end
 	self:ScheduleRepeatingEvent("bwragnarosemergecheck", self.EmergeCheck, 2, self)
 	self:ScheduleEvent("bwragnarosemerge", self.Emerge, 90, self)
-    self:TriggerEvent("BigWigs_StartCounterBar", self, "Sons dead", 8, "Interface\\Icons\\spell_fire_fire")
-    self:TriggerEvent("BigWigs_SetCounterBar", self, "Sons dead", (8 - 0.1))
+    --self:TriggerEvent("BigWigs_StartCounterBar", self, "Sons dead", 8, "Interface\\Icons\\spell_fire_fire")
+    --self:TriggerEvent("BigWigs_SetCounterBar", self, "Sons dead", (8 - 0.1))
 end
 
 function BigWigsRagnaros:EmergeCheck()

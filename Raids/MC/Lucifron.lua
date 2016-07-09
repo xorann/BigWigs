@@ -63,11 +63,11 @@ L:RegisterTranslations("enUS", function() return {
 
 L:RegisterTranslations("deDE", function() return {
 	trigger1 = "von Lucifrons Fluch betroffen",
-	trigger2 = "von Drohender Verdammnis betroffen",
+	trigger2 = "von Drohende Verdammnis betroffen",
 	trigger3 = "Schattenschock trifft",
 	trigger4 = "Schattenschock(.+) widerstanden",
-	trigger5 = "Lucifrons Fluch(.+) widerstanden",
-	trigger6 = "Drohende Verdammnis(.+) widerstanden",
+	trigger5 = "Lucifrons Fluch wurde von(.+) widerstanden",
+	trigger6 = "Drohende Verdammnis wurde von(.+) widerstanden",
 	
 	warn1 = "5 Sekunden bis Lucifrons Fluch!",
 	warn2 = "Lucifrons Fluch - 20 Sekunden bis zu n\195\164chsten!",
@@ -79,13 +79,13 @@ L:RegisterTranslations("deDE", function() return {
 	mindcontrolotherend_trigger = "Gedanken beherrschen schwindet von (.*).",
 	deathyou_trigger = "Du stirbst.",
 	deathother_trigger = "(.*) stirbt.",
-	deadaddtrigger = "Besch\195\188tzer der Flammensch\195\188rer stirbt.",
-	add_name = "Flamewaker Protector",
+	deadaddtrigger = "Feuerschuppenbesch\195\188tzer stirbt", --"Besch\195\188tzer der Flammensch\195\188rer stirbt.",
+	add_name = "Feuerschuppenbesch\195\188tzer",
 	
 	mindcontrol_message = "%s ist ferngesteuert!",
 	mindcontrol_message_you = "Du bist ferngesteuert!",
 	mindcontrol_bar = "GK: %s",
-	addmsg = "%d/2 Flamewaker Protector tot!",
+	addmsg = "%d/2 Feuerschuppenbesch\195\188tzer tot!",
 
 	bar1text = "Lucifrons Fluch",
 	bar2text = "Drohende Verdammnis",
@@ -151,9 +151,9 @@ function BigWigsLucifron:OnEnable()
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMC_(.*)", 0.5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMCEnd_(.*)", 0.5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronCurseRep", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronShock", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronDoomRep", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronCurseRep1", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronShock1", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronDoomRep1", 5)
 end
 
 ------------------------------
@@ -165,11 +165,11 @@ function BigWigsLucifron:Event(msg)
 	local _,_,mindcontrolotherend,_ = string.find(msg, L["mindcontrolotherend_trigger"])
 	local _,_,mindcontrolotherdeath,_ = string.find(msg, L["deathother_trigger"])
 	if ((string.find(msg, L["trigger1"])) or (string.find(msg, L["trigger5"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronCurseRep")
+		self:TriggerEvent("BigWigs_SendSync", "LucifronCurseRep1")
 	elseif ((string.find(msg, L["trigger2"])) or (string.find(msg, L["trigger6"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronDoomRep")
+		self:TriggerEvent("BigWigs_SendSync", "LucifronDoomRep1")
 	elseif ((string.find(msg, L["trigger3"])) or (string.find(msg, L["trigger4"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronShock")
+		self:TriggerEvent("BigWigs_SendSync", "LucifronShock1")
 	elseif string.find(msg, L["mindcontrolyou_trigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "LucifronMC_"..UnitName("player"))
 	elseif string.find(msg, L["mindcontrolyouend_trigger"]) then
@@ -198,13 +198,13 @@ function BigWigsLucifron:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 10, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
 		end
 		self:TriggerEvent("BigWigs_SendSync", "LucifronShock")
-	elseif sync == "LucifronCurseRep" and self.db.profile.curse then
+	elseif sync == "LucifronCurseRep1" and self.db.profile.curse then
 		self:ScheduleEvent("messagewarn1", "BigWigs_Message", 15, L["warn1"], "Attention")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 20, "Interface\\Icons\\Spell_Shadow_BlackPlague")
-	elseif sync == "LucifronDoomRep" and self.db.profile.doom then
+	elseif sync == "LucifronDoomRep1" and self.db.profile.doom then
 		self:ScheduleEvent("messagewarn2", "BigWigs_Message", 10, L["warn3"], "Attention")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 15, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
-	elseif sync == "LucifronShock" and self.db.profile.shock then
+	elseif sync == "LucifronShock1" and self.db.profile.shock then
 		--self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 6, "Interface\\Icons\\Spell_Shadow_Shadowbolt")
 	elseif string.find(sync, "LucifronMC_") then
 		if self.db.profile.mc then

@@ -11,9 +11,9 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
 L:RegisterTranslations("enUS", function() return {
 	corerager_name = "Core Rager",
-	earthquakesoonwarn = "Earthquake soon - melees get out!",
+	earthquakesoonwarn = "Earthquake soon",
 	golemaggenrage = "Golemagg the Incinerator gains Enrage",
-	enragewarn = "Boss is enraged! Spam heals!",
+	enragewarn = "Boss is enraged!",
 
 	cmd = "Golemagg",
 	
@@ -27,10 +27,10 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	corerager_name = "Core Rager",
-	earthquakesoonwarn = "Erdbeben bald - Melees geht weg!",
+	corerager_name = "Kernw\195\188terich",
+	earthquakesoonwarn = "Erdbeben bald",
 	golemaggenrage = "Golemagg the Incinerator bekommt \'Wutanfall",
-	enragewarn = "Boss ist in Raserei! Spam Heilung!",
+	enragewarn = "Boss ist in Raserei!",
 
 	cmd = "Golemagg",
 	
@@ -81,7 +81,7 @@ function BigWigsGolemagg:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == "GolemaggEarthquake" and self.db.profile.earthquake then
 		self:TriggerEvent("BigWigs_Message", L["earthquakesoonwarn"], "Attention", "Alarm")
 	elseif sync == "GolemaggEnrage" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Attention")
+		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Attention", true, "Beware")
 	end
 end
 

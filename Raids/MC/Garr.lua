@@ -20,6 +20,7 @@ L:RegisterTranslations("enUS", function() return {
 	triggeradddead2 = "Garr gains Enrage(.+)2",
 	triggeradddead1 = "Garr gains Enrage.",
 
+    counterbarMsg = "Firesworns dead",
 	addmsg1 = "1/8 Firesworns dead!",
 	addmsg2 = "2/8 Firesworns dead!",
 	addmsg3 = "3/8 Firesworns dead!",
@@ -37,7 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	firesworn_name = "Firesworn",
+	firesworn_name = "Feueranbeter",
 	triggeradddead1 = "Garr bekommt \'Wutanfall\'.",
 	triggeradddead2 = "Garr bekommt \'Wutanfall(.+)2",
 	triggeradddead3 = "Garr bekommt \'Wutanfall(.+)3",
@@ -47,6 +48,7 @@ L:RegisterTranslations("deDE", function() return {
 	triggeradddead7 = "Garr bekommt \'Wutanfall(.+)7",
 	triggeradddead8 = "Garr bekommt \'Wutanfall(.+)8",
 
+    counterbarMsg = "Feueranbeter tot",
 	addmsg1 = "1/8 Feueranbeter tot!",
 	addmsg2 = "2/8 Feueranbeter tot!",
 	addmsg3 = "3/8 Feueranbeter tot!",
@@ -94,8 +96,8 @@ end
 function BigWigsGarr:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
-        self:TriggerEvent("BigWigs_StartCounterBar", self, "Firesworns dead", 8, "Interface\\Icons\\spell_nature_strengthofearthtotem02")
-        self:TriggerEvent("BigWigs_SetCounterBar", self, "Firesworns dead", (8 - 0.1))
+        self:TriggerEvent("BigWigs_StartCounterBar", self, L["counterbarMsg"], 8, "Interface\\Icons\\spell_nature_strengthofearthtotem02")
+        self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - 0.1))
     elseif self.started and string.find(sync, "GarrAddDead%d") then
         local newCount = tonumber(string.sub(sync, 12))
         
@@ -103,7 +105,7 @@ function BigWigsGarr:BigWigs_RecvSync(sync, rest, nick)
         if self.adds < newCount then
             self.adds = newCount
             self:TriggerEvent("BigWigs_Message", L["addmsg"..newCount], "Positive")
-            self:TriggerEvent("BigWigs_SetCounterBar", self, "Firesworns dead", (8 - newCount))
+            self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - newCount))
         end
     end
 end

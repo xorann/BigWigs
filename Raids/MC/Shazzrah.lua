@@ -15,6 +15,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger2 = "Shazzrah gains Deaden Magic",
 	trigger3 = "afflicted by Shazzrah",
 	trigger4 = "Shazzrah casts Counterspell",
+    trigger4b = "Shazzrah(.+) Counterspell was resisted by",
 	trigger5 = "Shazzrah(.+) Curse was resisted",
 	trigger6 = "Deaden Magic fades from Shazzrah",
 
@@ -56,6 +57,7 @@ L:RegisterTranslations("deDE", function() return {
 	trigger2 = "Shazzrah bekommt \'Magie d\195\164mpfen",
 	trigger3 = "von Shazzrahs Fluch betroffen",
 	trigger4 = "Shazzrah wirkt Gegenzauber",
+    trigger4b = "Shazzrahs Gegenzauber wurde von (.+) widerstanden",
 	trigger5 = "Shazzrahs Fluch(.)widerstanden",
 	trigger6 = "Magie d\195\164mpfen schwindet von Shazzrah",
 
@@ -141,8 +143,8 @@ function BigWigsShazzrah:Event(msg)
 		self:TriggerEvent("BigWigs_SendSync", "ShazzrahDeadenMagicOff")
 	elseif (string.find(msg, L["trigger1"])) then
 		self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlink1")
-	--elseif (string.find(msg, L["trigger4"])) then
-	--	self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1")
+	elseif (string.find(msg, L["trigger4"]) or string.find(msg, L["trigger4b"])) then
+		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1")
 	elseif (string.find(msg, L["trigger3"]) or string.find(msg, L["trigger5"])) then
 		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCurse1")
 	end

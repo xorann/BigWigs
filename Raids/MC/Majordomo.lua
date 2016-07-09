@@ -50,8 +50,8 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	disabletrigger = "My flame! Please don",
-    trigger = "Reckless mortals, none may challenge the sons of the living flame!",
+	disabletrigger = "Ich werde euch nun verlassen",
+    trigger = "Niemand fordert die S\195\182hne der Lebenden Flamme heraus", --"Reckless mortals, none may challenge the sons of the living flame!",
 
 	trigger1 = "bekommt \'Magiereflexion'",
 	trigger2 = "bekommt \'Schadensschild'",

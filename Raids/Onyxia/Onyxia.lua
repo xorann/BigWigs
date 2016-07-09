@@ -86,13 +86,13 @@ L:RegisterTranslations("deDE", function() return {
 	onyfear_name = "Furcht",
 	onyfear_desc = "Warne vor Dr\195\182hnendes Gebr\195\188ll in Phase 3.",
 
-	deepbreath_trigger = "Onyxia takes in a deep breath",
+	deepbreath_trigger = "holt tief Luft",
 	flamebreath_trigger = "Onyxia beginnt Flammenatem zu wirken\.",
 	wingbuffet_trigger = "Onyxia beginnt Fl\195\188gelsto\195\159 zu wirken\.",
 	fireball_trigger = "Onyxia beginnt Feuerball zu wirken\.",
 	fear_trigger = "Onyxia beginnt Dr\195\182hnendes Gebr\195\188ll zu wirken\.",
 	phase2_trigger = "from above",
-	phase3_trigger = "It seems you'll need another lesson",
+	phase3_trigger = "Es scheint, als wenn Ihr eine weitere Lektion braucht",
 
 	warn1 = "Tiefer Atem kommen!",
 	phase1text = "Phase 1",
@@ -202,10 +202,11 @@ function BigWigsOnyxia:BigWigs_RecvSync(sync, rest, nick)
 			self:TriggerEvent("BigWigs_Message", L["phase2text"], "Alarm")
 		end
 	elseif sync == "OnyPhaseThree" and self.db.profile.phase and self.phase < 3 then
-		self:TriggerEvent("BigWigs_Message", L["phase3text"], "Beware")
-        self:TriggerEvent("BigWigs_StartBar", self, L["fear_next"], 8, "Interface\\Icons\\Spell_Shadow_Possession")
+		--self:TriggerEvent("BigWigs_Message", L["phase3text"], "Beware")
+        self:Message(L["phase3text"], "Alarm", true, "Beware")
+        self:TriggerEvent("BigWigs_StartBar", self, L["fear_next"], 10, "Interface\\Icons\\Spell_Shadow_Possession")
         self.phase = 3
-        self:KTM_Reset()
+        --self:KTM_Reset()
 	elseif sync == "OnyDeepBreath" and self.db.profile.deepbreath then
         self:DebugMessage('deep breath received')
 		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important", true, "RunAway")

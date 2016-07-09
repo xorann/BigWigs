@@ -18,6 +18,8 @@ L:RegisterTranslations("enUS", function() return {
 	addmsg = "%d/2 Flamewakers dead!",
 	flamewaker_name = "Flamewaker",
 
+    barNextRain = "Next Rain",
+            
 	warn1 = "5 seconds until Gehennas' Curse!",
 	warn2 = "Gehennas' Curse - Decurse NOW!",
 
@@ -40,10 +42,12 @@ L:RegisterTranslations("deDE", function() return {
 	--trigger2 = "Gehennas beginnt Schattenblitz",
 	trigger3 = "Ihr seid von Feuerregen betroffen",
 	trigger4 = "Gehennas\' Fluch(.+) widerstanden",
-	dead1 = "Flammensch\195\188rer stirbt",
-	addmsg = "%d/2 Flammensch\195\188rer tot!",
-	flamewaker_name = "Flammensch\195\188rer",
+	dead1 = "Feuerschuppe stirbt",
+	addmsg = "%d/2 Feuerschuppe tot!",
+	flamewaker_name = "Feuerschuppe",
 
+    barNextRain = "N\195\164chster Regen",
+            
 	warn1 = "5 Sekunden bis Gehennas' Fluch!",
 	warn2 = "Gehennas' Fluch - JETZT Entfluchen!",
 
@@ -54,7 +58,7 @@ L:RegisterTranslations("deDE", function() return {
 	
 	adds_cmd = "adds",
 	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Flammensch\195\188rer Tod",
+	adds_desc = "Verk\195\188ndet Feuerschuppe Tod",
 	
 	curse_cmd = "curse",
 	curse_name = "Alarm f\195\188r Gehennas' Fluch",
@@ -106,7 +110,7 @@ function BigWigsGehennas:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("messagewarn2", "BigWigs_Message", 7, L["warn1"], "Urgent")
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 12, "Interface\\Icons\\Spell_Shadow_BlackPlague")
 		end
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Rain", 10, "Interface\\Icons\\Spell_Shadow_RainOfFire")
+        self:TriggerEvent("BigWigs_StartBar", self, L["barNextRain"], 10, "Interface\\Icons\\Spell_Shadow_RainOfFire")
 	elseif sync == "GehennasCurse" and self.db.profile.curse then
 		self:ScheduleEvent("messagewarn1", "BigWigs_Message", 26, L["warn1"], "Urgent")
 		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 31, "Interface\\Icons\\Spell_Shadow_BlackPlague")
@@ -129,7 +133,7 @@ function BigWigsGehennas:Event(msg)
 	elseif (string.find(msg, L["trigger3"])) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
 		self:TriggerEvent("BigWigs_Message", L["firewarn"], "Attention", "Alarm")
-        self:ScheduleEvent("BigWigs_StartBar", 6, self, "Next Rain", 9, "Interface\\Icons\\Spell_Shadow_RainOfFire")
+        self:ScheduleEvent("BigWigs_StartBar", 6, self, L["barNextRain"], 9, "Interface\\Icons\\Spell_Shadow_RainOfFire")
         self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire", 6)
 	end
 end
