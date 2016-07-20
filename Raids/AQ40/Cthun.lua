@@ -78,6 +78,9 @@ L:RegisterTranslations("enUS", function() return {
 	CoEtrigger	= "Curse of the Elements",
 	CoStrigger	= "Curse of Shadow",
 	CoRtrigger	= "Curse of Recklessness",
+            
+    vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) C'Thun for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
+	vulnerability_dots_test = "^C'Thun suffers ([%d]+) ([%w]+) damage from [%w]+[%s's]* ([%w%s:]+)%.[%s%(]*([%d]*)",
 
 	startwarn	= "C'Thun engaged! - 45 sec until Dark Glare and Eyes",
 
@@ -137,12 +140,17 @@ function BigWigsCThun:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
 	-- Not sure about this, since we get out of combat between the phases.
 	--self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+    
+    self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")    
 
 	self:RegisterEvent("BigWigs_RecvSync")
 
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunStart", 20)
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunP2Start", 20)
-	self:TriggerEvent("BigWigs_ThrottleSync", "CThunWeakened", 20)
+	self:TriggerEvent("BigWigs_ThrottleSync", "CThunWeakened1", 20)
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunGEdown", 3)
 end
 
@@ -155,7 +163,7 @@ function BigWigsCThun:GenericBossDeath(event)
 end
 
 function BigWigsCThun:Emote( msg )
-	if string.find(msg, L["weakenedtrigger"]) then self:TriggerEvent("BigWigs_SendSync", "CThunWeakened") end
+	if string.find(msg, L["weakenedtrigger"]) then self:TriggerEvent("BigWigs_SendSync", "CThunWeakened1") end
 end
 
 function BigWigsCThun:CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE( arg1 )
@@ -183,7 +191,7 @@ function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
         
 	elseif sync == "CThunP2Start" then
 		self:CThunP2Start()
-	elseif sync == "CThunWeakened" then
+	elseif sync == "CThunWeakened1" then
 		self:CThunWeakened()
 	elseif sync == "CThunGEdown" then
 		self:TriggerEvent("BigWigs_Message", L["gedownwarn"], "Positive")
@@ -428,4 +436,17 @@ function BigWigsCThun:DarkGlare()
 		self:ScheduleRepeatingEvent("bwcthundarkglare", self.DarkGlare, timeP1Glare, self )
 		firstGlare = nil
 	end
+end
+
+function BigWigsCThun:PlayerDamageEvents(msg)
+    if string.find(msg, "C'Thun") and not string.find(msg, "Eye of C'Thun") then
+        local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
+        if stype and dmg and school then
+            if dmg > 100 then
+                -- trigger weakend
+                DEFAULT_CHAT_FRAME:AddMessage("C'Thun is weakened")
+                self:TriggerEvent("BigWigs_SendSync", "CThunWeakened1")
+            end
+        end
+    end
 end
