@@ -151,7 +151,7 @@ end
 ----------------------
 
 function BigWigsCThun:GenericBossDeath(event)
-   DEFAULT_CHAT_FRAME:AddMessage("Debug: GenericBossDeath: " .. event) 
+   --DEFAULT_CHAT_FRAME:AddMessage("Debug: GenericBossDeath: " .. event) 
 end
 
 function BigWigsCThun:Emote( msg )
