@@ -34,6 +34,8 @@
 - <b>(DG)</b> Flesh Tentacles
 
 countdown before dark glare start and end
+not working: weaken less than 5s before eye tentacles
+sometimes giant eye timer during weaken
 
 Giant Claw
     - Spawn trigger: "Giant Claw Tentacle's Ground Rupture"

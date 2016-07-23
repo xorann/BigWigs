@@ -80,6 +80,8 @@ function BigWigsBoar:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
     
+    self:RegisterEvent("UNIT_HEALTH")
+    
     --self:RegisterEvent("BigWigs_RecvSync")
     self:RegisterEvent("BigWigs_RecvSync")
 end
@@ -189,4 +191,11 @@ function BigWigsBoar:PlayerDamageEvents(msg)
             end
         end
     end
+end
+
+function BigWigsGolemagg:UNIT_HEALTH(arg1)
+	if UnitName(arg1) == boss then
+		local health = UnitHealth(arg1)
+		self:DebugMessage("health: " .. health)
+	end
 end
