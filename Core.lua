@@ -372,11 +372,11 @@ end]]
 --      Provided API      --
 ------------------------------
 
-function BigWigs.modulePrototype:Bar(text, length, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	self:TriggerEvent("BigWigs_StartBar", self, text, time, "Interface\\Icons\\" .. icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+function BigWigs.modulePrototype:Bar(text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	self:TriggerEvent("BigWigs_StartBar", self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 end
-function BigWigs.modulePrototype:DelayedBar(text, length, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	return self:ScheduleEvent("BigWigs_StartBar", delay, self, text, time, "Interface\\Icons\\" .. icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+function BigWigs.modulePrototype:DelayedBar(text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	return self:ScheduleEvent("BigWigs_StartBar", delay, self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 end
 function BigWigs.modulePrototype:RemoveBar(text)
 	self:TriggerEvent("BigWigs_StopBar", self, text)

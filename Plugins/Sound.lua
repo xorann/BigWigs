@@ -28,6 +28,8 @@ local sounds = {
     Eight = "Interface\\AddOns\\BigWigs\\Sounds\\8.ogg",
     Nine = "Interface\\AddOns\\BigWigs\\Sounds\\9.ogg",
     Ten = "Interface\\AddOns\\BigWigs\\Sounds\\10.ogg",
+    
+    Murloc = "Sound\\Creature\\Murloc\\mMurlocAggroOld.wav",
 }
 
 

@@ -235,6 +235,7 @@ end
 function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
+        self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
 		if self.db.profile.inferno then
 			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")
 			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_bar"], 30, "Interface\\Icons\\Spell_Fire_Incinerate")
@@ -245,6 +246,7 @@ function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == "GeddonBombX" then
 		bombstart = GetTime()
 	elseif sync == "GeddonInfernoX" then
+        self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
 		if self.db.profile.inferno then
 			self:TriggerEvent("BigWigs_Message", L["inferno_message"], "Important")
 			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")

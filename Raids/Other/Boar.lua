@@ -25,6 +25,8 @@ L:RegisterTranslations("enUS", function() return {
     charge_trigger = "gains Boar Charge",
     charge_msg = "Boar is charging!",
     charge_bar = "Charge",
+            
+    vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Elder Mottled Boar for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
      
 } end )
 
@@ -72,6 +74,11 @@ function BigWigsBoar:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
     --self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+    
+    self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
+	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
     
     --self:RegisterEvent("BigWigs_RecvSync")
     self:RegisterEvent("BigWigs_RecvSync")
@@ -166,4 +173,20 @@ function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
 		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
 		self:TriggerEvent("BigWigs_StartBar", self, L["shieldbar"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
 	end--]]
+end
+
+function BigWigsBoar:PlayerDamageEvents(msg)
+    --DEFAULT_CHAT_FRAME:AddMessage("player damage :" .. msg)
+    if not string.find(msg, "Eye of C'Thun") then
+        local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
+        if stype and dmg and school then
+            if tonumber(dmg) > 300 then
+                -- trigger weakend
+                DEFAULT_CHAT_FRAME:AddMessage("C'Thun is weakened")
+                self:Sound("Beware")
+                self:Sound("Seven")
+                --self:TriggerEvent("BigWigs_SendSync", "CThunWeakened1")
+            end
+        end
+    end
 end
