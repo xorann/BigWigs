@@ -27,6 +27,7 @@ L:RegisterTranslations("enUS", function() return {
     charge_bar = "Charge",
             
     vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Elder Mottled Boar for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
+    umlaut_test = "hits you for",
      
 } end )
 
@@ -42,6 +43,9 @@ L:RegisterTranslations("deDE", function() return {
     charge_trigger = "gains Boar Charge", -- uebersetzung?
     charge_msg = "Eber st\195\188rmt an!",
     charge_bar = "Anst\195\188rmen",
+            
+    vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Elder Mottled Boar for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
+    umlaut_test = "trifft Euch für",
      
 } end )
 
@@ -79,6 +83,8 @@ function BigWigsBoar:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
+    
+    self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "UmlautCheck")
     
     self:RegisterEvent("UNIT_HEALTH")
     
@@ -190,6 +196,14 @@ function BigWigsBoar:PlayerDamageEvents(msg)
                 --self:TriggerEvent("BigWigs_SendSync", "CThunWeakened1")
             end
         end
+    end
+end
+
+function BigWigsBoar:UmlautCheck(msg) 
+    if string.find(msg, L["umlaut_test"]) then
+        self:DebugMessage("umlaut test succesful")    
+    else
+        self:DebugMessage("umlaut test not succesful")
     end
 end
 
