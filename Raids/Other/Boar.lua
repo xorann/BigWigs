@@ -193,7 +193,7 @@ function BigWigsBoar:PlayerDamageEvents(msg)
     end
 end
 
-function BigWigsGolemagg:UNIT_HEALTH(arg1)
+function BigWigsBoar:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		self:DebugMessage("health: " .. health)

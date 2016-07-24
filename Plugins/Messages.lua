@@ -1,4 +1,4 @@
-﻿
+
 assert(BigWigs, "BigWigs not found!")
 
 ------------------------------
@@ -112,7 +112,7 @@ L:RegisterTranslations("deDE", function() return {
 
 BigWigsMessages = BigWigs:NewModule(L["Messages"])
 BigWigsMessages.defaultDB = {
-	display = L["RaidWarning frame"],
+	display = L["BigWigs frame"],
 	usecolors = true,
 	scale = 1.0,
 }

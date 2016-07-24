@@ -91,25 +91,25 @@ L:RegisterTranslations("deDE", function() return {
 	bar2text = "Drohende Verdammnis",
 	bar3text = "Schattenschock",
 
-	cmd = "Lucifron",
+	--cmd = "Lucifron",
 
-	adds_cmd = "adds",
+	--adds_cmd = "adds",
 	adds_name = "Z\195\164hler f\195\188r tote Adds",
 	adds_desc = "Verk\195\188ndet Flamewaker Protectors Tod",
 	
-	mc_cmd = "mc",
+	--mc_cmd = "mc",
 	mc_name = "Gedankenkontrolle",
 	mc_desc = "Warnen, wenn jemand \195\188bernommen ist",
 	
-	curse_cmd = "curse",
+	--curse_cmd = "curse",
 	curse_name = "Alarm f\195\188r Lucifrons Fluch",
 	curse_desc = "Warnen vor Lucifrons Fluch",
 	
-	doom_cmd = "doom",
+	--doom_cmd = "doom",
 	doom_name = "Alarm f\195\188r Drohende Verdammnis",
 	doom_desc = "Warnen vor Drohender Verdammnis",
 	
-	shock_cmd = "shock",
+	--shock_cmd = "shock",
 	shock_name = "Alarm f\195\188r Schattenschock ",
 	shock_desc  = "Warnen vor Schattenschock",
 } end)
