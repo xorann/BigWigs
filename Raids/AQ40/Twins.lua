@@ -6,6 +6,7 @@ local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
 local boss = AceLibrary("Babble-Boss-2.2")["The Twin Emperors"]
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs" .. boss)
+local twinstarted = nil
 
 ----------------------------
 --      Localization      --
@@ -169,7 +170,7 @@ function BigWigsTwins:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport1", 10)
+	self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport42", 10)
 end
 
 ------------------------------
@@ -179,19 +180,23 @@ end
 function BigWigsTwins:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["pull_trigger1"]) or string.find(msg, L["pull_trigger2"]) or string.find(msg, L["pull_trigger3"]) or string.find(msg, L["pull_trigger4"]) or string.find(msg, L["pull_trigger5"]) or string.find(msg, L["pull_trigger6"]) or string.find(msg, L["pull_trigger7"]) or string.find(msg, L["pull_trigger8"]) or string.find(msg, L["pull_trigger9"]) or string.find(msg, L["pull_trigger10"]) then
         
-        if self:IsEventRegistered("CHAT_MSG_MONSTER_YELL") then
-			self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
-		end
+        if not twinstarted then
+            twinstarted = true
         
-        if self.db.profile.teleport then
-            self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport1")
-            self:DelayedSound(20, "Ten")
-            self:DelayedSound(27, "Three")
-            self:DelayedSound(28, "Two")
-            self:DelayedSound(29, "One")
-        end
-        if self.db.profile.enrage then
-            self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 900, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
+            if self:IsEventRegistered("CHAT_MSG_MONSTER_YELL") then
+                self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+            end
+
+            if self.db.profile.teleport then
+                self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport42")
+                self:DelayedSound(20, "Ten")
+                self:DelayedSound(27, "Three")
+                self:DelayedSound(28, "Two")
+                self:DelayedSound(29, "One")
+            end
+            if self.db.profile.enrage then
+                self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 900, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
+            end
         end
     elseif string.find(msg, L["kill_trigger"]) then
         if self.db.profile.bosskill then 
@@ -227,8 +232,9 @@ end
 end]]
 
 function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:StartFight()
+	if not self.started and not twinstarted and sync == "BossEngaged" and rest == self.bossSync then
+		twinstarted = true
+        self:StartFight()
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end
@@ -243,7 +249,7 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
             
             --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
             self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-            self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport1")
+            self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport42")
             --self:KTM_Reset()
 		end
 		if self.db.profile.enrage then
@@ -258,7 +264,8 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("bwtwinswarn6", "BigWigs_Message", 870, L["warn6"], "Important")
 			self:ScheduleEvent("bwtwinswarn7", "BigWigs_Message", 890, L["warn7"], "Important")
 		end
-	elseif sync == "TwinsTeleport1" and self.db.profile.teleport then
+        self:DebugMessage("BossEngaged")
+	elseif sync == "TwinsTeleport42" and self.db.profile.teleport then
 		self:TriggerEvent("BigWigs_Message", L["portwarn"], "Attention", true, "Alarm")
 		--self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
 		--self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
@@ -267,7 +274,7 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
             
         --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
         self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport1")
+        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport42")
         self:KTM_Reset()
         
         self:DelayedSound(20, "Ten")
@@ -288,7 +295,8 @@ end	]]
 function BigWigsTwins:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if (string.find(msg, L["porttrigger"])) then
 		self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
-        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport1")
+        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport42")
+        self:DebugMessage("real port trigger")
 	end
 end
 
