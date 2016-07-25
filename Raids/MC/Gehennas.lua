@@ -146,7 +146,7 @@ function BigWigsGehennas:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
 end
 
 function BigWigsGehennas:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
+    --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["dead1"]) then
 		self:TriggerEvent("BigWigs_SendSync", "GehennasAddDead " .. tostring(self.flamewaker + 1))
 	end

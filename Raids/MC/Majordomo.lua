@@ -150,12 +150,12 @@ function BigWigsMajordomo:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function BigWigsMajordomo:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
+    --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["healdead"]) then
-        DEFAULT_CHAT_FRAME:AddMessage("heal dead")
+        --DEFAULT_CHAT_FRAME:AddMessage("heal dead")
 		self:TriggerEvent("BigWigs_SendSync", "DomoHealerDead " .. tostring(self.hdead + 1))
 	elseif string.find(msg, L["elitedead"]) then
-		DEFAULT_CHAT_FRAME:AddMessage("elite dead")
+		--DEFAULT_CHAT_FRAME:AddMessage("elite dead")
         self:TriggerEvent("BigWigs_SendSync", "DomoEliteDead " .. tostring(self.edead + 1))
 	end
 end

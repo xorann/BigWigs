@@ -234,7 +234,7 @@ function BigWigsLucifron:BigWigs_RecvSync(sync, rest, nick)
 end
 
 function BigWigsLucifron:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
+    --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["deadaddtrigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "LucifronAddDead " .. tostring(self.protector + 1))
 	end

@@ -197,10 +197,10 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self:StartFight()
         self:TriggerEvent("BigWigs_Message", L["landing_soon_warning"], "Important", true, "Long")
-        self:TriggerEvent("BigWigs_StartBar", self, L["land"], 159, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
+        --self:TriggerEvent("BigWigs_StartBar", self, L["land"], 159, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
         self:TriggerEvent("BigWigs_StartBar", self, L["Mob_Spawn"], 10, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
-        self:ScheduleEvent("BigWigs_Message", 105, L["landing_soon_warning"], "Important", true, "Alarm")
-        self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
+        --self:ScheduleEvent("BigWigs_Message", 105, L["landing_soon_warning"], "Important", true, "Alarm")
+        --self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
 	elseif sync == "NefarianShadowflame" and self.db.profile.shadowflame then
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
 		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
