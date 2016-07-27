@@ -252,7 +252,7 @@ function BigWigsCThun:OnEnable()
 	self:RegisterEvent("BigWigs_RecvSync")
 
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunStart"..BigWigsCThun.revision, 20)
-	self:TriggerEvent("BigWigs_ThrottleSync", "CThunP2Start"..BigWigsCThun.revision, 20)
+	self:TriggerEvent("BigWigs_ThrottleSync", "CThunP2Start", 20)
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunWeakened1"..BigWigsCThun.revision, 50)
 	self:TriggerEvent("BigWigs_ThrottleSync", "CThunGEdown"..BigWigsCThun.revision, 3)
     self:TriggerEvent("BigWigs_ThrottleSync", "CThunWeakenedOver"..BigWigsCThun.revision, 600)
@@ -281,8 +281,9 @@ function BigWigsCThun:CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE( arg1 )
 end
 
 function BigWigsCThun:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    self:DebugMessage("death: "..msg)
 	if (msg == string.format(UNITDIESOTHER, eyeofcthun)) then
-		self:TriggerEvent("BigWigs_SendSync", "CThunP2Start"..BigWigsCThun.revision)
+		self:TriggerEvent("BigWigs_SendSync", "CThunP2Start")
 	elseif (msg == string.format(UNITDIESOTHER, gianteye)) then
 		self:TriggerEvent("BigWigs_SendSync", "CThunGEdown"..BigWigsCThun.revision)
 	elseif (msg == string.format(UNITDIESOTHER, cthun)) then
@@ -298,7 +299,8 @@ function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
         self:StartFight()
 		self:CThunStart()
         
-	elseif sync == "CThunP2Start"..BigWigsCThun.revision then
+	elseif sync == "CThunP2Start" then
+        self:TriggerEvent("BigWigs_SendSync", "CThunP2Start"..BigWigsCThun.revision)
 		self:CThunP2Start()
 	elseif sync == "CThunWeakened1"..BigWigsCThun.revision then
 		self:CThunWeakened()
@@ -698,7 +700,9 @@ end
 
 function BigWigsCThun:CheckGiantClawSpawn(msg)
     self:DebugMessage("GiantClawSpawn: " .. msg)
-    self:Sync("GiantClawSpawn"..BigWigsCThun.revision)
+    if string.find(msg, L["giant_claw_spawn_trigger"]) then
+        self:Sync("GiantClawSpawn"..BigWigsCThun.revision)
+    end
 end
 
 function BigWigsCThun:CheckFleshTentacles(msg)
