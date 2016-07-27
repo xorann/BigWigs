@@ -206,7 +206,7 @@ BigWigsCThun.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsCThun.enabletrigger = { eyeofcthun, cthun }
 BigWigsCThun.bossSync = "CThun"
 BigWigsCThun.toggleoptions = { "rape", -1, "tentacle", "glare", "group", -1, "giant", "weakened", "bosskill" }
-BigWigsCThun.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
+BigWigsCThun.revision = tonumber(string.sub("$Revision: 20001 $", 12, -3))
 BigWigsCThun.target = nil
 
 function BigWigsCThun:OnEnable()
@@ -294,10 +294,12 @@ end
 
 function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
     --self:DebugMessage("BigWigs_RecvSync: " .. sync .. " " .. rest)
-    if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart"..BigWigsCThun.revision)) then
-        if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-        self:StartFight()
-		self:CThunStart()
+    if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) --[[or (sync == "CThunStart"..BigWigsCThun.revision)]]) then
+        
+    self:TriggerEvent("BigWigs_SendSync", "CThunStart"..BigWigsCThun.revision)
+    if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
+    self:StartFight()
+    self:CThunStart()
         
 	elseif sync == "CThunP2Start" then
         self:TriggerEvent("BigWigs_SendSync", "CThunP2Start"..BigWigsCThun.revision)
