@@ -273,10 +273,10 @@ function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
 		self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
         
         if self.db.profile.breathcd then
-            self:DelayedSound(48, "Ten")
-            self:DelayedSound(55, "Three")
-            self:DelayedSound(56, "Two")
-            self:DelayedSound(57, "One")
+            self:DelayedSound(50, "Ten")
+            self:DelayedSound(57, "Three")
+            self:DelayedSound(58, "Two")
+            self:DelayedSound(59, "One")
         end
         
 	elseif sync == "ChromaggusFrenzyStart" then

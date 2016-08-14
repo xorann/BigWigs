@@ -203,7 +203,7 @@ function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
         --self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
 	elseif sync == "NefarianShadowflame" and self.db.profile.shadowflame then
 		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
+		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important", true, "Alarm")
 		self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_bar"], 17, "Interface\\Icons\\Spell_Fire_Incinerate")
 	elseif sync == "NefarianFear" and self.db.profile.fear then
         self:TriggerEvent("BigWigs_StopBar", self, L["fear_bar"])
