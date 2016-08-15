@@ -301,8 +301,6 @@ function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
 		end
 		self:StartFight()
 		self:CThunStart()
-	end
-        
 	elseif sync == "CThunP2Start" then
         self:TriggerEvent("BigWigs_SendSync", "CThunP2Start"..BigWigsCThun.revision)
 		self:CThunP2Start()
