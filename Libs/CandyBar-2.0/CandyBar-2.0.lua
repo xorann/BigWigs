@@ -43,6 +43,10 @@ local CandyBar = Mixin {
 	"SetCandyBarTimerTextColor",
 	"SetCandyBarFontSize",
 	"SetCandyBarPoint",
+	"GetCandyBarPoint",
+    "GetCandyBarCenter",
+	"GetCandyBarOffsets",
+	"GetCandyBarEffectiveScale",
 	"SetCandyBarGradient",
 	"SetCandyBarScale",
 	"SetCandyBarTimeFormat",
@@ -55,6 +59,7 @@ local CandyBar = Mixin {
 	"SetCandyBarGroupPoint",
 	"SetCandyBarGroupGrowth",
 	"UpdateCandyBarGroup",
+	"GetCandyBarNextBarPointInGroup",
 	"RegisterCandyBarWithGroup",
 	"UnregisterCandyBarWithGroup",
 	"IsCandyBarRegisteredWithGroup",
@@ -474,6 +479,55 @@ function CandyBar:SetPoint(name, point, rframe, rpoint, xoffset, yoffset)
 	CandyBar.var.handlers[name].frame:SetPoint(point, rframe,rpoint,xoffset,yoffset)
 
 	return true
+end
+
+function CandyBar:GetPoint(name)
+	CandyBar:argCheck(name, 2, "string")
+	
+	local handler = CandyBar.var.handlers[name]
+	if not handler then
+		return
+	end
+	
+	return handler.point, handler.rframe, handler.rpoint, handler.xoffset, handler.yoffset
+end
+
+function CandyBar:GetCenter(name)
+	CandyBar:argCheck(name, 2, "string")
+	
+	local handler = CandyBar.var.handlers[name]
+	if not handler then
+		return
+	end
+
+	return handler.frame:GetCenter()
+end
+
+function CandyBar:GetOffsets(name)
+	CandyBar:argCheck(name, 2, "string")
+	
+	local handler = CandyBar.var.handlers[name]
+	if not handler then
+		return
+	end
+	
+	local bottom = handler.frame:GetBottom()
+	local top = handler.frame:GetTop()
+	local left = handler.frame:GetLeft()
+	local right = handler.frame:GetRight()
+	
+	return left, top, bottom, right
+end
+
+function CandyBar:GetEffectiveScale(name)
+	CandyBar:argCheck(name, 2, "string")
+	
+	local handler = CandyBar.var.handlers[name]
+	if not handler then
+		return
+	end
+
+	return handler.frame:GetEffectiveScale()
 end
 
 -- Set the width for a bar
@@ -908,6 +962,39 @@ function CandyBar:UpdateGroup( name )
 	return true
 end
 
+function CandyBar:GetNextBarPointInGroup(name)
+	CandyBar:argCheck(name, 2, "string")
+	
+	local group = CandyBar.var.groups[name]
+	if not CandyBar.var.groups[name] then
+		return
+	end
+	
+	local xoffset = group.xoffset
+	local yoffset = group.yoffset
+	local m = -1
+	if group.growup then
+		m = 1
+	end
+	
+	local bar = 0
+	local barh = 0
+	
+	local vertspacing = group.vertspacing or 0
+	
+	for c,n in pairs(group.bars) do
+		local handler = CandyBar.var.handlers[n]
+		if handler then
+			if handler.frame:IsShown() then
+				barh = handler.height or CandyBar.var.defaults.height
+				bar = bar + barh + vertspacing
+			end
+		end
+	end
+	
+	return xoffset, yoffset + (m * bar)
+end
+
 -- Internal Method
 -- Update a bar on screen
 function CandyBar:Update( name )
@@ -1222,6 +1309,10 @@ CandyBar.SetCandyBarTextColor = CandyBar.SetTextColor
 CandyBar.SetCandyBarTimerTextColor = CandyBar.SetTimerTextColor
 CandyBar.SetCandyBarFontSize = CandyBar.SetFontSize
 CandyBar.SetCandyBarPoint = CandyBar.SetPoint
+CandyBar.GetCandyBarPoint = CandyBar.GetPoint
+CandyBar.GetCandyBarCenter = CandyBar.GetCenter
+CandyBar.GetCandyBarOffsets = CandyBar.GetOffsets
+CandyBar.GetCandyBarEffectiveScale = CandyBar.GetEffectiveScale
 CandyBar.SetCandyBarScale = CandyBar.SetScale
 CandyBar.SetCandyBarTimeFormat = CandyBar.SetTimeFormat
 CandyBar.SetCandyBarTimeLeft = CandyBar.SetTimeLeft
@@ -1232,6 +1323,7 @@ CandyBar.IsCandyBarGroupRegistered = CandyBar.IsGroupRegistered
 CandyBar.SetCandyBarGroupPoint = CandyBar.SetGroupPoint
 CandyBar.SetCandyBarGroupGrowth = CandyBar.SetGroupGrowth
 CandyBar.UpdateCandyBarGroup = CandyBar.UpdateGroup
+CandyBar.GetCandyBarNextBarPointInGroup = CandyBar.GetNextBarPointInGroup
 CandyBar.SetCandyBarOnClick = CandyBar.SetOnClick
 CandyBar.SetCandyBarFade = CandyBar.SetFade
 CandyBar.RegisterCandyBarWithGroup = CandyBar.RegisterWithGroup

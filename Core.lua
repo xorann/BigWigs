@@ -266,6 +266,7 @@ function BigWigs.modulePrototype:StartFight()
         self.started = true
         self:TriggerEvent("BigWigs_Message", string.format(L["%s engaged!"], self:ToString()), "Positive")
         BigWigsBossRecords:StartBossfight(self)
+        self:SendEngageSync()
     end
 end
 
@@ -302,6 +303,7 @@ function BigWigs.modulePrototype:GenericBossDeath(msg)
 				
 				BigWigsBossRecords:EndBossfight(module)
                 BigWigsAutoReply:EndBossfight()
+                BigWigsBars:BigWigs_HideBars()
                 BigWigsBars:BigWigs_HideCounterBars()
 				
 				if self.core:IsDebugging() then

@@ -139,6 +139,8 @@ Raids\Other\Lethon.lua
 Raids\Other\Taerar.lua
 Raids\Other\Ysondre.lua
 
+Raids\Other\Boar.lua
+
 Raids\Onyxia\Onyxia.lua
 
 Raids\Naxxramas\Anubrekhan.lua
