@@ -43,11 +43,8 @@ end
 
 L:RegisterTranslations("enUS", function() return {
 	["Bars"] = true,
-
+            
 	["bars"] = true,
-	["anchor"] = true,
-	["scale"] = true,
-	["up"] = true,
 
 	["Options for the timer bars."] = true,
 	["Show the bar anchor frame."] = true,
@@ -72,15 +69,29 @@ L:RegisterTranslations("enUS", function() return {
 
 	["Texture"] = true,
 	["Set the texture for the timerbars."] = true,
+            
+            
+    
+            
+    ["Reset position"] = true,
+	["Reset the anchor position, moving it to the center of your screen."] = true,
+    ["Reverse"] = true,
+	["Toggles if bars are reversed (fill up instead of emptying)."] = true,
+    ["Emphasize"] = true,
+	["Emphasize bars that are close to completion (<10sec). Also note that bars started at less than 15 seconds initially will be emphasized right away."] = true,
+    ["Enable"] = true,
+	["Enables emphasizing bars."] = true,
+    ["Flash"] = true,
+	["Flashes the background red for bars that are emphasized."] = true,
+    ["Move"] = true,
+	["Move bars that are emphasized to a second anchor."] = true,
+    ["Set the scale for emphasized bars."] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
 	["Bars"] = "Anzeigebalken",
 
 	["bars"] = "balken",
-	["anchor"] = "verankerung",
-	["scale"] = "skalierung",
-	["up"] = "oben",
 
 	["Options for the timer bars."] = "Optionen f\195\188r die Timer Anzeigebalken.",
 	["Show the bar anchor frame."] = "Verankerung der Anzeigebalken anzeigen.",
@@ -105,6 +116,23 @@ L:RegisterTranslations("deDE", function() return {
 
 	["Texture"] = "Textur",
 	["Set the texture for the timerbars."] = "Textur der Anzeigebalken w\195\164hlen.",
+            
+            
+    
+            
+    ["Reset position"] = "Position zurücksetzen",
+	["Reset the anchor position, moving it to the center of your screen."] = "Die Verankerungsposition zurücksetzen (bewegt die Balken zur Mitte deines Interfaces).",
+    ["Reverse"] = "Umkehren",
+	["Toggles if bars are reversed (fill up instead of emptying)."] = "Legt fest, ob sich die Anzeigebalken füllen oder leeren sollen.",
+    ["Emphasize"] = "Hervorheben",
+	["Emphasize bars that are close to completion (<10sec). Also note that bars started at less than 15 seconds initially will be emphasized right away."] = "Anzeigebalken hervorheben die kurz vor Abschluss sind (<10sek). Anzeigebalken die mit einem Timer von weniger als 15 Sekunden starten werden von Beginn weg als hervorgehobene Balken dargestellt.",
+    ["Enable"] = "Aktivieren",
+	["Enables emphasizing bars."] = "Aktiviert hervorgehobene Anzeigebalken.",
+    ["Flash"] = "Blinken",
+	["Flashes the background red for bars that are emphasized."] = "Lässt den Hintergrund von hervorgehobenen Anzeigebalken rot blinken.",
+    ["Move"] = "Bewegen",
+	["Move bars that are emphasized to a second anchor."] = "Hervorgehobene Anzeigebalken zu einem zweiten Ankerpunkt bewegen.",
+    ["Set the scale for emphasized bars."] = "Die Skalierung für hervorgehobene Anzeigebalken festlegen.",
 
 } end)
 
@@ -137,45 +165,171 @@ BigWigsBars.defaultDB = {
 	reverse = nil,
 }
 BigWigsBars.consoleCmd = L["bars"]
+
+local function getOption(key)
+	if key == "anchor" then
+		return BigWigsBars.frames.anchor and BigWigsBars.frames.anchor:IsShown()
+	else
+		return BigWigsBars.db.profile[key]
+	end
+end
+local function setOption(key, value)
+	if key == "anchor" then
+		if value then
+			BigWigsBars:BigWigs_ShowAnchors()
+		else
+			BigWigsBars:BigWigs_HideAnchors()
+		end
+	else
+		BigWigsBars.db.profile[key] = value
+	end
+	if key == "growup" and BigWigsBars.frames.anchor then
+		BigWigsBars:SetCandyBarGroupPoint("BigWigsGroup", value and "BOTTOM" or "TOP", BigWigsBars.frames.anchor, value and "TOP" or "BOTTOM", 0, 0)
+		BigWigsBars:SetCandyBarGroupGrowth("BigWigsGroup", value)
+	elseif key == "emphasizeGrowup" and BigWigsBars.frames.emphasizeAnchor then
+		BigWigsBars:SetCandyBarGroupPoint("BigWigsEmphasizedGroup", value and "BOTTOM" or "TOP", BigWigsBars.frames.emphasizeAnchor, value and "TOP" or "BOTTOM", 0, 0)
+		BigWigsBars:SetCandyBarGroupGrowth("BigWigsEmphasizedGroup", value)
+	end
+end
+local function shouldDisableEmphasizeOption()
+	return not BigWigsBars.db.profile.emphasize
+end
+
 BigWigsBars.consoleOptions = {
 	type = "group",
 	name = L["Bars"],
 	desc = L["Options for the timer bars."],
 	args   = {
-		[L["anchor"]] = {
+		anchor = {
 			type = "execute",
 			name = L["Show anchor"],
 			desc = L["Show the bar anchor frame."],
+            order = 1,
 			func = function() BigWigsBars:BigWigs_ShowAnchors() end,
 		},
-		[L["up"]] = {
+        reset = {
+			type = "execute",
+			name = L["Reset position"],
+			desc = L["Reset the anchor position, moving it to the center of your screen."],
+			order = 2,
+			func = function() BigWigsBars:ResetAnchor() end,
+		},
+        spacer = {
+			type = "header",
+			name = " ",
+			order = 10,
+		},
+		growup = {
 			type = "toggle",
-			name = L["Group upwards"],
-			desc = L["Toggle bars grow upwards/downwards from anchor."],
+			name = L["Grow bars upwards"],
+            desc = L["Toggle bars grow upwards/downwards from anchor."],
+            order = 13,
 			get = function() return BigWigsBars.db.profile.growup end,
-			set = function(v) BigWigsBars.db.profile.growup = v end,
+			set = function(v) 
+                    BigWigsBars.db.profile.growup = v 
+                    BigWigsBars:SetCandyBarGroupPoint("BigWigsGroup", v and "BOTTOM" or "TOP", BigWigsBars.frames.anchor, v and "TOP" or "BOTTOM", 0, 0)
+                    BigWigsBars:SetCandyBarGroupGrowth("BigWigsGroup", v)
+                end,
 			message = L["Bars now grow %2$s"],
 			current = L["Bars now grow %2$s"],
 			map = {[true] = L["Up"], [false] = L["Down"]},
 		},
-		[L["scale"]] = {
+        reverse = {
+			type = "toggle",
+			name = L["Reverse"],
+			desc = L["Toggles if bars are reversed (fill up instead of emptying)."],
+			order = 14,
+			get = function() return BigWigsBars.db.profile.reverse end,
+			set = function(v) BigWigsBars.db.profile.reverse = v end,
+			--passValue = "reverse",
+		},
+		scale = {
 			type = "range",
 			name = L["Bar scale"],
 			desc = L["Set the bar scale."],
+            order = 15,
 			min = 0.2,
 			max = 2.0,
 			step = 0.1,
 			get = function() return BigWigsBars.db.profile.scale end,
 			set = function(v) BigWigsBars.db.profile.scale = v end,
 		},
-		[L["Texture"]] = {
+		texture = {
 			type = "text",
 			name = L["Texture"],
 			desc = L["Set the texture for the timerbars."],
+            order = 16,
 			get = function() return BigWigsBars.db.profile.texture end,
 			set = function(v) BigWigsBars.db.profile.texture = v end,
 			validate = surface:List(),
-		}
+		},
+        spacer2 = {
+			type = "header",
+			name = " ",
+			order = 20,
+		},
+		emphasize = {
+			type = "group",
+			name = L["Emphasize"],
+			desc = L["Emphasize bars that are close to completion (<10sec). Also note that bars started at less than 15 seconds initially will be emphasized right away."],
+			order = 21,
+			args = {
+                emphasize = {
+				    type = "toggle",
+				    name = L["Enable"],
+				    desc = L["Enables emphasizing bars."],
+                    get = function() return BigWigsBars.db.profile.emphasize end,
+                    set = function(v) BigWigsBars.db.profile.emphasize = v end,
+					order = 1,
+				},
+				growup = {
+					type = "toggle",
+					name = L["Grow bars upwards"],
+					desc = L["Toggle bars grow upwards/downwards from anchor."],
+					order = 2,
+                    get = function() return BigWigsBars.db.profile.emphasizeGrowup end,
+                    set = function(v) 
+                            BigWigsBars.db.profile.emphasizeGrowup = v 
+                            BigWigsBars:SetCandyBarGroupPoint(BigWigsBars.frames.emphasizeAnchor.candyBarGroupId, v and "BOTTOM" or "TOP", BigWigsBars.frames.emphasizeAnchor, v and "TOP" or "BOTTOM", 0, 0)
+                            BigWigsBars:SetCandyBarGroupGrowth(BigWigsBars.frames.emphasizeAnchor.candyBarGroupId, v)
+                        end,
+					disabled = shouldDisableEmphasizeOption,
+				},
+				flash = {
+					type = "toggle",
+					name = L["Flash"],
+					desc = L["Flashes the background red for bars that are emphasized."],
+                    get = function() return BigWigsBars.db.profile.emphasizeFlash end,
+                    set = function(v) BigWigsBars.db.profile.emphasizeFlash = v end,
+					disabled = shouldDisableEmphasizeOption,
+					order = 3,
+				},
+				move = {
+					type = "toggle",
+					name = L["Move"],
+					desc = L["Move bars that are emphasized to a second anchor."],
+                    get = function() return BigWigsBars.db.profile.emphasizeMove end,
+                    set = function(v) BigWigsBars.db.profile.emphasizeMove = v end,
+					disabled = shouldDisableEmphasizeOption,
+					order = 4,
+				},
+				scale = {
+					type = "range",
+			        name = L["Bar scale"],
+					desc = L["Set the scale for emphasized bars."],
+					min = 0.2,
+					max = 2.0,
+					step = 0.1,
+                    get = function() return BigWigsBars.db.profile.emphasizeScale end,
+                    set = function(v) BigWigsBars.db.profile.emphasizeScale = v end,
+					disabled = function()
+						if not BigWigsBars.db.profile.emphasizeMove then return true end
+						return shouldDisableEmphasizeOption()
+					end,
+					order = 5,
+				},
+            },
+        },
 	},
 }
 
@@ -185,9 +339,9 @@ BigWigsBars.consoleOptions = {
 ------------------------------
 
 function BigWigsBars:OnRegister()
-	self.consoleOptions.args[L["Texture"]].validate = surface:List()
+	self.consoleOptions.args.texture.validate = surface:List()
         self:RegisterEvent("Surface_Registered", function()
-		self.consoleOptions.args[L["Texture"]].validate = surface:List()
+		self.consoleOptions.args.texture.validate = surface:List()
         end)
 end
 
@@ -232,6 +386,40 @@ end
 --      Event Handlers      --
 ------------------------------
 
+function BigWigsBars:Disable(module)
+	if self.frames.emphasizeAnchor.moduleBars[module] then
+		if self.frames.emphasizeAnchor.emphasizeTimers[module] then
+			for k, v in pairs(self.frames.emphasizeAnchor.emphasizeTimers[module]) do
+				self:CancelScheduledEvent(v)
+				self.frames.emphasizeAnchor.emphasizeTimers[module][k] = nil
+			end
+		end
+
+		if self.frames.emphasizeAnchor.flashTimers[module] then
+			for k, v in pairs(self.frames.emphasizeAnchor.flashTimers[module]) do
+				self:CancelScheduledEvent(v)
+				self.frames.emphasizeAnchor.flashTimers[module][k] = nil
+			end
+		end
+
+		for k in pairs(self.frames.emphasizeAnchor.moduleBars[module]) do
+			if self.frames.emphasizeAnchor.movingBars[k] then
+				self.frames.emphasizeAnchor.movingBars[k] = del(self.frames.emphasizeAnchor.movingBars[k])
+			end
+			self:UnregisterCandyBar(k)
+			self.frames.emphasizeAnchor.moduleBars[module][k] = nil
+		end
+
+		if not next(self.frames.emphasizeAnchor.movingBars) then
+			self:CancelScheduledEvent("BigWigsBarMover")
+		end
+	end
+end
+
+function BigWigsBars:Ace2_AddonDisabled(module)
+    BigWigsBars:Disable(module)
+end
+
 function BigWigsBars:BigWigs_ShowAnchors()
 	if not self.frames.anchor then self:SetupFrames() end
     self.frames.anchor:Show()
@@ -252,11 +440,9 @@ function BigWigsBars:BigWigs_HideAnchors()
 	end
 end
 
-local barCache = {
-    -- [i] = {text, module}
-}
+
 function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	if not text or not time then return end
+    if not text or not time then return end
 	local id = "BigWigsBar "..text
     if not self.frames.anchor then self:SetupFrames() end
     
@@ -337,13 +523,9 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
     self:SetCandyBarScale(id, scale)
     
 	self:StartCandyBar(id, true)
-    
-    tinsert(barCache,{text, module})
 end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
-    self:DebugMessage("Stop bar: "..module.." "..text)
-    
     if not text then return end
 	if self.frames.emphasizeAnchor.moduleBars[module] then
 		local id = "BigWigsBar "..text
@@ -370,19 +552,7 @@ function BigWigsBars:BigWigs_StopBar(module, text)
 		self.frames.emphasizeAnchor.moduleBars[module][id] = nil
 	end
     
-    table.remove(barCache,{text, module})
-	--module:UnregisterCandyBar("BigWigsBar "..text)
-end
-
-function BigWigsBars:BigWigs_HideBars()
-    self:DebugMessage("1")
-    -- forces to hide all counter bars cached, used on bosskills
-    for i=1, table.getn(barCache) do
-        self:DebugMessage("1 "..i)
-        self:BigWigs_StopBar(barCache[i][2], barCache[i][1])
-    end
-    
-    barCache = {}
+	module:UnregisterCandyBar("BigWigsBar "..text)
 end
 
 local counterBarCache = {
@@ -481,7 +651,11 @@ function tablelength(T)
   return count
 end
 flashBarUp = function(id)
-	BigWigsBars:SetCandyBarBackgroundColor(id, unpack(flashColors[currentColor[id]]))
+    --self:SetCandyBarBackgroundColor(id, bg.r, bg.g, bg.b, bg.a)
+    local r, g, b, a = unpack(flashColors[currentColor[id]])
+    BigWigsBars:DebugMessage("flashBarUp id: "..id.." r: "..r)
+	--BigWigsBars:SetCandyBarBackgroundColor(id, unpack(flashColors[currentColor[id]]))
+    BigWigsBars:SetCandyBarBackgroundColorRGB(id, r, g, b, a)
 	--if currentColor[id] == #flashColors then
     if currentColor[id] == tablelength(flashColors) then
 		BigWigsBars:ScheduleRepeatingEvent(id, flashBarDown, 0.1, id)
@@ -490,7 +664,9 @@ flashBarUp = function(id)
 	currentColor[id] = currentColor[id] + 1
 end
 flashBarDown = function(id)
-	BigWigsBars:SetCandyBarBackgroundColor(id, unpack(flashColors[currentColor[id]]))
+    local r, g, b, a = unpack(flashColors[currentColor[id]])
+	--BigWigsBars:SetCandyBarBackgroundColor(id, unpack(flashColors[currentColor[id]]))
+    BigWigsBars:SetCandyBarBackgroundColorRGB(id, r, g, b, a)
 	if currentColor[id] == 1 then
 		BigWigsBars:ScheduleRepeatingEvent(id, flashBarUp, 0.1, id)
 		return
@@ -806,8 +982,8 @@ function BigWigsBars:SavePosition()
     if not self.frames.anchor then self:SetupFrames() end
 
 	local s = self.frames.anchor:GetEffectiveScale()
-	self.db.profile.posx = anchor:GetLeft() * s
-	self.db.profile.posy = anchor:GetTop() * s
+	self.db.profile.posx = self.frames.anchor:GetLeft() * s
+	self.db.profile.posy = self.frames.anchor:GetTop() * s
 
 	if self.db.profile.emphasize and self.db.profile.emphasizeMove then
 		if not self.frames.emphasizeAnchor then self:SetupFrames(true) end

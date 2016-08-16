@@ -39,6 +39,7 @@ local CandyBar = Mixin {
 	"SetCandyBarWidth",
 	"SetCandyBarHeight",
 	"SetCandyBarBackgroundColor",
+    "SetCandyBarBackgroundColorRGB",
 	"SetCandyBarTextColor",
 	"SetCandyBarTimerTextColor",
 	"SetCandyBarFontSize",
@@ -354,6 +355,26 @@ function CandyBar:SetBackgroundColor(name, color, alpha)
 	local ctable = {}
 
 	_, ctable[1], ctable[2], ctable[3] = paint:GetRGBPercent(color)
+
+	if alpha then ctable[4] = alpha else ctable[4] = 1 end
+
+	CandyBar.var.handlers[name].bgcolor = ctable
+
+	CandyBar.var.handlers[name].frame.statusbarbg:SetStatusBarColor( ctable[1], ctable[2], ctable[3], ctable[4] )
+
+	return true
+end
+function CandyBar:SetBackgroundColorRGB(name, r, g, b, alpha)
+	CandyBar:argCheck(name, 2, "string")
+	CandyBar:argCheck(r, 1, "number")
+    CandyBar:argCheck(g, 1, "number")
+    CandyBar:argCheck(b, 1, "number")
+
+	if not CandyBar.var.handlers[name] then return end
+
+	local ctable = {}
+    
+    ctable[1], ctable[2], ctable[3] = r, g, b
 
 	if alpha then ctable[4] = alpha else ctable[4] = 1 end
 
@@ -1305,6 +1326,7 @@ CandyBar.SetCandyBarColor = CandyBar.SetColor
 CandyBar.SetCandyBarText = CandyBar.SetText
 CandyBar.SetCandyBarIcon = CandyBar.SetIcon
 CandyBar.SetCandyBarBackgroundColor = CandyBar.SetBackgroundColor
+CandyBar.SetCandyBarBackgroundColorRGB = CandyBar.SetBackgroundColorRGB
 CandyBar.SetCandyBarTextColor = CandyBar.SetTextColor
 CandyBar.SetCandyBarTimerTextColor = CandyBar.SetTimerTextColor
 CandyBar.SetCandyBarFontSize = CandyBar.SetFontSize

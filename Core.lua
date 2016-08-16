@@ -164,7 +164,7 @@ BigWigs.cmdtable = {type = "group", handler = BigWigs, args = {
 }}
 BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, BigWigs.cmdtable)
 BigWigs.debugFrame = ChatFrame1
-BigWigs.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
+BigWigs.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
 
 --------------------------------
 --      Module Prototype      --
@@ -303,7 +303,7 @@ function BigWigs.modulePrototype:GenericBossDeath(msg)
 				
 				BigWigsBossRecords:EndBossfight(module)
                 BigWigsAutoReply:EndBossfight()
-                BigWigsBars:BigWigs_HideBars()
+                BigWigsBars:Disable(module)
                 BigWigsBars:BigWigs_HideCounterBars()
 				
 				if self.core:IsDebugging() then
