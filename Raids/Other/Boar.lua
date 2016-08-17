@@ -28,6 +28,11 @@ L:RegisterTranslations("enUS", function() return {
             
     vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Elder Mottled Boar for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
     umlaut_test = "hits you for",
+            
+            
+    proximity_cmd = "proximity",
+    proximity_name = "Proximity Warning",
+    proximity_desc = "Show Proximity Warning Frame",
      
 } end )
 
@@ -46,6 +51,10 @@ L:RegisterTranslations("deDE", function() return {
             
     vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Elder Mottled Boar for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
     umlaut_test = "trifft Euch für",
+            
+    proximity_cmd = "proximity",
+    proximity_name = "Nähe Warnungsfenster",
+    proximity_desc = "Zeit das Nähe Warnungsfenster",
      
 } end )
 
@@ -61,8 +70,10 @@ BigWigsBoar.zonename = {
 }
 BigWigsBoar.enabletrigger = boss
 BigWigsBoar.bossSync = "Boar"
-BigWigsBoar.toggleoptions = {"engage", "charge", "bosskill"}
+BigWigsBoar.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
 BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
+BigWigsBoar.proximityCheck = function(unit) return CheckInteractDistance(unit, 4) end
+BigWigsBoar.proximitySilent = true
 
 ------------------------------
 --      Initialization      --
@@ -105,14 +116,8 @@ function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
             self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
 			--self:PossibleSubmerge()
 		end
-	--[[elseif sync == "OuroSweep" then
-		self:Sweep()
-	elseif sync == "OuroSandblast" then
-		self:Sandblast()
-	elseif sync == "OuroEmerge" then
-		self:Emerge()
-	elseif sync == "OuroSubmerge" then
-		self:Submerge()--]]
+        
+        BigWigsProximity:BigWigs_ShowProximity(self)
 	
     elseif sync == "TwinsTeleport" then
         self:TriggerEvent("BigWigs_StartBar", self, L["teleport_msg"], 30, "Interface\\Icons\\Spell_Arcane_Blink")

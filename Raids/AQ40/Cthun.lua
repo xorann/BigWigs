@@ -123,6 +123,11 @@ L:RegisterTranslations("enUS", function() return {
 	CoEtrigger	= "Curse of the Elements",
 	CoStrigger	= "Curse of Shadow",
 	CoRtrigger	= "Curse of Recklessness",]]
+            
+            
+    proximity_cmd = "proximity",
+    proximity_name = "Proximity Warning",
+    proximity_desc = "Show Proximity Warning Frame",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -195,6 +200,10 @@ L:RegisterTranslations("deDE", function() return {
 	CoEtrigger	= "Curse of the Elements",
 	CoStrigger	= "Curse of Shadow",
 	CoRtrigger	= "Curse of Recklessness",]]
+            
+    proximity_cmd = "proximity",
+    proximity_name = "Nähe Warnungsfenster",
+    proximity_desc = "Zeit das Nähe Warnungsfenster",
 } end )
 
 ----------------------------------
@@ -205,9 +214,11 @@ BigWigsCThun = BigWigs:NewModule(cthun)
 BigWigsCThun.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsCThun.enabletrigger = { eyeofcthun, cthun }
 BigWigsCThun.bossSync = "CThun"
-BigWigsCThun.toggleoptions = { "rape", -1, "tentacle", "glare", "group", -1, "giant", "weakened", "bosskill" }
+BigWigsCThun.toggleoptions = { "rape", -1, "tentacle", "glare", "group", -1, "giant", "weakened", "proximity", "bosskill" }
 BigWigsCThun.revision = tonumber(string.sub("$Revision: 20002 $", 12, -3))
 BigWigsCThun.target = nil
+BigWigsCThun.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+BigWigsCThun.proximitySilent = false
 
 function BigWigsCThun:OnEnable()
     self.started = nil
@@ -232,8 +243,8 @@ function BigWigsCThun:OnEnable()
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Emote")		-- weakened triggering
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Emote")		-- weakened triggering
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
+	--self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
+	--self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
 	-- Not sure about this, since we get out of combat between the phases.
 	--self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
     
@@ -346,6 +357,8 @@ function BigWigsCThun:CThunStart()
 		self:ScheduleEvent("bwcthuntentaclesstart", self.StartTentacleRape, timeP1TentacleStart, self )
 		self:ScheduleEvent("bwcthungroupwarningstart", self.GroupWarning, timeP1GlareStart - 1, self )
 		self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, timeTarget, self )
+        
+        BigWigsProximity:BigWigs_ShowProximity(self)
 	end
 end
 
@@ -401,6 +414,8 @@ function BigWigsCThun:CThunP2Start()
 		self:ScheduleRepeatingEvent("bwcthuntargetp2", self.CheckTargetP2, timeTarget, self )
         
         timeLastEyeTentaclesSpawn = GetTime() + 10
+        
+        BigWigsProximity:BigWigs_HideProximity(self)
 	end
 
 end

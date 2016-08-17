@@ -9,7 +9,7 @@ assert( BigWigs, "BigWigs not found!")
 local L = AceLibrary("AceLocale-2.2"):new("BigWigsBars")
 local paint = AceLibrary("PaintChips-2.0")
 local minscale, maxscale = 0.25, 2
-local candybar = AceLibrary("CandyBar-2.0")
+local candybar = AceLibrary("CandyBar-2.0.1")
 
 local surface = AceLibrary("Surface-1.0")
 
@@ -645,7 +645,7 @@ end
 local flashBarUp, flashBarDown
 
 local currentColor = {}
-function tablelength(T)
+local function tablelength(T)
   local count = 0
   for _ in pairs(T) do count = count + 1 end
   return count
@@ -653,7 +653,6 @@ end
 flashBarUp = function(id)
     --self:SetCandyBarBackgroundColor(id, bg.r, bg.g, bg.b, bg.a)
     local r, g, b, a = unpack(flashColors[currentColor[id]])
-    BigWigsBars:DebugMessage("flashBarUp id: "..id.." r: "..r)
 	--BigWigsBars:SetCandyBarBackgroundColor(id, unpack(flashColors[currentColor[id]]))
     BigWigsBars:SetCandyBarBackgroundColorRGB(id, r, g, b, a)
 	--if currentColor[id] == #flashColors then

@@ -1,7 +1,7 @@
 --[[
-Name: CandyBar-2.0
-Revision: $Rev: 15771 $
-Author: Ammo (wouter@muze.nl)
+Name: CandyBar-2.0.1
+Revision: $Rev: 15772 $
+Author: Ammo (wouter@muze.nl), improved by Dorann
 Website: http://www.wowace.com/
 Documentation: http://www.wowace.com/
 SVN: svn://svn.wowace.com/root/trunk/CandyBar/CandyBar-2.0
@@ -9,7 +9,7 @@ Description: A timer bars library
 Dependencies: AceLibrary, AceOO-2.0, PaintChips-2.0, (optional) Compost-2.0
 ]]
 
-local vmajor, vminor = "CandyBar-2.0", "$Revision: 15771 $"
+local vmajor, vminor = "CandyBar-2.0.1", "$Revision: 15772 $"
 
 if not AceLibrary then error(vmajor .. " requires AceLibrary.") end
 if not AceLibrary:IsNewVersion(vmajor, vminor) then return end
@@ -1390,7 +1390,7 @@ function CandyBar:activate(oldLib, oldDeactivate)
 
 	if oldLib then self.var = oldLib.var
 	else
-		local _,_,ourpath = string.find(debugstack(), "\\AddOns\\(.-)CandyBar%-2%.0%.lua")
+		local _,_,ourpath = string.find(debugstack(), "\\AddOns\\(.-)CandyBar%-2%.0%.1%.lua")
 		ourpath = "Interface\\AddOns\\"..ourpath .. "bar.tga"
 		self.var = {  -- "Local" variables go here
 			frame = CreateFrame("Frame"),
