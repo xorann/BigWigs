@@ -43,10 +43,13 @@ BigWigsWarningSign.frame = CreateFrame("Frame", nil, UIParent)
 BigWigsWarningSign.frame:SetFrameStrata("MEDIUM")
 BigWigsWarningSign.frame:SetWidth(100) 
 BigWigsWarningSign.frame:SetHeight(100)
-BigWigsWarningSign.texture = BigWigsWarningSign.frame:CreateTexture(nil, "BACKGROUND")
-BigWigsWarningSign.texture:SetAllPoints(BigWigsWarningSign.frame)
 BigWigsWarningSign.frame:SetAlpha(0.8)
 BigWigsWarningSign.frame:SetPoint("CENTER", 0, 150)
+
+BigWigsWarningSign.texture = BigWigsWarningSign.frame:CreateTexture(nil, "BACKGROUND")
+BigWigsWarningSign.texture:SetAllPoints(BigWigsWarningSign.frame)
+BigWigsWarningSign.texture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
 BigWigsWarningSign.frame:Hide()
 
 ------------------------------
