@@ -9,7 +9,7 @@ assert( BigWigs, "BigWigs not found!")
 local L = AceLibrary("AceLocale-2.2"):new("BigWigsBars")
 local paint = AceLibrary("PaintChips-2.0")
 local minscale, maxscale = 0.25, 2
-local candybar = AceLibrary("CandyBar-2.0.1")
+local candybar = AceLibrary("CandyBar-2.1")
 
 local surface = AceLibrary("Surface-1.0")
 
@@ -530,22 +530,22 @@ function BigWigsBars:BigWigs_StopBar(module, text)
 	if self.frames.emphasizeAnchor.moduleBars[module] then
 		local id = "BigWigsBar "..text
 
-		if movingBars[id] then
-			movingBars[id] = del(movingBars[id])
+		if self.frames.emphasizeAnchor.movingBars[id] then
+			self.frames.emphasizeAnchor.movingBars[id] = del(self.frames.emphasizeAnchor.movingBars[id])
 		end
 
-		if not next(movingBars) then
+		if not next(self.frames.emphasizeAnchor.movingBars) then
 			self:CancelScheduledEvent("BigWigsBarMover")
 		end
 
-		if emphasizeTimers[module] and emphasizeTimers[module][id] then
-			self:CancelScheduledEvent(emphasizeTimers[module][id])
-			emphasizeTimers[module][id] = nil
+		if self.frames.emphasizeAnchor.emphasizeTimers[module] and self.frames.emphasizeAnchor.emphasizeTimers[module][id] then
+			self:CancelScheduledEvent(self.frames.emphasizeAnchor.emphasizeTimers[module][id])
+			self.frames.emphasizeAnchor.emphasizeTimers[module][id] = nil
 		end
 
-		if flashTimers[module] and flashTimers[module][id] then
-			self:CancelScheduledEvent(flashTimers[module][id])
-			flashTimers[module][id] = nil
+		if self.frames.emphasizeAnchor.flashTimers[module] and self.frames.emphasizeAnchor.flashTimers[module][id] then
+			self:CancelScheduledEvent(self.frames.emphasizeAnchor.flashTimers[module][id])
+			self.frames.emphasizeAnchor.flashTimers[module][id] = nil
 		end
 
 		self:UnregisterCandyBar(id)

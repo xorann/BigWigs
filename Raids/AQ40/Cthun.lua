@@ -215,7 +215,7 @@ BigWigsCThun.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsCThun.enabletrigger = { eyeofcthun, cthun }
 BigWigsCThun.bossSync = "CThun"
 BigWigsCThun.toggleoptions = { "rape", -1, "tentacle", "glare", "group", -1, "giant", "weakened", "proximity", "bosskill" }
-BigWigsCThun.revision = tonumber(string.sub("$Revision: 20002 $", 12, -3))
+BigWigsCThun.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
 BigWigsCThun.target = nil
 BigWigsCThun.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
 BigWigsCThun.proximitySilent = false
@@ -292,7 +292,7 @@ end
 end]]
 
 function BigWigsCThun:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    --self:DebugMessage("death: "..msg)
+    self:DebugMessage("death: "..msg)
 	if (msg == string.format(UNITDIESOTHER, eyeofcthun)) then
 		self:TriggerEvent("BigWigs_SendSync", "CThunP2Start")
 	elseif (msg == string.format(UNITDIESOTHER, gianteye)) then
@@ -305,13 +305,11 @@ end
 
 function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
     --self:DebugMessage("BigWigs_RecvSync: " .. sync .. " " .. rest)
-    if not self.started and ( (sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart"..BigWigsCThun.revision) ) then
-		self:TriggerEvent("BigWigs_SendSync", "CThunStart"..BigWigsCThun.revision)
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then 
-			self:UnregisterEvent("PLAYER_REGEN_DISABLED") 
-		end
-		self:StartFight()
+    if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart"..BigWigsCThun.revision)) then
+        if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
+        self:StartFight()
 		self:CThunStart()
+        
 	elseif sync == "CThunP2Start" then
         self:TriggerEvent("BigWigs_SendSync", "CThunP2Start"..BigWigsCThun.revision)
 		self:CThunP2Start()
@@ -337,7 +335,7 @@ end
 -----------------------
 
 function BigWigsCThun:CThunStart()
-    self:DebugMessage("CThunStart")
+    self:DebugMessage("CThunStart: ")
 	if not cthunstarted then
 		cthunstarted = true
 
@@ -490,7 +488,7 @@ function BigWigsCThun:GiantEyeEyeBeam()
     end
     
     local name = L["Unknown"]
-	self:CheckTargetP2()
+    self:CheckTargetP2()
     if BigWigsCThun.target then
         name = BigWigsCThun.target
         self:TriggerEvent("BigWigs_SetRaidIcon", name)
@@ -503,7 +501,7 @@ end
 
 function BigWigsCThun:CThunEyeBeam()
     local name = L["Unknown"]
-	self:CheckTarget()
+    self:CheckTarget()
     if BigWigsCThun.target then
         name = BigWigsCThun.target
         self:TriggerEvent("BigWigs_SetRaidIcon", name)
@@ -582,7 +580,7 @@ function BigWigsCThun:CheckTargetP2()
 end
 
 function BigWigsCThun:GroupWarning()
-	self:CheckTarget()
+    self:CheckTarget()
 	if BigWigsCThun.target then
 		local i, name, group, glareTarget, glareGroup, playerGroup
         local playerName = GetUnitName("player")
@@ -715,10 +713,9 @@ function BigWigsCThun:CheckEyeBeam(msg)
     elseif string.find(msg, L["eye_beam_trigger_cthun"]) then
         self:DebugMessage("C'Thun Eye Beam trigger")
         self:Sync("CThunEyeBeam"..BigWigsCThun.revision)
-		
-		if not cthunstarted then 
-			self:TriggerEvent("BigWigs_SendSync", "CThunStart"..BigWigsCThun.revision)
-		end
+        if not cthunstarted then 
+            self:TriggerEvent("BigWigs_SendSync", "CThunStart"..BigWigsCThun.revision)
+        end
     end
 end
 
