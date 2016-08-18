@@ -72,7 +72,7 @@ BigWigsBoar.enabletrigger = boss
 BigWigsBoar.bossSync = "Boar"
 BigWigsBoar.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
 BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
-BigWigsBoar.proximityCheck = function(unit) return CheckInteractDistance(unit, 4) end
+BigWigsBoar.proximityCheck = function(unit) return CheckInteractDistance(unit, 3) end
 BigWigsBoar.proximitySilent = true
 
 ------------------------------
@@ -80,8 +80,6 @@ BigWigsBoar.proximitySilent = true
 ------------------------------
 
 function BigWigsBoar:OnEnable()
-    started = nil
-    
     self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
     
 	--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
@@ -97,77 +95,52 @@ function BigWigsBoar:OnEnable()
     
     self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "UmlautCheck")
     
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+    
     self:RegisterEvent("UNIT_HEALTH")
     
     --self:RegisterEvent("BigWigs_RecvSync")
     self:RegisterEvent("BigWigs_RecvSync")
+    
+    --self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport", 28)
+end
+
+function BigWigsBoar:CheckForWipe(event)
+    self:DebugMessage("BigWigsBoar:CheckForWipe()")
+    BigWigs.modulePrototype:CheckForWipe(self)
 end
 
 function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
     self:DebugMessage("sync: " .. sync)
-    if sync == self:GetEngageSync() and rest and rest == boss and not started then
-		started = true
-        self:KTM_SetTarget(boss)
+    
+    if not self.started and sync == self:GetEngageSync() and rest and rest == boss then
+        --self:KTM_SetTarget(boss)
         
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
+		--if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
 		if self.db.profile.engage then
-        --if true then
 			self:TriggerEvent("BigWigs_Message", L["engage_msg"], "Attention")
-            self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
-			--self:PossibleSubmerge()
 		end
-        
+
+        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
+            
         BigWigsProximity:BigWigs_ShowProximity(self)
-	
     elseif sync == "TwinsTeleport" then
         self:TriggerEvent("BigWigs_StartBar", self, L["teleport_msg"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
-        
-        --[[self:ScheduleEvent("teleCoundtdown10", "BigWigs_Message", 20, "", "Urgent", true, "Ten")
-        self:ScheduleEvent("teleCoundtdown3", "BigWigs_Message", 27, "", "Urgent", true, "Three")
-        self:ScheduleEvent("teleCoundtdown2", "BigWigs_Message", 28, "", "Urgent", true, "Two")
-        self:ScheduleEvent("teleCoundtdown1", "BigWigs_Message", 29, "", "Urgent", true, "One")
-        self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["teleport_msg"], "Urgent", true, "Alarm")]]
+
         self:DelayedSound(20, "Ten")
         self:DelayedSound(27, "Three")
         self:DelayedSound(28, "Two")
         self:DelayedSound(29, "One")
+        self:CancelScheduledEvent("TwinsTeleport")
         self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-        
+
         self:KTM_Reset()
     end
 end
 
---[[function BigWigsBoar:CHAT_MSG_MONSTER_YELL( msg )
-	if self.db.profile.teleport and string.find(msg, L["trigger1"]) then
-		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important")
-	end
-end--]]
-
---[[function BigWigsBoar:CHAT_MSG_SPELL_AURA_GONE_OTHER( msg )
-	if self.db.profile.shield and string.find(msg, L["trigger2"]) then
-		self:TriggerEvent("BigWigs_Message", L["warn2"], "Attention")
-	end
-end--]]
-
 function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
-    if self.db.profile.charge and string.find(arg1, L["charge_trigger"]) then
-        self:DebugMessage("charge")
-        --self:TriggerEvent("BigWigs_Message", L["charge_msg"], "Urgent")
-        --self:TriggerEvent("BigWigs_Message", "", "Urgent", true, "One")
-        
+    if self.db.profile.charge and string.find(arg1, L["charge_trigger"]) then        
         -- countdown
-        --[[self:TriggerEvent("BigWigs_Message", L["charge_msg"], "Urgent", true, "Ten")
-        self:ScheduleEvent("coundtdown9", "BigWigs_Message", 1, "", "Urgent", true, "Nine")
-        self:ScheduleEvent("coundtdown8", "BigWigs_Message", 2, "", "Urgent", true, "Eight")
-        self:ScheduleEvent("coundtdown7", "BigWigs_Message", 3, "", "Urgent", true, "Seven")
-        self:ScheduleEvent("coundtdown6", "BigWigs_Message", 4, "", "Urgent", true, "Six")
-        self:ScheduleEvent("coundtdown5", "BigWigs_Message", 5, "", "Urgent", true, "Five")
-        self:ScheduleEvent("coundtdown4", "BigWigs_Message", 6, "", "Urgent", true, "Four")
-        self:ScheduleEvent("coundtdown3", "BigWigs_Message", 7, "", "Urgent", true, "Three")
-        self:ScheduleEvent("coundtdown2", "BigWigs_Message", 8, "", "Urgent", true, "Two")
-        self:ScheduleEvent("coundtdown1", "BigWigs_Message", 9, "", "Urgent", true, "One")
-        self:ScheduleEvent("coundtdown0", "BigWigs_Message", 10, "Alarm", "Urgent", true, "Beware")
-        ]]
         self:Sound("Ten");
         self:DelayedSound(1, "Nine")
         self:DelayedSound(2, "Eight")
@@ -181,11 +154,6 @@ function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
         self:DelayedSound(10, "Beware")
         self:TriggerEvent("BigWigs_StartBar", self, L["charge_bar"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
     end
-    
-	--[[if self.db.profile.shield and string.find(arg1, L["trigger3"]) then
-		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["shieldbar"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
-	end--]]
 end
 
 function BigWigsBoar:PlayerDamageEvents(msg)
@@ -206,15 +174,15 @@ end
 
 function BigWigsBoar:UmlautCheck(msg) 
     if string.find(msg, L["umlaut_test"]) then
-        self:DebugMessage("umlaut test succesful")    
+        --self:DebugMessage("umlaut test succesful")    
     else
-        self:DebugMessage("umlaut test not succesful")
+        --self:DebugMessage("umlaut test not succesful")
     end
 end
 
 function BigWigsBoar:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
-		self:DebugMessage("health: " .. health)
+		--self:DebugMessage("health: " .. health)
 	end
 end

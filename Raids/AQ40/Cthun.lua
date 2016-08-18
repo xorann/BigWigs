@@ -49,6 +49,8 @@ local firstWarning = nil
 local tentacletime = timeP1Tentacle
 local isWeakened = nil
 
+local doCheckForWipe = false
+
 ----------------------------
 --      Localization      --
 ----------------------------
@@ -246,7 +248,7 @@ function BigWigsCThun:OnEnable()
 	--self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
 	--self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE") -- engage of Eye of C'Thun
 	-- Not sure about this, since we get out of combat between the phases.
-	--self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
     
     self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
@@ -278,6 +280,11 @@ end
 function BigWigsCThun:GenericBossDeath(event)
    --DEFAULT_CHAT_FRAME:AddMessage("Debug: GenericBossDeath: " .. event) 
 end
+function BigWigsCThun:CheckForWipe(event)
+    if doCheckForWipe then
+        BigWigs.modulePrototype:CheckForWipe(self)
+    end
+end
 
 function BigWigsCThun:Emote( msg )
 	if string.find(msg, L["weakenedtrigger"]) then 
@@ -307,7 +314,7 @@ function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
     --self:DebugMessage("BigWigs_RecvSync: " .. sync .. " " .. rest)
     if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart"..BigWigsCThun.revision)) then
         if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-        self:StartFight()
+        --self:StartFight()
 		self:CThunStart()
         
 	elseif sync == "CThunP2Start" then
@@ -338,6 +345,7 @@ function BigWigsCThun:CThunStart()
     self:DebugMessage("CThunStart: ")
 	if not cthunstarted then
 		cthunstarted = true
+        doCheckForWipe = true
 
 		self:TriggerEvent("BigWigs_Message", L["startwarn"], "Attention", false, false)
         self:Bar(L["barStartRandomBeams"], timeP1RandomEyeBeams, iconGiantEye)
@@ -363,6 +371,7 @@ end
 function BigWigsCThun:CThunP2Start()
 	if not phase2started then
 		phase2started = true
+        doCheckForWipe = false -- disable wipe check since we get out of combat, enable it later again
 		tentacletime = timeP2Tentacle
 
 		self:TriggerEvent("BigWigs_Message", L["phase2starting"], "Bosskill")
@@ -538,6 +547,7 @@ function BigWigsCThun:StartGiantRape()
 end
 
 function BigWigsCThun:StartGiantCRape()
+    doCheckForWipe = true
 	self:GCTentacleRape()
 	--self:ScheduleRepeatingEvent("bwcthungctentacles", self.GCTentacleRape, timeP2GiantClaw, self )
 end

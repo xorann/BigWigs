@@ -112,6 +112,9 @@ function BigWigsSound:OnEnable()
 	self:RegisterEvent("BigWigs_Message")
 	self:RegisterEvent("BigWigs_Sound")
 end
+function BigWigsSound:OnDisable()
+    BigWigs:DebugMessage("OnDisable")
+end
 
 function BigWigsSound:BigWigs_Message(text, color, noraidsay, sound, broadcastonly)
 	if not text or sound == false or broadcastonly then return end

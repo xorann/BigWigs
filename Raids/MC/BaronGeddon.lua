@@ -171,8 +171,8 @@ function BigWigsBaronGeddon:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonServiceX", 4)
 	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonManaIgniteX", 4)
 	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonManaIgniteFirst", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoX", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoFirst", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoX", 29)
+	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoFirst", 29)
 end
 
 ------------------------------
@@ -234,7 +234,7 @@ end
 
 function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
+        --self:StartFight()
         self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
 		if self.db.profile.inferno then
 			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")

@@ -170,7 +170,7 @@ function BigWigsTwins:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport42", 10)
+	self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport43", 28)
 end
 
 ------------------------------
@@ -188,7 +188,7 @@ function BigWigsTwins:CHAT_MSG_MONSTER_YELL(msg)
             end
 
             if self.db.profile.teleport then
-                self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport42")
+                self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport43")
                 self:DelayedSound(20, "Ten")
                 self:DelayedSound(27, "Three")
                 self:DelayedSound(28, "Two")
@@ -232,9 +232,9 @@ end
 end]]
 
 function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and not twinstarted and sync == "BossEngaged" and rest == self.bossSync then
+	if not twinstarted and sync == "BossEngaged" and rest == self.bossSync then
 		twinstarted = true
-        self:StartFight()
+        --self:StartFight()
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end
@@ -242,15 +242,7 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
 			self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
 		end
 		if self.db.profile.teleport then
-	                --self:ScheduleEvent(function() BigWigsThaddiusArrows:Direction("Noth") end, 25)
-			--self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
-			--self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
-            
-            --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
-            self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-            self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport42")
-            --self:KTM_Reset()
+	        self:Sync("TwinsTeleport43")
 		end
 		if self.db.profile.enrage then
 	                --self:ScheduleRepeatingEvent("bwtwinstelebar", self.Telebar, 30.1, self)
@@ -265,22 +257,18 @@ function BigWigsTwins:BigWigs_RecvSync(sync, rest, nick)
 			self:ScheduleEvent("bwtwinswarn7", "BigWigs_Message", 890, L["warn7"], "Important")
 		end
         self:DebugMessage("BossEngaged")
-	elseif sync == "TwinsTeleport42" and self.db.profile.teleport then
-		self:TriggerEvent("BigWigs_Message", L["portwarn"], "Attention", true, "Alarm")
-		--self:ScheduleEvent("BigWigs_Message", 20, L["portdelaywarn10"], "Urgent")
-		--self:ScheduleEvent("BigWigs_Message", 25, L["portdelaywarn"], "Urgent")
-		--self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
+	elseif sync == "TwinsTeleport43" and self.db.profile.teleport then
         self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
-            
-        --self:ScheduleEvent("teleCoundtdown0", "BigWigs_Message", 30, L["portwarn"], "Urgent", true, "Alarm")
+        
         self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport42")
+        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport43")
         self:KTM_Reset()
         
         self:DelayedSound(20, "Ten")
         self:DelayedSound(27, "Three")
         self:DelayedSound(28, "Two")
         self:DelayedSound(29, "One")
+        self:DelayedMessage(30, L["portwarn"], "Attention", true, "Alarm")
 	end
 end
 
@@ -295,7 +283,7 @@ end	]]
 function BigWigsTwins:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if (string.find(msg, L["porttrigger"])) then
 		self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
-        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport42")
+        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport43")
         self:DebugMessage("real port trigger")
 	end
 end
