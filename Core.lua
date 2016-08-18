@@ -452,6 +452,9 @@ end
 function BigWigs.modulePrototype:Sync(sync)
 	self:TriggerEvent("BigWigs_SendSync", sync)
 end
+function BigWigs.modulePrototype:DelayedSync(delay, sync)
+	self:ScheduleEvent("BigWigs_SendSync", delay, sync)
+end
 
 function BigWigs.modulePrototype:WarningSign(texturePath, duration, force)
 	self:TriggerEvent("BigWigs_ShowWarningSign", texturePath, duration, force)

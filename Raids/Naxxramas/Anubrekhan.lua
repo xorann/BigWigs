@@ -5,6 +5,10 @@
 local boss = AceLibrary("Babble-Boss-2.2")["Anub'Rekhan"]
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
+local locustSwarmInterval = 60
+local locustSwarmDuration = 20
+local locustSwarmCastTime = 3.25
+
 ----------------------------
 --      Localization      --
 ----------------------------
@@ -68,10 +72,10 @@ function BigWigsAnubrekhan:OnEnable()
 end
 
 function BigWigsAnubrekhan:CHAT_MSG_MONSTER_YELL(msg)
-	if self.db.profile.locust and (msg == L["starttrigger1"] or msg == L["starttrigger2"] or msg == L["starttrigger3"]) then
+	if self.db.profile.locust and (string.find(msg, L["starttrigger1"]) or string.find(msg, L["starttrigger2"]) or string.find(msg, L["starttrigger3"])) then
 		self:TriggerEvent("BigWigs_Message", L["engagewarn"], "Urgent")
-		self:ScheduleEvent("BigWigs_Message", 50, L["gainwarn10sec"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["gainincbar"], 60, "Interface\\Icons\\Spell_Nature_InsectSwarm")
+		self:ScheduleEvent("BigWigs_Message", locustSwarmInterval - 10, L["gainwarn10sec"], "Important")
+		self:TriggerEvent("BigWigs_StartBar", self, L["gainincbar"], locustSwarmInterval, "Interface\\Icons\\Spell_Nature_InsectSwarm")
 	end
 end
 
@@ -84,16 +88,16 @@ function BigWigsAnubrekhan:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function BigWigsAnubrekhan:LocustCast(msg)
-	if msg == L["casttrigger"] then
+	if string.find(msg, L["casttrigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "AnubLocustInc")
 	end
 end
 
 function BigWigsAnubrekhan:BigWigs_RecvSync(sync)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
+        --self:StartFight()
 	elseif sync == "AnubLocustInc" then
-		self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, 3.25, self, "BigWigs_SendSync", "AnubLocustSwarm")
+		self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, locustSwarmCastTime, self, "BigWigs_SendSync", "AnubLocustSwarm")
 		if self.db.profile.locust then
 			self:TriggerEvent("BigWigs_Message", L["castwarn"], "Orange")
 			self:TriggerEvent("BigWigs_StartBar", self, L["castwarn"], 3, "Interface\\Icons\\Spell_Nature_InsectSwarm" )
@@ -101,12 +105,21 @@ function BigWigsAnubrekhan:BigWigs_RecvSync(sync)
 	elseif sync == "AnubLocustSwarm" then
 		self:CancelScheduledEvent("bwanublocustinc")
 		if self.db.profile.locust then
-			self:ScheduleEvent("BigWigs_Message", 20, L["gainendwarn"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["gainbar"], 20, "Interface\\Icons\\Spell_Nature_InsectSwarm")
+            self:WarningSign("Spell_Nature_InsectSwarm", 5)
+			self:ScheduleEvent("BigWigs_Message", locustSwarmDuration, L["gainendwarn"], "Important")
+			self:TriggerEvent("BigWigs_StartBar", self, L["gainbar"], locustSwarmDuration, "Interface\\Icons\\Spell_Nature_InsectSwarm")
 			self:TriggerEvent("BigWigs_Message", L["gainnextwarn"], "Urgent")
-			self:ScheduleEvent("BigWigs_Message", 50, L["gainwarn10sec"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["gainincbar"], 60, "Interface\\Icons\\Spell_Nature_InsectSwarm")
+			self:ScheduleEvent("BigWigs_Message", locustSwarmInterval - 10, L["gainwarn10sec"], "Important")
+			self:TriggerEvent("BigWigs_StartBar", self, L["gainincbar"], locustSwarmInterval, "Interface\\Icons\\Spell_Nature_InsectSwarm")
 		end
 	end
+end
+
+function BigWigsAnubrekhan:Test()
+    self:Sync("StartFight "..self:ToString())
+    self:SendEngageSync()
+    --self:LocustCast(L["casttrigger"])
+    --self:ScheduleEvent(self:ToString().."Test_Locust", self.LocustCast(L["casttrigger"]), 5, self)
+    self:DelayedSync(5, "AnubLocustInc")
 end
 
