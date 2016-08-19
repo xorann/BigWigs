@@ -188,6 +188,7 @@ function BigWigs.modulePrototype:OnInitialize()
 end
 
 function BigWigs:DebugMessage(msg, module)
+    if not msg then msg = "" end
     local prefix = "|cfB34DFFf[BigWigs Debug]|r - ";
     local core = BigWigs
     local debugFrame = DEFAULT_CHAT_FRAME
@@ -604,7 +605,7 @@ function BigWigs:AceEvent_FullyInitialized()
 		self:RegisterEvent("BigWigs_TargetSeen")
 		self:RegisterEvent("BigWigs_RebootModule")
 	
-		self:RegisterEvent("BigWigs_RecvSync", 10)
+		self:RegisterEvent("BigWigs_RecvSync")
 		--self:RegisterEvent("AceEvent_FullyInitialized", function() self:TriggerEvent("BigWigs_ThrottleSync", "BossEngaged", 5) end )
 
 	else
@@ -794,20 +795,21 @@ function BigWigs:RegisterModule(name, module)
 end
 
 
-function BigWigs:EnableModule(module, nosync)
+function BigWigs:EnableModule(module, nosync)    
 	local m = self:GetModule(module)
 	if m and m:IsBossModule() and not self:IsModuleActive(module) then
-		self:ToggleModuleActive(module, true)
+        self:ToggleModuleActive(module, true)
 		self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m:ToString() or "??"), "Core", true)
 		if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. (m.synctoken or BB:GetReverseTranslation(module))) end
+        
         m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
         m:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
         --m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","CheckForBosskill")
         m.bossSync = m:ToString()
 
         m:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
-		m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
-	end
+        m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
+    end
 end
 
 
@@ -823,11 +825,20 @@ function BigWigs:BigWigs_RebootModule(module)
     self:CancelAllScheduledEvents()
     
 	self:ToggleModuleActive(module, false)
+    self:ToggleModuleActive(module, true)
     BigWigs:EnableModule(name)
-	self:ToggleModuleActive(module, true)
+    
+    -- Register Events again
+    module:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+    module:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
+    --m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","CheckForBosskill")
+    module.bossSync = module:ToString()
+    module:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
+    module:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
     
     self.fightHasStarted = false
     
+    -- reset plugins
     self:TriggerEvent("BigWigs_RemoveRaidIcon")
     self:TriggerEvent("BigWigs_HideWarningSign", "", true)
     BigWigsBars:Disable(module)
@@ -837,8 +848,20 @@ end
 
 function BigWigs:BigWigs_RecvSync(sync, module, nick)
 	if sync == "EnableModule" and module then
-		local name = BB:HasTranslation(module) and BB[module] or module
-		if self:HasModule(name) and self:GetModule(name).zonename == GetRealZoneText() then self:EnableModule(name, true) end
+		local name = BB:HasTranslation(module) and BB[module] or module        
+        local isInZone = false
+        if type(self:GetModule(name).zonename) == "string" and self:GetModule(name).zonename == GetRealZoneText() then
+            isInZone = true
+        elseif type(self:GetModule(name).zonename) == "table" then
+            for _, v in pairs(self:GetModule(name).zonename) do
+                if v == GetRealZoneText() then
+                    isInZone = true
+                    break
+                end
+            end
+        end
+            
+		if self:HasModule(name) and isInZone then self:EnableModule(name, true) end
 	elseif sync == "EnableExternal" and module then
 		local name = BB:HasTranslation(module) and BB[module] or module
 		if self:HasModule(name) and self:GetModule(name).zonename == GetRealZoneText() then self:EnableModule(name, true) end

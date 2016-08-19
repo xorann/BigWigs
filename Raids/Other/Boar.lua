@@ -111,7 +111,7 @@ function BigWigsBoar:CheckForWipe(event)
 end
 
 function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
-    self:DebugMessage("sync: " .. sync)
+    self:DebugMessage("boar sync: " .. sync)
     
     if not self.started and sync == self:GetEngageSync() and rest and rest == boss then
         --self:KTM_SetTarget(boss)
