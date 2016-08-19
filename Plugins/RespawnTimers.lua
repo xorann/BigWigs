@@ -139,8 +139,8 @@ local emoteTable = {
 
 BigWigsRespawnTimers = BigWigs:NewModule(name)
 BigWigsRespawnTimers.defaultDB = {
-	bars = true,
-	messages = true,
+	bars = false,
+	messages = false,
 }
 
 BigWigsRespawnTimers.consoleCmd = L["respawntimers"]

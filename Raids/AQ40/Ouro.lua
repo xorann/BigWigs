@@ -132,7 +132,7 @@ BigWigsOuro.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigsOuro.enabletrigger = boss
 BigWigsOuro.bossSync = "Ouro"
 BigWigsOuro.toggleoptions = {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
-BigWigsOuro.revision = tonumber(string.sub("$Revision: 18120 $", 12, -3))
+BigWigsOuro.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
 
 ------------------------------
 --      Initialization      --

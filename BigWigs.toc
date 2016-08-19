@@ -79,6 +79,7 @@ Plugins\BossRecords.lua
 Plugins\RaidOfficer.lua
 Plugins\AutoReply.lua
 Plugins\Proximity.lua
+Plugins\DousedRunes.lua
 
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua

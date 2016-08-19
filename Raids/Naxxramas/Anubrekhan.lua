@@ -53,7 +53,7 @@ BigWigsAnubrekhan.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
 BigWigsAnubrekhan.enabletrigger = boss
 BigWigsAnubrekhan.bossSync = "AnubRekhan"
 BigWigsAnubrekhan.toggleoptions = {"locust", "enrage", "bosskill"}
-BigWigsAnubrekhan.revision = tonumber(string.sub("$Revision: 15496 $", 12, -3))
+BigWigsAnubrekhan.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
