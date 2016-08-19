@@ -398,8 +398,24 @@ function BigWigs.modulePrototype:CheckForWipe(module)
         end 
     end]]
     
-	local go = self:Scan()
-	if not go then
+    local function RaidMemberInCombat()
+        if UnitAffectingCombat("player") then
+            return true
+        end
+
+        local num = GetNumRaidMembers()
+        for i = 1, num do
+            local raidUnit = string.format("raid%s", i)
+            if UnitExists(raidUnit) and UnitAffectingCombat(raidUnit) then
+                return true
+            end
+        end
+        
+        return false
+    end
+    
+	local inCombat = RaidMemberInCombat()
+	if not inCombat then
         self:DebugMessage("Wipe detected. Rebooting module ["..self:ToString().."].")
         self:CancelScheduledEvent(self:ToString().."_CheckWipe")
 		self:TriggerEvent("BigWigs_RebootModule", self)
