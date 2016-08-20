@@ -78,6 +78,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Vaelastrasz the Corrupt"] = true,
 	["Lord Victor Nefarius"] = true,
 	
+    ["You have slain %s!"] = true,
 } end)
 
 
@@ -130,6 +131,8 @@ L:RegisterTranslations("deDE", function() return {
 	-- ["Silithus"] = true,
 	["Outdoor Raid Bosses"] = "Outdoor",
 	-- ["Outdoor Raid Bosses Zone"] = "Outdoor Raid Bosses", -- DO NOT EVER TRANSLATE untill I find a more elegant option
+            
+    ["You have slain %s!"] = "Ihr habt %s getötet!",
 } end)
 
 
@@ -279,7 +282,7 @@ function BigWigs.modulePrototype:SendEngageSync()
 end
 
 function BigWigs.modulePrototype:StartFight()
-    self:DebugMessage("StartFight()")
+    self:DebugMessage("StartFight() " .. self:ToString())
     
     if self:IsBossModule() and not BigWigs:IsModuleActive(self) then
         BigWigs:EnableModule(self:ToString())
@@ -319,36 +322,45 @@ end
 function BigWigs.modulePrototype:EndBossFight()
     if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(L["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
 
-    self:KTM_ClearTarget()
+    if BigWigs:IsModuleActive(self) then
+        self:KTM_ClearTarget()
 
-    BigWigsBossRecords:EndBossfight(self)
-    BigWigsAutoReply:EndBossfight()
+        BigWigsBossRecords:EndBossfight(self)
+        BigWigsAutoReply:EndBossfight()
 
-    self:TriggerEvent("BigWigs_RemoveRaidIcon")
-    self:TriggerEvent("BigWigs_HideWarningSign", "", true)
-    BigWigsBars:Disable(self)
-    BigWigsBars:BigWigs_HideCounterBars()
+        self:TriggerEvent("BigWigs_RemoveRaidIcon")
+        self:TriggerEvent("BigWigs_HideWarningSign", "", true)
+        BigWigsBars:Disable(self)
+        BigWigsBars:BigWigs_HideCounterBars()
 
-    self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
-    self.core:ToggleModuleActive(self, false)
+        self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
+        self.core:ToggleModuleActive(self, false)
+        
+        self:SendBosskillSync()
+    end
 end
 function BigWigs.modulePrototype:GenericBossDeath(msg)
-    for name, module in BigWigs:IterateModules() do
-        if module:IsBossModule() and BigWigs:IsModuleActive(module) then
-            if msg == string.format(UNITDIESOTHER, module:ToString()) then
-				self:SendBosskillSync()
-            end
-        end
+    if msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self:ToString()) then
+    --if string.find(msg, self:ToString()) then
+        self:EndBossFight()
     end
 end
 
 
 function BigWigs.modulePrototype:CheckForWipe(module)
-    if module then
+    
+    if self and type(self.IsBossModule) == "function" and self:IsBossModule() then
+        -- everything is fine, do nothing
+    elseif module and type(module.IsBossModule) == "function" and module:IsBossModule() then
         self = module
+    else
+        return
     end
-    self:DebugMessage("BigWigs." .. self.name .. ":CheckForWipe()")
+    
+    if not self or not self:IsBossModule() then return end
+    self:DebugMessage("BigWigs." .. self:ToString() .. ":CheckForWipe()")
 	
+    -- start wipe check in regular intervals
     local running = self:IsEventScheduled(self:ToString().."_CheckWipe")
     if not running then
 		self:ScheduleRepeatingEvent(self:ToString().."_CheckWipe", self.CheckForWipe, 5, self)
@@ -817,16 +829,18 @@ function BigWigs:BigWigs_RebootModule(module)
     local name = ""
     if type(module) == "string" then
         name = module
-    elseif module:ToString() then
-        name = module:ToString()
+        module = self:GetModule(module)
     end
-    self:DebugMessage("BigWigs_RebootModule: "..name)
+    
+    if not module:IsBossModule() then return end
+
+    self:DebugMessage("BigWigs_RebootModule: "..module:ToString())
     
     self:CancelAllScheduledEvents()
     
 	self:ToggleModuleActive(module, false)
     self:ToggleModuleActive(module, true)
-    BigWigs:EnableModule(name)
+    BigWigs:EnableModule(module:ToString())
     
     -- Register Events again
     module:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
@@ -870,10 +884,7 @@ function BigWigs:BigWigs_RecvSync(sync, module, nick)
 			self:Print(string.format(L["%s has requested forced reboot for the %s module."], nick, module))
 		end
 		self:TriggerEvent("BigWigs_RebootModule", module)
-    elseif sync == "StartFight" --[[and module]] then
-        self:DebugMessage("core startfight")
-        self:DebugMessage("module: "..module)
-        
+    elseif sync == "StartFight" --[[and module]] then        
         local m = self:GetModule(module)
         if m:IsBossModule() then
             m:StartFight() 

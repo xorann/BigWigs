@@ -61,13 +61,13 @@ BigWigsDousedRunes.defaultDB = {
     
     time = time(),
     runes = {
-        ["Geddon"] = false,
-        ["Gehennas"] = false,
         ["Magmadar"] = false,
+        ["Gehennas"] = false,
         ["Garr"] = false,
+        ["Geddon"] = false,
         ["Shazzrah"] = false,
-        ["Golemagg"] = false,
         ["Sulfuron"] = false,
+        ["Golemagg"] = false,
     },
 }
 
@@ -169,15 +169,15 @@ function BigWigsDousedRunes:CHAT_MSG_MONSTER_YELL(msg)
     
     if rune then
         self:Update(rune)
-    end
-    
-    if self.db.profile.showOnDouse then
-        self:Show()
+        
+        if self.db.profile.showOnDouse then
+            self:Show()
+        end
     end
 end
 
 function BigWigsDousedRunes:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    self:DebugMessage("BigWigsDousedRunes death: " .. msg)
+    --self:DebugMessage("BigWigsDousedRunes death: " .. msg)
     if self.db.profile.showOnBossKill then
         for key, value in pairs(self.db.profile.runes) do
             if string.find(msg, key) then
@@ -188,6 +188,7 @@ function BigWigsDousedRunes:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 end
 
 function BigWigsDousedRunes:Show()
+    self:DebugMessage("BigWigsDousedRunes:Show()")
     if not frame then
         self:SetupFrames()
     end

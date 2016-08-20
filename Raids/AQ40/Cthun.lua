@@ -235,7 +235,7 @@ function BigWigsCThun:OnEnable()
 	-- register events
     self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 
-    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath") -- override since we get out of combat between phases.
+    --self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath") -- override since we get out of combat between phases.
 
     
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
@@ -277,9 +277,11 @@ end
 --  Event Handlers  --
 ----------------------
 
-function BigWigsCThun:GenericBossDeath(event)
-   --DEFAULT_CHAT_FRAME:AddMessage("Debug: GenericBossDeath: " .. event) 
-end
+--[[function BigWigsCThun:GenericBossDeath(event)
+    if msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self:ToString()) then
+        self:EndBossFight()
+    end
+end]]
 function BigWigsCThun:CheckForWipe(event)
     if doCheckForWipe then
         BigWigs.modulePrototype:CheckForWipe(self)
