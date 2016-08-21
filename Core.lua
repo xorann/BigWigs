@@ -178,6 +178,7 @@ BigWigs.modulePrototype.core = BigWigs
 BigWigs.modulePrototype.debugFrame = ChatFrame1
 BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
 BigWigs.modulePrototype.fightHasStarted = false
+BigWigs.modulePrototype.started = false
 
 
 
@@ -319,30 +320,43 @@ function BigWigs.modulePrototype:CheckForEngage()
 	end
 end
 
-function BigWigs.modulePrototype:EndBossFight()
+function BigWigs.modulePrototype:Disable()
+    self:EndBossFight()
+    self.core:ToggleModuleActive(self, false)
+end
+function BigWigs.modulePrototype:Victory()
     if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(L["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
-
+    
+    BigWigsBossRecords:EndBossfight(self)
+    
+    self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
+    self:Disable()
+    --self.core:ToggleModuleActive(self, false)
+      
+    --self:SendBosskillSync()
+end
+function BigWigs.modulePrototype:EndBossFight()
     if BigWigs:IsModuleActive(self) then
+        self.fightHasStarted = false
+        self.started = false
+        
+        self:CancelAllScheduledEvents()
+        
         self:KTM_ClearTarget()
 
-        BigWigsBossRecords:EndBossfight(self)
         BigWigsAutoReply:EndBossfight()
 
         self:TriggerEvent("BigWigs_RemoveRaidIcon")
         self:TriggerEvent("BigWigs_HideWarningSign", "", true)
         BigWigsBars:Disable(self)
         BigWigsBars:BigWigs_HideCounterBars()
-
-        self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
-        self.core:ToggleModuleActive(self, false)
-        
-        self:SendBosskillSync()
     end
 end
 function BigWigs.modulePrototype:GenericBossDeath(msg)
     if msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self:ToString()) then
     --if string.find(msg, self:ToString()) then
-        self:EndBossFight()
+        --self:EndBossFight()
+        self:SendBosskillSync()
     end
 end
 
@@ -446,14 +460,19 @@ end]]
 --      Provided API      --
 ------------------------------
 
+local delayPrefix = "ScheduledEventPrefix"
+
 function BigWigs.modulePrototype:Bar(text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	self:TriggerEvent("BigWigs_StartBar", self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 end
-function BigWigs.modulePrototype:DelayedBar(text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	return self:ScheduleEvent("BigWigs_StartBar", delay, self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-end
 function BigWigs.modulePrototype:RemoveBar(text)
 	self:TriggerEvent("BigWigs_StopBar", self, text)
+end
+function BigWigs.modulePrototype:DelayedBar(delay, text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	return self:ScheduleEvent(delayPrefix .. "Bar" .. self:ToString() .. text, "BigWigs_StartBar", delay, self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+end
+function BigWigs.modulePrototype:CancelDelayedBar(text)
+    self:CancelScheduledEvent(delayPrefix .. "Bar" .. self:ToString() .. text)
 end
 
 function BigWigs.modulePrototype:Icon(name, iconnumber)
@@ -467,15 +486,23 @@ function BigWigs.modulePrototype:Message(text, priority, noRaidSay, sound, broad
 	self:TriggerEvent("BigWigs_Message", text, priority, noRaidSay, sound, broadcastOnly)
 end
 function BigWigs.modulePrototype:DelayedMessage(delay, text, priority, noRaidSay, sound, broadcastOnly)
-	return self:ScheduleEvent("BigWigs_Message", delay, text, priority, noRaidSay, sound, broadcastOnly)
+	return self:ScheduleEvent(delayPrefix .. "Message" .. self:ToString() .. text, "BigWigs_Message", delay, text, priority, noRaidSay, sound, broadcastOnly)
+end
+function BigWigs.modulePrototype:CancelDelayedMessage(text)
+    self:CancelScheduledEvent(delayPrefix .. "Message" .. self:ToString() .. text)
 end
 
 function BigWigs.modulePrototype:Sound(sound)
 	self:TriggerEvent("BigWigs_Sound", sound)
 	--BigWigsSound:BigWigs_Sound(sound)
 end
-function BigWigs.modulePrototype:DelayedSound(delay, sound)
-	return self:ScheduleEvent("BigWigs_Sound", delay, sound)
+function BigWigs.modulePrototype:DelayedSound(delay, sound, id)
+    if not id then id = "_" end
+	return self:ScheduleEvent(delayPrefix .. "Sound" .. self:ToString() .. sound .. id, "BigWigs_Sound", delay, sound)
+end
+function BigWigs.modulePrototype:CancelDelayedSound(sound, id)
+    if not id then id = "_" end
+    self:CancelScheduledEvent(delayPrefix .. "Sound" .. self:ToString() .. sound .. id)
 end
 
 function BigWigs.modulePrototype:Sync(sync)
@@ -483,6 +510,9 @@ function BigWigs.modulePrototype:Sync(sync)
 end
 function BigWigs.modulePrototype:DelayedSync(delay, sync)
 	self:ScheduleEvent("BigWigs_SendSync", delay, sync)
+end
+function BigWigs.modulePrototype:CancelDelayedSync(sync)
+    self:CancelScheduledEvent(delayPrefix .. "Sync" .. self:ToString() .. sync)
 end
 
 function BigWigs.modulePrototype:WarningSign(texturePath, duration, force)
@@ -814,14 +844,23 @@ function BigWigs:EnableModule(module, nosync)
 		self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m:ToString() or "??"), "Core", true)
 		if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. (m.synctoken or BB:GetReverseTranslation(module))) end
         
-        m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+        --[[m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
         m:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
         --m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","CheckForBosskill")
         m.bossSync = m:ToString()
 
         m:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
-        m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
+        m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition]]
+        self.fightHasStarted = false
     end
+    
+    m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+    m:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
+    --m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","CheckForBosskill")
+    m.bossSync = m:ToString()
+
+    m:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
+    m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
 end
 
 
@@ -835,28 +874,28 @@ function BigWigs:BigWigs_RebootModule(module)
     if not module:IsBossModule() then return end
 
     self:DebugMessage("BigWigs_RebootModule: "..module:ToString())
+    module:Disable()
+    --self:CancelAllScheduledEvents()
     
-    self:CancelAllScheduledEvents()
-    
-	self:ToggleModuleActive(module, false)
-    self:ToggleModuleActive(module, true)
+	--self:ToggleModuleActive(module, false)
+    self:ToggleModuleActive(module, true) -- prevent enable module message
     BigWigs:EnableModule(module:ToString())
     
     -- Register Events again
-    module:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
-    module:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
+    --module:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
+    --module:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH",  "CheckForWipe")
     --m:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","CheckForBosskill")
-    module.bossSync = module:ToString()
-    module:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
-    module:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
+    --module.bossSync = module:ToString()
+    --module:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
+    --module:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH","GenericBossDeath") -- addition
     
-    self.fightHasStarted = false
+    --self.fightHasStarted = false
     
     -- reset plugins
-    self:TriggerEvent("BigWigs_RemoveRaidIcon")
-    self:TriggerEvent("BigWigs_HideWarningSign", "", true)
-    BigWigsBars:Disable(module)
-    BigWigsBars:BigWigs_HideCounterBars()
+    --self:TriggerEvent("BigWigs_RemoveRaidIcon")
+    --self:TriggerEvent("BigWigs_HideWarningSign", "", true)
+    --BigWigsBars:Disable(module)
+    --BigWigsBars:BigWigs_HideCounterBars()
 end
 
 
@@ -896,7 +935,8 @@ function BigWigs:BigWigs_RecvSync(sync, module, nick)
                 -- thekal is an exception
                 self:ScheduleEvent("ThekalPhase2", BigWigsThekal.PhaseSwitch, 1)
             end]]
-            m:EndBossFight()
+            --m:EndBossFight()
+            m:Victory()
         end
 	end
 end

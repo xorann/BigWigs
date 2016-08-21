@@ -6,6 +6,15 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
 local berserkannounced
 
+local timers = {
+	nextSubmerge = 90,
+	sweep = 1.5,
+	sweepInterval = 20,
+	sandblast = 2,
+	sandblastInterval = 22,
+	nextEmerge = 30,
+}
+
 ----------------------------
 --      Localization      --
 ----------------------------
@@ -139,6 +148,7 @@ BigWigsOuro.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
 ------------------------------
 
 function BigWigsOuro:OnEnable()
+    self:DebugMessage("ouro OnEnable")
 	berserkannounced = nil
 	self.started = nil
     self.phase = nil
@@ -179,7 +189,8 @@ end
 
 function BigWigsOuro:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:StartFight()
+		self:DebugMessage("engage")
+        self:StartFight()
         
         self.phase = "emerged"
 		self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
@@ -204,8 +215,8 @@ end
 
 function BigWigsOuro:PossibleSubmerge()
 	if self.db.profile.emerge then
-		self:ScheduleEvent("bwouroemergewarn", "BigWigs_Message", 75, L["emergewarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["possible_submerge_bar"], 90, "Interface\\Icons\\Spell_Nature_Earthquake")
+		self:ScheduleEvent("bwouroemergewarn", "BigWigs_Message", timers.nextSubmerge -15, L["emergewarn"], "Important")
+		self:TriggerEvent("BigWigs_StartBar", self, L["possible_submerge_bar"], timers.nextSubmerge, "Interface\\Icons\\Spell_Nature_Earthquake")
 		--self:ScheduleEvent("bwouroemergewarn2", "BigWigs_Message", 165, L["emergewarn2"], "Important")
 		--self:TriggerEvent("BigWigs_StartBar", self, L["emergebartext"], 180, "Interface\\Icons\\Spell_Nature_Earthquake")
 	end
@@ -219,28 +230,28 @@ function BigWigsOuro:Berserk()
 	self:UnregisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 
 	if self.db.profile.berserk then
-		self:TriggerEvent("BigWigs_Message", L["berserkannounce"], "Important")
+		self:TriggerEvent("BigWigs_Message", L["berserkannounce"], "Important", true, "Beware")
 	end
 end
 
 function BigWigsOuro:Sweep()
 	if self.db.profile.sweep then
-        self:Bar(L["sweepannounce"], 1.5, "Spell_Nature_Thorns")
+        self:Bar(L["sweepannounce"], timers.sweep, "Spell_Nature_Thorns")
 		self:Message(L["sweepannounce"], "Important", true, "Alarm")
         --self:TriggerEvent("BigWigs_Message", L["sweepannounce"], "Important")
 		--self:DelayedMessage(15, L["sweepwarn"], "Important")
-        self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", 16, L["sweepwarn"], "Important")
-		self:Bar(L["sweepbartext"], 20, "Spell_Nature_Thorns")
+        self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", timers.sweepInterval - 5, L["sweepwarn"], "Important")
+		self:Bar(L["sweepbartext"], timers.sweepInterval, "Spell_Nature_Thorns")
         --self:TriggerEvent("BigWigs_StartBar", self, L["sweepbartext"], 21, "Interface\\Icons\\Spell_Nature_Thorns")
 	end
 end
 
 function BigWigsOuro:Sandblast()
 	if self.db.profile.sandblast then
-        self:Bar(L["sandblastannounce"], 2, "Spell_Nature_Cyclone")
+        self:Bar(L["sandblastannounce"], timers.sandblast, "Spell_Nature_Cyclone")
 		self:TriggerEvent("BigWigs_Message", L["sandblastannounce"], "Important", true, "Alert")
-		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", 17, L["sandblastwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], 22, "Interface\\Icons\\Spell_Nature_Cyclone")
+		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", timers.sandblastInterval - 5, L["sandblastwarn"], "Important")
+		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], timers.sandblastInterval, "Interface\\Icons\\Spell_Nature_Cyclone")
 	end
 end
 
@@ -256,13 +267,13 @@ function BigWigsOuro:Emerge()
 	end
 
 	if self.db.profile.sweep then
-		self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", 15, L["sweepwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sweepbartext"], 20, "Interface\\Icons\\Spell_Nature_Thorns")
+		self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", timers.sweepInterval - 5, L["sweepwarn"], "Important")
+		self:TriggerEvent("BigWigs_StartBar", self, L["sweepbartext"], timers.sweepInterval, "Interface\\Icons\\Spell_Nature_Thorns")
 	end	
 
 	if self.db.profile.sandblast then
-		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", 17, L["sandblastwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], 22, "Interface\\Icons\\Spell_Nature_Cyclone")
+		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", timers.sandblastInterval - 5, L["sandblastwarn"], "Important")
+		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], timers.sandblastInterval, "Interface\\Icons\\Spell_Nature_Cyclone")
 	end
 
 	--[[if self.db.profile.scarab then
@@ -286,8 +297,8 @@ function BigWigsOuro:Submerge()
     
 	if self.db.profile.submerge then
 		self:TriggerEvent("BigWigs_Message", L["submergeannounce"], "Important")
-		self:ScheduleEvent("bwsubmergewarn", "BigWigs_Message", 25, L["submergewarn"], "Important" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["submergebartext"], 30, "Interface\\Icons\\Spell_Nature_Earthquake")
+		self:ScheduleEvent("bwsubmergewarn", "BigWigs_Message", timers.nextEmerge - 5, L["submergewarn"], "Important" )
+		self:TriggerEvent("BigWigs_StartBar", self, L["submergebartext"], timers.nextEmerge, "Interface\\Icons\\Spell_Nature_Earthquake")
 	end
 end
 
@@ -371,6 +382,17 @@ function BigWigsOuro:Test()
             BigWigsOuro:EmergeCheck(L["emergetrigger"])
         end
     end
+    local function deactivate()
+        self:DebugMessage("deactivate")
+        self:Disable()
+        --[[self:DebugMessage("deactivate ")
+        if self.phase then
+            self:DebugMessage("deactivate module "..self:ToString())
+            --BigWigs:ToggleModuleActive(self, false) 
+            self.core:ToggleModuleActive(self, false)
+            self.phase = nil
+        end]]
+    end
     
     BigWigs:Print("BigWigsOuro Test started")
     BigWigs:Print("Do not change your target!")
@@ -381,9 +403,11 @@ function BigWigsOuro:Test()
     
     TargetUnit("player")
     
-    -- engage
+    -- immitate CheckForEngage
     self:Sync("StartFight "..self:ToString())
     self:SendEngageSync()
+    
+    -- encounter specific settings
     self.submergeCheckName = UnitName("player")
     
     
@@ -398,4 +422,8 @@ function BigWigsOuro:Test()
     
     -- emerge after 42s
     self:ScheduleEvent(self:ToString().."Test_emerge", emerge, 42, self)
+    
+    -- reset after 60s
+    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 4, self)
+    
 end

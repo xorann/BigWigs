@@ -186,3 +186,51 @@ function BigWigsBoar:UNIT_HEALTH(arg1)
 		--self:DebugMessage("health: " .. health)
 	end
 end
+
+
+----------------------------------
+--      Module Test Function    --
+----------------------------------
+
+function BigWigsBoar:Test()
+    --[[local function sweep()
+        if self.phase == "emerged" then
+            BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sweeptrigger"])
+        end
+    end
+    local function sandblast()
+        if self.phase == "emerged" then
+            BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sandblasttrigger"])
+        end
+    end
+    local function submerge()
+        if self.phase == "emerged" then
+            ClearTarget()
+        end
+    end
+    local function emerge()
+        if self.phase == "submerged" then
+            TargetUnit("player")
+            BigWigsOuro:EmergeCheck(L["emergetrigger"])
+        end
+    end]]
+    local function deactivate()
+        self:Disable()
+    end
+    
+    BigWigs:Print("BigWigsBoar Test started")
+    BigWigs:Print("  Sweep Test after 5s")
+    BigWigs:Print("  Sand Storm Test after 10s")
+    BigWigs:Print("  Submerge Test after 32s")
+    BigWigs:Print("  Emerge Test after 42s")
+        
+    -- immitate CheckForEngage
+    self:Sync("StartFight "..self:ToString())
+    self:SendEngageSync()    
+    
+    -- sweep after 5s
+    local s = self:DelayedBar(2, "test", 7, "Spell_Frost_FrostShock")
+    local s = self:DelayedBar(2, "test2", 7, "Spell_Frost_FrostShock")
+    --self:DebugMessage("s: "..s.id.id)
+    self:CancelDelayedBar("test")
+end
