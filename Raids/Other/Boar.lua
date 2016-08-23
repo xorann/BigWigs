@@ -80,7 +80,7 @@ BigWigsBoar.proximitySilent = true
 ------------------------------
 
 function BigWigsBoar:OnEnable()
-    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
+    --self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
     
 	--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
@@ -107,7 +107,7 @@ end
 
 function BigWigsBoar:CheckForWipe(event)
     self:DebugMessage("BigWigsBoar:CheckForWipe()")
-    BigWigs.modulePrototype:CheckForWipe(self)
+    BigWigs:CheckForWipe(self)
 end
 
 function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )

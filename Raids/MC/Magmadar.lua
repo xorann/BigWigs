@@ -75,7 +75,7 @@ BigWigsMagmadar.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 ------------------------------
 
 function BigWigsMagmadar:OnEnable()
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
 	firstpanic = 0
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")

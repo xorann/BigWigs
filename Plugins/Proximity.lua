@@ -204,9 +204,9 @@ end
 -----------------------------------------------------------------------
 
 function BigWigsProximity:BigWigs_ShowProximity(module)
-	if active then
+	--[[if active then
         error("The proximity module is already running for another boss module.")
-    end
+    end]]
     
     self:OpenProximity(module)
 end

@@ -270,7 +270,7 @@ function BigWigsOptions:OnClick()
 		else
 			for name, module in deuce.core:IterateModules() do
 				if module:IsBossModule() and deuce.core:IsModuleActive(module) then
-					deuce.core:BigWigs_RebootModule(module)
+					deuce.core:BigWigs_RebootModule(name)
 				end
 			end
 			self:Print(L["All running modules have been reset."])
