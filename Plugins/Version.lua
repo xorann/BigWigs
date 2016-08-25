@@ -10,6 +10,8 @@ local COLOR_GREEN = "00ff00"
 local COLOR_RED = "ff0000"
 local COLOR_WHITE = "ffffff"
 
+local isInitialQuery = true
+
 ---------------------------------
 --      Localization           --
 ---------------------------------
@@ -40,27 +42,11 @@ L:RegisterTranslations("enUS", function() return {
 	["Runs a version query on the BigWigs core."] = true,
 	["Nr Replies"] = true,
 	["Ancient"] = true,
-} end )
-
-L:RegisterTranslations("koKR", function() return {
-	["Version Query"] = "버전 요청",
-	["Commands for querying the raid for Big Wigs versions."] = "BigQigs 버전에 대한 공격대 요청 명령.",
-	["Query already running, please wait 5 seconds before trying again."] = "이미 요청 중, 5초후 다시 시도하세요.",
-	["Querying versions for "] = "버전 요청 중 : ",
-	["Big Wigs Version Query"] = "BigWigs 버전 요청",
-	["Close window"] = "창 닫기", -- I know, it's really a Tablet.
-	["Showing version for "] = "버전 표시 중 ",
-	["Green versions are newer than yours, red are older, and white are the same."] = "녹색 : 최신, 붉은색 : 이전, 흰색 : 같음(자신 기준)",
-	["Player"] = "플레이어",
-	["Version"] = "버전",
-	["Current zone"] = "현재 지역",
-	["<zone>"] = "<지역>",
-	["Version query done."] = "버전 요청 완료.",
-	["Runs a version query on your current zone."] = "현재 지역에 동작 모듈 버전 요청",
-	["Closes the version query window."] = "버전 확인 창 닫기.",
-	["Runs a version query on the given zone."] = "정해진 지역에 동작 모듈 버전 요청.",
-	["Zone"] = "지역",
-	["N/A"] = "N/A",
+            
+    ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = true,
+    ["Close"] = true,
+    ["Cancel"] = true,
+            
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -89,88 +75,12 @@ L:RegisterTranslations("deDE", function() return {
 	["Runs a version query on the BigWigs core."] = "Versionsabfrage f\195\188r die BigWigs Kernkomponente starten.",
 	["Nr Replies"] = "Anzahl der Antworten",
 	["Ancient"] = "Alt",
+            
+    ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = "Deine Version von Big Wigs Classic-WoW ist veraltet! Bitte downloade die neuste Version von https://github.com/xorann/BigWigs/releases.",
+    ["Close"] = "Schliessen",
+    ["Cancel"] = "Abbrechen",
 } end )
 
-L:RegisterTranslations("zhCN", function() return {
-	["versionquery"] = "检查版本",
-	["Version Query"] = "检查版本",
-	["Commands for querying the raid for Big Wigs versions."] = "这个命令检查Big Wigs的版本",
-	["Query already running, please wait 5 seconds before trying again."] = "检查中，请等5秒后再尝试",
-	["Querying versions for "] = "检查版本 ",
-	["Big Wigs Version Query"] = "Big Wigs版本检查",
-	["Close window"] = "关闭窗口", -- I know, it's really a Tablet.
-	["Showing version for "] = "显示版本 ",
-	["Green versions are newer than yours, red are older, and white are the same."] = "绿色的版本比你的新，红色的比你的旧，白色的是相同",
-	["Player"] = "玩家",
-	["Version"] = "版本",
-	["Current zone"] = "目前区域",
-	["<zone>"] = "<区域>",
-	["Version query done."] = "完成检查版本",
-	["Runs a version query on your current zone."] = "检查当前区域的版本",
-	["Closes the version query window."] = "关掉目前的检查版本窗口",
-	["current"] = "目前",
-	["Runs a version query on the given zone."] = "检查指定区域的版本",
-	["Zone"] = "区域",
-	["zone"] = "区域",
-	["N/A"] = "N/A",
-	["BigWigs"] = "BigWigs",
-	["Runs a version query on the BigWigs core."] = "检查BigWigs内核的版本",
-	["Nr Replies"] = "回复的数量",
-	["Ancient"] = "旧的",
-} end )
-
-L:RegisterTranslations("zhTW", function() return {
-	["versionquery"] = "檢查版本",
-	["Version Query"] = "檢查版本",
-	["Commands for querying the raid for Big Wigs versions."] = "用於檢查BigWigs的版本",
-	["Query already running, please wait 5 seconds before trying again."] = "檢查中，若要再次檢查，請稍後5秒",
-	["Querying versions for "] = "檢查版本 ",
-	["Big Wigs Version Query"] = "Big Wigs版本檢查",
-	["Close window"] = "關閉窗口", -- I know, it's really a Tablet.
-	["Showing version for "] = "顯示版本 ",
-	["Green versions are newer than yours, red are older, and white are the same."] = "綠色的版本比你的新，紅色的比較舊，白色則表示版本相同",
-	["Player"] = "玩家",
-	["Version"] = "版本",
-	["Current zone"] = "目前區域",
-	["<zone>"] = "<區域>",
-	["Version query done."] = "完成檢查版本",
-	["Runs a version query on your current zone."] = "檢查目前區域的版本",
-	["Closes the version query window."] = "關掉目前的檢查版本視窗",
-	["current"] = "目前",
-	["Runs a version query on the given zone."] = "檢查指定區域的版本",
-	["Zone"] = "區域",
-	["zone"] = "區域",
-	["N/A"] = "N/A",
-	["BigWigs"] = "BigWigs",
-	["Runs a version query on the BigWigs core."] = "檢查BigWigs核心的版本",
-	["Nr Replies"] = "回復的數量",
-	["Ancient"] = "舊的",
-} end )
-
-L:RegisterTranslations("frFR", function() return {
-	["Version Query"] = "Vérification des versions",
-	["Commands for querying the raid for Big Wigs versions."] = "Commandes de vérification des version de BigWigs du raid.",	
-	["Query already running, please wait 5 seconds before trying again."] = "Une vérification est déjà en cours, veuillez réessayer dans 5 secondes.",
-	["Querying versions for "] = "Vérification des versions pour ",
-	["Big Wigs Version Query"] = "Vérification des versions de BigWigs",
-	["Close window"] = "Fermer la fenêtre", -- I know, it's really a Tablet.
-	["Showing version for "] = "Affichage des versions pour ",
-	["Green versions are newer than yours, red are older, and white are the same."] = "Les versions en verte sont plus récentes que vous, celles en rouge plus anciennes, et celles en blanc les mêmes que vous.",
-	["Player"] = "Joueur",
-	--["Version"] = "Version",
-	["Current zone"] = "Zone actuelle",
-	--["<zone>"] = "<zone>",
-	["Version query done."] = "Vérification des versions terminée.",
-	["Runs a version query on your current zone."] = "Effectue une vérification des versions dans votre zone.",
-	["Closes the version query window."] = "Ferme la fenêtre de vérification des versions.",
-	["Runs a version query on the given zone."] = "Effectue une vérification des versions dans la zone donnée.",
-	--["Zone"] = "Zone",
-	--["N/A"] = "N/A",
-	--["BigWigs"] = "BigWigs",
-	["Runs a version query on the BigWigs core."] = "Effectue une vérification des versions du noyau de BigWigs.",
-	["Nr Replies"] = "Nbre de réponses",
-	["Ancient"] = "Ancien",	
-} end )
 
 ---------------------------------
 --      Addon Declaration      --
@@ -211,17 +121,25 @@ BigWigsVersionQuery.consoleOptions = {
 --      Initialization      --
 ------------------------------
 
+function BigWigsVersionQuery:Test()
+    BigWigsVersionQuery:QueryVersion("BigWigs")
+end
+
 function BigWigsVersionQuery:OnEnable()
 	self.queryRunning = nil
 	self.responseTable = {}
 	self.zoneRevisions = nil
 	self.currentZone = ""
+	self.OutOfDateShown = false
 
 	BWL = AceLibrary("AceLocale-2.2"):new("BigWigs")
 
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "BWVQ", 0)
 	self:TriggerEvent("BigWigs_ThrottleSync", "BWVR", 0)
+	
+	--BigWigsVersionQuery:QueryVersion("BigWigs")
+    self:ScheduleEvent("versionquerytest", BigWigsVersionQuery.Test, 1, self)
 end
 
 function BigWigsVersionQuery:PopulateRevisions()
@@ -247,8 +165,8 @@ end
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsVersionQuery:UpdateVersions()
-	if not tablet:IsRegistered("BigWigs_VersionQuery") then
+function BigWigsVersionQuery:UpdateTablet()
+    if not tablet:IsRegistered("BigWigs_VersionQuery") then
 		tablet:Register("BigWigs_VersionQuery",
 			"children", function() tablet:SetTitle(L["Big Wigs Version Query"])
 				self:OnTooltipUpdate() end,
@@ -281,6 +199,57 @@ function BigWigsVersionQuery:UpdateVersions()
 		tablet:Refresh("BigWigs_VersionQuery")
 	end
 end
+function BigWigsVersionQuery:UpdateVersions()
+    for name, version in pairs(self.responseTable) do
+        if not self.zoneRevisions then return end
+        if self.zoneRevisions[self.currentZone] and version > self.zoneRevisions[self.currentZone] then
+            self:IsOutOfDate()
+        end
+	end
+    
+	if not isInitialQuery then
+        self:UpdateTablet()
+    end
+end
+
+function BigWigsVersionQuery:IsOutOfDate()
+	if not self.OutOfDateShown then
+		self.OutOfDateShown = true
+		BigWigs:Print(L["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."])
+        
+        local dialog = nil
+        StaticPopupDialogs["BigWigsOutOfDateDialog"] = {
+            text = L["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."],
+            button1 = L["Close"],
+            button2 = L["Cancel"],
+            OnAccept = function()
+                StaticPopup_Hide ("BigWigsOutOfDateDialog")
+            end,
+            OnCancel = function()
+                StaticPopup_Hide ("BigWigsOutOfDateDialog")
+            end,
+            OnShow = function (self, data)
+                local editbox = getglobal(this:GetName().."WideEditBox")
+                editbox:SetText("https://github.com/xorann/BigWigs/releases")
+                editbox:SetWidth(250)
+                editbox:ClearFocus()
+                editbox:HighlightText() 
+                --self.editBox:SetText("Some text goes here")
+                getglobal(this:GetName().."Button2"):Hide()
+            end,
+            hasEditBox = true,
+            hasWideEditBox = true,
+            maxLetters = 42,
+            --EditBox:setText("Text"),
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+            preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+        }
+        local dialog = StaticPopup_Show ("BigWigsOutOfDateDialog")
+        
+	end
+end
 
 function BigWigsVersionQuery:OnTooltipUpdate()
 	local zoneCat = tablet:AddCategory(
@@ -310,6 +279,7 @@ function BigWigsVersionQuery:OnTooltipUpdate()
 			local color = COLOR_WHITE
 			if self.zoneRevisions[self.currentZone] and version > self.zoneRevisions[self.currentZone] then
 				color = COLOR_GREEN
+				self:IsOutOfDate()
 			elseif self.zoneRevisions[self.currentZone] and version < self.zoneRevisions[self.currentZone] then
 				color = COLOR_RED
 			end
@@ -320,6 +290,10 @@ function BigWigsVersionQuery:OnTooltipUpdate()
 	tablet:SetHint(L["Green versions are newer than yours, red are older, and white are the same."])
 end
 
+function BigWigsVersionQuery:QueryVersionAndShowWindow(zone)
+    self:QueryVersion(zone)
+	self:UpdateVersions()
+end
 function BigWigsVersionQuery:QueryVersion(zone)
 	if self.queryRunning then
 		self.core:Print(L["Query already running, please wait 5 seconds before trying again."])
@@ -338,14 +312,16 @@ function BigWigsVersionQuery:QueryVersion(zone)
 			zone = BZ:GetTranslation(zone)
 		end
 	end
-
+    
 	if not zone then
 		error("The given zone is invalid.")
 		return
 	end
 
 	-- ZZZ |zone| should be translated here.
-	self.core:Print(L["Querying versions for "].."|cff"..COLOR_GREEN..zone.."|r.")
+	if not isInitialQuery then
+        self.core:Print(L["Querying versions for "].."|cff"..COLOR_GREEN..zone.."|r.")
+    end
 
 	-- If this is a non-enUS zone, convert it to enUS.
 	if BZ:HasReverseTranslation(zone) then zone = BZ:GetReverseTranslation(zone) end
@@ -354,9 +330,12 @@ function BigWigsVersionQuery:QueryVersion(zone)
 
 	self.queryRunning = true
 	self:ScheduleEvent(	function()
-							self.queryRunning = nil
-							self.core:Print(L["Version query done."])
-						end, 5)
+            self.queryRunning = nil
+            if not isInitialQuery then
+                self.core:Print(L["Version query done."])
+            end
+            isInitialQuery = false
+        end, 5)
 
 	self.responseTable = {}
 
@@ -367,7 +346,6 @@ function BigWigsVersionQuery:QueryVersion(zone)
 		self.responseTable[UnitName("player")] = self.zoneRevisions[zone]
 	end
 	self.responses = 1
-	self:UpdateVersions()
 	self:TriggerEvent("BigWigs_SendSync", "BWVQ "..zone)
 end
 
@@ -412,7 +390,9 @@ end
 
 function BigWigsVersionQuery:BigWigs_RecvSync(sync, rest, nick)
 	if sync == "BWVQ" and nick ~= UnitName("player") and rest then
-		if not self.zoneRevisions then self:PopulateRevisions() end
+		if not self.zoneRevisions then 
+            self:PopulateRevisions() 
+        end
 		if not self.zoneRevisions[rest] then
 			self:TriggerEvent("BigWigs_SendSync", "BWVR -1 "..nick)
 		else
