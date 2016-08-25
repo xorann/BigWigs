@@ -248,13 +248,14 @@ end
 BigWigs.modulePrototype.core = BigWigs
 BigWigs.modulePrototype.debugFrame = ChatFrame1
 BigWigs.modulePrototype.engaged = false
+BigWigs.modulePrototype.bossSync = nil -- "Ouro"
 
 -- override
 BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
 BigWigs.modulePrototype.started = false
 BigWigs.modulePrototype.zonename = nil -- AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigs.modulePrototype.enabletrigger = nil -- boss
-BigWigs.modulePrototype.bossSync = nil -- "Ouro"
+BigWigs.modulePrototype.wipemobs = nil -- adds that will be considered in CheckForEngage
 BigWigs.modulePrototype.toggleoptions = nil -- {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
 BigWigs.modulePrototype.proximityCheck = nil -- function(unit) return CheckInteractDistance(unit, 2) end
 BigWigs.modulePrototype.proximitySilent = nil -- false
@@ -493,6 +494,11 @@ end
 function BigWigs.modulePrototype:BigWigs_RecvSync(sync, rest, nick)
 end
 
+-- test function
+function BigWigs.modulePrototype:Test()
+	BigWigs:Print("No tests defined for module " .. self:ToString())
+end
+
 ------------------------------
 --      Provided API      --
 ------------------------------
@@ -507,6 +513,9 @@ function BigWigs.modulePrototype:DelayedSync(delay, sync)
 end
 function BigWigs.modulePrototype:CancelDelayedSync(sync)
     self:CancelScheduledEvent(delayPrefix .. "Sync" .. self:ToString() .. sync)
+end
+function BigWigs.modulePrototype:ThrottleSync(throttle, sync)
+    self:TriggerEvent("BigWigs_ThrottleSync", sync, throttle)
 end
 
 function BigWigs.modulePrototype:Message(text, priority, noRaidSay, sound, broadcastOnly)
@@ -846,7 +855,8 @@ end
 function BigWigs:SetupModule(moduleName)
 	local m = self:GetModule(moduleName)
 	if m and m:IsBossModule() then
-		m.bossSync = m:ToString()
+		--m.bossSync = m:ToString()
+		m.bossSync = BB:GetReverseTranslation(moduleName) -- untranslated string
 		
 		m:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
 		m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")

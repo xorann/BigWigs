@@ -1,9 +1,48 @@
+
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Elder Mottled Boar"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
+--BigWigsBoar = module
+module.zonename = { 
+    AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"], 
+    AceLibrary("Babble-Zone-2.2")["Durotar"]
+}
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
+
+-- Proximity Plugin
+module.proximityCheck = function(unit) return CheckInteractDistance(unit, 3) end
+module.proximitySilent = true
+
 ------------------------------
---      Are you local?      --
+--      Locals 			    --
 ------------------------------
 
-local boss =  AceLibrary("Babble-Boss-2.2")["Elder Mottled Boar"]
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+
+local timer = {
+	charge = 10,
+	teleport = 30,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	teleport = "TwinsTeleport",
+}
+
 
 ----------------------------
 --      Localization      --
@@ -59,105 +98,77 @@ L:RegisterTranslations("deDE", function() return {
 } end )
 
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsBoar = BigWigs:NewModule(boss)
-BigWigsBoar.zonename = { 
-    AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"], 
-    AceLibrary("Babble-Zone-2.2")["Durotar"]
-}
-BigWigsBoar.enabletrigger = boss
-BigWigsBoar.bossSync = "Boar"
-BigWigsBoar.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
-BigWigsBoar.revision = tonumber(string.sub("$Revision: 13476 $", 12, -3))
-BigWigsBoar.proximityCheck = function(unit) return CheckInteractDistance(unit, 3) end
-BigWigsBoar.proximitySilent = true
-
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsBoar:OnEnable()
-    --self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
-    
-	--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	--self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
-    --self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-    
+
     self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
     
     self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "UmlautCheck")
-    
-    self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
-    
+
     self:RegisterEvent("UNIT_HEALTH")
     
-    --self:RegisterEvent("BigWigs_RecvSync")
-    self:RegisterEvent("BigWigs_RecvSync")
-    
-    --self:TriggerEvent("BigWigs_ThrottleSync", "TwinsTeleport", 28)
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe") -- we want to override this function
+	
+	--self:ThrottleSync(28, syncName.teleport)
 end
 
-function BigWigsBoar:CheckForWipe(event)
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.engage then
+		self:Message(L["engage_msg"], "Attention")
+	end
+
+	self:Sync("TwinsTeleport")
+		
+	BigWigsProximity:BigWigs_ShowProximity(self)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Event Handlers	    --
+------------------------------
+
+function module:CheckForWipe(event)
     self:DebugMessage("BigWigsBoar:CheckForWipe()")
     BigWigs:CheckForWipe(self)
 end
 
-function BigWigsBoar:BigWigs_RecvSync( sync, rest, nick )
-    self:DebugMessage("boar sync: " .. sync)
-    
-    if not self.started and sync == self:GetEngageSync() and rest and rest == boss then
-        --self:KTM_SetTarget(boss)
-        
-		--if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		if self.db.profile.engage then
-			self:TriggerEvent("BigWigs_Message", L["engage_msg"], "Attention")
-		end
-
-        self:TriggerEvent("BigWigs_SendSync", "TwinsTeleport")
-            
-        BigWigsProximity:BigWigs_ShowProximity(self)
-    elseif sync == "TwinsTeleport" then
-        self:TriggerEvent("BigWigs_StartBar", self, L["teleport_msg"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
-
-        self:DelayedSound(20, "Ten")
-        self:DelayedSound(27, "Three")
-        self:DelayedSound(28, "Two")
-        self:DelayedSound(29, "One")
-        self:CancelScheduledEvent("TwinsTeleport")
-        self:ScheduleEvent("BigWigs_SendSync", 30, "TwinsTeleport")
-
-        self:KTM_Reset()
-    end
-end
-
-function BigWigsBoar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
     if self.db.profile.charge and string.find(arg1, L["charge_trigger"]) then        
         -- countdown
         self:Sound("Ten");
-        self:DelayedSound(1, "Nine")
-        self:DelayedSound(2, "Eight")
-        self:DelayedSound(3, "Seven")
-        self:DelayedSound(4, "Six")
-        self:DelayedSound(5, "Five")
-        self:DelayedSound(6, "Four")
-        self:DelayedSound(7, "Three")
-        self:DelayedSound(8, "Two")
-        self:DelayedSound(9, "One")
-        self:DelayedSound(10, "Beware")
-        self:TriggerEvent("BigWigs_StartBar", self, L["charge_bar"], 10, "Interface\\Icons\\Spell_Frost_FrostShock")
+        self:DelayedSound(timer.charge - 9, "Nine")
+        self:DelayedSound(timer.charge - 8, "Eight")
+        self:DelayedSound(timer.charge - 7, "Seven")
+        self:DelayedSound(timer.charge - 6, "Six")
+        self:DelayedSound(timer.charge - 5, "Five")
+        self:DelayedSound(timer.charge - 4, "Four")
+        self:DelayedSound(timer.charge - 3, "Three")
+        self:DelayedSound(timer.charge - 2, "Two")
+        self:DelayedSound(timer.charge - 1, "One")
+        self:DelayedSound(timer.charge, "Beware")
+		self:Bar(L["charge_bar"], timer.charge, icon.charge)
     end
 end
 
-function BigWigsBoar:PlayerDamageEvents(msg)
-    --DEFAULT_CHAT_FRAME:AddMessage("player damage :" .. msg)
+function module:PlayerDamageEvents(msg)
     if not string.find(msg, "Eye of C'Thun") then
         local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
         if stype and dmg and school then
@@ -172,7 +183,7 @@ function BigWigsBoar:PlayerDamageEvents(msg)
     end
 end
 
-function BigWigsBoar:UmlautCheck(msg) 
+function module:UmlautCheck(msg) 
     if string.find(msg, L["umlaut_test"]) then
         --self:DebugMessage("umlaut test succesful")    
     else
@@ -180,7 +191,7 @@ function BigWigsBoar:UmlautCheck(msg)
     end
 end
 
-function BigWigsBoar:UNIT_HEALTH(arg1)
+function module:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		--self:DebugMessage("health: " .. health)
@@ -188,11 +199,42 @@ function BigWigsBoar:UNIT_HEALTH(arg1)
 end
 
 
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync( sync, rest, nick )
+    self:DebugMessage("boar sync: " .. sync)
+    
+    if sync == syncName.teleport then
+		self:Teleport()
+    end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Teleport()
+	self:Bar(L["teleport_msg"], timer.teleport, icon.teleport)
+
+	self:DelayedSound(timer.teleport - 10, "Ten")
+	self:DelayedSound(timer.teleport - 3, "Three")
+	self:DelayedSound(timer.teleport - 2, "Two")
+	self:DelayedSound(timer.teleport - 1, "One")
+	
+	self:CancelDelayedSync(syncName.teleport)
+	self:DelayedSync(timer.teleport, syncName.teleport)
+
+	self:KTM_Reset()
+end
+
+
 ----------------------------------
 --      Module Test Function    --
 ----------------------------------
 
-function BigWigsBoar:Test()
+function module:Test()
     --[[local function sweep()
         if self.phase == "emerged" then
             BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sweeptrigger"])
@@ -215,7 +257,7 @@ function BigWigsBoar:Test()
         end
     end]]
     local function deactivate()
-        self:Disable()
+        self:DisableModule(self:ToString())
     end
     
     BigWigs:Print("BigWigsBoar Test started")
@@ -225,7 +267,7 @@ function BigWigsBoar:Test()
     BigWigs:Print("  Emerge Test after 42s")
         
     -- immitate CheckForEngage
-    self:Sync("StartFight "..self:ToString())
+    --self:Sync("StartFight "..self:ToString())
     self:SendEngageSync()    
     
     -- sweep after 5s

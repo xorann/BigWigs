@@ -1,9 +1,49 @@
+
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Vaelastrasz the Corrupt"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
+local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--BigWigsVaelastrasz = module
+module.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.wipemobs = nil
+module.toggleoptions = {"start", "flamebreath", "adrenaline", "whisper", "tankburn", "icon", "bosskill"}
+
 ------------------------------
---      Are you local?      --
+--      Locals 			    --
 ------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Vaelastrasz the Corrupt"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+local timer = {
+	adrenaline = 20,
+	flamebreath = 2,
+	tankburn = 44.9,
+	start1 = 38,
+	start2 = 28,
+	start3 = 12,
+}
+local icon = {
+	adrenaline = "INV_Gauntlets_03",
+	flamebreath = "Spell_Fire_Fire",
+	tankburn = "INV_Gauntlets_03",
+	start = "Spell_Holy_PrayerOfHealing",
+}
+local syncName = {
+	adrenaline = "VaelAdrenaline",
+	flamebreath = "VaelBreath",
+	tankburn = "VaelTankBurn",
+	start = "VaelStart",
+}
 
 ----------------------------
 --      Localization      --
@@ -103,169 +143,145 @@ L:RegisterTranslations("deDE", function() return {
 	icon_desc = "Markiert den Spieler mit Brennendes Adrenalin zur leichteren Lokalisierung.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsVaelastrasz = BigWigs:NewModule(boss)
-BigWigsVaelastrasz.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsVaelastrasz.enabletrigger = boss
-BigWigsVaelastrasz.bossSync = "Vaelastrasz"
-BigWigsVaelastrasz.toggleoptions = { "start", "flamebreath", "adrenaline", "whisper", "tankburn", "icon", "bosskill" }
-BigWigsVaelastrasz.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsVaelastrasz:OnEnable()
-	self.barstarted = false
-	self.started = false
-	self.announcedadrenaline = false
-	self.tankburnannounced = false
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "VaelAdrenaline", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VaelBreath", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VaelTankBurn", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VaelStart", 5)
+
+	self:TriggerEvent("BigWigs_ThrottleSync", syncName.adrenaline, 2)
+	self:TriggerEvent("BigWigs_ThrottleSync", syncName.flamebreath, 3)
+	self:TriggerEvent("BigWigs_ThrottleSync", syncName.tankburn, 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", syncName.start, 5)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.barstarted = false
+	self.started = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Tankburn()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsVaelastrasz:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["flamebreath_trigger"] then
-		if self.db.profile.flamebreath then
-			self:TriggerEvent("BigWigs_StartBar", self, L["breath_bar"], 2, "Interface\\Icons\\Spell_Fire_Fire", true, "Red")
-			self:TriggerEvent("BigWigs_Message", L["breath_message"], "Urgent")
-		end
-		self:TriggerEvent("BigWigs_SendSync", "VaelBreath")
+		self:Sync(syncName.flamebreath)
 	end
 end
 
-function BigWigsVaelastrasz:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
+function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
 	local _, _, deathother = string.find(msg, L["deathother_trigger"])
 	if msg == L["deathyou_trigger"] then
 		if self.db.profile.adrenaline then
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["adrenaline_bar"], UnitName("player")))
+			self:RemoveBar(string.format(L["adrenaline_bar"], UnitName("player")))
 		end
-		self:TriggerEvent("BigWigs_SendSync", "VaelDead "..UnitName("player"))
 	elseif deathother then
 		if self.db.profile.adrenaline then
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["adrenaline_bar"], deathother))
+			self:RemoveBar(string.format(L["adrenaline_bar"], deathother))
 		end
-		self:TriggerEvent("BigWigs_SendSync", "VaelDead "..deathother)
 	end
 end
 
-function BigWigsVaelastrasz:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["yell1"]) and self.db.profile.start then
-		self:TriggerEvent("BigWigs_StartBar", self, L["start_bar"], 38, "Interface\\Icons\\Spell_Holy_PrayerOfHealing", true, "Cyan")
+		self:Bar(L["start_bar"], timer.start1, icon.start, true, "Cyan")
 		self.barstarted = true
 	elseif string.find(msg, L["yell2"]) and self.db.profile.start and not self.barstarted then
-		self:TriggerEvent("BigWigs_StartBar", self, L["start_bar"], 28, "Interface\\Icons\\Spell_Holy_PrayerOfHealing", true, "Cyan")
+		self:Bar(L["start_bar"], timer.start2, icon.start, true, "Cyan")
 		self.barstarted = true
 	elseif string.find(msg, L["yell3"]) and self.db.profile.start and not self.barstarted then
-		self:TriggerEvent("BigWigs_StartBar", self, L["start_bar"], 12, "Interface\\Icons\\Spell_Holy_PrayerOfHealing", true, "Cyan")
+		self:Bar(L["start_bar"], timer.start3, icon.start, true, "Cyan")
 	end
 end
 
-function BigWigsVaelastrasz:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "VaelStart")) then
-        self:StartFight()
-		if self.db.profile.tankburn then
-            self:TriggerEvent("BigWigs_StartBar", self, L["tankburn_bar"], 44.9, "Interface\\Icons\\INV_Gauntlets_03", true, "Black")
-            self:ScheduleEvent("BigWigs_Message", 39.9, L["tankburnsoon"], "Urgent")
-		end
-	elseif sync == "VaelBreath" and self.db.profile.flamebreath then
-		self:TriggerEvent("BigWigs_StartBar", self, L["breath_bar"], 2, "Interface\\Icons\\Spell_Fire_Fire", true, "Red")
-		self:TriggerEvent("BigWigs_Message", L["breath_message"], "Urgent")
-	elseif sync == "VaelDead" and rest and rest ~= "" and self.db.profile.adrenaline then
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["adrenaline_bar"], rest))
-	elseif sync == "VaelAdrenaline" and rest and rest ~= "" then
-		if not self.announcedadrenaline then
-			if self.db.profile.whisper then
-				if rest ~= UnitName("player") then
-					self:TriggerEvent("BigWigs_SendTell", rest, L["adrenaline_message_you"])
-				end
-			end
-			if self.db.profile.adrenaline then
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["adrenaline_bar"], rest), 20, "Interface\\Icons\\INV_Gauntlets_03", true, "White")
-				self:SetCandyBarOnClick("BigWigsBar "..string.format(L["adrenaline_bar"], rest), function(name, button, extra) TargetByName(extra, true) end, rest)
-				if rest == UnitName("player") then
-					self:TriggerEvent("BigWigs_Message", L["adrenaline_message_you"], "Attention", true, "Alert")
-                    self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\INV_Gauntlets_03", 20)
-				else
-					self:TriggerEvent("BigWigs_Message", string.format(L["adrenaline_message"], rest), "Urgent")
-				end
-			end
-			if self.db.profile.icon then
-				self:TriggerEvent("BigWigs_SetRaidIcon", rest)
-			end
-		end
-		self.announcedadrenaline = false
-	elseif sync == "VaelTankBurn" then
-		if not self.tankburnannounced then
-			if self.db.profile.tankburn then
-				self:TriggerEvent("BigWigs_StartBar", self, L["tankburn_bar"], 44.9, "Interface\\Icons\\INV_Gauntlets_03", true, "Black")
-				self:ScheduleEvent("BigWigs_Message", 39.9, L["tankburnsoon"], "Urgent")
-			end
-		end
-		self.tankburnannounced = false
-	end
-end
-
-function BigWigsVaelastrasz:Event(msg)
+function module:Event(msg)
 	local _, _, name, detect = string.find(msg, L["adrenaline_trigger"])
 	if name and detect then
 		if detect == L["are"] then
 			name = UnitName("player")
-		else
-			if self.db.profile.whisper and not self.announcedadrenaline then
-				self:TriggerEvent("BigWigs_SendTell", name, L["adrenaline_message_you"])
-			end
 		end
-		if self.db.profile.adrenaline and not self.announcedadrenaline then
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["adrenaline_bar"], name), 20, "Interface\\Icons\\INV_Gauntlets_03", true, "White")
+		self:Sync(syncName.adrenaline .. " "..name)
+	end
+end
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.flamebreath then
+		self:Flamebreath()
+	elseif sync == syncName.adrenaline and rest and rest ~= "" then
+		self:Adrenaline(rest)
+	elseif sync == syncName.tankburn then
+		self:Tankburn()
+	end
+end
+
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Tankburn()
+	if self.db.profile.tankburn then
+		self:Bar(L["tankburn_bar"], timer.tankburn, icon.tankburn, true, "Black")
+		self:DelayedMessage(timer.tankburn - 5, L["tankburnsoon"], "Urgent")
+	end
+end
+
+function module:Flamebreath()
+	if self.db.profile.flamebreath then
+		self:Bar(L["breath_bar"], timer.flamebreath, timer.flamebreath, true, "Red")
+		self:Message(L["breath_message"], "Urgent")
+	end
+end
+
+function module:Adrenaline(name)
+	if name then
+		-- send whisper
+		if self.db.profile.whisper and name ~= UnitName("player") then
+			self:TriggerEvent("BigWigs_SendTell", name, L["adrenaline_message_you"])
+		end
+		
+		-- bar and message
+		if self.db.profile.adrenaline then
+			self:Bar(string.format(L["adrenaline_bar"], name), timer.adrenaline, icon.adrenaline, true, "White")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["adrenaline_bar"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 			if name == UnitName("player") then
-				self:TriggerEvent("BigWigs_Message", L["adrenaline_message_you"], "Attention", true, "Alert")
-                self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\INV_Gauntlets_03", 20)
+				self:Message(L["adrenaline_message_you"], "Attention", true, "Beware")
+                self:WarningSign(icon.adrenaline, timer.adrenaline)
 			else
-				self:TriggerEvent("BigWigs_Message", string.format(L["adrenaline_message"], name), "Urgent")
+				self:Message(string.format(L["adrenaline_message"], name), "Urgent")
 			end
 		end
-		if self.db.profile.icon and not self.announcedadrenaline then
-			self:TriggerEvent("BigWigs_SetRaidIcon", name)
+		
+		-- set icon
+		if self.db.profile.icon then
+			self:Icon(name)
 		end
-		self.announcedadrenaline = true
-		self:TriggerEvent("BigWigs_SendSync", "VaelAdrenaline "..name)
+		
+		-- tank burn
 		for i = 1, GetNumRaidMembers() do
-			if UnitExists("raid"..i.."target") and UnitName("raid"..i.."target") == boss and UnitExists("raid"..i.."targettarget") and UnitName("raid"..i.."targettarget") == name then
-				if self.db.profile.tankburn and not self.tankburnannounced then
-					self:TriggerEvent("BigWigs_StartBar", self, L["tankburn_bar"], 44.9, "Interface\\Icons\\INV_Gauntlets_03", true, "Black")
-					self:ScheduleEvent("BigWigs_Message", 39.9, L["tankburnsoon"], "Urgent")
-				end
-				self.tankburnannounced = true
-				self:TriggerEvent("BigWigs_SendSync", "VaelTankBurn")
+			if UnitExists("raid" .. i .. "target") and UnitName("raid" .. i .. "target") == boss and UnitExists("raid" .. i .. "targettarget") and UnitName("raid" .. i .. "targettarget") == name then
+				self:Sync(syncName.tankburn)
 				break
 			end
 		end
-	end
-	if not self.started and string.find(msg, L["start_trigger"]) then
-		if self.db.profile.tankburn then
-			self:TriggerEvent("BigWigs_StartBar", self, L["tankburn_bar"], 45, "Interface\\Icons\\INV_Gauntlets_03", true, "Black")
-			self:ScheduleEvent("BigWigs_Message", 40, L["tankburnsoon"], "Urgent")
-		end
-		self:StartFight()
-		self:TriggerEvent("BigWigs_SendSync", "VaelStart")
 	end
 end

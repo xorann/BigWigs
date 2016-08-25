@@ -1,9 +1,37 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Lucifron"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Lucifron"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--BigWigsTestboss = module
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+
+module.toggleoptions = {"adds", "curse", "doom", "shock", "mc", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+}
+local icon = {
+}
+local syncName = {
+}
+
 
 ----------------------------
 --      Localization      --
@@ -114,27 +142,15 @@ L:RegisterTranslations("deDE", function() return {
 	shock_desc  = "Warnen vor Schattenschock",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsLucifron = BigWigs:NewModule(boss)
-BigWigsLucifron.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsLucifron.enabletrigger = boss
-BigWigsLucifron.bossSync = "Lucifron"
-BigWigsLucifron.wipemobs = { L["add_name"] }
-BigWigsLucifron.toggleoptions = { "adds", "curse", "doom", "shock", "mc", "bosskill"}
-BigWigsLucifron.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsLucifron:OnEnable()
-    self.started = nil
-	self.protector = 0
-	
-	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
+module.wipemobs = { L["add_name"] }
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
@@ -147,8 +163,7 @@ function BigWigsLucifron:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
+
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMC_(.*)", 0.5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMCEnd_(.*)", 0.5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronCurseRep1", 5)
@@ -156,86 +171,101 @@ function BigWigsLucifron:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronDoomRep1", 5)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	self.protector = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.curse then
+		self:DelayedMessage(15, L["warn1"], "Attention")
+		self:Bar(L["bar1text"], 20, "Spell_Shadow_BlackPlague")
+	end
+	if self.db.profile.doom then
+		self:DelayedMessage(5, L["warn3"], "Attention")
+		self:Bar(L["bar1text"], 10, "Spell_Shadow_NightOfTheDead")
+	end
+	self:Sync("LucifronShock")
+end
+
+-- called after boss is disengaged (wipe/retreat or victory)
+function module:OnDisengage()
+end
+
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsLucifron:Event(msg)
+function module:Event(msg)
 	local _,_,mindcontrolother,_ = string.find(msg, L["mindcontrolother_trigger"])
 	local _,_,mindcontrolotherend,_ = string.find(msg, L["mindcontrolotherend_trigger"])
 	local _,_,mindcontrolotherdeath,_ = string.find(msg, L["deathother_trigger"])
 	if ((string.find(msg, L["trigger1"])) or (string.find(msg, L["trigger5"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronCurseRep1")
+		self:Sync("LucifronCurseRep1")
 	elseif ((string.find(msg, L["trigger2"])) or (string.find(msg, L["trigger6"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronDoomRep1")
+		self:Sync("LucifronDoomRep1")
 	elseif ((string.find(msg, L["trigger3"])) or (string.find(msg, L["trigger4"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronShock1")
+		self:Sync("LucifronShock1")
 	elseif string.find(msg, L["mindcontrolyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMC_"..UnitName("player"))
+		self:Sync("LucifronMC_"..UnitName("player"))
 	elseif string.find(msg, L["mindcontrolyouend_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMCEnd_"..UnitName("player"))
+		self:Sync("LucifronMCEnd_"..UnitName("player"))
 	elseif string.find(msg, L["deathyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMCEnd_"..UnitName("player"))
+		self:Sync("LucifronMCEnd_"..UnitName("player"))
 	elseif mindcontrolother then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMC_"..mindcontrolother)
+		self:Sync("LucifronMC_"..mindcontrolother)
 	elseif mindcontrolotherend then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMCEnd_"..mindcontrolotherend)
+		self:Sync("LucifronMCEnd_"..mindcontrolotherend)
 	elseif mindcontrolotherdeath then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronMCEnd_"..mindcontrolotherdeath)
+		self:Sync("LucifronMCEnd_"..mindcontrolotherdeath)
 	end
 end
 
-function BigWigsLucifron:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
-        
-        if self.db.profile.curse then
-			self:ScheduleEvent("messagewarn4", "BigWigs_Message", 10, L["warn1"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 20, "Interface\\Icons\\Spell_Shadow_BlackPlague")
-		end
-        if self.db.profile.doom then
-			self:ScheduleEvent("messagewarn3", "BigWigs_Message", 5, L["warn3"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 10, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
-		end
-		self:TriggerEvent("BigWigs_SendSync", "LucifronShock")
-	elseif sync == "LucifronCurseRep1" and self.db.profile.curse then
-		self:ScheduleEvent("messagewarn1", "BigWigs_Message", 15, L["warn1"], "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 20, "Interface\\Icons\\Spell_Shadow_BlackPlague")
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	if string.find(msg, L["deadaddtrigger"]) then
+		self:Sync("LucifronAddDead " .. tostring(self.protector + 1))
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == "LucifronCurseRep1" and self.db.profile.curse then
+		self:DelayedMessage(15, L["warn1"], "Attention")
+		self:Bar(L["bar1text"], 20, "Spell_Shadow_BlackPlague")
 	elseif sync == "LucifronDoomRep1" and self.db.profile.doom then
-		self:ScheduleEvent("messagewarn2", "BigWigs_Message", 10, L["warn3"], "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 15, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
+		self:DelayedMessage(10, L["warn3"], "Attention")
+		self:Bar(L["bar1text"], 15, "Spell_Shadow_NightOfTheDead")
 	elseif sync == "LucifronShock1" and self.db.profile.shock then
-		--self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 6, "Interface\\Icons\\Spell_Shadow_Shadowbolt")
+		--self:Bar(L["bar3text"], 6, "Spell_Shadow_Shadowbolt")
 	elseif string.find(sync, "LucifronMC_") then
 		if self.db.profile.mc then
 			chosenone = string.sub(sync,12)
 			if chosenone == UnitName("player") then
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mindcontrol_bar"], UnitName("player")), 15, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate")
-				self:TriggerEvent("BigWigs_Message", L["mindcontrol_message_you"], "Attention")
+				self:Message(L["mindcontrol_message_you"], "Attention")
+				self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), 15, "Spell_Shadow_ShadowWordDominate")
 			else
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mindcontrol_bar"], chosenone), 15, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate")
-				self:TriggerEvent("BigWigs_Message", string.format(L["mindcontrol_message"], chosenone), "Urgent")
+				self:Message(string.format(L["mindcontrol_message"], chosenone), "Urgent")
+				self:Bar(string.format(L["mindcontrol_bar"], chosenone), 15, "Spell_Shadow_ShadowWordDominate")
 			end
 		end
 	elseif string.find(sync, "LucifronMCEnd_") then
 		if self.db.profile.mc then
 			luckyone = string.sub(sync,15)
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["mindcontrol_bar"], luckyone))
+			self:RemoveBar(string.format(L["mindcontrol_bar"], luckyone))
 		end
 	elseif sync == "LucifronAddDead" and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.protector < rest then
             self.protector = rest
             if self.db.profile.adds then
-                self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], self.protector), "Positive")
+				self:Message(string.format(L["addmsg"], self.protector), "Positive")
             end
         end
-	end
-end
-
-function BigWigsLucifron:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
-	if string.find(msg, L["deadaddtrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LucifronAddDead " .. tostring(self.protector + 1))
 	end
 end

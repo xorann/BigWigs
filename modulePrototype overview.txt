@@ -8,13 +8,14 @@
 BigWigs.modulePrototype.core = BigWigs
 BigWigs.modulePrototype.debugFrame = ChatFrame1
 BigWigs.modulePrototype.engaged = false
+BigWigs.modulePrototype.bossSync = nil -- untranslated string
 
 -- override
 BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
 BigWigs.modulePrototype.started = false
 BigWigs.modulePrototype.zonename = nil -- AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigs.modulePrototype.enabletrigger = nil -- boss
-BigWigs.modulePrototype.bossSync = nil -- "Ouro"
+BigWigs.modulePrototype.wipemobs = nil -- adds that will be considered in CheckForEngage
 BigWigs.modulePrototype.toggleoptions = nil -- {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
 BigWigs.modulePrototype.timers = {} -- table for all timers
 BigWigs.modulePrototype.icons = {} -- table for all icons
@@ -28,8 +29,9 @@ void BigWigs.modulePrototype:DebugMessage(msg)
 void BigWigs.modulePrototype:OnInitialize()
 
 -- override (if necessary)
-void BigWigs.modulePrototype:OnSetup()
+void BigWigs.modulePrototype.OnEnable()
 void BigWigs.modulePrototype:OnEngage()
+void BigWigs.modulePrototype:OnSetup()
 void BigWigs.modulePrototype:OnDisengage()
 
 -- do not override
@@ -58,6 +60,8 @@ void BigWigs.modulePrototype:CheckForBossDeath(msg)
 -- override
 void BigWigs.modulePrototype:BigWigs_RecvSync(sync, rest, nick)
 
+-- test function
+void BigWigs.modulePrototype:Test()
 
 ------------------------------
 --      Provided API        --
@@ -66,6 +70,7 @@ void BigWigs.modulePrototype:BigWigs_RecvSync(sync, rest, nick)
 void BigWigs.modulePrototype:Sync(sync)
 void BigWigs.modulePrototype:DelayedSync(delay, sync)
 void BigWigs.modulePrototype:CancelDelayedSync(sync)
+void BigWigs.modulePrototype:ThrottleSync(throttle, sync)
 
 void BigWigs.modulePrototype:Message(text, priority, noRaidSay, sound, broadcastOnly)
 table BigWigs.modulePrototype:DelayedMessage(delay, text, priority, noRaidSay, sound, broadcastOnly)
