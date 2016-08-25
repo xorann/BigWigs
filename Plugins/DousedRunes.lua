@@ -330,7 +330,7 @@ function BigWigsDousedRunes:SetupFrames()
 	if x and y then
 		local s = frame:GetEffectiveScale()
 		frame:ClearAllPoints()
-		frame:SetPoint("TOP", UIParent, "TOP", x / s, y / s)
+		frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
 	else
 		self:ResetPosition()
 	end
@@ -342,7 +342,7 @@ function BigWigsDousedRunes:ResetPosition()
 	if not frame then self:SetupFrames() end
 	frame:ClearAllPoints()
 	--frame:SetPoint("CENTER", UIParent, "CENTER")
-    frame:SetPoint("TOP", UIParent, "TOP", 280, -440)
+    frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 1000, 500)
 	self.db.profile.posx = nil
 	self.db.profile.posy = nil
 end

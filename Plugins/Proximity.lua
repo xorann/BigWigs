@@ -403,7 +403,7 @@ function BigWigsProximity:SetupFrames()
 	if x and y then
 		local s = anchor:GetEffectiveScale()
 		anchor:ClearAllPoints()
-		anchor:SetPoint("TOP", UIParent, "TOP", x / s, y / s)
+		anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
 	else
 		self:ResetAnchor()
 	end
@@ -413,7 +413,7 @@ function BigWigsProximity:ResetAnchor()
 	if not anchor then self:SetupFrames() end
 	anchor:ClearAllPoints()
 	--anchor:SetPoint("CENTER", UIParent, "CENTER")
-    anchor:SetPoint("TOP", UIParent, "TOP", -280, -440)
+    anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 300, 500)
 	self.db.profile.posx = nil
 	self.db.profile.posy = nil
 end
