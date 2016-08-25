@@ -125,7 +125,6 @@ function BigWigsFlamegor:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
 		self:TriggerEvent("BigWigs_SendSync", "FlamegorStart")
 	elseif sync == "FlamegorStart" and not self.started then
-		self:StartFight()
 		if self.db.profile.wingbuffet then
 			--self:ScheduleEvent("BigWigs_Message", 28.5, L["wingbuffet_warning"], "Attention")
             self:DelayedMessage(28.5, L["wingbuffet_warning"], "Attention", true, "Alert")

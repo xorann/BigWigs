@@ -97,7 +97,6 @@ end
 
 function BigWigsAnubrekhan:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        --self:StartFight()
 	elseif sync == "AnubLocustInc" then
 		self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, timers.locustSwarmCastTime, self, "BigWigs_SendSync", "AnubLocustSwarm")
 		if self.db.profile.locust then
@@ -118,7 +117,6 @@ function BigWigsAnubrekhan:BigWigs_RecvSync(sync, rest, nick)
 end
 
 function BigWigsAnubrekhan:Test()
-    self:Sync("StartFight "..self:ToString())
     self:SendEngageSync()
     --self:LocustCast(L["casttrigger"])
     --self:ScheduleEvent(self:ToString().."Test_Locust", self.LocustCast(L["casttrigger"]), 5, self)

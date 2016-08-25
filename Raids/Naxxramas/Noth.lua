@@ -140,7 +140,6 @@ end
 
 function BigWigsNoth:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "NothCurse" then
 		if self.db.profile.curse then
 			self:TriggerEvent("BigWigs_Message", L["cursewarn"], "Important", nil, "Alarm")

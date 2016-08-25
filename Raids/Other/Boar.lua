@@ -267,7 +267,6 @@ function module:Test()
     BigWigs:Print("  Emerge Test after 42s")
         
     -- immitate CheckForEngage
-    --self:Sync("StartFight "..self:ToString())
     self:SendEngageSync()    
     
     -- sweep after 5s

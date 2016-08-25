@@ -95,7 +95,6 @@ end
 
 function BigWigsGarr:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
         --self:TriggerEvent("BigWigs_StartCounterBar", self, L["counterbarMsg"], 8, "Interface\\Icons\\spell_nature_strengthofearthtotem02")
         --self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - 0.1))
     elseif self.started and string.find(sync, "GarrAddDead%d") then

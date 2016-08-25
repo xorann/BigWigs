@@ -195,7 +195,6 @@ end
 
 function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
         self:TriggerEvent("BigWigs_Message", L["landing_soon_warning"], "Important", true, "Long")
         --self:TriggerEvent("BigWigs_StartBar", self, L["land"], 159, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
         self:TriggerEvent("BigWigs_StartBar", self, L["Mob_Spawn"], 10, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")

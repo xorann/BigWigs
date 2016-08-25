@@ -141,7 +141,6 @@ end
 
 function BigWigsRazuvious:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "RazuviousShout" then
 		self:CancelScheduledEvent("bwrazuviousnoshout")
 		self:ScheduleEvent("bwrazuviousnoshout", self.noShout, self.timeShout, self )		

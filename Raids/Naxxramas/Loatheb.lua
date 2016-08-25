@@ -81,7 +81,6 @@ end
 
 function BigWigsLoatheb:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end

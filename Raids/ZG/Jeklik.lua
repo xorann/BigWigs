@@ -225,7 +225,6 @@ end
 
 function BigWigsJeklik:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "JeklikPhaseOne")) then
-        self:StartFight()
 		self.phase = 1
 		if self.db.profile.fear then
 			self:TriggerEvent("BigWigs_StartBar", self, L["fearreptext"], 13, "Interface\\Icons\\Spell_Shadow_SummonImp")

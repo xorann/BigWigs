@@ -104,7 +104,6 @@ end
 
 function BigWigsGehennas:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
         
 		if self.db.profile.curse then
 			self:ScheduleEvent("messagewarn2", "BigWigs_Message", 7, L["warn1"], "Urgent")

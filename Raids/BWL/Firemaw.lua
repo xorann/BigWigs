@@ -129,7 +129,6 @@ function BigWigsFiremaw:BigWigs_RecvSync(sync, rest, nick)
 		self:TriggerEvent("BigWigs_SendSync", "FiremawStart")
 		--self:TriggerEvent("BigWigs_SendSync", "FiremawFirstBuffet")
 	elseif sync == "FiremawStart" and not self.started then
-		self:StartFight()
 		if self.db.profile.wingbuffet then
 			--self:ScheduleEvent("BigWigs_Message", 20, L["wingbuffet_warning"], "Important")
             self:DelayedMessage(20, L["wingbuffet_warning"], "Attention", true, "Alert")

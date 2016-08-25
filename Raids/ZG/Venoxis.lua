@@ -260,7 +260,6 @@ end
 
 function BigWigsVenoxis:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "VenoxisPhaseOne")) then
-        self:StartFight()
 		if self.db.profile.phase then
 			self:TriggerEvent("BigWigs_Message", L["phase1_message"], "Attention")
 		end

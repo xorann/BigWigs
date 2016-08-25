@@ -136,7 +136,6 @@ end
 
 function BigWigsRagnaros:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:StartFight()
 		if self.db.profile.aoeknock then
 			self:TriggerEvent("BigWigs_SendSync", "RagnarosKnockback")
 		end

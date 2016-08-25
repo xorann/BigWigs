@@ -190,7 +190,6 @@ end
 function BigWigsOuro:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
 		self:DebugMessage("engage")
-        self:StartFight()
         
         self.phase = "emerged"
 		self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
@@ -404,7 +403,6 @@ function BigWigsOuro:Test()
     TargetUnit("player")
     
     -- immitate CheckForEngage
-    self:Sync("StartFight "..self:ToString())
     self:SendEngageSync()
     
     -- encounter specific settings

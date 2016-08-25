@@ -147,7 +147,6 @@ end
 
 function BigWigsSartura:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self.db.profile.berserk then
 			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
 			self:TriggerEvent("BigWigs_StartBar", self, L["berserktext"], 600, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")

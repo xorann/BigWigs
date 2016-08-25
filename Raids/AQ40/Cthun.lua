@@ -316,7 +316,6 @@ function BigWigsCThun:BigWigs_RecvSync(sync, rest, nick)
     --self:DebugMessage("BigWigs_RecvSync: " .. sync .. " " .. rest)
     if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "CThunStart"..BigWigsCThun.revision)) then
         if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-        --self:StartFight()
 		self:CThunStart()
         
 	elseif sync == "CThunP2Start" then

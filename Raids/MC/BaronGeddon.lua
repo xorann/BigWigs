@@ -234,7 +234,6 @@ end
 
 function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        --self:StartFight()
         self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
 		if self.db.profile.inferno then
 			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")

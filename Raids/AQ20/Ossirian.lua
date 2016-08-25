@@ -185,7 +185,6 @@ end
 
 function BigWigsOssirian:BigWigs_RecvSync(sync, debuffKey)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
     end
 	if sync ~= "OssirianWeakness" or not debuffKey or not L:HasTranslation(debuffKey) then return end
 

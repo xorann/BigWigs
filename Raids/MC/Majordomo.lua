@@ -167,7 +167,6 @@ function BigWigsMajordomo:BigWigs_RecvSync(sync, rest, nick)
     --end
     
     if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "DomoPull")) then
-        self:StartFight()
         if self.db.profile.magic or self.db.profile.dmg then
 			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 15, "Interface\\Icons\\Spell_Shadow_DetectLesserInvisibility")
 			self:ScheduleEvent("BigWigs_Message", 10, L["warn3"], "Urgent")

@@ -90,7 +90,6 @@ end
 
 function BigWigsGrobbulus:BigWigs_RecvSync( sync, rest, nick )
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
 		if self.db.profile.enrage then
 			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Attention")

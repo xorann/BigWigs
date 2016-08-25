@@ -248,7 +248,6 @@ end
 
 function BigWigsBugFamily:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self.db.profile.panic then
             self:TriggerEvent("BigWigs_StartBar", self, L["panic_bar"], 18.4, "Interface\\Icons\\Spell_Shadow_DeathScream", true, "white")
             self:ScheduleEvent("PanicAnnounce", "BigWigs_Message", 15.4, L["panic_message"], "Urgent", true, "Alarm")

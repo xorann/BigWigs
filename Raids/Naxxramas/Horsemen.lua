@@ -139,7 +139,6 @@ end
 function BigWigsHorsemen:BigWigs_RecvSync(sync, rest, nick)
 	--Print("sync= "..sync.." rest= "..rest.." nick= "..nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end

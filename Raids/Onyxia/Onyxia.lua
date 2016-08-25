@@ -192,7 +192,6 @@ function BigWigsOnyxia:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.phase and not self.started then
 			self:TriggerEvent("BigWigs_Message", L["phase1text"], "Attention")
 		end
-		self:StartFight()
         self.phase = 1
         self:KTM_SetTarget(boss)
 	elseif sync == "OnyPhaseTwo" and self.phase < 2 then

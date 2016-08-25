@@ -151,7 +151,6 @@ end]]
 
 function BigWigsSkeram:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "SkeramSplit80Soon" then
 		splittime = true
 		if self.db.profile.split then

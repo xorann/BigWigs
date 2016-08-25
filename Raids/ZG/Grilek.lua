@@ -144,7 +144,6 @@ end
 
 function BigWigsGrilek:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if firstwarn == 0 then
 			self:TriggerEvent("BigWigs_SendSync", "GrilekMeleeIni")
 		end	

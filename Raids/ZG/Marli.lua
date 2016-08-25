@@ -165,7 +165,6 @@ end
 
 function BigWigsMarli:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "MarliSpiders" and self.db.profile.spider then
 		self:TriggerEvent("BigWigs_Message", L["spiders_message"], "Attention")
 	elseif sync == "MarliTrollPhase" and self.db.profile.phase then

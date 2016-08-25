@@ -65,7 +65,6 @@ end
 
 function BigWigsHazzarah:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "HazzarahIllusions" and self.db.profile.nightmaresummon then
 		self:TriggerEvent("BigWigs_Message", L["nightmaresummon_message"], "Important", true, "Alarm")
 	end

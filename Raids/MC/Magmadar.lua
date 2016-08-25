@@ -111,7 +111,6 @@ end
 
 function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:StartFight()
 		
 		if firstpanic == 0 then
 			self:TriggerEvent("BigWigs_SendSync", "MagmadarPanicIni")

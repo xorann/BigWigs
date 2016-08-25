@@ -113,7 +113,6 @@ end
 
 function BigWigsHeigan:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "HeiganDisease" then
 		self:TriggerEvent("BigWigs_Message", L["dwarn"], "Important") 
 		self:TriggerEvent("BigWigs_StartBar", self, L["dbar"], 15, "Interface\\Icons\\Ability_Creature_Disease_03")

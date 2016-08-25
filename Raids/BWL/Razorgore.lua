@@ -427,7 +427,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:CancelScheduledEvent("destroyegg_check")
 		self:CancelScheduledEvent("orbcontrol_check")
 		if self.db.profile.orb and self.previousorb then
-			self:Bar(string.format(L["orb_bar"], self.previousorb))
+			self:Bar(string.format(L["orb_bar"], self.previousorb), 90, "INV_Misc_Gem_Pearl_03", true, "white")
 		end
 		if self.db.profile.fireballvolley then
 			self:RemoveBar(L["volley_bar"])

@@ -155,7 +155,6 @@ end
 
 function BigWigsJindo:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
         self:TriggerEvent("BigWigs_StartBar", self, "Next Hex", 8, "Interface\\Icons\\Spell_Nature_Polymorph")
         self:TriggerEvent("BigWigs_StartBar", self, "Next Healing Ward", 12, "Interface\\Icons\\Spell_Holy_LayOnHands")
         self:TriggerEvent("BigWigs_StartBar", self, "Next Brain Wash", 21, "Interface\\Icons\\Spell_Totem_WardOfDraining")

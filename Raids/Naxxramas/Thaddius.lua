@@ -220,7 +220,6 @@ end
 
 function BigWigsThaddius:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "ThaddiusPolarity" and self.db.profile.polarity then
 		self:RegisterEvent("PLAYER_AURAS_CHANGED")
 		self:ScheduleEvent("BigWigs_Message", 27, L["pswarn3"], "Important")

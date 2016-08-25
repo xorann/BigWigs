@@ -98,7 +98,6 @@ end
 
 function BigWigsFaerlina:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 	elseif sync == "FaerlinaEnrage" then
 		if self.db.profile.enrage then
 			self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Urgent")

@@ -120,7 +120,6 @@ end
 
 function BigWigsEbonroc:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:StartFight()
 		if self.db.profile.wingbuffet then
 			--self:ScheduleEvent("BigWigs_Message", 14, L["wingbuffet_warning"], "Important")
             self:DelayedMessage(14, L["wingbuffet_warning"], "Attention", true, "Alert")
