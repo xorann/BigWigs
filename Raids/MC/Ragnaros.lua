@@ -28,7 +28,7 @@ module.toggleoptions = {"aoeknock", "submerge", "emerge", "adds", "bosskill"}
 
 local timer = {
 	emerge_soon = 64.5,
-	hammer_of_ragnaros = 25,
+	hammer_of_ragnaros = 11,
 	emerge = 90,
 	submerge = 180,
 	knockback = 30,
@@ -59,7 +59,7 @@ L:RegisterTranslations("enUS", function() return {
 	knockback_trigger = "^TASTE",
 	submerge_trigger = "^COME FORTH,",
 	engage_trigger = "^NOW FOR YOU",
-    engage_soon_trigger = "Imprudent whelps!",
+    engage_soon_trigger = "Impudent whelps!",
     hammer_trigger = "^BY FIRE BE PURGED!",
 
 	knockback_message = "Knockback!",
@@ -194,7 +194,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
     elseif string.find(msg, L["engage_soon_trigger"]) then
         self:Bar("Combat", timer.emerge_soon, icon.emerge_soon)
     elseif string.find(msg ,L["hammer_trigger"]) then
-        self:Bar("Hammer of Ragnaros", timer.hammer_of_ragnaros, icon.hammer_of_ragnaros)
+        --self:Bar("Hammer of Ragnaros", timer.hammer_of_ragnaros, icon.hammer_of_ragnaros) -- doesn't do anything on nefarian
 	end
 end
 

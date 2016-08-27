@@ -27,14 +27,14 @@ module.toggleoptions = {"curse", "deaden", "blink", "counterspell", "bosskill"}
 ---------------------------------
 
 local timer = {
-	cs = 12.5,
+	cs = 14,
     firstCS = 10,
     curse =  22, 
     firstCurse = 10,
     blink = 45,
     firstBlink = 30,
-    deaden = 30,
-    firstDeaden = 24,
+    deaden = 24,
+    firstDeaden = 15,
 }
 local icon = {
     cs = "Spell_Frost_IceShock",
@@ -49,6 +49,18 @@ local syncName = {
     deaden = "ShazzrahDeadenMagicOn",
     deadenOver = "ShazzrahDeadenMagicOff",
 }
+--[[
+pull: 28:55 (0) 28:55:06
+cs: 29:05 (10) 29:05:01 (9.83)
+deaden: 29:10 (15) 29:10:07 (15)
+cs: 29:19 (14) 29:19:09 (14.27)
+blink: 26:25 (30) 29:25:01 (30)
+cs: 29:33 (14/8) 29:33:03 (13.8)
+deaden: 29:34 (24/9) 29:34:07 (24)
+cs: 29:46 (13) 29:46:10 (13.23)
+deaden: 29:58 (24) 29:58:03 (24)
+cs: 29:59 (13) 29:59:10 (13.0)
+]]
 
 local _, playerClass = UnitClass("player")
 local firstblink = true
@@ -163,7 +175,7 @@ function module:OnEnable()
     self:ThrottleSync(10, syncName.curse)
     self:ThrottleSync(5, syncName.deaden)
     self:ThrottleSync(5, syncName.deadenOver)
-    self:ThrottleSync(5, syncName.cs)
+    self:ThrottleSync(1, syncName.cs)
 end
 
 -- called after module is enabled and after each wipe
@@ -184,7 +196,7 @@ function module:OnEngage()
     self:DelayedSync(timer.firstBlink, syncName.blink)
     
     if self.db.profile.curse then
-        self:Bar(L["curse_bar"], timer.firstCurse, icon.curse)
+        --self:Bar(L["curse_bar"], timer.firstCurse, icon.curse) -- seems to be completly random
     end
     if self.db.profile.deaden then
         self:Bar(L["deaden_bar"], timer.firstDeaden, icon.deaden)
@@ -244,7 +256,7 @@ end
 
 function module:Curse()
     self:Message(L["curse_warn"], "Attention", "Alarm")
-    self:Bar(L["curse_bar"], timer.curse, icon.curse)
+    --self:Bar(L["curse_bar"], timer.curse, icon.curse) -- seems to be completly random
 end
 
 function module:Blink()

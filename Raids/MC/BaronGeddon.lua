@@ -76,7 +76,7 @@ L:RegisterTranslations("enUS", function() return {
 	nextinferno_message = "3 seconds until Inferno!",
 	service_bar = "Last Service",
 	nextbomb_bar = "Next Living Bomb",
-	ignite_bar = "Next Ignite Mana",
+	ignite_bar = "~Next Ignite Mana",
 
 	service_message = "Last Service! Baron Geddon exploding in 8 seconds!",
 	inferno_message = "Inferno for 8 seconds!",
@@ -137,7 +137,7 @@ L:RegisterTranslations("deDE", function() return {
 	nextinferno_message = "3 Sekunden bis Inferno!",
 	service_bar = "Letzter Dienst.",
 	nextbomb_bar = "N\195\164chste Lebende Bombe",
-	ignite_bar = "N\195\164chste Mana entz\195\188nden",
+	ignite_bar = "~N\195\164chste Mana entz\195\188nden",
 
 	service_message = "Letzter Dienst! Baron Geddon explodiert in 8 Sekunden!",
 	inferno_message = "Inferno 8 Sekunden lang!",
@@ -283,7 +283,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.bomb then
 	elseif sync == syncName.inferno then
         self:Inferno()
-	elseif sync == syncName.ignite and self.db.profile.mana then
+	elseif sync == syncName.ignite then
 		self:ManaIgnite()
 	elseif sync == syncName.bombStop and self.db.profile.bomb then
 		self:RemoveBar(string.format(L["bomb_bar"], bombt))

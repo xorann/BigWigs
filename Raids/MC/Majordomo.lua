@@ -25,7 +25,7 @@ module.toggleoptions = {"magic", "dmg", "adds", "bosskill"}
 
 local timer = {
 	shieldDuration = 10,
-	shieldInterval = 25,
+	shieldInterval = 15,
 	firstShield = 15,
 }
 local icon = {
@@ -37,6 +37,7 @@ local syncName = {
 	dmg = "DomoAuraDamage",
 	magic = "DomoAuraMagic"
 }
+
 
 
 ----------------------------
@@ -236,6 +237,7 @@ end
 
 function module:DamageShield()
 	if self.db.profile.dmg then
+        self:RemoveBar(L["shield_bar"])
 		self:Message(L["dmg_warn"], "Attention")
 		self:Bar(L["dmg_bar"], timer.shieldDuration, icon.dmg)
 	end

@@ -24,12 +24,12 @@ module.toggleoptions = {"adds", "curse", "bosskill"}
 ---------------------------------
 
 local timer = {
-	firstCurse = 12,
-	firstRain = 10,
+	firstCurse = 20,
+	firstRain = 4,
 	rainTick = 2,
 	rainDuration = 6,
-	nextRain = 15,
-	curse = 31,
+	nextRain = 19, -- 12, 18
+	curse = 30,
 }
 local icon = {
 	curse = "Spell_Shadow_BlackPlague",
@@ -139,7 +139,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.firstCurse - 5, L["curse_warn_soon"], "Urgent")
 		self:Bar(L["curse_bar"], timer.firstCurse, icon.curse)
 	end
-	self:Bar(L["barNextRain"], timer.firstRain, icon.rain)
+	--self:Bar(L["barNextRain"], timer.firstRain, icon.rain)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -161,7 +161,7 @@ function module:Event(msg)
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
 		self:Message(L["firewarn"], "Attention", "Alarm")
         self:WarningSign(icon.rain, timer.rainDuration)
-        self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain)
+        --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
 	end
 end
 
