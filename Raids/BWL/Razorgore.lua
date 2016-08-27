@@ -366,13 +366,13 @@ function module:Events(msg)
 		end
 	elseif msg == L["deathyou_trigger"] then
 		if self.db.profile.mc then
-			self:RemoveBar(self, string.format(L["mindcontrol_bar"], UnitName("player")))
+			self:RemoveBar(string.format(L["mindcontrol_bar"], UnitName("player")))
 		end
 		if self.db.profile.polymorph then
-			self:RemoveBar(self, string.format(L["polymorph_bar"], UnitName("player")))
+			self:RemoveBar(string.format(L["polymorph_bar"], UnitName("player")))
 		end
 		if self.db.profile.orb then
-			self:RemoveBar(self, string.format(L["orb_bar"], UnitName("player")))
+			self:RemoveBar(string.format(L["orb_bar"], UnitName("player")))
 		end
 	end
 end
@@ -416,7 +416,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:CancelScheduledEvent("orbcontrol_check")
 		if self.db.profile.orb then
 			if self.previousorb ~= nil then
-				self:Bar(string.format(L["orb_bar"], self.previousorb))
+				self:RemoveBar(string.format(L["orb_bar"], self.previousorb))
 			end
 			self:Bar(string.format(L["orb_bar"], rest), 90, "INV_Misc_Gem_Pearl_03", true, "white")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["orb_bar"], rest), function(name, button, extra) TargetByName(extra, true) end, rest)

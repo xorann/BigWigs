@@ -72,31 +72,33 @@ void BigWigs.modulePrototype:DelayedSync(delay, sync)
 void BigWigs.modulePrototype:CancelDelayedSync(sync)
 void BigWigs.modulePrototype:ThrottleSync(throttle, sync)
 
-void BigWigs.modulePrototype:Message(text, priority, noRaidSay, sound, broadcastOnly)
-table BigWigs.modulePrototype:DelayedMessage(delay, text, priority, noRaidSay, sound, broadcastOnly)
+void BigWigs.modulePrototype:Message(text[, priority[, noRaidSay[, sound[, broadcastOnly]]]])
+table BigWigs.modulePrototype:DelayedMessage(delay, text[, priority[, noRaidSay[, sound[, broadcastOnly]]]])
 void BigWigs.modulePrototype:CancelDelayedMessage(text)
 
-void BigWigs.modulePrototype:Bar(text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+void BigWigs.modulePrototype:Bar(text, time, icon[, otherColor, c1[, c2[, c3[, c4[, c5[, c6[, c7[, c8[, c9[, c10]]]]]]]]]])
 void BigWigs.modulePrototype:RemoveBar(text)
-table BigWigs.modulePrototype:DelayedBar(delay, text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+table BigWigs.modulePrototype:DelayedBar(delay, text, time, icon[, otherColor, c1[, c2[, c3[, c4[, c5[, c6[, c7[, c8[, c9[, c10]]]]]]]]]])
 void BigWigs.modulePrototype:CancelDelayedBar(text)
 
 void BigWigs.modulePrototype:Sound(sound)
-table BigWigs.modulePrototype:DelayedSound(delay, sound, id)
-void BigWigs.modulePrototype:CancelDelayedSound(sound, id)
+table BigWigs.modulePrototype:DelayedSound(delay, sound[, id])
+void BigWigs.modulePrototype:CancelDelayedSound(sound[, id])
 
-void BigWigs.modulePrototype:Icon(name, iconnumber)
+void BigWigs.modulePrototype:Icon(name[, iconnumber])
 void BigWigs.modulePrototype:RemoveIcon()
 
-void BigWigs.modulePrototype:WarningSign(texturePath, duration, force)
-void BigWigs.modulePrototype:RemoveWarningSign(texturePath, forceHide)
+void BigWigs.modulePrototype:WarningSign(texturePath, duration[, force])
+void BigWigs.modulePrototype:RemoveWarningSign(texturePath[, forceHide])
+void BigWigs.modulePrototype:DelayedWarningSign(delay, icon, duration[, id])
+void BigWigs.modulePrototype:CancelDelayedWarningSign(icon[, id])
 
 void BigWigs.modulePrototype:Say(msg)
 
 -- KLHThreatMeter
 void BigWigs.modulePrototype:KTM_Reset()
-void BigWigs.modulePrototype:KTM_ClearTarget(forceReset)
-void BigWigs.modulePrototype:KTM_SetTarget(targetName, forceReset)
+void BigWigs.modulePrototype:KTM_ClearTarget([forceReset])
+void BigWigs.modulePrototype:KTM_SetTarget(targetName[, forceReset])
 
 
 -------------------------------------

@@ -1,9 +1,47 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Sulfuron Harbinger"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Sulfuron Harbinger"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"heal", "adds", "knockback", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	knockback = 13.5,
+    firstKnockback = 5.8,
+    heal = 2,
+    flame_spear = 13,
+}
+local icon = {
+	knockback = "Spell_Fire_Fireball",
+    heal = "Spell_Shadow_ChillTouch",
+    flame_spear = "Spell_Fire_FlameBlades",
+}
+local syncName = {
+	knockback = "SulfuronKnockback",
+    heal = "SulfuronAddHeal",
+    flame_spear = "SulfuronSpear",
+    add_dead = "SulfuronAddDead",
+}
+
+local deadpriests = 0
 
 ----------------------------
 --      Localization      --
@@ -27,6 +65,8 @@ L:RegisterTranslations("enUS", function() return {
 
 	addmsg = "%d/4 Flamewaker Priests dead!",
 
+    flame_spear_bar = "Flame Spear",
+            
 	cmd = "Sulfuron",
 	
 	knockback_cmd = "knockback",
@@ -45,7 +85,7 @@ L:RegisterTranslations("enUS", function() return {
 L:RegisterTranslations("deDE", function() return {
 	triggeradddead = "Flamewaker Priest stirbt",
 	triggercast = "beginnt Dunkle Besserung",
-    spear_cast = "begins to perform Flame Spear",
+    spear_cast = "beginnt Flammenspeer zu wirken",
 	healbar = "Dunkle Besserung",
 	knockbacktimer = "AoE R\195\188cksto\195\159",
 	knockbackannounce = "3 Sekunden bis R\195\188cksto\195\159!",
@@ -60,6 +100,8 @@ L:RegisterTranslations("deDE", function() return {
 
 	addmsg = "%d/4 Flamewaker Priest tot!",
 
+    flame_spear_bar = "Flammenspeer",
+            
 	cmd = "Sulfuron",
 	
 	knockback_cmd = "knockback",
@@ -75,92 +117,85 @@ L:RegisterTranslations("deDE", function() return {
 	adds_desc = "Verk\195\188ndet Flamewaker Priests Tod",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsSulfuron = BigWigs:NewModule(boss)
-BigWigsSulfuron.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsSulfuron.enabletrigger = boss
-BigWigsSulfuron.bossSync = "Sulfuron"
-BigWigsSulfuron.wipemobs = { L["flamewakerpriest_name"] }
-BigWigsSulfuron.toggleoptions = {"heal", "adds", "knockback", "bosskill"}
-BigWigsSulfuron.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsSulfuron:OnEnable()
-    self.started = nil
-    self.deadpriests = 0
-    
+module.wipemobs = { L["flamewakerpriest_name"] }
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "SulfuronAddHeal", 1)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SulfuronKnockback", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SulfuronSpear", 5)
+	
+	self:ThrottleSync(1, syncName.heal)
+    self:ThrottleSync(5, syncName.knockback)
+    self:ThrottleSync(5, syncName.flame_spear)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+    deadpriests = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+    if self.db.profile.knockback then
+        self:Bar(L["knockbacktimer"], timer.firstKnockback, icon.knockback)
+        self:DelayedMessage(timer.firstKnockback - 3, L["knockbackannounce"], "Urgent")
+    end
+    --self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
+    --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsSulfuron:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	if string.find(msg, L["triggeradddead"]) then
-        --DEFAULT_CHAT_FRAME:AddMessage("add dead")
-		self:TriggerEvent("BigWigs_SendSync", "SulfuronAddDead " .. tostring(self.deadpriests + 1))
+		self:Sync(syncName.add_dead .. " " .. tostring(deadpriests + 1))
 	end
 end
 
-function BigWigsSulfuron:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if string.find(msg, L["triggercast"]) then
-		self:TriggerEvent("BigWigs_SendSync", "SulfuronAddHeal")
+		self:Sync(syncName.heal)
 	end
 end
 
-function BigWigsSulfuron:Events(msg)
+function module:Events(msg)
 	if (string.find(msg, L["knockback1"]) or string.find(msg, L["knockback11"]) or string.find(msg, L["knockback2"]) or string.find(msg, L["knockback3"]) or string.find(msg, L["knockback33"]) or string.find(msg, L["knockback4"])) then
-		self:TriggerEvent("BigWigs_SendSync", "SulfuronKnockback")
+		self:Sync(syncName.knockback)
     elseif string.find(msg,"spear_cast") then
-        self:TriggerEvent("BigWigs_SendSync", "SulfuronSpear")
+        self:Sync(syncName.flame_spear)
 	end
 end
 
-function BigWigsSulfuron:BigWigs_RecvSync(sync, rest, nick)
-	--DEFAULT_CHAT_FRAME:AddMessage("sync: " .. sync)
-    --if rest then
-    --    DEFAULT_CHAT_FRAME:AddMessage("rest: " .. rest)
-    --end
-    
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self.db.profile.knockback then
-			self:ScheduleEvent("BigWigs_Message", 2.8, L["knockbackannounce"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["knockbacktimer"], 5.8 , "Interface\\Icons\\Spell_Fire_Fireball")
-		end
-        --self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
-        --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
-	elseif sync == "SulfuronAddDead" and rest and rest ~= "" then
-        --DEFAULT_CHAT_FRAME:AddMessage("sync received, add dead")
+function module:BigWigs_RecvSync(sync, rest, nick)    
+    if sync == syncName.add_dead and rest and rest ~= "" then
         rest = tonumber(rest)
-        if rest <= 4 and self.deadpriests < rest then
-            self.deadpriests = rest
-            self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], self.deadpriests), "Positive")
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - self.deadpriests))
+        if rest <= 4 and deadpriests < rest then
+            deadpriests = rest
+            self:Message(string.format(L["addmsg"], deadpriests), "Positive")
+            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - deadpriests))
         end
-	elseif sync == "SulfuronAddHeal" and self.db.profile.heal then		
-		self:TriggerEvent("BigWigs_Message", L["healwarn"], "Attention", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["healbar"], 2 , "Interface\\Icons\\Spell_Shadow_ChillTouch")
-	elseif sync == "SulfuronKnockback" and self.db.profile.knockback then
-		self:ScheduleEvent("messagewarn1", "BigWigs_Message", 10.5, L["knockbackannounce"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["knockbacktimer"], 13.5 , "Interface\\Icons\\Spell_Fire_Fireball")
-    elseif sync == "SulfuronSpear" then
-        self:TriggerEvent("BigWigs_StartBar", self, "Flame Spear", 13 , "Interface\\Icons\\Spell_Fire_FlameBlades")
+	elseif sync == syncName.heal and self.db.profile.heal then		
+		self:Message(L["healwarn"], "Attention", true, "Alarm")
+		self:Bar(L["healbar"], timer.heal, icon.heal)
+	elseif sync == syncName.knockback and self.db.profile.knockback then
+		self:Bar(L["knockbacktimer"], timer.knockback, icon.knockback)
+		self:DelayedMessage(timer.knockback - 3, L["knockbackannounce"], "Urgent")
+    elseif sync == syncName.flame_spear then
+        self:Bar(L["flame_spear_bar"], timer.flame_spear, icon.flame_spear)
 	end
 end

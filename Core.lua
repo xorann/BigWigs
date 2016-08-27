@@ -560,12 +560,21 @@ function BigWigs.modulePrototype:RemoveIcon()
 	self:TriggerEvent("BigWigs_RemoveRaidIcon")
 end
 
-function BigWigs.modulePrototype:WarningSign(texturePath, duration, force)
-	self:TriggerEvent("BigWigs_ShowWarningSign", texturePath, duration, force)
+function BigWigs.modulePrototype:WarningSign(icon, duration, force)
+	self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\" .. icon, duration, force)
 end
-function BigWigs.modulePrototype:RemoveWarningSign(texturePath, forceHide)
-	self:TriggerEvent("BigWigs_HideWarningSign", texturePath, forceHide)
+function BigWigs.modulePrototype:RemoveWarningSign(icon, forceHide)
+	self:TriggerEvent("BigWigs_HideWarningSign", icon, forceHide)
 end
+function BigWigs.modulePrototype:DelayedWarningSign(delay, icon, duration, id)
+	if not id then id = "_" end
+	self:ScheduleEvent(delayPrefix .. "WarningSign" .. self:ToString() .. icon .. id, "BigWigs_ShowWarningSign", delay, "Interface\\Icons\\" .. icon, duration)
+end
+function BigWigs.modulePrototype:CancelDelayedWarningSign(icon, id)
+    if not id then id = "_" end
+    self:CancelScheduledEvent(delayPrefix .. "WarningSign" .. self:ToString() .. icon .. id)
+end
+
 
 function BigWigs.modulePrototype:Say(msg)
 	SendChatMessage(msg, "SAY")
@@ -837,7 +846,7 @@ function BigWigs:RegisterModule(name, module)
 	--end
 end
 
-function BigWigs:EnableModule(moduleName, nosync)    
+function BigWigs:EnableModule(moduleName, nosync)
 	local m = self:GetModule(moduleName)
 	if m and not self:IsModuleActive(moduleName) then
         self:ToggleModuleActive(moduleName, true)

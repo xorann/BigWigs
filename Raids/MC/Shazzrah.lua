@@ -1,35 +1,82 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Shazzrah"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Shazzrah"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"curse", "deaden", "blink", "counterspell", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	cs = 12.5,
+    firstCS = 10,
+    curse =  22, 
+    firstCurse = 10,
+    blink = 45,
+    firstBlink = 30,
+    deaden = 30,
+    firstDeaden = 24,
+}
+local icon = {
+    cs = "Spell_Frost_IceShock",
+    curse = "Spell_Shadow_AntiShadow",
+    blink = "Spell_Arcane_Blink",
+    deaden = "Spell_Holy_SealOfSalvation",
+}
+local syncName = {
+	cs = "ShazzrahCounterspell1",
+    curse = "ShazzrahCurse1",
+    blink = "ShazzrahBlink1",
+    deaden = "ShazzrahDeadenMagicOn",
+    deadenOver = "ShazzrahDeadenMagicOff",
+}
+
 local _, playerClass = UnitClass("player")
+local firstblink = true
 
 ----------------------------
 --      Localization      --
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	trigger1 = "casts Gate of Shazzrah",
-	trigger2 = "Shazzrah gains Deaden Magic",
-	trigger3 = "afflicted by Shazzrah",
-	trigger4 = "Shazzrah casts Counterspell",
-    trigger4b = "Shazzrah(.+) Counterspell was resisted by",
-	trigger5 = "Shazzrah(.+) Curse was resisted",
-	trigger6 = "Deaden Magic fades from Shazzrah",
+	blink_trigger = "casts Gate of Shazzrah",
+	deaden_trigger = "Shazzrah gains Deaden Magic",
+	curse_trigger = "afflicted by Shazzrah",
+	cs_trigger2 = "Shazzrah casts Counterspell",
+    cs_trigger = "Shazzrah(.+) Counterspell was resisted by",
+	curse_trigger2 = "Shazzrah(.+) Curse was resisted",
+	deaden_over_trigger = "Deaden Magic fades from Shazzrah",
 
-	warn1 = "Blink - 45 seconds until next one!",
-	warn2 = "3 seconds to Blink!",
-	warn3 = "Deaden Magic is up! Dispel it!",
-	warn4 = "Shazzrah's Curse! Decurse NOW!",
-	warn5 = "Counterspell! ~18 seconds until next one!",
-	warn6 = "3 seconds until Counterspell!",
+	blink_warn = "Blink - 45 seconds until next one!",
+	blink_soon_warn = "3 seconds to Blink!",
+	deaden_warn = "Deaden Magic is up! Dispel it!",
+	curse_warn = "Shazzrah's Curse! Decurse NOW!",
+	cs_now_warn = "Counterspell! ~18 seconds until next one!",
+	cs_soon_warn = "3 seconds until Counterspell!",
 
-	bar1text = "Possible Blink",
-	bar2text = "Deaden Magic",
-	bar3text = "Shazzrah's Curse",
-	bar4text = "Counterspell",
+	blink_bar = "Possible Blink",
+	deaden_bar = "Deaden Magic",
+	curse_bar = "Shazzrah's Curse",
+	cs_bar = "Counterspell",
 
 	cmd = "Shazzrah",
 	
@@ -53,25 +100,25 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	trigger1 = "Shazzrah wirkt Portal von Shazzrah",
-	trigger2 = "Shazzrah bekommt \'Magie d\195\164mpfen",
-	trigger3 = "von Shazzrahs Fluch betroffen",
-	trigger4 = "Shazzrah wirkt Gegenzauber",
-    trigger4b = "Shazzrahs Gegenzauber wurde von (.+) widerstanden",
-	trigger5 = "Shazzrahs Fluch(.)widerstanden",
-	trigger6 = "Magie d\195\164mpfen schwindet von Shazzrah",
+	blink_trigger = "Shazzrah wirkt Portal von Shazzrah",
+	deaden_trigger = "Shazzrah bekommt \'Magie d\195\164mpfen",
+	curse_trigger = "von Shazzrahs Fluch betroffen",
+	cs_trigger2 = "Shazzrah wirkt Gegenzauber",
+    cs_trigger = "Shazzrahs Gegenzauber wurde von (.+) widerstanden",
+	curse_trigger2 = "Shazzrahs Fluch(.)widerstanden",
+	deaden_over_trigger = "Magie d\195\164mpfen schwindet von Shazzrah",
 
-	warn1 = "Blinzeln! N\195\164chstes in ~45 Sekunden!",
-	warn2 = "Blinzeln in ~5 Sekunden!",
-	warn3 = "Magie d\195\164mpfen auf Shazzrah! Entferne magie!",
-	warn4 = "Shazzrahs Fluch! Entfluche JETZT!",
-	warn5 = "Gegenzauber - 40 Sekunden bis zum n\195\164chsten!",
-	warn6 = "3 Sekunden bis Gegenzauber!",
+	blink_warn = "Blinzeln! N\195\164chstes in ~45 Sekunden!",
+	blink_soon_warn = "Blinzeln in ~5 Sekunden!",
+	deaden_warn = "Magie d\195\164mpfen auf Shazzrah! Entferne magie!",
+	curse_warn = "Shazzrahs Fluch! Entfluche JETZT!",
+	cs_now_warn = "Gegenzauber - 40 Sekunden bis zum n\195\164chsten!",
+	cs_soon_warn = "3 Sekunden bis Gegenzauber!",
 
-	bar1text = "Mögliches Blinzeln",
-	bar2text = "Magie d\195\164mpfen",
-	bar3text = "N\195\164chster Fluch",
-	bar4text = "N\195\164chster Gegenzauber",
+	blink_bar = "Mögliches Blinzeln",
+	deaden_bar = "Magie d\195\164mpfen",
+	curse_bar = "N\195\164chster Fluch",
+	cs_bar = "N\195\164chster Gegenzauber",
 	
 	cmd = "Shazzrah",
 	
@@ -92,25 +139,13 @@ L:RegisterTranslations("deDE", function() return {
 	blink_desc = "Warnen wenn Shazzrah blinzelt",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsShazzrah = BigWigs:NewModule(boss)
-BigWigsShazzrah.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsShazzrah.enabletrigger = boss
-BigWigsShazzrah.bossSync = "Shazzrah"
-BigWigsShazzrah.toggleoptions = {"curse", "deaden", "blink", "counterspell", "bosskill"}
-BigWigsShazzrah.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsShazzrah:OnEnable()
-	firstcounterspell = 0
-	firstblink = 0
-	firstcurse = 0
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
@@ -123,85 +158,125 @@ function BigWigsShazzrah:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahBlink1", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCurse1", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahDeadenMagicOn", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahDeadenMagicOff", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ShazzrahCounterspell1", 5)
+	
+	self:ThrottleSync(10, syncName.blink)
+    self:ThrottleSync(10, syncName.curse)
+    self:ThrottleSync(5, syncName.deaden)
+    self:ThrottleSync(5, syncName.deadenOver)
+    self:ThrottleSync(5, syncName.cs)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	firstblink = true
+end
+
+-- called after boss is engaged
+function module:OnEngage()        
+    if self.db.profile.counterspell then
+        self:Bar(L["cs_bar"], timer.firstCS, icon.cs)
+    end
+    self:DelayedSync(timer.firstCS, syncName.cs)
+    
+    if self.db.profile.blink then
+        self:Bar(L["blink_bar"], timer.firstBlink, icon.blink)
+    end
+    self:DelayedSync(timer.firstBlink, syncName.blink)
+    
+    if self.db.profile.curse then
+        self:Bar(L["curse_bar"], timer.firstCurse, icon.curse)
+    end
+    if self.db.profile.deaden then
+        self:Bar(L["deaden_bar"], timer.firstDeaden, icon.deaden)
+    end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsShazzrah:Event(msg)
-	if (string.find(msg, L["trigger2"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahDeadenMagicOn")
-	elseif (string.find(msg, L["trigger6"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahDeadenMagicOff")
-	elseif (string.find(msg, L["trigger1"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlink1")
-	elseif (string.find(msg, L["trigger4"]) or string.find(msg, L["trigger4b"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1")
-	elseif (string.find(msg, L["trigger3"]) or string.find(msg, L["trigger5"])) then
-		self:TriggerEvent("BigWigs_SendSync", "ShazzrahCurse1")
+function module:Event(msg)
+	if (string.find(msg, L["deaden_trigger"])) then
+		self:Sync(syncName.deaden)
+	elseif (string.find(msg, L["deaden_over_trigger"])) then
+		self:Sync(syncName.deadenOver)
+	elseif (string.find(msg, L["blink_trigger"])) then
+		self:Sync(syncName.blink)
+	elseif (string.find(msg, L["cs_trigger2"]) or string.find(msg, L["cs_trigger"])) then
+		self:Sync(syncName.cs)
+	elseif (string.find(msg, L["curse_trigger"]) or string.find(msg, L["curse_trigger2"])) then
+		self:Sync(syncName.curse)
 	end
 end
 
-function BigWigsShazzrah:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        if sync ~= "ShazzrahEngaged" then self:TriggerEvent("BigWigs_SendSync", "ShazzrahEngaged") end
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.blink then
+        self:Blink()
+	elseif sync == syncName.deaden  then
+        self:DeadenMagic()
+	elseif sync == syncName.deadenOver then
+		self:DeadenMagicOver()
+	elseif sync == syncName.curse then
+		self:Curse()
+	elseif sync == syncName.cs then
+		self:Counterspell()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Counterspell()
+    if self.db.profile.counterspell then
+        self:Bar(L["cs_bar"], timer.cs, icon.cs)
+    end
+    self:DelayedSync(timer.cs, syncName.cs)
+end
+
+function module:Curse()
+    self:Message(L["curse_warn"], "Attention", "Alarm")
+    self:Bar(L["curse_bar"], timer.curse, icon.curse)
+end
+
+function module:Blink()
+	firstblink = false
+    self:KTM_Reset()
+    
+    if self.db.profile.blink then
+        self:Message(L["blink_warn"], "Important")
+        self:Bar(L["blink_bar"], timer.blink, icon.blink)
         
-        if self.db.profile.counterspell then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar4text"], 10, "Interface\\Icons\\Spell_Frost_IceShock")
-			self:ScheduleEvent("csfirsttoX", self.Counterspell, 10, self)
-		end
-		if self.db.profile.blink then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 30, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleEvent("blinkfirsttoX", self.Blink, 30, self)
-		end
-		if self.db.profile.curse then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 10, "Interface\\Icons\\Spell_Shadow_AntiShadow")
-		end
-        if self.db.profile.deaden then
-            self:TriggerEvent("BigWigs_StartBar", self, "Next Deaden Magic", 24, "Interface\\Icons\\Spell_Holy_SealOfSalvation")
-        end
-	elseif sync == "ShazzrahBlink1" then
-		firstblink = 1
-		--klhtm:ResetRaidThreat()
-		if self.db.profile.blink then
-			self:TriggerEvent("BigWigs_Message", L["warn1"], "Important")
-			self:ScheduleEvent("BigWigs_Message", 40, L["warn2"], "Attention", "Alarm")
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 45, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleRepeatingEvent("blinkrepeatable", self.Blink, 45, self)
-		end
-	elseif sync == "ShazzrahDeadenMagicOn" and self.db.profile.deaden then
-        self:TriggerEvent("BigWigs_StopBar", self, "Next Deaden Magic")
-		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar2text"], 30, "Interface\\Icons\\Spell_Holy_SealOfSalvation")
-        if playerClass == "SHAMAN" or playerClass == "PRIEST" then
-            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Holy_SealOfSalvation", 30)
-        end
-	elseif sync == "ShazzrahDeadenMagicOff" and self.db.profile.deaden then
-		self:TriggerEvent("BigWigs_StopBar", self, L["bar2text"])
-        if playerClass == "SHAMAN" or playerClass == "PRIEST" then
-            self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Holy_SealOfSalvation")
-        end
-	elseif sync == "ShazzrahCurse1" and self.db.profile.curse then
-		self:TriggerEvent("BigWigs_Message", L["warn4"], "Attention", "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar3text"], 22, "Interface\\Icons\\Spell_Shadow_AntiShadow")
-	elseif sync == "ShazzrahCounterspell1" and self.db.profile.counterspell then
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar4text"], 12.5, "Interface\\Icons\\Spell_Frost_IceShock")
-	    self:ScheduleRepeatingEvent("csrepeatable", self.Counterspell, 12.5, self)
-	end
+        self:DelayedMessage(timer.blink - 5, L["blink_soon_warn"], "Attention", "Alarm")
+    end
+    
+    self:DelayedSync(timer.blink, syncName.blink)
 end
 
-function BigWigsShazzrah:Counterspell()	
-	self:TriggerEvent("BigWigs_SendSync", "ShazzrahCounterspell1");
+function module:DeadenMagic()
+    if self.db.profile.deaden then
+        self:RemoveBar(L["deaden_bar"])
+        self:Message(L["deaden_warn"], "Important")
+        self:Bar(L["deaden_bar"], timer.deaden, icon.deaden)
+        if playerClass == "SHAMAN" or playerClass == "PRIEST" then
+            self:WarningSign(icon.deaden, timer.deaden)
+        end
+    end
 end
 
-function BigWigsShazzrah:Blink()
-	self:TriggerEvent("BigWigs_SendSync", "ShazzrahBlink1");
+function module:DeadenMagicOver()
+    if self.db.profile.deaden then
+        self:RemoveBar(L["deaden_bar"])
+        if playerClass == "SHAMAN" or playerClass == "PRIEST" then
+            self:RemoveWarningSign(icon.deaden)
+        end
+    end
 end

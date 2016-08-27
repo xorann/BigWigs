@@ -10,14 +10,12 @@ local bossName = "Testboss"
 local boss = AceLibrary("Babble-Boss-2.2")[bossName]
 local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---BigWigsTestboss = module
-module.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 --module.bossSync = bossName -- untranslated string
 
 -- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 module.revision = 20003 -- To be overridden by the module!
 module.enabletrigger = boss -- string or table {boss, add1, add2}
-module.wipemobs = nil
 module.toggleoptions = {"berserk", "bosskill"}
 
 -- Proximity Plugin
@@ -38,6 +36,7 @@ local icon = {
 }
 local syncName = {
 	teleport = "TwinsTeleport",
+	berserk = "TestbossBerserk"
 }
 
 local berserkannounced = nil
@@ -59,6 +58,8 @@ L:RegisterTranslations("enUS", function() return {
 	berserktrigger = "%s goes into a berserker rage!",
 	berserkannounce = "Berserk - Berserk!",
 	berserksoonwarn = "Berserk Soon - Get Ready!",
+	
+	add_name = "Dragon",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -70,6 +71,8 @@ L:RegisterTranslations("deDE", function() return {
 	berserktrigger = "%s bekommt Berserkerwut!",
 	berserkannounce = "Berserk - Berserk!",
 	berserksoonwarn = "Berserkerwut in Kürze - Bereit machen!",
+	
+	add_name = "Drache",
 } end )
 
 
@@ -77,6 +80,7 @@ L:RegisterTranslations("deDE", function() return {
 --      Initialization      --
 ------------------------------
 
+module.wipemobs = { L["add_name"] }
 module:RegisterYellEngage(L["start_trigger"])
 
 -- called after module is enabled
@@ -84,7 +88,7 @@ function module:OnEnable()
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	
-	self:TriggerEvent("BigWigs_ThrottleSync", "TestbossBerserk", 10)
+	self:ThrottleSync(10, syncName.berserk)
 end
 
 -- called after module is enabled and after each wipe
@@ -121,7 +125,7 @@ end
 
 function module:CHAT_MSG_MONSTER_EMOTE(msg)
 	if msg == L["berserktrigger"] then
-		self:Sync("TestbossBerserk")
+		self:Sync(syncName.berserk)
 	end
 end
 
@@ -133,7 +137,7 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
         self.started = true
-	elseif sync == "TestbossBerserk" then
+	elseif sync == syncName.berserk then
 		self:Berserk()
 	end
 end

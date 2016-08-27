@@ -1,3 +1,17 @@
+--[[
+    Backport from later versions by Dorann
+    https://github.com/xorann/BigWigs
+    
+	This is a small plugin to show which raid members are in close range. This is useful for encounters like C'Thun.
+	Boss modules can override the following properties:
+	module.proximityCheck = function(unit) return CheckInteractDistance(unit, 3) end
+	module.proximitySilent = true
+	
+	module.proximityCheck defines the function to use for the range check. The CheckInteractDistance function has four possible input values for different ranges: 1=10(?) yards; 2=11.11 yards; 3=9.9 yards; 4=28 yards
+	module.proximitySilent allows you to configure whether a warning sound should be played, whenever a raid member is too close
+--]]
+
+
 assert( BigWigs, "BigWigs not found!")
 
 -----------------------------------------------------------------------

@@ -50,6 +50,7 @@ function BigWigsAFKick:BigWigs_RecvSync(sync, rest, nick)
             if name and name == nick then
                 if rank > 0 then
                     -- the author is at least assistant
+					self:IsAfk()
                     break
                 else
                     -- the author is a fucktard trying to abuse my system
@@ -68,5 +69,15 @@ function BigWigsAFKick:IsAfk()
     -- maybe afk flag enables a 40sec timer in which the player can return and cancel the process
     -- so after 40s the Logout window shall appear which again has a 20s timer so that the player
     -- has 1min in total to react and cancel the process of logging out
+	 
+	-- if we are in a boss fight, don't do anything
+	-- if we are not in a boss fight, show pop up with countdown and who initiated the logout
+	-- after the countdown is over try to logout. if not possible take stronger measures
+	
+	-- Quit() -- normal exit game, 20s warning
+	-- ForceQuit() -- immidiate exit
+	-- Logout() -- normal logout, 20s warning
+	-- Camp() ?? -- does not work
+	
     return false
 end

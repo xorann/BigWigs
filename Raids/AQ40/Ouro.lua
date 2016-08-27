@@ -422,6 +422,6 @@ function BigWigsOuro:Test()
     self:ScheduleEvent(self:ToString().."Test_emerge", emerge, 42, self)
     
     -- reset after 60s
-    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 4, self)
+    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 60, self)
     
 end

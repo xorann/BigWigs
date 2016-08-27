@@ -1,9 +1,35 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Garr"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Garr"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+--module.wipemobs = nil
+module.toggleoptions = {"adds", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {}
+local icon = {}
+local syncName = {
+}
+
+local adds = 0
 
 ----------------------------
 --      Localization      --
@@ -65,66 +91,72 @@ L:RegisterTranslations("deDE", function() return {
 	adds_desc = "Verk\195\188ndet Feueranbeter Tod",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsGarr = BigWigs:NewModule(boss)
-BigWigsGarr.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsGarr.enabletrigger = boss
-BigWigsGarr.bossSync = "Garr"
-BigWigsGarr.wipemobs = { L["firesworn_name"] }
-BigWigsGarr.toggleoptions = {"adds", "bosskill"}
-BigWigsGarr.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGarr:OnEnable()
-    self.started    = nil
-    self.adds       = 0
+module.wipemobs = { L["firesworn_name"] }
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started    = nil
+    adds       		= 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	--self:TriggerEvent("BigWigs_StartCounterBar", self, L["counterbarMsg"], 8, "Interface\\Icons\\spell_nature_strengthofearthtotem02")
+    --self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - 0.1))
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsGarr:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        --self:TriggerEvent("BigWigs_StartCounterBar", self, L["counterbarMsg"], 8, "Interface\\Icons\\spell_nature_strengthofearthtotem02")
-        --self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - 0.1))
-    elseif self.started and string.find(sync, "GarrAddDead%d") then
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+	if (string.find(msg, L["triggeradddead8"])) then
+		self:Sync("GarrAddDead8")
+	elseif (string.find(msg, L["triggeradddead7"])) then
+		self:Sync("GarrAddDead7")
+	elseif (string.find(msg, L["triggeradddead6"])) then
+		self:Sync("GarrAddDead6")
+	elseif (string.find(msg, L["triggeradddead5"])) then
+		self:Sync("GarrAddDead5")
+	elseif (string.find(msg, L["triggeradddead4"])) then
+		self:Sync("GarrAddDead4")
+	elseif (string.find(msg, L["triggeradddead3"])) then
+		self:Sync("GarrAddDead3")
+	elseif (string.find(msg, L["triggeradddead2"])) then
+		self:Sync("GarrAddDead2")
+	elseif (string.find(msg, L["triggeradddead1"])) then
+		self:Sync("GarrAddDead1")
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if self.started and string.find(sync, "GarrAddDead%d") then
         local newCount = tonumber(string.sub(sync, 12))
-        
         
         if self.adds < newCount then
             self.adds = newCount
-            self:TriggerEvent("BigWigs_Message", L["addmsg"..newCount], "Positive")
+            self:Message(L["addmsg"..newCount], "Positive")
             --self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - newCount))
         end
     end
-end
-
-function BigWigsGarr:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
-	if (string.find(msg, L["triggeradddead8"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead8")
-	elseif (string.find(msg, L["triggeradddead7"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead7")
-	elseif (string.find(msg, L["triggeradddead6"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead6")
-	elseif (string.find(msg, L["triggeradddead5"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead5")
-	elseif (string.find(msg, L["triggeradddead4"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead4")
-	elseif (string.find(msg, L["triggeradddead3"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead3")
-	elseif (string.find(msg, L["triggeradddead2"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead2")
-	elseif (string.find(msg, L["triggeradddead1"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GarrAddDead1")
-	end
 end

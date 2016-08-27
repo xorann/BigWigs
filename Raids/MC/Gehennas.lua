@@ -1,29 +1,68 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Gehennas"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Gehennas"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"adds", "curse", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	firstCurse = 12,
+	firstRain = 10,
+	rainTick = 2,
+	rainDuration = 6,
+	nextRain = 15,
+	curse = 31,
+}
+local icon = {
+	curse = "Spell_Shadow_BlackPlague",
+	rain = "Spell_Shadow_RainOfFire",
+}
+local syncName = {
+	curse = "GehennasCurse",
+	add = "GehennasAddDead"
+}
+
+local flamewaker = 0
+
 
 ----------------------------
 --      Localization      --
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	trigger1 = "afflicted by Gehennas",
-	--trigger2 = "Gehennas begins to cast Shadow Bolt",
-	trigger3 = "You are afflicted by Rain of Fire",
-	trigger4 = "Gehennas' Curse was resisted",
+	curse_trigger = "afflicted by Gehennas",
+	--bolt_trigger = "Gehennas begins to cast Shadow Bolt",
+	rain_trigger = "You are afflicted by Rain of Fire",
+	rain_run_trigger = "You suffer (%d+) (.+) from "..boss.." 's Rain of Fire.",
+	curse_trigger2 = "Gehennas' Curse was resisted",
 	dead1 = "Flamewaker dies",
 	addmsg = "%d/2 Flamewakers dead!",
 	flamewaker_name = "Flamewaker",
 
     barNextRain = "Next Rain",
             
-	warn1 = "5 seconds until Gehennas' Curse!",
-	warn2 = "Gehennas' Curse - Decurse NOW!",
+	curse_warn_soon = "5 seconds until Gehennas' Curse!",
+	curse_warn_now = "Gehennas' Curse - Decurse NOW!",
 
-	bar1text = "Gehennas' Curse",
+	curse_bar = "Gehennas' Curse",
 	firewarn = "Move from FIRE!",
 
 	cmd = "Gehennas",
@@ -38,20 +77,22 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	trigger1 = "von Gehennas(.+)Fluch betroffen",
-	--trigger2 = "Gehennas beginnt Schattenblitz",
-	trigger3 = "Ihr seid von Feuerregen betroffen",
-	trigger4 = "Gehennas\' Fluch(.+) widerstanden",
+	curse_trigger = "von Gehennas(.+)Fluch betroffen",
+	--bolt_trigger = "Gehennas beginnt Schattenblitz",
+	rain_trigger = "Ihr seid von Feuerregen betroffen",
+	rain_run_trigger = "Ihr erleidet (%d+) (.+) von "..boss.." Feuerregen.",	
+	
+	curse_trigger2 = "Gehennas\' Fluch(.+) widerstanden",
 	dead1 = "Feuerschuppe stirbt",
 	addmsg = "%d/2 Feuerschuppe tot!",
 	flamewaker_name = "Feuerschuppe",
 
     barNextRain = "N\195\164chster Regen",
             
-	warn1 = "5 Sekunden bis Gehennas' Fluch!",
-	warn2 = "Gehennas' Fluch - JETZT Entfluchen!",
+	curse_warn_soon = "5 Sekunden bis Gehennas' Fluch!",
+	curse_warn_now = "Gehennas' Fluch - JETZT Entfluchen!",
 
-	bar1text = "Gehennas' Fluch",
+	curse_bar = "Gehennas' Fluch",
 	firewarn = "Raus aus dem Feuer!",
 
 	cmd = "Gehennas",
@@ -65,27 +106,16 @@ L:RegisterTranslations("deDE", function() return {
 	curse_desc = "Warnen vor Gehennas' Fluch",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsGehennas = BigWigs:NewModule(boss)
-BigWigsGehennas.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsGehennas.enabletrigger = boss
-BigWigsGehennas.bossSync = "Gehennas"
-BigWigsGehennas.wipemobs = { L["flamewaker_name"] }
-BigWigsGehennas.toggleoptions = {"adds", "curse", "bosskill"}
-BigWigsGehennas.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGehennas:OnEnable()
-    self.started    = false
-	self.flamewaker = 0
-	
-    self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE",        "Event")
+module.wipemobs = { L["flamewaker_name"] }
+
+-- called after module is enabled
+function module:OnEnable()	
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE",        "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE",            "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_FRIENDLYPLAYER_DAMAGE",  "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE",              "Event")
@@ -93,60 +123,76 @@ function BigWigsGehennas:OnEnable()
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE",               "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
     self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-    self:RegisterEvent("PLAYER_REGEN_DISABLED",     "CheckForEngage")
-    self:RegisterEvent("BigWigs_RecvSync")
-    self:TriggerEvent("BigWigs_ThrottleSync",       "GehennasCurse",    10)
+	
+	self:ThrottleSync(10, syncName.curse)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = false
+	flamewaker = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.curse then
+		self:DelayedMessage(timer.firstCurse - 5, L["curse_warn_soon"], "Urgent")
+		self:Bar(L["curse_bar"], timer.firstCurse, icon.curse)
+	end
+	self:Bar(L["barNextRain"], timer.firstRain, icon.rain)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsGehennas:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        
-		if self.db.profile.curse then
-			self:ScheduleEvent("messagewarn2", "BigWigs_Message", 7, L["warn1"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 12, "Interface\\Icons\\Spell_Shadow_BlackPlague")
-		end
-        self:TriggerEvent("BigWigs_StartBar", self, L["barNextRain"], 10, "Interface\\Icons\\Spell_Shadow_RainOfFire")
-	elseif sync == "GehennasCurse" and self.db.profile.curse then
-		self:ScheduleEvent("messagewarn1", "BigWigs_Message", 26, L["warn1"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 31, "Interface\\Icons\\Spell_Shadow_BlackPlague")
-	elseif sync == "GehennasAddDead" and rest and rest ~= "" then
-        rest = tonumber(rest)
-        if rest <= 2 and self.flamewaker < rest then
-            self.flamewaker = rest
-            self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], self.flamewaker), "Positive")
-        end
-	end
-end
-
-
-function BigWigsGehennas:Event(msg)
-    if string.find(msg, "You suffer (%d+) (.+) from "..boss.." 's Rain of Fire.") then
+function module:Event(msg)
+    if string.find(msg, L["rain_run_trigger"]) then
         -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire", 2)
-    elseif ((string.find(msg, L["trigger1"])) or (string.find(msg, L["trigger4"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "GehennasCurse")
-	elseif (string.find(msg, L["trigger3"])) then
+        self:WarningSign(icon.rain, timer.rainTick)
+    elseif ((string.find(msg, L["curse_trigger"])) or (string.find(msg, L["curse_trigger2"]))) then
+		self:Sync(syncName.curse)
+	elseif (string.find(msg, L["rain_trigger"])) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-		self:TriggerEvent("BigWigs_Message", L["firewarn"], "Attention", "Alarm")
-        self:ScheduleEvent("BigWigs_StartBar", 6, self, L["barNextRain"], 9, "Interface\\Icons\\Spell_Shadow_RainOfFire")
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire", 6)
+		self:Message(L["firewarn"], "Attention", "Alarm")
+        self:WarningSign(icon.rain, timer.rainDuration)
+        self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain)
 	end
 end
 
-function BigWigsGehennas:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-    if string.find(msg,"Rain of Fire") then
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+    if string.find(msg, "Rain of Fire") then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Shadow_RainOfFire")
+        self:RemoveWarningSign(icon.rain)
     end
 end
 
-function BigWigsGehennas:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["dead1"]) then
-		self:TriggerEvent("BigWigs_SendSync", "GehennasAddDead " .. tostring(self.flamewaker + 1))
+		self:Sync(syncName.add .. " " .. tostring(flamewaker + 1))
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.curse and self.db.profile.curse then
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Urgent")
+		self:Bar(self, L["curse_bar"], timer.curse, icon.curse)
+	elseif sync == syncName.add and rest and rest ~= "" then
+        rest = tonumber(rest)
+        if rest <= 2 and flamewaker < rest then
+            flamewaker = rest
+            self:Message(string.format(L["addmsg"], flamewaker), "Positive")
+        end
 	end
 end

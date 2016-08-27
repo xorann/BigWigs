@@ -1,3 +1,10 @@
+--[[
+    by Dorann
+    https://github.com/xorann/BigWigs
+    
+	This is a small plugin to show which runes in Molten Core are already doused. By default the window is shown after a boss with a rune was killed or a rune was doused.
+--]]
+
 assert( BigWigs, "BigWigs not found!")
 
 -----------------------------------------------------------------------

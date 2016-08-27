@@ -1,10 +1,47 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Magmadar"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Magmadar"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"panic", "frenzy", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	panic = 30,
+	firstPanicDelay = 20 - 30,
+	frenzy = 8,
+}
+local icon = {
+	panic = "Spell_Shadow_DeathScream",
+	frenzy = "Ability_Druid_ChallangingRoar",
+	tranquil = "Spell_Nature_Drowsy",
+}
+local syncName = {
+	panic = "MagmadarPanic",
+	frenzy = "MagmadarFrenzyStart",
+	frenzyOver = "MagmadarFrenzyStop",
+}
+
+
 local _, playerClass = UnitClass("player")
+
 
 ----------------------------
 --      Localization      --
@@ -12,10 +49,10 @@ local _, playerClass = UnitClass("player")
 
 L:RegisterTranslations("enUS", function() return {
 	-- Chat message triggers
-	trigger1 = "goes into a killing frenzy!",
-	trigger2 = "afflicted by Panic.",
-	trigger3 = "Panic fail(.+) immune.",
-	trigger4 = "Magmadar's Panic was resisted",
+	frenzy_trigger = "goes into a killing frenzy!",
+	panic_trigger = "afflicted by Panic.",
+	panic_trigger2 = "Panic fail(.+) immune.",
+	panic_trigger3 = "Magmadar's Panic was resisted",
 	frenzy_bar = "Frenzy",
 	frenzyfade_trigger = "Frenzy fades from Magmadar",
 
@@ -38,10 +75,10 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	trigger1 = "wird m\195\182rderisch wahnsinnig!",
-	trigger2 = "von Panik betroffen",
-	trigger3 = "Panik(.+)immun",
-	trigger4 = "Panik(.+)widerstanden",
+	frenzy_trigger = "wird m\195\182rderisch wahnsinnig!",
+	panic_trigger = "von Panik betroffen",
+	panic_trigger2 = "Panik(.+)immun",
+	panic_trigger3 = "Panik(.+)widerstanden",
 	frenzy_bar = "Wutanfall",
 	frenzyfade_trigger = "Wutanfall schwindet von Magmadar.",
 
@@ -59,102 +96,112 @@ L:RegisterTranslations("deDE", function() return {
 	frenzy_desc = "Warnung, wenn Magmadar in Raserei ger\195\164t.",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsMagmadar = BigWigs:NewModule(boss)
-BigWigsMagmadar.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsMagmadar.enabletrigger = boss
-BigWigsMagmadar.bossSync = "Magmadar"
-BigWigsMagmadar.toggleoptions = {"panic", "frenzy", "bosskill"}
-BigWigsMagmadar.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
-
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsMagmadar:OnEnable()
-	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "GenericBossDeath")
-	firstpanic = 0
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Panic")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Panic")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Panic")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Panic")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Panic")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Panic")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "MagmadarPanic", 15)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MagmadarFrenzyStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MagmadarFrenzyStop", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MagmadarPanicIni", 10)
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckPanic")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckPanic")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckPanic")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckPanic")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckPanic")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CheckPanic")
+
+	self:ThrottleSync(15, syncName.panic)
+	self:ThrottleSync(5, syncName.frenzy)
+	self:ThrottleSync(5, syncName.frenzyOver)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Panic(timer.firstPanicDelay) -- 10s earlier than normal
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsMagmadar:CHAT_MSG_MONSTER_EMOTE(msg)
-	if string.find(arg1, L["trigger1"]) and self.db.profile.frenzy then
-		self:TriggerEvent("BigWigs_SendSync", "MagmadarFrenzyStart")
+function module:CheckPanic(msg)
+	if ((string.find(msg, L["panic_trigger"])) or (string.find(msg, L["panic_trigger2"])) or (string.find(msg, L["panic_trigger3"]))) then
+		self:Sync(syncName.panic)
 	end
 end
 
-function BigWigsMagmadar:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
+	if string.find(arg1, L["frenzy_trigger"]) and self.db.profile.frenzy then
+		self:Sync(syncName.frenzy)
+	end
+end
+
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
 	if string.find(msg, L["frenzyfade_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "MagmadarFrenzyStop")
+		self:Sync(syncName.frenzyOver)
 	end
 end
 
-function BigWigsMagmadar:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		
-		if firstpanic == 0 then
-			self:TriggerEvent("BigWigs_SendSync", "MagmadarPanicIni")
-		end
-	elseif sync == "MagmadarPanicIni" then
-		firstpanic = 1
-		if self.db.profile.panic then
-			self:ScheduleEvent("BigWigs_Message", 15, L["fearsoon"], "Attention")		
-			self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 20, "Interface\\Icons\\Spell_Shadow_DeathScream")
-            
-            self:DelayedSound(10, "Ten")
-            self:DelayedSound(17, "Three")
-            self:DelayedSound(18, "Two")
-            self:DelayedSound(19, "One")
-		end
-        self:TriggerEvent("BigWigs_StartBar", self, "First Frenzy", 29, "Interface\\Icons\\Ability_Druid_ChallangingRoar")
-        --self:TriggerEvent("BigWigs_StartBar", self, "Lava Bomb", 12, "Interface\\Icons\\Spell_Fire_SelfDestruct")
-        --self:ScheduleEvent("BigWigs_SendSync", 12, "MagmadarLavaBomb")
-	elseif sync == "MagmadarPanic" and self.db.profile.panic then
-		self:TriggerEvent("BigWigs_Message", L["feartime"], "Important")
-		self:ScheduleEvent("BigWigs_Message", 25, L["fearsoon"], "Urgent")		
-		self:TriggerEvent("BigWigs_StartBar", self, L["fearbar"], 30, "Interface\\Icons\\Spell_Shadow_DeathScream")
-        
-        self:DelayedSound(20, "Ten")
-        self:DelayedSound(27, "Three")
-        self:DelayedSound(28, "Two")
-        self:DelayedSound(29, "One")
-	elseif sync == "MagmadarFrenzyStart" and self.db.profile.frenzy then
-		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
-        if playerClass == "HUNTER" then
-            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
-        end
-	elseif sync == "MagmadarFrenzyStop" and self.db.profile.frenzy then
-        self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy")
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.panic then
+		self:Panic()
+	elseif sync == syncName.frenzy then
+		self:Frenzy()
+	elseif sync == syncName.frenzyOver then
+        self:FrenzyOver()
     elseif sync == "MagmadarLavaBomb" then
-        --self:TriggerEvent("BigWigs_StartBar", self, "Lava Bomb", 11, "Interface\\Icons\\Spell_Fire_SelfDestruct")
-        --self:ScheduleEvent("BigWigs_SendSync", 11, "MagmadarLavaBomb")
+        --self:Bar("Lava Bomb", 11, "Spell_Fire_SelfDestruct")
+        --self:Sync(11, "MagmadarLavaBomb")
 	end
 end
 
-function BigWigsMagmadar:Panic(msg)
-	if ((string.find(msg, L["trigger2"])) or (string.find(msg, L["trigger3"])) or (string.find(msg, L["trigger4"]))) then
-		self:TriggerEvent("BigWigs_SendSync", "MagmadarPanic")
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Panic(delay)
+	if self.db.profile.panic then
+		if not delay then
+			delay = 0
+			self:Message(L["feartime"], "Important")
+		end
+	
+		self:DelayedMessage(timer.panic - 5 + delay, L["fearsoon"], "Urgent")		
+		self:Bar(L["fearbar"], timer.panic + delay, icon.panic)
+		
+		if playerClass == "WARRIOR" then
+			self:DelayedSound(timer.panic - 10 + delay, "Ten")
+			self:DelayedSound(timer.panic - 3 + delay, "Three")
+			self:DelayedSound(timer.panic - 2 + delay, "Two")
+			self:DelayedSound(timer.panic - 1 + delay, "One")
+		end
 	end
+end
+
+function module:Frenzy()
+	if self.db.profile.frenzy then
+		self:Message(L["frenzyann"], "Important", true, "Alert")
+		self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
+		if playerClass == "HUNTER" then
+			self:WarningSign(icon.tranquil, timer.frenzy, true)
+		end
+	end
+end
+function module:FrenzyOver()
+	self:RemoveBar(L["frenzy_bar"])
+    self:RemoveWarningSign(icon.tranquil)
 end

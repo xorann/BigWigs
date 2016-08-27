@@ -1,9 +1,35 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Golemagg the Incinerator"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Golemagg the Incinerator"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"earthquake", "enraged", "bosskill"}
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {}
+local icon = {}
+local syncName = {
+	earthquake = "GolemaggEarthquake",
+	enrage = "GolemaggEnrage",
+}
+
+local earthquakeon = nil
 
 ----------------------------
 --      Localization      --
@@ -43,61 +69,68 @@ L:RegisterTranslations("deDE", function() return {
 	earthquake_desc = "Sagt an, wenn es f\195\188r die Melees zeit ist, weg zu gehen",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsGolemagg = BigWigs:NewModule(boss)
-BigWigsGolemagg.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsGolemagg.enabletrigger = boss
-BigWigsGolemagg.bossSync = "Golemagg"
-BigWigsGolemagg.wipemobs = { L["corerager_name"] }
-BigWigsGolemagg.toggleoptions = { "earthquake", "enraged", "bosskill"}
-BigWigsGolemagg.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGolemagg:OnEnable()
-    self.started = nil
-	earthquakeon = nil
+module.wipemobs = { L["corerager_name"] }
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "GolemaggEarthquake", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GolemaggEnrage", 10)
+	
+	self:ThrottleSync(10, syncName.earthquake)
+	self:ThrottleSync(10, syncName.enrage)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	earthquakeon = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsGolemagg:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:KTM_SetTarget(boss)
-	elseif sync == "GolemaggEarthquake" and self.db.profile.earthquake then
-		self:TriggerEvent("BigWigs_Message", L["earthquakesoonwarn"], "Attention", "Alarm")
-	elseif sync == "GolemaggEnrage" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Attention", true, "Beware")
-	end
-end
-
-function BigWigsGolemagg:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if string.find(msg, L["golemaggenrage"]) then
-		self:TriggerEvent("BigWigs_SendSync", "GolemaggEnrage")
+		self:Sync(syncName.enrage)
 	end
 end
 
-function BigWigsGolemagg:UNIT_HEALTH(arg1)
+function module:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		if health > 15 and health <= 20 and not earthquakeon then
-			self:TriggerEvent("BigWigs_SendSync", "GolemaggEarthquake")
+			self:Sync(syncName.earthquake)
 			earthquakeon = true
 		elseif health > 20 and earthquakeon then
 			earthquakeon = nil
 		end
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.earthquake and self.db.profile.earthquake then
+		self:Message(L["earthquakesoonwarn"], "Attention", "Alarm")
+	elseif sync == syncName.enrage and self.db.profile.enraged then
+		self:Message(L["enragewarn"], "Attention", true, "Beware")
 	end
 end

@@ -10,11 +10,10 @@ local bossName = "Lucifron"
 local boss = AceLibrary("Babble-Boss-2.2")[bossName]
 local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---BigWigsTestboss = module
-module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
 --module.bossSync = bossName -- untranslated string
 
 -- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
 module.revision = 20003 -- To be overridden by the module!
 module.enabletrigger = boss -- string or table {boss, add1, add2}
 
@@ -26,10 +25,23 @@ module.toggleoptions = {"adds", "curse", "doom", "shock", "mc", "bosskill"}
 ---------------------------------
 
 local timer = {
+	curse = 20,
+	doom = 15,
+	firstDoom = 10,
+	mc = 15,
 }
 local icon = {
+	curse = "Spell_Shadow_BlackPlague",
+	doom = "Spell_Shadow_NightOfTheDead",
+	mc = "Spell_Shadow_ShadowWordDominate",
 }
 local syncName = {
+	curse = "LucifronCurseRep1",
+	doom = "LucifronDoomRep1",
+	shock = "LucifronShock1",
+	mc = "LucifronMC_",
+	mcEnd = "LucifronMCEnd_",
+	add = "LucifronAddDead",
 }
 
 
@@ -38,16 +50,16 @@ local syncName = {
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	trigger1 = "afflicted by Lucifron",
-	trigger2 = "afflicted by Impending Doom",
-	trigger3 = "s Shadow Shock hits",
-	trigger4 = "s Shadow Shock was resisted",
-	trigger5 = " Lucifron(.*) Curse was resisted",
-	trigger6 = "s Impending Doom was resisted",
-	warn1 = "5 seconds until Lucifron's Curse!",
-	warn2 = "Lucifron's Curse - 20 seconds until next!",
-	warn3 = "5 seconds until Impending Doom!",
-	warn4 = "Impending Doom - 20 seconds until next!",
+	curse_trigger = "afflicted by Lucifron",
+	doom_trigger = "afflicted by Impending Doom",
+	shock_trigger = "s Shadow Shock hits",
+	shock_trigger2 = "s Shadow Shock was resisted",
+	curse_trigger2 = " Lucifron(.*) Curse was resisted",
+	doom_trigger2 = "s Impending Doom was resisted",
+	curse_warn_soon = "5 seconds until Lucifron's Curse!",
+	curse_warn_now = "Lucifron's Curse - 20 seconds until next!",
+	doom_warn_soon = "5 seconds until Impending Doom!",
+	doom_warn_now = "Impending Doom - 20 seconds until next!",
 	mindcontrolyou_trigger = "You are afflicted by Dominate Mind.",
 	mindcontrolother_trigger = "(.*) is afflicted by Dominate Mind.",
 	mindcontrolyouend_trigger = "Dominate Mind fades from you.",
@@ -62,9 +74,9 @@ L:RegisterTranslations("enUS", function() return {
 	mindcontrol_bar = "MC: %s",
 	addmsg = "%d/2 Flamewaker Protectors dead!",
 
-	bar1text = "Lucifron's Curse",
-	bar2text = "Impending Doom",
-	bar3text = "Shadow Shock",
+	curse_bar = "Lucifron's Curse",
+	doom_bar = "Impending Doom",
+	shock_bar = "Shadow Shock",
 
 	cmd = "Lucifron",
 	
@@ -90,17 +102,17 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	trigger1 = "von Lucifrons Fluch betroffen",
-	trigger2 = "von Drohende Verdammnis betroffen",
-	trigger3 = "Schattenschock trifft",
-	trigger4 = "Schattenschock(.+) widerstanden",
-	trigger5 = "Lucifrons Fluch wurde von(.+) widerstanden",
-	trigger6 = "Drohende Verdammnis wurde von(.+) widerstanden",
+	curse_trigger = "von Lucifrons Fluch betroffen",
+	doom_trigger = "von Drohende Verdammnis betroffen",
+	shock_trigger = "Schattenschock trifft",
+	shock_trigger2 = "Schattenschock(.+) widerstanden",
+	curse_trigger2 = "Lucifrons Fluch wurde von(.+) widerstanden",
+	doom_trigger2 = "Drohende Verdammnis wurde von(.+) widerstanden",
 	
-	warn1 = "5 Sekunden bis Lucifrons Fluch!",
-	warn2 = "Lucifrons Fluch - 20 Sekunden bis zu n\195\164chsten!",
-	warn3 = "5 Sekunden bis Drohende Verdammnis!",
-	warn4 = "Drohende Verdammnis - 20 Sekunden bis zu n\195\164chsten!",
+	curse_warn_soon = "5 Sekunden bis Lucifrons Fluch!",
+	curse_warn_now = "Lucifrons Fluch - 20 Sekunden bis zu n\195\164chsten!",
+	doom_warn_soon = "5 Sekunden bis Drohende Verdammnis!",
+	doom_warn_now = "Drohende Verdammnis - 20 Sekunden bis zu n\195\164chsten!",
 	mindcontrolyou_trigger = "Ihr seid von Gedanken beherrschen betroffen.",
 	mindcontrolother_trigger = "(.*) ist von Gedanken beherrschen betroffen.",
 	mindcontrolyouend_trigger = "Gedanken beherrschen\' schwindet von Euch.",
@@ -115,9 +127,9 @@ L:RegisterTranslations("deDE", function() return {
 	mindcontrol_bar = "GK: %s",
 	addmsg = "%d/2 Feuerschuppenbesch\195\188tzer tot!",
 
-	bar1text = "Lucifrons Fluch",
-	bar2text = "Drohende Verdammnis",
-	bar3text = "Schattenschock",
+	curse_bar = "Lucifrons Fluch",
+	doom_bar = "Drohende Verdammnis",
+	shock_bar = "Schattenschock",
 
 	--cmd = "Lucifron",
 
@@ -164,11 +176,11 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMC_(.*)", 0.5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronMCEnd_(.*)", 0.5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronCurseRep1", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronShock1", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LucifronDoomRep1", 5)
+	self:ThrottleSync(0.5, syncName.mc .. "(.*)")
+	self:ThrottleSync(0.5, syncName.mcEnd .. "(.*)")
+	self:ThrottleSync(5, syncName.curse)
+	self:ThrottleSync(5, syncName.shock)
+	self:ThrottleSync(5, syncName.doom)
 end
 
 -- called after module is enabled and after each wipe
@@ -180,12 +192,12 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.curse then
-		self:DelayedMessage(15, L["warn1"], "Attention")
-		self:Bar(L["bar1text"], 20, "Spell_Shadow_BlackPlague")
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention")
+		self:Bar(L["curse_bar"], timer.curse, icon.curse)
 	end
 	if self.db.profile.doom then
-		self:DelayedMessage(5, L["warn3"], "Attention")
-		self:Bar(L["bar1text"], 10, "Spell_Shadow_NightOfTheDead")
+		self:DelayedMessage(timer.firstDoom - 5, L["doom_warn_soon"], "Attention")
+		self:Bar(L["doom_bar"], timer.firstDoom, icon.doom)
 	end
 	self:Sync("LucifronShock")
 end
@@ -202,30 +214,30 @@ function module:Event(msg)
 	local _,_,mindcontrolother,_ = string.find(msg, L["mindcontrolother_trigger"])
 	local _,_,mindcontrolotherend,_ = string.find(msg, L["mindcontrolotherend_trigger"])
 	local _,_,mindcontrolotherdeath,_ = string.find(msg, L["deathother_trigger"])
-	if ((string.find(msg, L["trigger1"])) or (string.find(msg, L["trigger5"]))) then
-		self:Sync("LucifronCurseRep1")
-	elseif ((string.find(msg, L["trigger2"])) or (string.find(msg, L["trigger6"]))) then
-		self:Sync("LucifronDoomRep1")
-	elseif ((string.find(msg, L["trigger3"])) or (string.find(msg, L["trigger4"]))) then
-		self:Sync("LucifronShock1")
+	if ((string.find(msg, L["curse_trigger"])) or (string.find(msg, L["curse_trigger2"]))) then
+		self:Sync(syncName.curse)
+	elseif ((string.find(msg, L["doom_trigger"])) or (string.find(msg, L["doom_trigger2"]))) then
+		self:Sync(syncName.doom)
+	elseif ((string.find(msg, L["shock_trigger"])) or (string.find(msg, L["shock_trigger2"]))) then
+		self:Sync(syncName.shock)
 	elseif string.find(msg, L["mindcontrolyou_trigger"]) then
-		self:Sync("LucifronMC_"..UnitName("player"))
+		self:Sync(syncName.mc .. UnitName("player"))
 	elseif string.find(msg, L["mindcontrolyouend_trigger"]) then
-		self:Sync("LucifronMCEnd_"..UnitName("player"))
+		self:Sync(syncName.mcEnd .. UnitName("player"))
 	elseif string.find(msg, L["deathyou_trigger"]) then
-		self:Sync("LucifronMCEnd_"..UnitName("player"))
+		self:Sync(syncName.mcEnd .. UnitName("player"))
 	elseif mindcontrolother then
-		self:Sync("LucifronMC_"..mindcontrolother)
+		self:Sync(syncName.mc .. mindcontrolother)
 	elseif mindcontrolotherend then
-		self:Sync("LucifronMCEnd_"..mindcontrolotherend)
+		self:Sync(syncName.mcEnd .. mindcontrolotherend)
 	elseif mindcontrolotherdeath then
-		self:Sync("LucifronMCEnd_"..mindcontrolotherdeath)
+		self:Sync(syncName.mcEnd .. mindcontrolotherdeath)
 	end
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	if string.find(msg, L["deadaddtrigger"]) then
-		self:Sync("LucifronAddDead " .. tostring(self.protector + 1))
+		self:Sync(syncName.add .. " " .. tostring(self.protector + 1))
 	end
 end
 
@@ -235,31 +247,31 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "LucifronCurseRep1" and self.db.profile.curse then
-		self:DelayedMessage(15, L["warn1"], "Attention")
-		self:Bar(L["bar1text"], 20, "Spell_Shadow_BlackPlague")
-	elseif sync == "LucifronDoomRep1" and self.db.profile.doom then
-		self:DelayedMessage(10, L["warn3"], "Attention")
-		self:Bar(L["bar1text"], 15, "Spell_Shadow_NightOfTheDead")
-	elseif sync == "LucifronShock1" and self.db.profile.shock then
-		--self:Bar(L["bar3text"], 6, "Spell_Shadow_Shadowbolt")
-	elseif string.find(sync, "LucifronMC_") then
+	if sync == syncName.curse and self.db.profile.curse then
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention")
+		self:Bar(L["curse_bar"], timer.curse, icon.curse)
+	elseif sync == syncName.doom and self.db.profile.doom then
+		self:DelayedMessage(timer.doom - 5, L["doom_warn_soon"], "Attention")
+		self:Bar(L["doom_bar"], timer.doom, icon.doom)
+	elseif sync == syncName.shock and self.db.profile.shock then
+		--self:Bar(L["shock_bar"], 6, "Spell_Shadow_Shadowbolt")
+	elseif string.find(sync, syncName.mc) then
 		if self.db.profile.mc then
 			chosenone = string.sub(sync,12)
 			if chosenone == UnitName("player") then
 				self:Message(L["mindcontrol_message_you"], "Attention")
-				self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), 15, "Spell_Shadow_ShadowWordDominate")
+				self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), timer.mc, icon.mc)
 			else
 				self:Message(string.format(L["mindcontrol_message"], chosenone), "Urgent")
-				self:Bar(string.format(L["mindcontrol_bar"], chosenone), 15, "Spell_Shadow_ShadowWordDominate")
+				self:Bar(string.format(L["mindcontrol_bar"], chosenone), timer.mc, icon.mc)
 			end
 		end
-	elseif string.find(sync, "LucifronMCEnd_") then
+	elseif string.find(sync, syncName.mcEnd) then
 		if self.db.profile.mc then
 			luckyone = string.sub(sync,15)
 			self:RemoveBar(string.format(L["mindcontrol_bar"], luckyone))
 		end
-	elseif sync == "LucifronAddDead" and rest and rest ~= "" then
+	elseif sync == syncName.add and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.protector < rest then
             self.protector = rest

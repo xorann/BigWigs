@@ -1,9 +1,52 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Baron Geddon"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Baron Geddon"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.wipemobs = nil
+module.toggleoptions = {"inferno", "service", "bomb", "mana", "announce", "icon", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	bomb = 8,
+	inferno = 8,
+	nextInferno = 30,
+	ignite = 20,
+	service = 8,
+}
+local icon = {
+	bomb = "Inv_Enchant_EssenceAstralSmall",
+	inferno = "Spell_Fire_Incinerate",
+	ignite = "Spell_Fire_Incinerate",
+	service = "Spell_Fire_SelfDestruct",
+}
+local syncName = {
+	bomb = "GeddonBombX",
+	bombStop = "GeddonBombStop",
+	inferno = "GeddonInfernoX",
+	ignite = "GeddonManaIgniteX",
+	service = "GeddonServiceX",
+}
+
+local firstinferno = true
+local firstignite = true
 
 ----------------------------
 --      Localization      --
@@ -131,30 +174,13 @@ L:RegisterTranslations("deDE", function() return {
 	announce_desc = "Dem Spieler fl\195\188stern, wenn er die Bombe ist.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent).",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsBaronGeddon                  = BigWigs:NewModule(boss)
-BigWigsBaronGeddon.zonename         = AceLibrary("Babble-Zone-2.2")["Molten Core"]
-BigWigsBaronGeddon.enabletrigger    = boss
-BigWigsBaronGeddon.bossSync         = "Geddon"
-BigWigsBaronGeddon.toggleoptions    = {"inferno", "service", "bomb", "mana", "announce", "icon", "bosskill"}
-BigWigsBaronGeddon.revision         = tonumber(string.sub("$Revision: 11203 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsBaronGeddon:OnEnable()
-    self.started = nil
-	firstinferno = 0
-	firstbomb = 0
-	firstignite = 0
-	bombt = 0
-	ignitestart = 0
-	bombstart = 0
-    
+-- called after module is enabled
+function module:OnEnable()    
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
@@ -164,102 +190,136 @@ function BigWigsBaronGeddon:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonBombX", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonBombStop", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonServiceX", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonManaIgniteX", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonManaIgniteFirst", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoX", 29)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GeddonInfernoFirst", 29)
+	
+	self:ThrottleSync(5, syncName.bomb)
+	self:ThrottleSync(3, syncName.bombStop)
+	self:ThrottleSync(4, syncName.service)
+	self:ThrottleSync(4, syncName.ignite)
+	self:ThrottleSync(29, syncName.inferno)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	firstinferno = true
+	firstignite = true
+	
+	bombt = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Inferno()
+	self:ManaIgnite()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsBaronGeddon:Event(msg)
+function module:Event(msg)
 	local _,_, bombother, mcverb = string.find(msg, L["bombother_trigger"])
 	local _,_, bombotherend, mcverb = string.find(msg, L["bombotherend_trigger"])
 	local _,_, bombotherdeath,mctype = string.find(msg, L["deathother_trigger"])
 	if string.find(msg, L["bombyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "GeddonBombX")
+		self:Sync(syncName.bomb)
 		if self.db.profile.bomb then
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bomb_bar1"], UnitName("player")), 8, "Interface\\Icons\\Inv_Enchant_EssenceAstralSmall")
-			self:TriggerEvent("BigWigs_Message", L["bomb_message_youscreen"], "Attention", "Alarm")
+			self:Bar(string.format(L["bomb_bar1"], UnitName("player")), timer.bomb, icon.bomb)
+			self:Message(L["bomb_message_youscreen"], "Attention", "Alarm")
 		end
 		if self.db.profile.icon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", UnitName("player"))
+			self:Icon(UnitName("player"))
 		end
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_MindBomb", 8)
+        self:WarningSign("Spell_Shadow_MindBomb", timer.bomb)
 	elseif string.find(msg, L["bombyouend_trigger"]) then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar1"], UnitName("player")))
-		self:TriggerEvent("BigWigs_SendSync", "GeddonBombStop")
+		self:RemoveBar(string.format(L["bomb_bar1"], UnitName("player")))
+		self:Sync(syncName.bombStop)
 	elseif string.find(msg, L["deathyou_trigger"]) then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar1"], UnitName("player")))
+		self:RemoveBar(string.format(L["bomb_bar1"], UnitName("player")))
 	elseif bombother then
 		bombt = bombother
-		self:TriggerEvent("BigWigs_SendSync", "GeddonBombX")
+		self:Sync(syncName.bomb)
 		if self.db.profile.bomb then
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bomb_bar"], bombother), 8, "Interface\\Icons\\Inv_Enchant_EssenceAstralSmall")
-			self:TriggerEvent("BigWigs_Message", string.format(L["bomb_message_other"], bombother), "Attention")
+			self:Bar(string.format(L["bomb_bar"], bombother), timer.bomb, icon.bomb)
+			self:Message(string.format(L["bomb_message_other"], bombother), "Attention")
 		end
 		if self.db.profile.icon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", bombother)
+			self:Icon(bombother)
 		end
 		if self.db.profile.announce then
 			self:TriggerEvent("BigWigs_SendTell", bombother, L["bomb_message_you"])
 		end
 	elseif bombotherend then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar"], bombotherend))
+		self:RemoveBar(string.format(L["bomb_bar"], bombotherend))
 	elseif string.find(msg, L["deathother_trigger"]) then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar"], bombotherdeath))
+		self:RemoveBar(string.format(L["bomb_bar"], bombotherdeath))
 	elseif (string.find(msg, L["ignitemana_trigger1"]) or string.find(msg, L["ignitemana_trigger2"])) then
-		self:TriggerEvent("BigWigs_SendSync", "GeddonManaIgniteX")
+		self:Sync(syncName.ignite)
 	end
 end
 
-function BigWigsBaronGeddon:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if string.find(msg, L["inferno_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "GeddonInfernoX")
+		self:Sync(syncName.inferno)
 	end
 end
 
-function BigWigsBaronGeddon:CHAT_MSG_MONSTER_EMOTE(msg)
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
 	if string.find(msg, L["service_trigger"]) and self.db.profile.service then
-		self:TriggerEvent("BigWigs_SendSync", "GeddonServiceX")
+		self:Sync(syncName.service)
 	end
 end
 
-function BigWigsBaronGeddon:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
-		if self.db.profile.inferno then
-			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_bar"], 30, "Interface\\Icons\\Spell_Fire_Incinerate")
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.bomb then
+	elseif sync == syncName.inferno then
+        self:Inferno()
+	elseif sync == syncName.ignite and self.db.profile.mana then
+		self:ManaIgnite()
+	elseif sync == syncName.bombStop and self.db.profile.bomb then
+		self:RemoveBar(string.format(L["bomb_bar"], bombt))
+	elseif sync == syncName.service and self.db.profile.service then
+		self:Bar(L["service_bar"], timer.service, icon.service)
+		self:Message(L["service_message"], "Important")
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Inferno()
+	self:DelayedSync(timer.nextInferno, syncName.inferno)
+	
+	if self.db.profile.inferno then
+		if firstinferno then
+			self:Bar(L["inferno_bar"], timer.nextInferno, icon.inferno)
+		else
+			self:Message(L["inferno_message"], "Important")
+			self:Bar(L["inferno_channel"], timer.inferno, icon.inferno)
+			self:DelayedBar(timer.inferno, L["inferno_bar"], timer.nextInferno - timer.inferno, icon.inferno)
 		end
-		if self.db.profile.mana then
-			self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 20, "Interface\\Icons\\Spell_Fire_Incinerate")
+	
+		self:DelayedMessage(timer.nextInferno - 5, L["nextinferno_message"], "Urgent")
+	end
+	
+	firstinferno = false
+end
+
+function module:ManaIgnite()
+	if self.db.profile.mana then
+		if firstignite then
+			self:Message(L["ignite_message"], "Important")
 		end
-	elseif sync == "GeddonBombX" then
-		bombstart = GetTime()
-	elseif sync == "GeddonInfernoX" then
-        self:ScheduleEvent("BigWigs_SendSync", 30, "GeddonInfernoX")
-		if self.db.profile.inferno then
-			self:TriggerEvent("BigWigs_Message", L["inferno_message"], "Important")
-			self:ScheduleEvent("BigWigs_Message", 25, L["nextinferno_message"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["inferno_channel"], 8, "Interface\\Icons\\Spell_Fire_Incinerate")
-			self:ScheduleEvent("BigWigs_StartBar", 8, self, L["inferno_bar"], 22, "Interface\\Icons\\Spell_Fire_Incinerate")
-		end
-	elseif sync == "GeddonManaIgniteX" and self.db.profile.mana then
-		ignitestart = GetTime()
-		self:TriggerEvent("BigWigs_Message", L["ignite_message"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["ignite_bar"], 20, "Interface\\Icons\\Spell_Fire_Incinerate")
-	elseif sync == "GeddonBombStop" and self.db.profile.bomb then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bomb_bar"], bombt))
-	elseif sync == "GeddonServiceX" and self.db.profile.service then
-		self:TriggerEvent("BigWigs_StartBar", self, L["service_bar"], 8, "Interface\\Icons\\Spell_Fire_SelfDestruct")
-		self:TriggerEvent("BigWigs_Message", L["service_message"], "Important")
+		self:Bar(L["ignite_bar"], timer.ignite, icon.ignite)
 	end
 end
