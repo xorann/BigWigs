@@ -7,16 +7,16 @@
 local bossName = "Elder Mottled Boar"
 
 -- do not override
+local bossSync = string.gsub(bossName, "%s", "") -- untranslated, unique string
+local module = BigWigs:NewModule(bossSync)
 local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local module = BigWigs:NewModule(boss)
---BigWigsBoar = module
+module.translatedName = boss
+
+-- override
 module.zonename = { 
     AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"], 
     AceLibrary("Babble-Zone-2.2")["Durotar"]
 }
---module.bossSync = bossName -- untranslated string
-
--- override
 module.revision = 20003 -- To be overridden by the module!
 module.enabletrigger = boss -- string or table {boss, add1, add2}
 module.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
@@ -29,7 +29,7 @@ module.proximitySilent = true
 --      Locals 			    --
 ------------------------------
 
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..bossSync)
 
 local timer = {
 	charge = 10,
@@ -84,7 +84,7 @@ L:RegisterTranslations("deDE", function() return {
             
     charge_name = "Ansturm Warnung",
     charge_desc = "Warnung f\195\188r anst\195\188rmen",
-    charge_trigger = "gains Boar Charge", -- uebersetzung?
+    charge_trigger = "bekommt 'Eberangriff'", -- uebersetzung?
     charge_msg = "Eber st\195\188rmt an!",
     charge_bar = "Anst\195\188rmen",
             

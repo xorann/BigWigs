@@ -43,8 +43,8 @@ local icon = {
     deaden = "Spell_Holy_SealOfSalvation",
 }
 local syncName = {
-	cs = "ShazzrahCounterspell1",
-    curse = "ShazzrahCurse1",
+	cs = "ShazzrahCounterspell2",
+    curse = "ShazzrahCurse2",
     blink = "ShazzrahBlink1",
     deaden = "ShazzrahDeadenMagicOn",
     deadenOver = "ShazzrahDeadenMagicOff",

@@ -100,12 +100,12 @@ function BigWigsBroodlord:Event(msg)
         self.MS = name
         self.lastMS = GetTime()
 		if detect == L["are"] then
-			self:TriggerEvent("BigWigs_Message", L["ms_warn_you"], "Beware")
+			self:TriggerEvent("BigWigs_Message", L["ms_warn_you"], "Alarm", true, "Beware")
 			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], UnitName("player")), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
             self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow", 5)
 		else
-			self:TriggerEvent("BigWigs_Message", string.format(L["ms_warn_other"], name), "Alarm")
+			self:TriggerEvent("BigWigs_Message", string.format(L["ms_warn_other"], name), "Alarm", true, "Alarm")
 			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], name), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 		end

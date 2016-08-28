@@ -4,13 +4,13 @@
 ----------------------------------
 
 -- override
-local bossName = "Testboss"
+local bossName = "Elder Mottled Boar"
 
 -- do not override
+local bossSync = string.gsub(bossName, "%s", "") -- untranslated, unique string
+local module = BigWigs:NewModule(bossSync)
 local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local module = BigWigs:NewModule(boss)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---module.bossSync = bossName -- untranslated string
+module.translatedName = boss
 
 -- override
 module.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]

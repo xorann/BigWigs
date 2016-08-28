@@ -36,7 +36,7 @@ local icon = {
 	rain = "Spell_Shadow_RainOfFire",
 }
 local syncName = {
-	curse = "GehennasCurse",
+	curse = "GehennasCurse1",
 	add = "GehennasAddDead"
 }
 

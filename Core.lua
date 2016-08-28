@@ -296,8 +296,7 @@ function BigWigs.modulePrototype:Engage()
     
     if self.bossSync and not self.engaged then
         self.engaged = true
-		self:Message(string.format(L["%s engaged!"], self:ToString()), "Positive")
-        --self:TriggerEvent("BigWigs_Message", string.format(L["%s engaged!"], self:ToString()), "Positive")
+		self:Message(string.format(L["%s engaged!"], self.translatedName), "Positive")
         BigWigsBossRecords:StartBossfight(self)
         self:KTM_SetTarget(self:ToString())
 		
@@ -324,7 +323,7 @@ function BigWigs.modulePrototype:Disengage()
     end
 end
 function BigWigs.modulePrototype:Victory()
-    if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(L["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
+    if self.db.profile.bosskill then self:Message(string.format(L["%s has been defeated"], self.translatedName), "Bosskill", nil, "Victory") end
     
     BigWigsBossRecords:EndBossfight(self)
     
@@ -481,7 +480,7 @@ end
 
 function BigWigs:CheckForBossDeath(msg, module)
     if module and module:IsBossModule() then
-        if msg == string.format(UNITDIESOTHER, module:ToString()) or msg == string.format(L["You have slain %s!"], module:ToString()) then
+        if msg == string.format(UNITDIESOTHER, module:ToString()) or msg == string.format(L["You have slain %s!"], module.translatedName) then
             module:SendBossDeathSync()
         end
     end
@@ -721,6 +720,7 @@ function BigWigs:RegisterModule(name, module)
 	if module:IsBossModule() then
 		local cons
 		local revision = type(module.revision) == "number" and module.revision or -1
+		--self:Print(name .. " " .. module.bossSync .. " " .. module:ToString())
 		local L2 = AceLibrary("AceLocale-2.2"):new("BigWigs"..name)
 		if module.toggleoptions then
 			local m = module
@@ -847,14 +847,21 @@ function BigWigs:RegisterModule(name, module)
 end
 
 function BigWigs:EnableModule(moduleName, nosync)
-	local m = self:GetModule(moduleName)
+	local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	local m = self:GetModule(name)
 	if m and not self:IsModuleActive(moduleName) then
         self:ToggleModuleActive(moduleName, true)
 		if m:IsBossModule() then
-			self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m:ToString() or "??"), "Core", true)
+			m.bossSync = m:ToString()
+			if not m.translatedName then
+				m.translatedName = m:ToString()
+				self:Print("translatedName for module " .. m:ToString() .. " missing")
+			end
+			self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m.translatedName or "??"), "Core", true)
+			
 		end
 		
-		if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. (m.synctoken or BB:GetReverseTranslation(moduleName))) end
+		if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. m.bossSync or (BB:GetReverseTranslation(moduleName))) end
         
 		self:SetupModule(moduleName)
     end
@@ -862,10 +869,13 @@ end
 
 -- registers generic events
 function BigWigs:SetupModule(moduleName)
-	local m = self:GetModule(moduleName)
+	local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	local m = self:GetModule(name)
 	if m and m:IsBossModule() then
-		--m.bossSync = m:ToString()
-		m.bossSync = BB:GetReverseTranslation(moduleName) -- untranslated string
+		m.bossSync = m:ToString()
+		--m.bossSync = BB:GetReverseTranslation(moduleName) -- untranslated string
+		--self:Print("bossSync: " .. string.gsub(BB:GetReverseTranslation(moduleName), "%s", ""))
+		--m.bossSync = string.gsub(BB:GetReverseTranslation(moduleName), "%s", "") -- untranslated, unique string without spaces
 		
 		m:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage") -- addition
 		m:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe")
@@ -881,7 +891,8 @@ function BigWigs:SetupModule(moduleName)
 end
 
 function BigWigs:DisableModule(moduleName)
-	local m = self:GetModule(moduleName)
+	local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	local m = self:GetModule(name)
 	if m then
 		if m:IsBossModule() then
 			m:Disengage()
@@ -892,7 +903,8 @@ end
 
 -- event handler
 function BigWigs:BigWigs_RebootModule(moduleName)    
-	local m = self:GetModule(moduleName)
+	local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	local m = self:GetModule(name)
 	if m and m:IsBossModule() then
 		self:DebugMessage("BigWigs:BigWigs_RebootModule(): " .. m:ToString())
 		m:Disengage()
@@ -929,18 +941,21 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
 			self:Print(string.format(L["%s has requested forced reboot for the %s module."], nick, moduleName))
 		end
 		self:TriggerEvent("BigWigs_RebootModule", moduleName)
-    elseif sync == "BossEngaged" and moduleName then        
-        local m = self:GetModule(moduleName)
+    elseif sync == "BossEngaged" and moduleName then 
+		local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+        local m = self:GetModule(name)
         if m:IsBossModule() then
             m:Engage() 
         end   
 	elseif sync == "BossWipe" and moduleName then
-		local m = self:GetModule(moduleName)
+		local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+		local m = self:GetModule(name)
         if m:IsBossModule() and BigWigs:IsModuleActive(m) then
 			self:TriggerEvent("BigWigs_RebootModule", moduleName)
 		end
     elseif sync == "BossDeath" and moduleName then
-        local m = self:GetModule(moduleName)
+		local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+        local m = self:GetModule(name)
         if m:IsBossModule() and BigWigs:IsModuleActive(m) then
             m:Victory()
         end
