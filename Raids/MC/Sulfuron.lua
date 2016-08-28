@@ -3,19 +3,10 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Sulfuron Harbinger"
+local module, L = BigWigs:ModuleDeclaration("Sulfuron Harbinger", "Molten Core")
 
--- do not override
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local module = BigWigs:NewModule(boss)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---module.bossSync = bossName -- untranslated string
-
--- override
-module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
 module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"heal", "adds", "knockback", "bosskill"}
 
 

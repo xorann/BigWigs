@@ -3,19 +3,10 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Gehennas"
+local module, L = BigWigs:ModuleDeclaration("Gehennas", "Molten Core")
 
--- do not override
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local module = BigWigs:NewModule(boss)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---module.bossSync = bossName -- untranslated string
-
--- override
-module.zonename = AceLibrary("Babble-Zone-2.2")["Molten Core"]
 module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"adds", "curse", "bosskill"}
 
 
@@ -51,7 +42,7 @@ L:RegisterTranslations("enUS", function() return {
 	curse_trigger = "afflicted by Gehennas",
 	--bolt_trigger = "Gehennas begins to cast Shadow Bolt",
 	rain_trigger = "You are afflicted by Rain of Fire",
-	rain_run_trigger = "You suffer (%d+) (.+) from "..boss.." 's Rain of Fire.",
+	rain_run_trigger = "You suffer (%d+) (.+) from " .. module.translatedName .. " 's Rain of Fire.",
 	curse_trigger2 = "Gehennas' Curse was resisted",
 	dead1 = "Flamewaker dies",
 	addmsg = "%d/2 Flamewakers dead!",

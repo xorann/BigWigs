@@ -278,6 +278,8 @@ function BigWigs.modulePrototype:OnInitialize()
 	self:TriggerEvent("BigWigs_ModuleLoaded", self.name, self)
 end
 
+
+
 -- override
 function BigWigs.modulePrototype:OnSetup()
 end
@@ -692,6 +694,31 @@ function BigWigs:ADDON_LOADED(addon)
 	self:RegisterModule(g.name, g)
 end
 
+function BigWigs:ModuleDeclaration(bossName, zoneName)
+    local name = string.gsub(bossName, "%s", "") -- untranslated, unique string
+    local module = BigWigs:NewModule(name)
+    local L = AceLibrary("AceLocale-2.2"):new("BigWigs" .. name)
+    module.translatedName = AceLibrary("Babble-Boss-2.2")[bossName]
+    
+    -- zone
+    local raidZones = {"Blackwing Lair", "Ruins of Ahn'Qiraj", "Ahn'Qiraj", "Molten Core", "Naxxramas", "Zul'Gurub"}
+    local isOutdoorraid = true
+    for i, value in ipairs(raidZones) do
+        if value == zoneName then
+            module.zonename = AceLibrary("Babble-Zone-2.2")[zoneName]
+            isOutdoorraid = false
+            break
+        end
+    end
+    if isOutdoorraid then
+        module.zonename = { 
+            AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"],
+            AceLibrary("Babble-Zone-2.2")[zoneName]
+        }
+    end
+    
+    return module, L
+end
 
 function BigWigs:RegisterModule(name, module)
 	--[[if module:IsRegistered() then

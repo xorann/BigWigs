@@ -105,6 +105,7 @@ void BigWigs.modulePrototype:KTM_SetTarget(targetName[, forceReset])
 --      Core: Module Handling      --
 -------------------------------------
 
+void BigWigs:ModuleDeclaration(bossName, zoneName)
 void BigWigs:RegisterModule(name, module)
 void BigWigs:EnableModule(moduleName, nosync)
 void BigWigs:SetupModule(moduleName)
@@ -126,10 +127,9 @@ BigWigs.modulePrototype:OnInitialize() -- do not override, entry point
 		
 (BigWigs:BigWigs_TargetSeen(mobname, unit), BigWigs:CHAT_MSG_MONSTER_YELL(msg), BigWigs:BigWigs_RebootModule(module), BigWigs:BigWigs_RecvSync(sync, module, nick), BigWigs.modulePrototype:Engage())
 	BigWigs:EnableModule(moduleName, nosync) -- synchronize, enable message
+		BigWigs.modulePrototype:OnEnable()
 		BigWigs:SetupModule(moduleName) -- register generic events
-			BigWigs.modulePrototype:OnSetup() -- register specific events and set variables
-			-- ?? BigWigs.modulePrototype:OnEnable() -- ?? when is this function called?
-			
+			BigWigs.modulePrototype:OnSetup() -- register specific events and set variables			
 			
 			BigWigs.modulePrototype:CheckForEngage() -- PLAYER_REGEN_DISABLED event handler, registered by BigWigs:EnableModule(moduleName, nosync)
 				boolean BigWigs.modulePrototype:Scan() -- do not override - boss/adds in combat?

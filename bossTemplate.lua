@@ -4,18 +4,20 @@
 ----------------------------------
 
 -- override
-local bossName = "Elder Mottled Boar"
+local bossName = "Bossname"
 
--- do not override
+--[[-- do not override
 local bossSync = string.gsub(bossName, "%s", "") -- untranslated, unique string
 local module = BigWigs:NewModule(bossSync)
+local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..bossSync)
 local boss = AceLibrary("Babble-Boss-2.2")[bossName]
 module.translatedName = boss
+]]
 
 -- override
-module.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
+local module, L = BigWigs:ModuleDeclaration("Bossname", "Naxxramas")
 module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"berserk", "bosskill"}
 
 -- Proximity Plugin
@@ -25,6 +27,7 @@ module.toggleoptions = {"berserk", "bosskill"}
 ---------------------------------
 --      Module specific Locals --
 ---------------------------------
+
 
 local timer = {
 	charge = 10,
@@ -135,9 +138,7 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self.started = true
-	elseif sync == syncName.berserk then
+	if sync == syncName.berserk then
 		self:Berserk()
 	end
 end

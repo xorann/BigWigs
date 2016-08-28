@@ -3,22 +3,10 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Elder Mottled Boar"
+local module, L = BigWigs:ModuleDeclaration("Elder Mottled Boar", "Durotar")
 
--- do not override
-local bossSync = string.gsub(bossName, "%s", "") -- untranslated, unique string
-local module = BigWigs:NewModule(bossSync)
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-module.translatedName = boss
-
--- override
-module.zonename = { 
-    AceLibrary("AceLocale-2.2"):new("BigWigs")["Outdoor Raid Bosses Zone"], 
-    AceLibrary("Babble-Zone-2.2")["Durotar"]
-}
 module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"engage", "charge", "proximity", "bosskill"}
 
 -- Proximity Plugin
@@ -28,8 +16,6 @@ module.proximitySilent = true
 ------------------------------
 --      Locals 			    --
 ------------------------------
-
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..bossSync)
 
 local timer = {
 	charge = 10,
