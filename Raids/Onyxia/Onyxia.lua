@@ -1,9 +1,59 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Onyxia"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+-- override
+local bossName = "Onyxia"
+
+-- do not override
+local boss = AceLibrary("Babble-Boss-2.2")[bossName]
+local module = BigWigs:NewModule(boss)
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+--module.bossSync = bossName -- untranslated string
+
+-- override
+module.zonename = AceLibrary("Babble-Zone-2.2")["Onyxia's Lair"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = boss -- string or table {boss, add1, add2}
+module.toggleoptions = {"flamebreath", "deepbreath", "wingbuffet", "fireball", "phase", "onyfear", "bosskill"}
+
+
+---------------------------------
+--      Module specific Locals --
+---------------------------------
+
+local timer = {
+	firstFear = 10,
+	fear = 30,
+	fearCast = 1.5,
+	wingbuffet = 1,	
+}
+local icon = {
+	wingbuffet = "INV_Misc_MonsterScales_14",
+	fear = "Spell_Shadow_Possession",
+	deepbreath = "Spell_Fire_SelfDestruct",
+	deepbreath_sign = "Spell_Fire_Lavaspawn",
+	fireball = "Spell_Fire_FlameBolt",
+}
+local syncName = {
+	deepbreath = "OnyDeepBreath",
+	phase2 = "OnyPhaseTwo",
+	phase3 = "OnyPhaseThree",
+	flamebreath = "OnyFlameBreath",
+	fireball = "OnyFireball",
+	fear = "OnyBellowingRoar",
+}
+
+local transitioned = false
+local phase = 0
+
+--[[
+10:54 p2
+11:26 deepbreath 32
+11:46 deepbreath 20
+12:07 deepbreath 21
+]]
 
 ----------------------------
 --      Localization      --
@@ -40,10 +90,11 @@ L:RegisterTranslations("enUS", function() return {
 	deepbreath_trigger = "takes in a deep breath",
 	flamebreath_trigger = "Onyxia begins to cast Flame Breath\.",
 	wingbuffet_trigger = "Onyxia begins to cast Wing Buffet\.",
-	fireball_trigger = "Onyxia begins to cast Fireball\.",
+	fireball_trigger = "Onyxia begins to cast Fireball.",
 	phase2_trigger = "from above",
 	phase3_trigger = "It seems you'll need another lesson",
 	fear_trigger = "Onyxia begins to cast Bellowing Roar\.",
+	fear_over_trigger = "Bellowing Roar",
 
 	warn1 = "Deep Breath incoming!",
 	phase1text = "Phase 1",
@@ -91,6 +142,7 @@ L:RegisterTranslations("deDE", function() return {
 	wingbuffet_trigger = "Onyxia beginnt Fl\195\188gelsto\195\159 zu wirken\.",
 	fireball_trigger = "Onyxia beginnt Feuerball zu wirken\.",
 	fear_trigger = "Onyxia beginnt Dr\195\182hnendes Gebr\195\188ll zu wirken\.",
+	fear_over_trigger = "Dr\195\182hnendes Gebr\195\188ll",
 	phase2_trigger = "from above",
 	phase3_trigger = "Es scheint, als wenn Ihr eine weitere Lektion braucht",
 
@@ -107,124 +159,163 @@ L:RegisterTranslations("deDE", function() return {
 	fireball_cast = "Feuerball",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsOnyxia = BigWigs:NewModule(boss)
-BigWigsOnyxia.zonename = AceLibrary("Babble-Zone-2.2")["Onyxia's Lair"]
-BigWigsOnyxia.enabletrigger = boss
-BigWigsOnyxia.bossSync = "Onyxia"
-BigWigsOnyxia.toggleoptions = { "flamebreath", "deepbreath", "wingbuffet", "fireball", "phase", "onyfear", "bosskill"}
-BigWigsOnyxia.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
-BigWigsOnyxia:RegisterYellEngage(L["engage_trigger"])
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsOnyxia:OnEnable()
-	transitioned = false
-	self.started = false
-    self.phase   = 0
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("UNIT_HEALTH")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyDeepBreath", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyPhaseTwo", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyPhaseThree", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyFlameBreath", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyFireball", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OnyBellowingRoar", 5)
+	
+	self:ThrottleSync(10, syncName.deepbreath)
+	self:ThrottleSync(10, syncName.phase2)
+	self:ThrottleSync(10, syncName.phase3)
+	self:ThrottleSync(5, syncName.flamebreath)
+	self:ThrottleSync(2, syncName.fireball)
+	self:ThrottleSync(5, syncName.fear)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	transitioned = false
+	self.started = false
+    phase = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.phase and not self.started then
+		self:Message(L["phase1text"], "Attention")
+	end
+	phase = 1
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsOnyxia:CHAT_MSG_RAID_BOSS_EMOTE(msg)
-    self:DebugMessage('CHAT_MSG_RAID_BOSS_EMOTE: ' .. msg)
+function module:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	if string.find(msg, L["deepbreath_trigger"]) then
-        self:DebugMessage('deep breath detected')
-		self:TriggerEvent("BigWigs_SendSync", "OnyDeepBreath")
+		self:Sync(syncName.deepbreath)
 	end
 end
 
-function BigWigsOnyxia:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg, L["engage_trigger"]) then
-        --self:SendEngageSync()
-	elseif (string.find(msg, L["phase2_trigger"])) then
-		self:TriggerEvent("BigWigs_SendSync", "OnyPhaseTwo")
+function module:CHAT_MSG_MONSTER_YELL(msg)
+    if (string.find(msg, L["phase2_trigger"])) then
+		self:Sync(syncName.phase2)
 	elseif (string.find(msg, L["phase3_trigger"])) then
-		self:TriggerEvent("BigWigs_SendSync", "OnyPhaseThree")
+		self:Sync(syncName.phase3)
 	end
 end
 
-function BigWigsOnyxia:UNIT_HEALTH(arg1) --temporary workaround until Phase2 yell gets fixed
+function module:UNIT_HEALTH(arg1) --temporary workaround until Phase2 yell gets fixed
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		if health > 60 and health <= 65 and not transitioned then
-			self:TriggerEvent("BigWigs_SendSync", "OnyPhaseTwo")
+			self:Sync(syncName.phase2)
 		elseif health > 65 then
 			transitioned = false
 		end
 	end
 end
 
-function BigWigsOnyxia:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["fear_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "OnyBellowingRoar")
+		self:Sync(syncName.fear)
 	elseif msg == L["flamebreath_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "OnyFlameBreath")
+		self:Sync(syncName.flamebreath)
 	elseif msg == L["wingbuffet_trigger"] and self.db.profile.wingbuffet then -- made local because 1s cast, with sync it would not be very accurate
-		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet_cast"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "yellow")
+		self:Bar(L["wingbuffet_cast"], timer.wingbuffet, icon.wingbuffet, true, "yellow")
 	elseif msg == L["fireball_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "OnyFireball")
+		self:Sync(syncName.fireball)
 	end
 end
 
-function BigWigsOnyxia:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "BossEngaged" and rest == "Onyxia" and not self.started then
-		if self.db.profile.phase and not self.started then
-			self:TriggerEvent("BigWigs_Message", L["phase1text"], "Attention")
-		end
-        self.phase = 1
-        self:KTM_SetTarget(boss)
-	elseif sync == "OnyPhaseTwo" and self.phase < 2 then
-		transitioned = true --to stop sending new syncs
-        self.phase = 2
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phase2text"], "Alarm")
-		end
-	elseif sync == "OnyPhaseThree" and self.db.profile.phase and self.phase < 3 then
-		--self:TriggerEvent("BigWigs_Message", L["phase3text"], "Beware")
-        self:Message(L["phase3text"], "Alarm", true, "Beware")
-        self:TriggerEvent("BigWigs_StartBar", self, L["fear_next"], 10, "Interface\\Icons\\Spell_Shadow_Possession")
-        self.phase = 3
-        --self:KTM_Reset()
-	elseif sync == "OnyDeepBreath" and self.db.profile.deepbreath then
-        self:DebugMessage('deep breath received')
-		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important", true, "RunAway")
-		self:TriggerEvent("BigWigs_StartBar", self, L["deepbreath_cast"], 5, "Interface\\Icons\\Spell_Fire_SelfDestruct", true, "black")
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 5)
-	elseif sync == "OnyFlameBreath" and self.db.profile.flamebreath then
-		self:TriggerEvent("BigWigs_StartBar", self, L["flamebreath_cast"], 2, "Interface\\Icons\\Spell_Fire_Fire")
-	elseif sync == "OnyFireball" and self.db.profile.fireball then 
-		self:TriggerEvent("BigWigs_StartBar", self, L["fireball_cast"], 3, "Interface\\Icons\\Spell_Fire_FlameBolt", true, "red")
-	elseif sync == "OnyBellowingRoar" and self.db.profile.onyfear then 
-		self:TriggerEvent("BigWigs_Message", L["feartext"], "Important", "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["fear_cast"], 1.5, "Interface\\Icons\\Spell_Shadow_Possession", true, "white")
-		self:ScheduleEvent("BigWigs_StartBar", 1.5, self, L["fear_next"], 28.5, "Interface\\Icons\\Spell_Shadow_Possession")
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_Possession", 5)
-	end
-end
-
-function BigWigsOnyxia:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-    if string.find(msg,"Bellowing Roar") then
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Shadow_Possession")
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+    if string.find(msg, L["fear_over_trigger"]) then
+        self:RemoveWarningSign(icon.fear)
     end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.phase2 then
+		self:Phase2()
+	elseif sync == syncName.phase3 then
+        self:Phase3()
+	elseif sync == syncName.deepbreath then
+		self:DeepBreath()
+	elseif sync == syncName.flamebreath  then
+		self:FlameBreath()
+	elseif sync == syncName.fireball  then 
+		self:Fireball()
+	elseif sync == syncName.fear  then 
+		self:Fear()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Phase2()
+	if phase < 2 then
+		transitioned = true --to stop sending new syncs
+		phase = 2
+		if self.db.profile.phase then
+			self:Message(L["phase2text"], "Alarm", false, "Alarm")
+		end
+	end
+end
+
+function module:Phase3()
+	if self.db.profile.phase and phase < 3 then
+		self:Message(L["phase3text"], "Alarm", true, "Beware")
+        self:Bar(L["fear_next"], timer.firstFear, icon.fear)
+        phase = 3
+	end
+end
+
+function module:DeepBreath()
+	if self.db.profile.deepbreath then
+		self:Message(L["warn1"], "Important", true, "RunAway")
+		self:Bar(L["deepbreath_cast"], 5, icon.deepbreath, true, "black")
+        self:WarningSign(icon.deepbreath_sign, 5)
+	end
+end
+
+function module:FlameBreath()
+	if self.db.profile.flamebreath then
+		self:Bar(L["flamebreath_cast"], 2, "Spell_Fire_Fire")
+	end
+end
+
+function module:Fireball()
+	if self.db.profile.fireball then
+		self:Bar(L["fireball_cast"], 3, icon.fireball, true, "red")
+	end
+end
+
+function module:Fear()
+	if self.db.profile.onyfear then
+		self:Message(L["feartext"], "Important", true, "Alarm")
+		self:Bar(L["fear_cast"], timer.fearCast, icon.fear, true, "white")
+		self:DelayedBar(timer.fearCast, L["fear_next"], timer.fear - timer.fearCast, icon.fear)
+        self:WarningSign(icon.fear, 5)
+	end
 end
