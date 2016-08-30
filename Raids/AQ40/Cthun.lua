@@ -282,6 +282,8 @@ function module:OnSetup()
 	phase2started = nil
 
 	tentacletime = timer.p1Tentacle
+    
+    BigWigsProximity:BigWigs_HideProximity(self)
 end
 
 -- called after boss is engaged
@@ -508,7 +510,7 @@ function module:CThunWeakened()
     -- next eye tentacles 75s after last spawn / 45s delayed
 	self:CancelScheduledEvent("bwcthuntentacles") -- ok
     local nextEyeTentacles = timer.p2Tentacle - (GetTime() - timer.lastEyeTentaclesSpawn) + timer.weakened;
-    self:DebugMessage("nextEyeTentacles(".. nextEyeTentacles ..") = timer.p2Tentacle(".. timer.p2Tentacle ..") - (GetTime() - timer.lastEyeTentaclesSpawn)(".. (GetTime() - timer.lastEyeTentaclesSpawn) ..") + time.weakened(".. time.weakened ..")")
+    self:DebugMessage("nextEyeTentacles(".. nextEyeTentacles ..") = timer.p2Tentacle(".. timer.p2Tentacle ..") - (GetTime() - timer.lastEyeTentaclesSpawn)(".. (GetTime() - timer.lastEyeTentaclesSpawn) ..") + time.weakened(".. timer.weakened ..")")
     self:Bar(self.db.profile.rape and L["barTentacle"] or L["barNoRape"], nextEyeTentacles, icon.eyeTentacles)    
     self:ScheduleEvent("bwcthunstarttentacles", self.TentacleRape, nextEyeTentacles, self )
     self:DelayedMessage(nextEyeTentacles - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, "Alert")

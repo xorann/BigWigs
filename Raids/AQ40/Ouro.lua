@@ -303,7 +303,7 @@ end
 
 function module:Submerge()
 	self:CancelDelayedMessage(L["sweepwarn"])
-	self:CacnelDelayedMessage(L["sandblastwarn"])
+	self:CancelDelayedMessage(L["sandblastwarn"])
 	self:CancelDelayedMessage(L["emergewarn"])
 
 	self:RemoveBar(L["sweepbartext"])
