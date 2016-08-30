@@ -216,7 +216,7 @@ function BigWigsOptions:ModuleAction(module)
 		deuce.core:ToggleModuleActive(module, false)
 		self:Print(string.format(L["%s disabled."], module:ToString()))
 	else
-		deuce.core:BigWigs_RebootModule(module)
+		deuce.core:BigWigs_RebootModule(module:ToString())
 		self:Print(string.format(L["%s reset."], module:ToString()))
 	end
 	self:UpdateTooltip()
