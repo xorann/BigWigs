@@ -1,10 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Viscidus"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
-local prior
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Viscidus", "Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -28,28 +28,28 @@ L:RegisterTranslations("enUS", function() return {
 	freeze_name = "Freezing States Alert",
 	freeze_desc = "Warn for the different frozen states",
 
-	trigger1 	= "Viscidus begins to slow.",
-	trigger2 	= "Viscidus is freezing up.",
-	trigger3 	= "Viscidus is frozen solid.",
-	trigger4 	= "Viscidus begins to crack.",
-	trigger5 	= "Viscidus looks ready to shatter.",
-	trigger6	= "afflicted by Poison Bolt Volley",
-	trigger7 	= "^([^%s]+) ([^%s]+) afflicted by Toxin%.$",
+	slow_trigger 	= "Viscidus begins to slow.",
+	freeze_trigger 	= "Viscidus is freezing up.",
+	frozen_trigger 	= "Viscidus is frozen solid.",
+	crack_trigger 	= "Viscidus begins to crack.",
+	shatter_trigger 	= "Viscidus looks ready to shatter.",
+	volley_trigger	= "afflicted by Poison Bolt Volley",
+	toxin_trigger 	= "^([^%s]+) ([^%s]+) afflicted by Toxin%.$",
 
 	you 		= "You",
 	are 		= "are",
 
-	warn1 		= "First freeze phase!",
-	warn2 		= "Second freeze phase!",
-	warn3 		= "Viscidus is frozen!",
-	warn4 		= "Cracking up - little more now!",
-	warn5 		= "Cracking up - almost there!",
-	warn6		= "Poison Bolt Volley!",
-	warn7		= "Poison Bolt Volley in ~3 sec!",
-	warn8		= " is in a toxin cloud!",
-	warn9		= "You are in the toxin cloud!",
+	freeze1_warn 		= "First freeze phase!",
+	freeze2_warn 		= "Second freeze phase!",
+	frozen_warn 		= "Viscidus is frozen!",
+	crack1_warn 		= "Cracking up - little more now!",
+	crack2_warn 		= "Cracking up - almost there!",
+	volley_warn		= "Poison Bolt Volley!",
+	volley_soon_warn		= "Poison Bolt Volley in ~3 sec!",
+	toxin_warn		= " is in a toxin cloud!",
+	toxin_self_warn		= "You are in the toxin cloud!",
 
-	bar1text	= "Poison Bolt Volley",
+	volley_bar	= "Poison Bolt Volley",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -65,169 +65,59 @@ L:RegisterTranslations("deDE", function() return {
 	freeze_name = "Freeze Phasen",
 	freeze_desc = "Zeigt die verschiedenen Freeze Phasen an.",
 
-	trigger1 	= "wird langsamer!",
-	trigger2 	= "friert ein!",
-	trigger3 	= "ist tiefgefroren!",
-	trigger4 	= "geht die Puste aus!", --CHECK
-	trigger5 	= "ist kurz davor, zu zerspringen!",
-	trigger6	= "afflicted by Poison Bolt Volley", -- ?
-	trigger7 	= "^([^%s]+) ([^%s]+) von Toxin betroffen.$",
+	slow_trigger 	= "wird langsamer!",
+	freeze_trigger 	= "friert ein!",
+	frozen_trigger 	= "ist tiefgefroren!",
+	crack_trigger 	= "geht die Puste aus!", --CHECK
+	shatter_trigger 	= "ist kurz davor, zu zerspringen!",
+	volley_trigger	= "afflicted by Poison Bolt Volley", -- ?
+	toxin_trigger 	= "^([^%s]+) ([^%s]+) von Toxin betroffen.$",
 
 	you 		= "Ihr",
 	are 		= "seid",
 
-	warn1 		= "Erste Freeze Phase!",
-	warn2 		= "Zweite Freeze Phase!",
-	warn3 		= "Dritte Freeze Phase!",
-	warn4 		= "Zerspringen - etwas noch!",
-	warn5 		= "Zerspringen - fast da!",
-	warn6		= "Poison Bolt Volley!", -- ?
-	warn7		= "Incoming Poison Bolt Volley in ~3 Sekunden!", -- ?
-	warn8		= " ist in einer Toxin Wolke!",
-	warn9		= "Du bist in einer Toxin Wolke!",
+	freeze1_warn 		= "Erste Freeze Phase!",
+	freeze2_warn 		= "Zweite Freeze Phase!",
+	frozen_warn 		= "Dritte Freeze Phase!",
+	crack1_warn 		= "Zerspringen - etwas noch!",
+	crack2_warn 		= "Zerspringen - fast da!",
+	volley_warn		= "Poison Bolt Volley!", -- ?
+	volley_soon_warn		= "Incoming Poison Bolt Volley in ~3 Sekunden!", -- ?
+	toxin_warn		= " ist in einer Toxin Wolke!",
+	toxin_self_warn		= "Du bist in einer Toxin Wolke!",
 
-	bar1text        = "Poison Bolt Volley",
+	volley_bar        = "Poison Bolt Volley",
 } end )
 
-L:RegisterTranslations("zhCN", function() return {
-	volley_name = "毒性之箭警报",
-	volley_desc = "毒性之箭警报",
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-	toxinyou_name = "玩家毒云警报",
-	toxinyou_desc = "你站在毒云中时发出警报",
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"}
 
-	toxinother_name = "队友毒云警报",
-	toxinother_desc = "队友站在毒云中时发出警报",
 
-	freeze_name = "冻结状态警报",
-	freeze_desc = "冻结状态警报",
-	
-	trigger1 	= "的速度慢下来了！",
-	trigger2 	= "冻结了！",
-	trigger3 	= "变成了坚硬的固体！",
-	trigger4 	= "开始碎裂了！",
-	trigger5 	= "马上就要碎裂的样子！",
-	trigger6	= "受到了毒性之箭效果",
-	trigger7 	= "^(.+)受(.+)了剧毒效果的影响。$",
+-- locals
+local timer = {
+	volley = 10,
+}
+local icon = {
+	volley = "Spell_Nature_CorrosiveBreath",
+}
+local syncName = {}
 
-	you 		= "你",
-	are 		= "到",
+local prior
 
-	warn1 		= "冻结第一阶段！",
-	warn2 		= "冻结第二阶段 - 做好准备",
-	warn3 		= "冻结第三阶段 - DPS全开！",
-	warn4 		= "即将碎裂 - 加大火力！",
-	warn5 		= "即将碎裂 - 几近成功！",
-	warn6		= "毒性之箭 - 迅速解毒！",
-	warn7		= "3秒后发动毒性之箭！",
-	warn8		= "在毒云中 - 快跑开！",
-	warn9		= "你在毒云中 - 快跑开！",
-
-	bar1text	= "毒性之箭",
-} end )
-
-L:RegisterTranslations("zhTW", function() return {
-	-- Viscidus 維希度斯
-	volley_name = "毒性之箭警報",
-	volley_desc = "當維希度斯施放毒性之箭時時發出警報",
-
-	toxinyou_name = "玩家毒雲警報",
-	toxinyou_desc = "你站在毒雲中時發出警報",
-
-	toxinother_name = "隊友毒雲警報",
-	toxinother_desc = "隊友站在毒雲中時發出警報",
-
-	freeze_name = "凍結狀態警報",
-	freeze_desc = "友方被凍結時發出警報",
-	
-	trigger1 	= "的速度慢下來了！",
-	trigger2 	= "凍住了！",
-	trigger3 	= "變成了堅硬的固體！",
-	trigger4 	= "開始碎裂了！",
-	trigger5 	= "馬上就要碎裂的樣子！",
-	trigger6	= "受到了毒性之箭效果",
-	trigger7 	= "^(.+)受到(.*)劇毒的",
-
-	you 		= "你",
-	are 		= "了",
-
-	warn1 		= "凍結階段 1/3 ！",
-	warn2 		= "凍結階段 2/3 ！做好准備！",
-	warn3 		= "凍結階段 3/3 ！火力全開！",
-	warn4 		= "碎裂階段 1/3 ！加大火力！",
-	warn5 		= "碎裂階段 2/3 ！幾近成功！",
-	warn6		= "毒性之箭 - 迅速解毒！",
-	warn7		= "3 秒後發動毒性之箭！",
-	warn8		= "在毒雲中！快跑開！！",
-	warn9		= "你在毒雲中！快跑開！",
-
-	bar1text	= "毒性之箭",
-} end )
-
-L:RegisterTranslations("koKR", function() return {
-	volley_name = "연발 독액 경고",
-	volley_desc = "연발 독액에 대한 경고",
-
-	toxinyou_name = "자신의 독구름 경고",
-	toxinyou_desc = "자신이 독구름일 때 알림",
-
-	toxinother_name = "타인의 독구름 경고",
-	toxinother_desc = "타인이 독구름일 때 알림",
-
-	freeze_name = "빙결 상태 경고",
-	freeze_desc = "각각의 빙결 상태에 대한 경고",
-
-	trigger1 	= "%s|1이;가; 느려지기 시작했습니다!",	-- CHECK
-	trigger2 	= "%s|1이;가; 얼어붙고 있습니다!",	-- CHECK
-	trigger3 	= "%s|1이;가; 단단하게 얼었습니다!",	-- CHECK
-	trigger4 	= "%s|1이;가; 분해되기 시작합니다!",	-- CHECK
-	trigger5 	= "%s|1이;가; 부서질 것 같습니다!",	-- CHECK
-	trigger6	= "연발 독액에 걸렸습니다",	-- CHECK
-	trigger7 	= "^([^|;%s]*)(.*)독소에 걸렸습니다%.$", -- CHECK
-
-	you 		= "",
-	are 		= "",
-
-	warn1 		= "1 단계 - 느려집니다!",
-	warn2 		= "2 단계 - 얼어붙고 있습니다!",
-	warn3 		= "3 단계 - 얼었습니다! 물리 공격 시작!",
-	warn4 		= "4 단계 - 좀 더 빠르게 공격!",
-	warn5 		= "5 단계 - 거의 부서졌습니다!",
-	warn6		= "연발 독액 - 독 해제 하세요!",
-	warn7		= "연발 독액 - 약 3 초후 시전!",
-	warn8		= "님이 독소에 걸렸습니다 - 대피!",
-	warn9		= "당신은 독구름에 걸렸습니다!",
-
-	bar1text	= "연발 독액",
-} end )
-
-L:RegisterTranslations("frFR", function() return {
--- need french chat/combatlog
-	trigger7 	= "^([^%s]+) ([^%s]+) subit les effets de Toxine%.$",
-
-	you 		= "Vous",
-	are 		= "subissez",
-
-} end )
-
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsViscidus = BigWigs:NewModule(boss)
-BigWigsViscidus.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsViscidus.enabletrigger = boss
-BigWigsViscidus.bossSync = "Viscidus"
-BigWigsViscidus.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"}
-BigWigsViscidus.revision = tonumber(string.sub("$Revision: 16282 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsViscidus:OnEnable()
-    self.started = nil
-	prior = nil
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("BigWigs_Message")
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckVis")
@@ -235,44 +125,60 @@ function BigWigsViscidus:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckVis")
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	prior = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function BigWigsViscidus:CheckVis(arg1)
-	if not prior and self.db.profile.volley and string.find(arg1, L["trigger6"]) then
-		self:TriggerEvent("BigWigs_Message", L["warn6"], "Urgent")
-		self:ScheduleEvent("BigWigs_Message", 7, L["warn7"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 10, "Interface\\Icons\\Spell_Nature_CorrosiveBreath")
+
+function module:CheckVis(arg1)
+	if not prior and self.db.profile.volley and string.find(arg1, L["volley_trigger"]) then
+		self:Message(L["volley_warn"], "Urgent")
+		self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent")
+		self:Bar(L["volley_bar"], timer.volley, icon.volley)
 		prior = true
-	elseif string.find(arg1, L["trigger7"]) then
-		local _,_, pl, ty = string.find(arg1, L["trigger7"])
+	elseif string.find(arg1, L["toxin_trigger"]) then
+		local _,_, pl, ty = string.find(arg1, L["toxin_trigger"])
 		if (pl and ty) then
 			if self.db.profile.toxinyou and pl == L["you"] and ty == L["are"] then
-				self:TriggerEvent("BigWigs_Message", L["warn9"], "Personal", true)
-				self:TriggerEvent("BigWigs_Message", UnitName("player") .. L["warn8"], "Important", nil, nil, true)
+				self:Message(L["toxin_self_warn"], "Personal", true)
+				self:Message(UnitName("player") .. L["toxin_warn"], "Important", nil, nil, true)
 			elseif self.db.profile.toxinother then
-				self:TriggerEvent("BigWigs_Message", pl .. L["warn8"], "Important")
-				self:TriggerEvent("BigWigs_SendTell", pl, L["warn9"])
+				self:Message(pl .. L["toxin_warn"], "Important")
+				--self:TriggerEvent("BigWigs_SendTell", pl, L["toxin_self_warn"]) -- can cause whisper bug on nefarian
 			end
 		end
 	end
 end
 
-function BigWigsViscidus:CHAT_MSG_RAID_BOSS_EMOTE(arg1)
+function module:CHAT_MSG_RAID_BOSS_EMOTE(arg1)
 	if not self.db.profile.freeze then return end
-	if arg1 == L["trigger1"] then
-		self:TriggerEvent("BigWigs_Message", L["warn1"], "Atention")
-	elseif arg1 == L["trigger2"] then
-		self:TriggerEvent("BigWigs_Message", L["warn2"], "Urgent")
-	elseif arg1 == L["trigger3"] then
-		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
-	elseif arg1 == L["trigger4"] then
-		self:TriggerEvent("BigWigs_Message", L["warn4"], "Urgent")
-	elseif arg1 == L["trigger5"] then
-		self:TriggerEvent("BigWigs_Message", L["warn5"], "Important")
+	if arg1 == L["slow_trigger"] then
+		self:Message(L["freeze1_warn"], "Atention")
+	elseif arg1 == L["freeze_trigger"] then
+		self:Message(L["freeze2_warn"], "Urgent")
+	elseif arg1 == L["frozen_trigger"] then
+		self:Message(L["frozen_warn"], "Important")
+	elseif arg1 == L["crack_trigger"] then
+		self:Message(L["crack1_warn"], "Urgent")
+	elseif arg1 == L["shatter_trigger"] then
+		self:Message(L["crack2_warn"], "Important")
 	end
 end
 
-function BigWigsViscidus:BigWigs_Message(text)
-	if text == L["warn7"] then prior = nil end
+function module:BigWigs_Message(text)
+	if text == L["volley_soon_warn"] then prior = nil end
 end

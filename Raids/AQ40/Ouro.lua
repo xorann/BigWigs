@@ -1,19 +1,10 @@
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Ouro"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
 
-local berserkannounced
+local module, L = BigWigs:ModuleDeclaration("Ouro", "Ahn'Qiraj")
 
-local timers = {
-	nextSubmerge = 90,
-	sweep = 1.5,
-	sweepInterval = 20,
-	sandblast = 2,
-	sandblastInterval = 22,
-	nextEmerge = 30,
-}
 
 ----------------------------
 --      Localization      --
@@ -38,10 +29,6 @@ L:RegisterTranslations("enUS", function() return {
 	submerge_name = "Submerge Alert",
 	submerge_desc = "Warn for Submerge",
 
-	scarab_cmd = "scarab",
-	scarab_name = "Scarab Despawn Alert",
-	scarab_desc = "Warn for Scarab Despawn",
-
 	berserk_cmd = "berserk",
 	berserk_name = "Berserk",
 	berserk_desc = "Warn for when Ouro goes berserk",
@@ -63,11 +50,7 @@ L:RegisterTranslations("enUS", function() return {
     emergetrigger = "Dirt Mound dies",
 	emergeannounce = "Ouro has emerged!",
 	emergewarn = "15 sec to possible submerge!",
-	emergewarn2 = "15 sec to Ouro sumberge!",
 	emergebartext = "Ouro submerge",
-
-	scarabdespawn = "Scarabs despawn in 10 Seconds",
-	scarabbar = "Scarabs despawn",
 
 	submergetrigger = "Ouro casts Summon Ouro Mounds.",
 	submergeannounce = "Ouro has submerged!",
@@ -94,9 +77,6 @@ L:RegisterTranslations("deDE", function() return {
 	submerge_name = "Untertauchen",
 	submerge_desc = "Warnung, wenn Ouro untertaucht.",
 
-	scarab_name = "Scarab Despawn Alert", -- ?
-	scarab_desc = "Warn for Scarab Despawn", -- ?
-
 	berserk_name = "Berserk",
 	berserk_desc = "Warn for when Ouro goes berserk",
 
@@ -116,11 +96,7 @@ L:RegisterTranslations("deDE", function() return {
 	emergetrigger = "Dirt Mound casts Summon Ouro Scarabs.", -- ?
 	emergeannounce = "Ouro ist aufgetaucht!",
 	emergewarn = "15 sec to possible submerge!",
-	emergewarn2 = "15 sec to Ouro sumberge!",
 	emergebartext = "Untertauchen",
-
-	scarabdespawn = "Scarabs verschwinden in 10 Sekunden", -- ?
-	scarabbar = "Scarabs despawn", -- ?
 
 	submergetrigger = "Ouro casts Summon Ouro Mounds.", -- ?
 	submergeannounce = "Ouro ist aufgetaucht!",
@@ -132,53 +108,97 @@ L:RegisterTranslations("deDE", function() return {
 	berserksoonwarn = "Berserkerwut in K\195\188rze - Bereit machen!",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsOuro = BigWigs:NewModule(boss)
-BigWigsOuro.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsOuro.enabletrigger = boss
-BigWigsOuro.bossSync = "Ouro"
-BigWigsOuro.toggleoptions = {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
-BigWigsOuro.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"sweep", "sandblast", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
+
+
+-- locals
+local timer = {
+	nextSubmerge = 90,
+	sweep = 1.5,
+	sweepInterval = 20,
+	sandblast = 2,
+	sandblastInterval = 22,
+	nextEmerge = 30,
+}
+local icon = {
+	sweep = "Spell_Nature_Thorns",
+	sandblast = "Spell_Nature_Cyclone",
+	submerge = "Spell_Nature_Earthquake",
+}
+local syncName = {
+	sweep = "OuroSweep",
+	sandblast = "OuroSandblast",
+	emerge = "OuroEmerge2",
+	submerge = "OuroSubmerge",
+	berserk = "OuroBerserk",
+}
+		
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsOuro:OnEnable()
-    self:DebugMessage("ouro OnEnable")
+-- called after module is enabled
+function module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
+	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "EmergeCheck")
+	self:RegisterEvent("UNIT_HEALTH")
+	
+	self:ThrottleSync(10, syncName.sweep)
+	self:ThrottleSync(10, syncName.sandblast)
+	self:ThrottleSync(10, syncName.emerge)
+	self:ThrottleSync(10, syncName.submerge)
+	self:ThrottleSync(10, syncName.berserk)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+	
 	berserkannounced = nil
 	self.started = nil
     self.phase = nil
     self.submergeCheckName = self:ToString()
+end
 
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "EmergeCheck")
+-- called after boss is engaged
+function module:OnEngage() 
+	self.phase = "emerged"
+	self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
+	
+	if self.db.profile.emerge then
+		self:Message(L["engage_message"], "Attention")
+		self:PossibleSubmerge()
+	end
+end
 
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
-	self:RegisterEvent("UNIT_HEALTH")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-
-	self:TriggerEvent("BigWigs_ThrottleSync", "OuroSweep", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OuroSandblast", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OuroEmerge2", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OuroSubmerge", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "OuroBerserk", 10)
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 
-function BigWigsOuro:UNIT_HEALTH( msg )
+------------------------------
+--      Event Handlers	    --
+------------------------------
+
+function module:UNIT_HEALTH( msg )
 	if UnitName(msg) == boss then
 		local health = UnitHealth(msg)
 		if health > 20 and health <= 23 and not berserkannounced then
 			if self.db.profile.berserk then
-				self:TriggerEvent("BigWigs_Message", L["berserksoonwarn"], "Important")
+				self:Message(L["berserksoonwarn"], "Important")
 			end
 			berserkannounced = true
 		elseif health > 30 and berserkannounced then
@@ -187,121 +207,152 @@ function BigWigsOuro:UNIT_HEALTH( msg )
 	end
 end
 
-function BigWigsOuro:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:DebugMessage("engage")
-        
-        self.phase = "emerged"
-		self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
-        
-        if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		if self.db.profile.emerge then
-			self:TriggerEvent("BigWigs_Message", L["engage_message"], "Attention")
-			self:PossibleSubmerge()
-		end
-	elseif sync == "OuroSweep" then
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
+	if string.find(msg, L["emergetrigger"]) then
+		self:Sync(syncName.emerge)
+	elseif string.find(msg, L["submergetrigger"]) then
+		self:Sync(syncName.submerge)
+	end
+end
+
+function module:EmergeCheck(msg)
+    if string.find(msg, L["emergetrigger"]) then
+        self:Sync(syncName.emerge)
+    end
+end
+
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
+	if string.find(msg, L["sweeptrigger"]) then
+		self:Sync(syncName.sweep)
+	elseif string.find(msg, L["sandblasttrigger"]) then
+		self:Sync(syncName.sandblast)
+	elseif string.find(msg, L["submergetrigger"]) then
+		self:Sync(syncName.submerge)
+	end
+end
+
+function module:CHAT_MSG_MONSTER_EMOTE( msg )
+	if msg == L["berserktrigger"] then
+		self:Sync(syncName.berserk)
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.sweep then
 		self:Sweep()
-	elseif sync == "OuroSandblast" then
+	elseif sync == syncName.sandblast then
 		self:Sandblast()
-	elseif sync == "OuroEmerge2" then
+	elseif sync == syncName.emerge then
 		self:Emerge()
-	elseif sync == "OuroSubmerge" then
+	elseif sync == syncName.submerge then
 		self:Submerge()
-	elseif sync == "OuroBerserk" then
+	elseif sync == syncName.berserk then
 		self:Berserk()
 	end
 end
 
-function BigWigsOuro:PossibleSubmerge()
-	if self.db.profile.emerge then
-		self:ScheduleEvent("bwouroemergewarn", "BigWigs_Message", timers.nextSubmerge -15, L["emergewarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["possible_submerge_bar"], timers.nextSubmerge, "Interface\\Icons\\Spell_Nature_Earthquake")
-		--self:ScheduleEvent("bwouroemergewarn2", "BigWigs_Message", 165, L["emergewarn2"], "Important")
-		--self:TriggerEvent("BigWigs_StartBar", self, L["emergebartext"], 180, "Interface\\Icons\\Spell_Nature_Earthquake")
-	end
-end
 
-function BigWigsOuro:Berserk()
-	self:CancelScheduledEvent("bwouroemergewarn")
-	self:CancelScheduledEvent("bwouroemergewarn2")
-	self:TriggerEvent("BigWigs_StopBar", self, L["emergebartext"])
-	self:TriggerEvent("BigWigs_StopBar", self, L["possible_submerge_bar"])
-	self:UnregisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+------------------------------
+--      Sync Handlers	    --
+------------------------------
 
-	if self.db.profile.berserk then
-		self:TriggerEvent("BigWigs_Message", L["berserkannounce"], "Important", true, "Beware")
-	end
-end
-
-function BigWigsOuro:Sweep()
+function module:Sweep()
 	if self.db.profile.sweep then
-        self:Bar(L["sweepannounce"], timers.sweep, "Spell_Nature_Thorns")
+        self:Bar(L["sweepannounce"], timer.sweep, icon.sweep)
 		self:Message(L["sweepannounce"], "Important", true, "Alarm")
-        --self:TriggerEvent("BigWigs_Message", L["sweepannounce"], "Important")
-		--self:DelayedMessage(15, L["sweepwarn"], "Important")
-        self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", timers.sweepInterval - 5, L["sweepwarn"], "Important")
-		self:Bar(L["sweepbartext"], timers.sweepInterval, "Spell_Nature_Thorns")
-        --self:TriggerEvent("BigWigs_StartBar", self, L["sweepbartext"], 21, "Interface\\Icons\\Spell_Nature_Thorns")
+        self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important")
+		self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
 	end
 end
 
-function BigWigsOuro:Sandblast()
+function module:Sandblast()
 	if self.db.profile.sandblast then
-        self:Bar(L["sandblastannounce"], timers.sandblast, "Spell_Nature_Cyclone")
-		self:TriggerEvent("BigWigs_Message", L["sandblastannounce"], "Important", true, "Alert")
-		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", timers.sandblastInterval - 5, L["sandblastwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], timers.sandblastInterval, "Interface\\Icons\\Spell_Nature_Cyclone")
+        self:Bar(L["sandblastannounce"], timer.sandblast, icon.sandblast)
+		self:Message(L["sandblastannounce"], "Important", true, "Alert")
+		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important")
+		self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
 	end
 end
 
-function BigWigsOuro:Emerge()
+function module:Emerge()
     self.phase = "emerged"
     
     self:CancelScheduledEvent("bwsubmergewarn")
     self:RemoveBar(L["submergebartext"])
     
 	if self.db.profile.emerge then
-		self:TriggerEvent("BigWigs_Message", L["emergeannounce"], "Important", false, "Beware")
+		self:Message(L["emergeannounce"], "Important", false, "Beware")
 		self:PossibleSubmerge()
 	end
 
 	if self.db.profile.sweep then
-		self:ScheduleEvent("bwourosweepwarn", "BigWigs_Message", timers.sweepInterval - 5, L["sweepwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sweepbartext"], timers.sweepInterval, "Interface\\Icons\\Spell_Nature_Thorns")
+		self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important")
+		self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
 	end	
 
 	if self.db.profile.sandblast then
-		self:ScheduleEvent("bwouroblastwarn", "BigWigs_Message", timers.sandblastInterval - 5, L["sandblastwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["sandblastbartext"], timers.sandblastInterval, "Interface\\Icons\\Spell_Nature_Cyclone")
+		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important")
+		self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
 	end
-
-	--[[if self.db.profile.scarab then
-		self:ScheduleEvent("bwscarabdespawn", "BigWigs_Message", 50, L["scarabdespawn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["scarabbar"], 60, "Interface\\Icons\\INV_Scarab_Clay")
-	end]]
 end
 
-function BigWigsOuro:Submerge()
-	self:CancelScheduledEvent("bwourosweepwarn")
-	self:CancelScheduledEvent("bwouroblastwarn")
-	self:CancelScheduledEvent("bwouroemergewarn")
-	self:CancelScheduledEvent("bwouroemergewarn2")
+function module:Submerge()
+	self:CancelDelayedMessage(L["sweepwarn"])
+	self:CacnelDelayedMessage(L["sandblastwarn"])
+	self:CancelDelayedMessage(L["emergewarn"])
 
-	self:TriggerEvent("BigWigs_StopBar", self, L["sweepbartext"])
-	self:TriggerEvent("BigWigs_StopBar", self, L["sandblastbartext"])
-	self:TriggerEvent("BigWigs_StopBar", self, L["emergebartext"])
-	self:TriggerEvent("BigWigs_StopBar", self, L["possible_submerge_bar"])
+	self:RemoveBar(L["sweepbartext"])
+	self:RemoveBar(L["sandblastbartext"])
+	self:RemoveBar(L["emergebartext"])
+	self:RemoveBar(L["possible_submerge_bar"])
 
     self.phase = "submerged"
     
 	if self.db.profile.submerge then
-		self:TriggerEvent("BigWigs_Message", L["submergeannounce"], "Important")
-		self:ScheduleEvent("bwsubmergewarn", "BigWigs_Message", timers.nextEmerge - 5, L["submergewarn"], "Important" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["submergebartext"], timers.nextEmerge, "Interface\\Icons\\Spell_Nature_Earthquake")
+		self:Message(L["submergeannounce"], "Important")
+		self:ScheduleEvent("bwsubmergewarn", "BigWigs_Message", timer.nextEmerge - 5, L["submergewarn"], "Important" )
+		self:Bar(L["submergebartext"], timer.nextEmerge, icon.submerge)
 	end
 end
 
-function BigWigsOuro:IsOuroVisible()
+function module:Berserk()
+	self:CancelDelayedMessage(L["emergewarn"])
+	self:RemoveBar(L["emergebartext"])
+	self:RemoveBar(L["possible_submerge_bar"])
+	self:UnregisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+
+	if self.db.profile.berserk then
+		self:Message(L["berserkannounce"], "Important", true, "Beware")
+	end
+end
+
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:PossibleSubmerge()
+	if self.db.profile.emerge then
+		self:DelayedMessage(timer.nextSubmerge -15, L["emergewarn"], "Important")
+		self:Bar(L["possible_submerge_bar"], timer.nextSubmerge, icon.submerge)
+	end
+end
+
+function module:SubmergeCheck()
+    if self.phase == "emerged" then
+        if not self:IsOuroVisible() then
+            self:DebugMessage("OuroSubmerge")
+            self:Sync(syncName.submerge)
+        end
+    end
+end
+
+function module:IsOuroVisible()
 	if UnitName("playertarget") == self.submergeCheckName then
 		return true
 	else
@@ -314,60 +365,21 @@ function BigWigsOuro:IsOuroVisible()
     
     return false
 end
-function BigWigsOuro:SubmergeCheck()
-    if self.phase == "emerged" then
-        if not self:IsOuroVisible() then
-            self:DebugMessage("OuroSubmerge")
-            self:Sync("OuroSubmerge")
-        end
-    end
-end
-
-function BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
-	if string.find(msg, L["emergetrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "OuroEmerge2")
-	elseif string.find(msg, L["submergetrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "OuroSubmerge")
-	end
-end
-function BigWigsOuro:EmergeCheck(msg)
-    if string.find(msg, L["emergetrigger"]) then
-        self:Sync("OuroEmerge2")
-        --self:TriggerEvent("BigWigs_SendSync", "OuroEmerge2")
-    end
-end
-
-
-function BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
-	if string.find(msg, L["sweeptrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "OuroSweep")
-	elseif string.find(msg, L["sandblasttrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "OuroSandblast")
-	elseif string.find(msg, L["submergetrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "OuroSubmerge")
-	end
-end
-
-function BigWigsOuro:CHAT_MSG_MONSTER_EMOTE( msg )
-	if msg == L["berserktrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "OuroBerserk")
-	end
-end
 
 
 ----------------------------------
 --      Module Test Function    --
 ----------------------------------
 
-function BigWigsOuro:Test()
+function module:Test()
     local function sweep()
         if self.phase == "emerged" then
-            BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sweeptrigger"])
+            module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sweeptrigger"])
         end
     end
     local function sandblast()
         if self.phase == "emerged" then
-            BigWigsOuro:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sandblasttrigger"])
+            module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sandblasttrigger"])
         end
     end
     local function submerge()
@@ -378,7 +390,7 @@ function BigWigsOuro:Test()
     local function emerge()
         if self.phase == "submerged" then
             TargetUnit("player")
-            BigWigsOuro:EmergeCheck(L["emergetrigger"])
+            module:EmergeCheck(L["emergetrigger"])
         end
     end
     local function deactivate()
@@ -393,7 +405,7 @@ function BigWigsOuro:Test()
         end]]
     end
     
-    BigWigs:Print("BigWigsOuro Test started")
+    BigWigs:Print("module Test started")
     BigWigs:Print("Do not change your target!")
     BigWigs:Print("  Sweep Test after 5s")
     BigWigs:Print("  Sand Storm Test after 10s")

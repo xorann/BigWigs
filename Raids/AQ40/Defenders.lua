@@ -1,9 +1,10 @@
-﻿------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Anubisath Defender"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Anubisath Defender", "Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -99,193 +100,37 @@ L:RegisterTranslations("deDE", function() return {
 	thunderclapwarn = "Donnerknall!",
 } end )
 
-L:RegisterTranslations("zhCN", function() return {
-	plagueyou_name = "玩家瘟疫警报",
-	plagueyou_desc = "你中了瘟疫时发出警报",
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-	plagueother_name = "队友瘟疫警报",
-	plagueother_desc = "队友中了瘟疫时发出警报",
-
-	thunderclap_name = "雷霆一击警报",
-	thunderclap_desc = "阿努比萨斯防御者发动雷霆一击时发出警报",
-
-	explode_name = "爆炸警报",
-	explode_desc = "阿努比萨斯防御者即将爆炸时发出警报",
-
-	enrage_name = "狂怒警报",
-	enrage_desc = "阿努比萨斯防御者进入狂怒状态时发出警报",
-
-	summon_name = "召唤警报",
-	summon_desc = "阿努比萨斯防御者召唤增援时发出警报",
-	
-	icon_name = "标记瘟疫",
-	icon_desc = "团队标记中瘟疫的玩家 (需要助理或更高权限)",
-	
-	explodetrigger = "阿努比萨斯防御者获得了爆炸的效果。",
-	explodewarn = "即将爆炸！近战躲开！",
-	enragetrigger = "阿努比萨斯防御者获得了狂怒的效果。",
-	enragewarn = "进入狂怒状态！",
-	summonguardtrigger = "阿努比萨斯防御者施放了召唤阿努比萨斯虫群卫士。",
-	summonguardwarn = "虫群卫士已被召唤出来",
-	summonwarriortrigger = "阿努比萨斯防御者施放了召唤阿努比萨斯战士。",
-	summonwarriorwarn = "阿努比萨斯战士已被召唤出来",
-	plaguetrigger = "^(.+)受(.+)了瘟疫效果的影响。$",
-	plaguewarn = "受到瘟疫的影响！快躲开！",
-	plagueyouwarn = "你受到瘟疫的影响！快跑开！",
-	plagueyou = "你",
-	plagueare = "到",
-	thunderclaptrigger = "^阿努比萨斯防御者的雷霆一击击中(.+)造成%d+点伤害。",
-	thunderclapwarn = "雷霆一击发动！",
-} end )
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"plagueyou", "plagueother", "icon", -1, "thunderclap", "explode", "enrage", "bosskill"}
 
 
-L:RegisterTranslations("zhTW", function() return {
-	-- Anubisath Defender 阿努比薩斯防禦者
-	plagueyou_name = "玩家瘟疫警報",
-	plagueyou_desc = "你中了瘟疫時發出警報",
+-- locals
+local timer = {
+	explode = 6,
+}
+local icon = {
+	explode = "",
+}
+local syncName = {
+	enrage = "DefenderEnrage",
+	explode = "DefenderExplode",
+	thunderclap = "DefenderThunderclap",
+}
 
-	plagueother_name = "隊友瘟疫警報",
-	plagueother_desc = "隊友中了瘟疫時發出警報",
-
-	thunderclap_name = "雷霆一擊警報",
-	thunderclap_desc = "阿努比薩斯防禦者發動雷霆一擊時發出警報",
-
-	explode_name = "爆炸警報",
-	explode_desc = "阿努比薩斯防禦者即將爆炸時發出警報",
-
-	enrage_name = "狂怒警報",
-	enrage_desc = "阿努比薩斯防禦者進入狂怒狀態時發出警報",
-
-	summon_name = "召喚警報",
-	summon_desc = "阿努比薩斯防禦者召喚增援時發出警報",
-	
-	icon_name = "標記瘟疫",
-	icon_desc = "團隊標記中瘟疫的玩家 (需要助理或領隊權限)",
-	
-	explodetrigger = "阿努比薩斯防禦者獲得了爆炸的效果。",
-	explodewarn = "即將爆炸！近戰躲開！",
-	enragetrigger = "阿努比薩斯防禦者獲得了狂怒的效果。",
-	enragewarn = "進入狂怒狀態！",
-	summonguardtrigger = "阿努比薩斯防禦者施放了召喚阿努比薩斯蟲群衛士。",
-	summonguardwarn = "蟲群衛士已被召喚出來",
-	summonwarriortrigger = "阿努比薩斯防禦者施放了召喚阿努比薩斯戰士。",
-	summonwarriorwarn = "阿努比薩斯戰士已被召喚出來",
-	plaguetrigger = "^(.+)受到(.*)瘟疫",
-	plaguewarn = "受到瘟疫的影響！快躲開！*",
-	plagueyouwarn = "你受到瘟疫的影響！快跑開！",
-	plagueyou = "你",
-	plagueare = "了",
-	thunderclaptrigger = "^阿努比薩斯防禦者的雷霆一擊擊中(.+)造成%d+點傷害。",
-	thunderclapwarn = "雷霆一擊發動！",
-	--The thunderclaptrigger use three events,
-	--CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE,
-	--CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE and
-	--CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE,
-	--but tne function BigWigsDefenders:Thunderclap does the same thing.
-	--The skill affects a lot of players at once in zhTW.
-	--(See BigWigs\Naxxramas\Maexxna.lua)
-	--They say it works fine for all other locales.
-	--Or just simply use thunderclaptrigger = "^阿努比薩斯防禦者的雷霆一擊擊中你", to trigger self ?
-	--Any idea?
-	--If anyone knows how to correct it in translation string, mail to me please.
-	--xinsonic@gmail.com
-} end )
-
-
-L:RegisterTranslations("koKR", function() return {
-	plagueyou_name = "자신의 역병 경고",
-	plagueyou_desc = "자신의 역병에 대한 경고",
-
-	plagueother_name = "타인의 역병 경고",
-	plagueother_desc = "타인의 역병에 대한 경고",
-
-	thunderclap_name = "천둥벼락 경고",
-	thunderclap_desc = "천둥벼락에 대한 경고",
-
-	explode_name = "폭발 경고",
-	explode_desc = "폭발에 대한 경고",
-
-	enrage_name = "분노 경고",
-	enrage_desc = "분노에 대한 경고",
-
-	summon_name = "소환 경고",
-	summon_desc = "추가 소환에 대한 경고",
-
-	icon_name = "아이콘 지정",
-	icon_desc = "마지막 역병에 걸린 사람에게 공격대 아이콘 지정(승급자 이상 필요)",
-
-	explodetrigger = "아누비사스 문지기|1이;가; 폭파 효과를 얻었습니다.",
-	explodewarn = "폭파! 떨어지세요!",
-	enragetrigger = "아누비사스 문지기|1이;가; 분노 효과를 얻었습니다.",
-	enragewarn = "분노 돌입!",
-	summonguardtrigger = "아누비사스 문지기|1이;가; 아누비사스 감시병 소환|1을;를; 시전합니다.",
-	summonguardwarn = "감시병 소환",
-	summonwarriortrigger = "아누비사스 문지기|1이;가; 아누비사스 전사 소환|1을;를; 시전합니다.",
-	summonwarriorwarn = "전사 소환",
-	plaguetrigger = "^([^|;%s]*)(.*)역병에 걸렸습니다%.$", -- "(.*) 역병에 걸렸습니다.",
-	plaguewarn = "님은 역병에 걸렸습니다. 피하세요",
-	plagueyouwarn = "당신은 역병에 걸렸습니다! 떨어지세요!",
-	plagueyou = "", -- "you"
-	plagueare = "", -- "are"
-	thunderclaptrigger = "아누비사스 문지기|1이;가; 천둥벼락|1으로;로; (.+)에게 (%d+)의",
-	thunderclapwarn = "천둥벼락! - 멀리 떨어지세요",
-} end )
-
-L:RegisterTranslations("frFR", function() return {
-	plagueyou_name = "Alerte Peste sur vous",
-	plagueyou_desc = "Pr\195\169viens quand vous avez la peste.",
-
-	plagueother_name = "Alerte Peste sur d'autres",
-	plagueother_desc = "Pr\195\169viens quand d'autres joueurs ont la peste.",
-
-	thunderclap_name = "Alerte Coups de tonnerre",
-	thunderclap_desc = "Pr\195\169viens des Coups de tonnerre",
-
-	explode_name = "Alerte Explosion",
-	explode_desc = "Pr\195\169viens en cas d'explosion imminente.",
-
-	enrage_name = "Alerte Enrag\195\169",
-	enrage_desc = "Pr\195\169viens quand le gardien s'enrage.",
-
-	summon_name = "Alerte invocation",
-	summon_desc = "Pr\195\169viens quand le gardien invoque des adds.",
-
-	icon_name = "Placer une ic\195\180ne",
-	icon_desc = "Place une ic\195\180ne de raid sur le dernier personnage qui a la peste (requiert d'\195\170tre promus ou plus).",
-
-	explodewarn = "Explosion imminente !",
-	enragewarn = "Enrag\195\169 !",
-	summonguardwarn = "Garde-Essaim invoqu\195\169 !",
-	summonwarriorwarn = "Guerrier invoqu\195\169 !",
-	plaguewarn = " a la peste !",
-	plagueyouwarn = "Tu as la peste !",
-	thunderclapwarn = "Coup de tonnerre !",
-
-	explodetrigger = "D\195\169fenseur Anubisath gagne Exploser.",
-	enragetrigger = "D\195\169fenseur Anubisath gagne Enrager.",
-	summonguardtrigger = "D\195\169fenseur Anubisath lance Invocation d'un Garde-essaim Anubisath.",
-	summonwarriortrigger = "D\195\169fenseur Anubisath lance Invocation d'un Guerrier Anubisath.",
-	plaguetrigger = "^([^%s]+) ([^%s]+) les effets de Peste%.$",
-	plagueyou = "Vous",
-	plagueare = "subissez",
-	thunderclaptrigger = "^D\195\169fenseur Anubisath lance Coup de tonnerre",--not sure
-} end )
-
-----------------------------------
---      Module Declaration      --
-----------------------------------
-
-BigWigsDefenders = BigWigs:NewModule(boss)
-BigWigsDefenders.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsDefenders.enabletrigger = boss
-BigWigsDefenders.toggleoptions = { "plagueyou", "plagueother", "icon", -1, "thunderclap", "explode", "enrage", "bosskill"}
-BigWigsDefenders.revision = tonumber(string.sub("$Revision: 18119 $", 12, -3))
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsDefenders:OnEnable()
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckPlague")
@@ -294,72 +139,76 @@ function BigWigsDefenders:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Thunderclap")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Thunderclap")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Thunderclap")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "DefenderEnrage", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "DefenderExplode", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "DefenderThunderclap", 6)
+	
+	self:ThrottleSync(10, syncName.enrage)
+	self:ThrottleSync(10, syncName.explode)
+	self:ThrottleSync(6, syncName.thunderclap)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsDefenders:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	if msg == string.format(UNITDIESOTHER, boss) then
-		self.core:ToggleModuleActive(self, false)
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.explode and self.db.profile.explode then
+		self:Message(L["explodewarn"], "Important")
+		self:Bar(L["explodewarn"], timer.explode, icon.explode)
+	elseif sync == syncName.enrage and self.db.profile.enrage then
+		self:Message(L["enragewarn"], "Important")
+	elseif sync == syncName.thunderclap and self.db.profile.thunderclap then
+		self:Message(L["thunderclapwarn"], "Important")
 	end
 end
 
-function BigWigsDefenders:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "DefenderExplode" and self.db.profile.explode then
-		self:TriggerEvent("BigWigs_Message", L["explodewarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["explodewarn"], 6, "Interface\\Icons\\Spell_Fire_SelfDestruct")
-	elseif sync == "DefenderEnrage" and self.db.profile.enrage then
-		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Important")
-	elseif sync == "DefenderThunderclap" and self.db.profile.thunderclap then
-		self:TriggerEvent("BigWigs_Message", L["thunderclapwarn"], "Important")
-	end
-end
-
-function BigWigsDefenders:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if msg == L["explodetrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "DefenderExplode")
+		self:Sync(syncName.explode)
 	elseif msg == L["enragetrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "DefenderEnrage")
+		self:Sync(syncName.enrage)
 	end
 end
 
-function BigWigsDefenders:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if not self.db.profile.summon then return end
 	if msg == L["summonguardtrigger"] then
-		self:TriggerEvent("BigWigs_Message", L["summonguardwarn"], "Attention")
+		self:Message(L["summonguardwarn"], "Attention")
 	elseif msg == L["summonwarriortrigger"] then
-		self:TriggerEvent("BigWigs_Message", L["summonwarriorwarn"], "Attention")
+		self:Message(L["summonwarriorwarn"], "Attention")
 	end
 end
 
-function BigWigsDefenders:CheckPlague(msg)
+function module:CheckPlague(msg)
 	local _,_, pplayer, ptype = string.find(msg, L["plaguetrigger"])
 	if pplayer then
 		if self.db.profile.plagueyou and pplayer == L["plagueyou"] then
-			self:TriggerEvent("BigWigs_Message", L["plagueyouwarn"], "Personal", true)
-			self:TriggerEvent("BigWigs_Message", UnitName("player") .. L["plaguewarn"], "Attention", nil, nil, true)
+			self:Message(L["plagueyouwarn"], "Personal", true)
+			self:Message(UnitName("player") .. L["plaguewarn"], "Attention", nil, nil, true)
 		elseif self.db.profile.plagueother then
-			self:TriggerEvent("BigWigs_Message", pplayer .. L["plaguewarn"], "Attention")
-			self:TriggerEvent("BigWigs_SendTell", pplayer, L["plagueyouwarn"])
+			self:Message(pplayer .. L["plaguewarn"], "Attention")
+			--self:TriggerEvent("BigWigs_SendTell", pplayer, L["plagueyouwarn"]) -- can cause whisper bug on nefarian
 		end
 
 		if self.db.profile.icon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", pplayer)
+			self:Icon(pplayer)
 		end
 	end
 end
 
-function BigWigsDefenders:Thunderclap(msg)
+function module:Thunderclap(msg)
 	if string.find(msg, L["thunderclaptrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "DefenderThunderclap")
+		self:Sync(syncName.thunderclap)
 	end
 end
-

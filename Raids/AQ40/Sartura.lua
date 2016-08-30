@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Battleguard Sartura"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Battleguard Sartura", "Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -105,137 +106,158 @@ L:RegisterTranslations("deDE", function() return {
 	whirlwind_desc = "Timer und Balken f\195\188r Wirbelwinde.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsSartura = BigWigs:NewModule(boss)
-BigWigsSartura.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsSartura.enabletrigger = boss
-BigWigsSartura.bossSync = "Battleguard Sartura"
-BigWigsSartura.wipemobs = { L["add_name"] }
-BigWigsSartura.toggleoptions = {"whirlwind", "adds", "enrage", "berserk", "bosskill"}
-BigWigsSartura.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"whirlwind", "adds", "enrage", "berserk", "bosskill"}
+
+
+-- locals
+local timer = {
+	berserk = 600,
+	firstWhirlwind = 20.3,
+	whirlwind = 15,
+	nextWhirlwind = 28,
+}
+local icon = {
+	berserk = "Spell_Shadow_UnholyFrenzy",
+	whirlwind = "Ability_Whirlwind",
+}
+local syncName = {
+	whirlwind = "SarturaWhirlwindStart",
+	whirlwindOver = "SarturaWhirlwindEnd",
+	enrage = "SarturaEnrage",
+	berserk = "SarturaBerserk",
+	add = "SarturaAddDead",
+}
+
+local guard = 0
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsSartura:OnEnable()
-    self.started = nil
-	guard = 0
-	sarturadead = false
+module:RegisterYellEngage(L["starttrigger"])
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaWhirlwindStart", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaWhirlwindEnd", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaEnrage", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaBerserk", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaAddDead", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaSarturaDead", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SarturaAllDead", 5)
+	
+	self:ThrottleSync(3, syncName.whirlwind)
+	self:ThrottleSync(3, syncName.whirlwindOver)
+	self:ThrottleSync(5, syncName.enrage)
+	self:ThrottleSync(5, syncName.berserk)
+	self:ThrottleSync(2, syncName.add)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	guard = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.berserk then
+		self:Message(L["startwarn"], "Important")
+		self:Bar(L["berserktext"], timer.berserk, icon.berserk)
+		self:DelayedMessage(timer.berserk - 5 * 60, L["warn1"], "Attention")
+		self:DelayedMessage(timer.berserk - 3 * 60, L["warn2"], "Attention")
+		self:DelayedMessage(timer.berserk - 90, L["warn3"], "Urgent")
+		self:DelayedMessage(timer.berserk - 60, L["warn4"], "Urgent")
+		self:DelayedMessage(timer.berserk - 30, L["warn5"], "Important")
+		self:DelayedMessage(timer.berserk - 10, L["warn6"], "Important")
+	end
+	if self.db.profile.whirlwind then
+		self:Bar(L["whirlwindfirstbartext"], timer.firstWhirlwind, icon.whirlwind)
+		self:DelayedMessage(timer.firstWhirlwind - 3, L["whirlwindinctext"], "Attention", true, "Alarm")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsSartura:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self.db.profile.berserk then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["berserktext"], 600, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-			self:ScheduleEvent("300into", "BigWigs_Message", 300, L["warn1"], "Attention")
-			self:ScheduleEvent("420into", "BigWigs_Message", 420, L["warn2"], "Attention")
-			self:ScheduleEvent("510into", "BigWigs_Message", 510, L["warn3"], "Urgent")
-			self:ScheduleEvent("540into", "BigWigs_Message", 540, L["warn4"], "Urgent")
-			self:ScheduleEvent("570into", "BigWigs_Message", 570, L["warn5"], "Important")
-			self:ScheduleEvent("590into", "BigWigs_Message", 590, L["warn6"], "Important")
-		end
-		if self.db.profile.whirlwind then
-			self:TriggerEvent("BigWigs_StartBar", self, L["whirlwindfirstbartext"], 20.3, "Interface\\Icons\\Ability_Whirlwind")
-			self:ScheduleEvent("BigWigs_Message", 17.3, L["whirlwindinctext"], "Attention", true, "Alarm")
-		end
-	elseif sync == "SarturaWhirlwindStart" and self.db.profile.whirlwind then
-		self:TriggerEvent("BigWigs_Message", L["whirlwindonwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["whirlwindbartext"], 15, "Interface\\Icons\\Ability_Whirlwind")
-		self:ScheduleEvent("BigWigs_Message", 25, L["whirlwindinctext"], "Attention", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["whirlwindnextbartext"], 28, "Interface\\Icons\\Ability_Whirlwind")
-	elseif sync == "SarturaWhirlwindEnd" and self.db.profile.whirlwind then
-		self:TriggerEvent("BigWigs_StopBar", self, L["whirlwindbartext"])
-		self:TriggerEvent("BigWigs_Message", L["whirlwindoffwarn"], "Attention")
-	elseif sync == "SarturaEnrage" and self.db.profile.enrage then
-		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Attention")
-	elseif sync == "SarturaBerserk" and self.db.profile.berserk then
-		self:TriggerEvent("BigWigs_Message", L["berserkwarn"], "Attention")
-		self:TriggerEvent("BigWigs_StopBar", self, L["berserktext"])
-		self:CancelScheduledEvent("300into")
-		self:CancelScheduledEvent("420into")
-		self:CancelScheduledEvent("510into")
-		self:CancelScheduledEvent("540into")
-		self:CancelScheduledEvent("570into")
-		self:CancelScheduledEvent("590into")
-	elseif sync == "SarturaAddDead" then
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+	if msg == L["whirlwindon"] then
+		self:Sync(syncName.whirlwind)
+	elseif msg == L["enragetrigger2"] then
+		self:Sync(syncName.enrage)
+	elseif msg == L["berserktrigger"] then
+		self:Sync(syncName.berserk)
+	end
+end
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	if msg == L["deadaddtrigger"] then
+		self:Sync(syncName.add)
+	end
+end
+
+function module:CHAT_MSG_MONSTER_YELL(msg)
+	if msg == L["endtrigger"] then
+		SendBossDeathSync()
+	end
+end
+
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
+	if string.find(msg, L["enragetrigger"]) then
+		self:Sync(syncName.enrage)
+	end
+end
+
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
+	if msg == L["whirlwindoff"] then
+		self:Sync(syncName.whirlwindOver)
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.whirlwind and self.db.profile.whirlwind then
+		self:Message(L["whirlwindonwarn"], "Important")
+		self:Bar(L["whirlwindbartext"], timer.whirlwind, icon.whirlwind)
+		
+		self:Bar(L["whirlwindnextbartext"], timer.nextWhirlwind, icon.whirlwind)
+		self:DelayedMessage(timer.nextWhirlwind - 3, L["whirlwindinctext"], "Attention", true, "Alarm")
+	elseif sync == syncName.whirlwindOver and self.db.profile.whirlwind then
+		self:RemoveBar(L["whirlwindbartext"])
+		self:Message(L["whirlwindoffwarn"], "Attention")
+	elseif sync == syncName.enrage and self.db.profile.enrage then
+		self:Message(L["enragewarn"], "Attention")
+	elseif sync == syncName.berserk and self.db.profile.berserk then
+		self:Message(L["berserkwarn"], "Attention")
+		self:RemoveBar(L["berserktext"])
+		
+		self:CancelDelayedMessage(L["warn1"])
+		self:CancelDelayedMessage(L["warn2"])
+		self:CancelDelayedMessage(L["warn3"])
+		self:CancelDelayedMessage(L["warn4"])
+		self:CancelDelayedMessage(L["warn5"])
+		self:CancelDelayedMessage(L["warn6"])
+	elseif sync == syncName.add then
 		guard = guard + 1
 		if self.db.profile.adds then
-			self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], guard), "Positive")
+			self:Message(string.format(L["addmsg"], guard), "Positive")
 		end
-		if (guard == 3) and sarturadead then
-			self:TriggerEvent("BigWigs_SendSync", "SarturaAllDead")
-		end
-	elseif sync == "SarturaSarturaDead" then
-		sarturadead = true
-		if self.db.profile.bosskill then
-			self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
-		end
-		if (guard == 3) and sarturadead then
-			self:TriggerEvent("BigWigs_SendSync", "SarturaAllDead")
-		end
-	elseif sync == "SarturaAllDead" and self.db.profile.bosskill then
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self.core:ToggleModuleActive(self, false)
-	end
-end
-
-function BigWigsSartura:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
-	if msg == L["whirlwindon"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaWhirlwindStart")
-	elseif msg == L["enragetrigger2"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaEnrage")
-	elseif msg == L["berserktrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaBerserk")
-	end
-end
-
-function BigWigsSartura:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	if msg == L["deadaddtrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaAddDead")
-	elseif msg == L["deadbosstrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaSarturaDead")
-	end
-end
-
-function BigWigsSartura:CHAT_MSG_MONSTER_YELL(msg)
-	if string.find(msg, L["starttrigger"]) then
-		self:SendEngageSync()
-	elseif msg == L["endtrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaSarturaDead")
-	end
-end
-
-function BigWigsSartura:CHAT_MSG_MONSTER_EMOTE(msg)
-	if string.find(msg, L["enragetrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaEnrage")
-	end
-end
-
-function BigWigsSartura:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
-	if msg == L["whirlwindoff"] then
-		self:TriggerEvent("BigWigs_SendSync", "SarturaWhirlwindEnd")
 	end
 end

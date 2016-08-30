@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["The Prophet Skeram"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("The Prophet Skeram", "Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -58,24 +59,38 @@ L:RegisterTranslations("deDE", function() return {
 	split_name = "Abbilder",
 	split_desc = "Alarm vor der Aufteilung",
 } end )
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsSkeram = BigWigs:NewModule(boss)
-BigWigsSkeram.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsSkeram.enabletrigger = boss
-BigWigsSkeram.bossSync = "Skeram"
-BigWigsSkeram.toggleoptions = {"mc", "split", "bosskill"}
-BigWigsSkeram.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"mc", "split", "bosskill"}
+
+-- locals
+local timer = {
+	mc = 20,
+}
+local icon = {
+	mc = "Spell_Shadow_Charm",
+}
+local syncName = {
+	mc = "SkeramMC",
+	mcOver = "SkeramMCEnd",
+}
+
+local splittime = false
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsSkeram:OnEnable()
-    self.started = nil
-	splittime = false
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Event")
@@ -84,116 +99,137 @@ function BigWigsSkeram:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	--self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramMC", 1)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramMCEnd", 1)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit80Soon", 100)
+	
+	--[[self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit80Soon", 100)
 	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit75Now", 100)
 	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit55Soon", 100)
 	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit50Now", 100)
 	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit30Soon", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit25Now", 100)
+	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit25Now", 100)]]
+	
+	self:ThrottleSync(1, syncName.mc)
+	self:ThrottleSync(1, syncName.mcOver)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	splittime = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsSkeram:Event(msg)
+function module:Event(msg)
 	local _,_, mindcontrolother, mctype = string.find(msg, L["mcplayerother"])
 	local _,_, mindcontrolotherend, mctype = string.find(msg, L["mcplayerotherend"])
 	local _,_, mindcontrolotherdeath,mctype = string.find(msg, L["deathother_trigger"])
 	if string.find(msg, L["mcplayer"]) then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMC "..UnitName("player"))
+		self:Sync(syncName.mc .. " " .. UnitName("player"))
 	elseif string.find(msg, L["mcplayeryouend"]) then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMCEnd "..UnitName("player"))
+		self:Sync(syncName.mcOver .. " " .. UnitName("player"))
 	elseif string.find(msg, L["deathyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMCEnd "..UnitName("player"))
+		self:Sync(syncName.mcOver .. " " .. UnitName("player"))
 	elseif mindcontrolother then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMC "..mindcontrolother)
+		self:Sync(syncName.mc .. " " .. mindcontrolother)
 	elseif mindcontrolotherend then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMCEnd "..mindcontrolotherend)
+		self:Sync(syncName.mcOver .. " " .. mindcontrolotherend)
 	elseif mindcontrolotherdeath then
-		self:TriggerEvent("BigWigs_SendSync", "SkeramMCEnd "..mindcontrolotherdeath)
+		self:Sync(syncName.mcOver .. " " .. mindcontrolotherdeath)
 	end
 end
 
-function BigWigsSkeram:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["kill_trigger"]) then
-		if self.db.profile.bosskill then
-			self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
-		end
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self.core:ToggleModuleActive(self, false)
+		BigWigs:Print("yell kill trigger")
+		--if self.db.profile.bosskill then
+		--	self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
+		--end
+		--self:TriggerEvent("BigWigs_RemoveRaidIcon")
+		--self.core:ToggleModuleActive(self, false)
+		self:SendBossDeathSync()
 	end
 end
 
---[[function BigWigsSkeram:UNIT_HEALTH(arg1)
+--[[function module:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		local maxhealth = UnitHealthMax(arg1)
 		if (health > 424782 and health <= 453100) and maxhealth == 566375 and not splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit80Soon")
+			self:Sync("SkeramSplit80Soon")
 		elseif (health > 283188 and health <= 311507) and maxhealth == 566375 and not splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit55Soon")
+			self:Sync("SkeramSplit55Soon")
 		elseif (health > 141594 and health <= 169913) and maxhealth == 566375 and not splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit30Soon")
+			self:Sync("SkeramSplit30Soon")
 		elseif (health > 311508 and health <= 424781) and maxhealth == 566375 and splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit75Now")
+			self:Sync("SkeramSplit75Now")
 		elseif (health > 169914 and health <= 283187) and maxhealth == 566375 and splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit50Now")
+			self:Sync("SkeramSplit50Now")
 		elseif (health > 1 and health <= 141593) and maxhealth == 566375 and splittime then
-			self:TriggerEvent("BigWigs_SendSync", "SkeramSplit25Now")
+			self:Sync("SkeramSplit25Now")
 		end
 	end
 end]]
 
-function BigWigsSkeram:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "SkeramSplit80Soon" then
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    --[[if sync == "SkeramSplit80Soon" then
 		splittime = true
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["splitsoon_message"], "Urgent")
+			self:Message(L["splitsoon_message"], "Urgent")
 		end
 	elseif sync == "SkeramSplit55Soon" then
 		splittime = true
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["splitsoon_message"], "Urgent")
+			self:Message(L["splitsoon_message"], "Urgent")
 		end
 	elseif sync == "SkeramSplit30Soon" then
 		splittime = true
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["splitsoon_message"], "Urgent")
+			self:Message(L["splitsoon_message"], "Urgent")
 		end
 	elseif sync == "SkeramSplit75Now" then
 		splittime = false
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["split_message"], "Important", "Alarm")
+			self:Message(L["split_message"], "Important", "Alarm")
 		end
 	elseif sync == "SkeramSplit50Now" then
 		splittime = false
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["split_message"], "Important", "Alarm")
+			self:Message(L["split_message"], "Important", "Alarm")
 		end
 	elseif sync == "SkeramSplit25Now" then
 		splittime = false
 		if self.db.profile.split then
-			self:TriggerEvent("BigWigs_Message", L["split_message"], "Important", "Alarm")
+			self:Message(L["split_message"], "Important", "Alarm")
 		end
-	elseif sync == "SkeramMC" then
+	else]]if sync == syncName.mc then
 		if self.db.profile.mc then
 			if rest == UnitName("player") then
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mindcontrol_bar"], UnitName("player")), 20, "Interface\\Icons\\Spell_Shadow_Charm", true, "White")
-				self:TriggerEvent("BigWigs_Message", L["mcplayer_message"], "Attention")
+				self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), timer.mc, icon.mc, true, "White")
+				self:Message(L["mcplayer_message"], "Attention")
 			else
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mindcontrol_bar"], rest), 20, "Interface\\Icons\\Spell_Shadow_Charm", true, "White")
-				self:TriggerEvent("BigWigs_Message", string.format(L["mcplayerother_message"], rest), "Urgent")
+				self:Bar(string.format(L["mindcontrol_bar"], rest), timer.mc, icon.mc, true, "White")
+				self:Message(string.format(L["mcplayerother_message"], rest), "Urgent")
 			end
 		end
-	elseif sync == "SkeramMCEnd" then
+	elseif sync == syncName.mcOver then
 		if self.db.profile.mc then
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["mindcontrol_bar"], rest))
+			self:RemoveBar(string.format(L["mindcontrol_bar"], rest))
 		end
 	end
 end

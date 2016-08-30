@@ -1,13 +1,13 @@
-------------------------------
---      Are you local?      --
-------------------------------
+
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("The Bug Family", "Ahn'Qiraj")
 
 local kri = AceLibrary("Babble-Boss-2.2")["Lord Kri"]
 local yauj = AceLibrary("Babble-Boss-2.2")["Princess Yauj"]
 local vem = AceLibrary("Babble-Boss-2.2")["Vem"]
-local boss = AceLibrary("Babble-Boss-2.2")["The Bug Family"]
-
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
 ----------------------------
 --      Localization      --
@@ -145,28 +145,57 @@ L:RegisterTranslations("deDE", function() return {
 	enrage_desc = "Zeit, bis der Boss in Raserei verf\195\164llt.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsBugFamily = BigWigs:NewModule(boss)
-BigWigsBugFamily.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsBugFamily.enabletrigger = {kri, yauj, vem}
-BigWigsBugFamily.bossSync = "The Bug Family"
-BigWigsBugFamily.toggleoptions = {"panic", "toxicvolley", "heal", "announce", "deathspecials", "enrage", "bosskill"}
-BigWigsBugFamily.revision = tonumber(string.sub("$Revision: 11208 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = {kri, yauj, vem} -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"panic", "toxicvolley", "heal", "announce", "deathspecials", "enrage", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstPanic = 18.4,
+	panic = 20,
+	firstVolley = 11.4,
+	volley = 10,
+	enrage = 900,
+	heal = 2,
+}
+local icon = {
+	panic = "Spell_Shadow_DeathScream",
+	volley = "Spell_Nature_Corrosivebreath",
+	enrage = "Spell_Shadow_UnholyFrenzy",
+	heal = "Spell_Holy_Heal",
+}
+local syncName = {
+	volley = "BugTrioKriVolley",
+	heal = "BugTrioYaujHealStart",
+	healStop = "BugTrioYaujHealStop",
+	panic = "BugTrioYaujPanic",
+	enrage = "BugTrioEnraged",
+	kriDead = "BugTrioKriDead",
+	yaujDead = "BugTrioYaujDead",
+	vemDead = "BugTrioVemDead",
+	allDead = "BugTrioAllDead",
+}
+	
+local kridead = nil
+local vemdead = nil
+local yaujdead = nil
+local healtime = 0
+local castingheal = false
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsBugFamily:OnEnable()
-    self.started = nil
-	kridead = nil
-	vemdead = nil
-	yaujdead = nil
-	healtime = 0
-	castingheal = false
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "Melee")
@@ -182,163 +211,221 @@ function BigWigsBugFamily:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Spells")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Spells")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Spells")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioKriVolley", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioYaujHealStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioYaujHealStop", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioYaujPanic", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioEnraged", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioKriDead", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioYaujDead", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioVemDead", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "BugTrioAllDead", 5)
+	
+	self:ThrottleSync(5, syncName.volley)
+	self:ThrottleSync(5, syncName.heal)
+	self:ThrottleSync(5, syncName.healStop)
+	self:ThrottleSync(5, syncName.panic)
+	self:ThrottleSync(5, syncName.enrage)
+	self:ThrottleSync(5, syncName.kriDead)
+	self:ThrottleSync(5, syncName.yaujDead)
+	self:ThrottleSync(5, syncName.vemDead)
+	self:ThrottleSync(5, syncName.allDead)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	kridead = nil
+	vemdead = nil
+	yaujdead = nil
+	healtime = 0
+	castingheal = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.panic then
+		self:Bar(L["panic_bar"], timer.firstPanic, icon.panic, true, "white")
+		self:DelayedMessage(timer.firstPanic - 3, L["panic_message"], "Urgent", true, "Alarm") 
+	end
+	if self.db.profile.toxicvolley then
+		self:Bar(L["toxicvolley_bar"], timer.firstVolley, icon.volley, true, "green")
+		self:DelayedMessage(timer.firstVolley - 3, L["toxicvolley_message"], "Urgent") 
+	end
+	if self.db.profile.enrage then
+		self:Bar(L["enrage_bar"], timer.enrage, icon.enrage, true, "red")
+		self:DelayedMessage(timer.enrage - 5 * 60, L["warn5minutes"], "Attention")
+		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3minutes"], "Attention")
+		self:DelayedMessage(timer.enrage - 90, L["warn90seconds"], "Attention")
+		self:DelayedMessage(timer.enrage - 60, L["warn60seconds"], "Attention")
+		self:DelayedMessage(timer.enrage - 30, L["warn30seconds"], "Attention")
+		self:DelayedMessage(timer.enrage - 10, L["warn10seconds"], "Attention")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsBugFamily:Spells(msg)
-	local _,_,toxicvaporsother,_ = string.find(msg, L["toxicvaporsother_trigger"])
-	if string.find(msg, L["panic_trigger"]) or string.find(msg, L["panicresist_trigger"]) or string.find(msg, L["panicimmune_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioYaujPanic")
-	elseif string.find(msg, L["toxicvolleyhit_trigger"]) or string.find(msg, L["toxicvolleyafflicted_trigger"]) or string.find(msg, L["toxicvolleyresist_trigger"]) or string.find(msg, L["toxicvolleyimmune_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioKriVolley")
-	elseif msg == L["toxicvaporsyou_trigger"] and self.db.profile.announce then		
-		self:TriggerEvent("BigWigs_Message", L["toxicvapors_message"], "Attention", "Alarm")
-	elseif toxicvaporsother and self.db.profile.announce then		
-		self:TriggerEvent("BigWigs_SendTell", toxicvaporsother, L["toxicvapors_message"])
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
+	if msg == L["enrage_trigger"] then
+		self:Sync(syncName.enrage)
 	end
 end
 
-function BigWigsBugFamily:Melee(msg)
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	if msg == string.format(UNITDIESOTHER, kri) then
+		self:Sync(syncName.kriDead)
+	elseif msg == string.format(UNITDIESOTHER, yauj) then
+		self:Sync(syncName.yaujDead)
+	elseif msg == string.format(UNITDIESOTHER, vem) then
+		self:Sync(syncName.vemDead)
+	end
+end
+
+function module:Melee(msg)
 	if string.find(msg, L["attack_trigger1"]) or string.find(msg, L["attack_trigger2"]) or string.find(msg, L["attack_trigger3"]) or string.find(msg, L["attack_trigger4"]) then
 		if castingheal then 
-			if (GetTime() - healtime) < 2 then
-				self:TriggerEvent("BigWigs_SendSync", "BugTrioYaujHealStop")
-			elseif (GetTime() - healtime) >= 2 then
+			if (GetTime() - healtime) < timer.heal then
+				self:Sync(syncName.healStop)
+			elseif (GetTime() - healtime) >= timer.heal then
 				castingheal = false
 			end
 		end
 	end
 end
 
-function BigWigsBugFamily:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	if msg == string.format(UNITDIESOTHER, kri) then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioKriDead")
-	elseif msg == string.format(UNITDIESOTHER, yauj) then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioYaujDead")
-	elseif msg == string.format(UNITDIESOTHER, vem) then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioVemDead")
-	end
-end
-
-function BigWigsBugFamily:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if msg == L["healtrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioYaujHealStart")
+		self:Sync(syncName.heal)
 	end
 end
 
-function BigWigsBugFamily:CHAT_MSG_MONSTER_EMOTE(msg)
-	if msg == L["enrage_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "BugTrioEnraged")
+function module:Spells(msg)
+	local _,_,toxicvaporsother,_ = string.find(msg, L["toxicvaporsother_trigger"])
+	if string.find(msg, L["panic_trigger"]) or string.find(msg, L["panicresist_trigger"]) or string.find(msg, L["panicimmune_trigger"]) then
+		self:Sync(syncName.panic)
+	elseif string.find(msg, L["toxicvolleyhit_trigger"]) or string.find(msg, L["toxicvolleyafflicted_trigger"]) or string.find(msg, L["toxicvolleyresist_trigger"]) or string.find(msg, L["toxicvolleyimmune_trigger"]) then
+		self:Sync(syncName.volley)
+	elseif msg == L["toxicvaporsyou_trigger"] and self.db.profile.announce then		
+		self:Message(L["toxicvapors_message"], "Attention", "Alarm")
+	elseif toxicvaporsother and self.db.profile.announce then		
+		--self:TriggerEvent("BigWigs_SendTell", toxicvaporsother, L["toxicvapors_message"]) -- can cause whisper bug on nefarian
 	end
 end
 
-function BigWigsBugFamily:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self.db.profile.panic then
-            self:TriggerEvent("BigWigs_StartBar", self, L["panic_bar"], 18.4, "Interface\\Icons\\Spell_Shadow_DeathScream", true, "white")
-            self:ScheduleEvent("PanicAnnounce", "BigWigs_Message", 15.4, L["panic_message"], "Urgent", true, "Alarm")
-		end
-		if self.db.profile.toxicvolley then
-            self:TriggerEvent("BigWigs_StartBar", self, L["toxicvolley_bar"], 11.4, "Interface\\Icons\\Spell_Nature_Corrosivebreath", true, "green")
-            self:ScheduleEvent("ToxicVolleyAnnounce", "BigWigs_Message", 8.4, L["toxicvolley_message"], "Urgent")
-		end
-		if self.db.profile.enrage then
-            self:TriggerEvent("BigWigs_StartBar", self, L["enrage_bar"], 900, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy", true, "red")
-            self:ScheduleEvent("BigWigs_Message", 600, L["warn5minutes"], "Attention")
-            self:ScheduleEvent("BigWigs_Message", 720, L["warn3minutes"], "Attention")
-            self:ScheduleEvent("BigWigs_Message", 810, L["warn90seconds"], "Attention")
-            self:ScheduleEvent("BigWigs_Message", 840, L["warn60seconds"], "Attention")
-            self:ScheduleEvent("BigWigs_Message", 870, L["warn30seconds"], "Attention")
-            self:ScheduleEvent("BigWigs_Message", 890, L["warn10seconds"], "Attention")
-		end
-	elseif sync == "BugTrioKriVolley" and self.db.profile.toxicvolley then
-		self:TriggerEvent("BigWigs_StartBar", self, L["toxicvolley_bar"], 10, "Interface\\Icons\\Spell_Nature_Corrosivebreath", true, "green")
-		self:ScheduleEvent("ToxicVolleyAnnounce", "BigWigs_Message", 7, L["toxicvolley_message"], "Urgent")
-	elseif sync == "BugTrioYaujHealStart" then
-		healtime = GetTime()
-		castingheal = true
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StartBar", self, L["healbar"], 2, "Interface\\Icons\\Spell_Holy_Heal", true, "yellow")
-			self:TriggerEvent("BigWigs_Message", L["healwarn"], "Attention", true, "Alert")
-		end
-	elseif sync == "BugTrioYaujHealStop" then
-		castingheal = false
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["healbar"])
-		end
-	elseif sync == "BugTrioYaujPanic" and self.db.profile.panic then
-		self:TriggerEvent("BigWigs_StartBar", self, L["panic_bar"], 20, "Interface\\Icons\\Spell_Shadow_DeathScream", true, "white")
-		self:ScheduleEvent("BigWigs_Message", 17, L["panic_message"], "Urgent", true, "Alarm")
-	elseif sync == "BugTrioEnraged" then
-		if self.db.profile.enrage then
-			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important")
-		end
-	elseif sync == "BugTrioKriDead" then
-		kridead = true
-		if self.db.profile.toxicvolley then
-			self:TriggerEvent("BigWigs_StopBar", self, L["toxicvolley_bar"])
-			self:CancelScheduledEvent("ToxicVolleyAnnounce")
-		end
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.volley then
+		self:Volley()
+	elseif sync == syncName.heal then
+		self:Heal()
+	elseif sync == syncName.healStop then
+		self:HealStop()
+	elseif sync == syncName.panic then
+		self:Panic()
+	elseif sync == syncName.enrage then
+		self:Enrage()
+	elseif sync == syncName.kriDead then
+		self:KriDead()
+	elseif sync == syncName.yaujDead then
+		self:YaujDead()
+	elseif sync == syncName.vemDead then
+		self:VemDead()
+	elseif sync == syncName.allDead then
+		self:SendBossDeathSync()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Volley()
+	if self.db.profile.toxicvolley then
+		self:Bar(L["toxicvolley_bar"], timer.volley, icon.volley, true, "green")
+		self:DelayedMessage(timer.firstVolley - 3, L["toxicvolley_message"], "Urgent")
+	end
+end
+
+function module:Heal()
+	healtime = GetTime()
+	castingheal = true
+	if self.db.profile.heal then
+		self:Bar(L["healbar"], timer.heal, icon.heal, true, "yellow")
+		self:Message(L["healwarn"], "Attention", true, "Alert")
+	end
+end
+
+function module:HealStop()
+	castingheal = false
+	if self.db.profile.heal then
+		self:RemoveBar(L["healbar"])
+	end
+end
+
+function module:Panic()
+	if self.db.profile.panic then
+		self:Bar(L["panic_bar"], timer.panic, icon.panic, true, "white")
+		self:DelayedMessage(timer.panic, L["panic_message"], "Urgent", true, "Alarm")
+	end
+end
+
+function module:Enrage()
+	if self.db.profile.enrage then
+		self:Message(L["enrage_warning"], "Important")
+	end
+end
+
+function module:KriDead()
+	kridead = true
+	if self.db.profile.toxicvolley then
+		self:RemoveBar(L["toxicvolley_bar"])
+		self:CancelDelayedMessage(L["toxicvolley_message"])
+	end
+	if self.db.profile.deathspecials then
+		self:Message(L["kridead_message"], "Positive")
+	end
+	if vemdead and yaujdead then
+		self:Sync(syncName.allDead)
+	end
+end
+
+function module:YaujDead()
+	yaujdead = true
+	if self.db.profile.heal then
+		self:RemoveBar(L["healbar"])
+	end
+	if self.db.profile.panic then
+		self:RemoveBar(L["panic_bar"])
+		self:CancelDelayedMessage(L["panic_message"])
+	end
+	if self.db.profile.deathspecials then
+		self:Message(L["yaujdead_message"], "Positive")
+	end
+	if vemdead and kridead then
+		self:Sync(syncName.allDead)
+	end
+end
+
+function module:VemDead()
+	vemdead = true
+	if yaujdead and kridead then
 		if self.db.profile.deathspecials then
-			self:TriggerEvent("BigWigs_Message", L["kridead_message"], "Positive")
+			self:Message(L["vemdead_message"], "Positive")
 		end
-		if vemdead and yaujdead then
-			self:TriggerEvent("BigWigs_SendSync", "BugTrioAllDead")
-		end
-	elseif sync == "BugTrioYaujDead" then
-		yaujdead = true
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["healbar"])
-		end
-		if self.db.profile.panic then
-			self:TriggerEvent("BigWigs_StopBar", self, L["panic_bar"])
-			self:CancelScheduledEvent("PanicAnnounce")
-		end
+		self:Sync(syncName.allDead)
+	elseif yaujdead then
 		if self.db.profile.deathspecials then
-			self:TriggerEvent("BigWigs_Message", L["yaujdead_message"], "Positive")
+			self:Message(L["vemdeadcontkri_message"], "Positive")
 		end
-		if vemdead and kridead then
-			self:TriggerEvent("BigWigs_SendSync", "BugTrioAllDead")
+	elseif kridead then
+		if self.db.profile.deathspecials then
+			self:Message(L["vemdeadcontyauj_message"], "Positive")
 		end
-	elseif sync == "BugTrioVemDead" then
-		vemdead = true
-		if yaujdead and kridead then
-			if self.db.profile.deathspecials then
-				self:TriggerEvent("BigWigs_Message", L["vemdead_message"], "Positive")
-			end
-			self:TriggerEvent("BigWigs_SendSync", "BugTrioAllDead")
-		elseif yaujdead then
-			if self.db.profile.deathspecials then
-				self:TriggerEvent("BigWigs_Message", L["vemdeadcontkri_message"], "Positive")
-			end
-		elseif kridead then
-			if self.db.profile.deathspecials then
-				self:TriggerEvent("BigWigs_Message", L["vemdeadcontyauj_message"], "Positive")
-			end
-		elseif not kridead and not yaujdead then
-			if self.db.profile.deathspecials then
-				self:TriggerEvent("BigWigs_Message", L["vemdeadcontboth_message"], "Positive")
-			end
+	elseif not kridead and not yaujdead then
+		if self.db.profile.deathspecials then
+			self:Message(L["vemdeadcontboth_message"], "Positive")
 		end
-	elseif sync == "BugTrioAllDead" then
-		if self.db.profile.bosskill then
-			self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], boss), "Bosskill", nil, "Victory")
-		end
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self.core:ToggleModuleActive(self, false)
 	end
 end

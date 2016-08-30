@@ -1,11 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Princess Huhuran"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
-local berserkannounced
-local prior
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Princess Huhuran", "Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -72,97 +71,104 @@ L:RegisterTranslations("deDE", function() return {
 
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsHuhuran = BigWigs:NewModule(boss)
-BigWigsHuhuran.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsHuhuran.enabletrigger = boss
-BigWigsHuhuran.bossSync = "Huhuran"
-BigWigsHuhuran.toggleoptions = {"wyvern", "frenzy", "berserk", "bosskill"}
-BigWigsHuhuran.revision = tonumber(string.sub("$Revision: 16639 $", 12, -3))
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"wyvern", "frenzy", "berserk", "bosskill"}
+
+
+-- locals
+local timer = {
+	berserk = 300,
+	sting = 25,
+}
+local icon = {
+	berserk = "INV_Shield_01",
+	sting = "INV_Spear_02",
+}
+local syncName = {}
+
+local berserkannounced = false
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsHuhuran:OnEnable()
-	prior = nil
-	berserkannounced = nil
-	self.started = nil
-
-	self:RegisterEvent("BigWigs_Message")
-
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "checkSting")
-
-	self:RegisterEvent("BigWigs_RecvSync")
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	berserkannounced = false
+	self.started = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.berserk then
+		self:Message(L["startwarn"], "Important")
+		self:Bar(L["berserkbar"], timer.berserk, icon.berserk)
+		self:DelayedMessage(timer.berserk - 60, L["berserkwarn1"], "Attention")
+		self:DelayedMessage(timer.berserk - 30, L["berserkwarn2"], "Urgent")
+		self:DelayedMessage(timer.berserk - 5, L["berserkwarn3"], "Important")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsHuhuran:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
-			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		end
-		if self.db.profile.berserk then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["berserkbar"], 300, "Interface\\Icons\\INV_Shield_01")
-			self:ScheduleEvent("bwhuhuranenragewarn1", "BigWigs_Message", 240, L["berserkwarn1"], "Attention")
-			self:ScheduleEvent("bwhuhuranenragewarn2", "BigWigs_Message", 270, L["berserkwarn2"], "Urgent")
-			self:ScheduleEvent("bwhuhuranenragewarn3", "BigWigs_Message", 295, L["berserkwarn3"], "Important")
-		end
-	end
-end
-
-function BigWigsHuhuran:CHAT_MSG_MONSTER_EMOTE(arg1)
+function module:CHAT_MSG_MONSTER_EMOTE(arg1)
 	if self.db.profile.frenzy and arg1 == L["frenzytrigger"] then
-		self:TriggerEvent("BigWigs_Message", L["frenzywarn"], "Urgent")
+		self:Message(L["frenzywarn"], "Urgent")
 	elseif self.db.profile.berserk and arg1 == L["berserktrigger"] then
-		self:CancelScheduledEvent("bwhuhuranenragewarn1")
-		self:CancelScheduledEvent("bwhuhuranenragewarn2")
-		self:CancelScheduledEvent("bwhuhuranenragewarn3")
+		self:CancelDelayedMessage(L["berserkwarn1"])
+		self:CancelDelayedMessage(L["berserkwarn2"])
+		self:CancelDelayedMessage(L["berserkwarn3"])
+		self:RemoveBar(L["berserkbar"])
 
-		self:TriggerEvent("BigWigs_StopBar", self, L["berserkbar"])
-
-		self:TriggerEvent("BigWigs_Message", L["berserkwarn"], "Beware")
-
+		self:Message(L["berserkwarn"], "Urgent", false, "Beware")
 		berserkannounced = true
 	end
 end
 
-function BigWigsHuhuran:UNIT_HEALTH(arg1)
-	if not self.db.profile.berserk then return end
-	if UnitName(arg1) == boss then
-		local health = UnitHealth(arg1)
-		if health > 30 and health <= 33 and not berserkannounced then
-			self:TriggerEvent("BigWigs_Message", L["berserksoonwarn"], "Important")
-			berserkannounced = true
-		elseif (health > 40 and berserkannounced) then
-			berserkannounced = false
+function module:UNIT_HEALTH(arg1)
+	if self.db.profile.berserk then 
+		if UnitName(arg1) == module.translatedName then
+			local health = UnitHealth(arg1)
+			if health > 30 and health <= 33 and not berserkannounced then
+				self:Message(L["berserksoonwarn"], "Important", false, "Alarm")
+				berserkannounced = true
+			elseif (health > 40 and berserkannounced) then
+				berserkannounced = false
+			end
 		end
 	end
 end
 
-function BigWigsHuhuran:checkSting(arg1)
-	if not self.db.profile.wyvern then return end
-	if not prior and string.find(arg1, L["stingtrigger"]) then
-		self:TriggerEvent("BigWigs_Message", L["stingwarn"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 25, "Interface\\Icons\\INV_Spear_02")
-		self:ScheduleEvent("BigWigs_Message", 22, L["stingdelaywarn"], "Urgent")
-		prior = true
+function module:checkSting(arg1)
+	if self.db.profile.wyvern then 
+		if string.find(arg1, L["stingtrigger"]) then
+			self:Message(L["stingwarn"], "Urgent")
+			self:Bar(L["bartext"], timer.sting, icon.sting)
+			self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent")
+		end
 	end
-end
-
-function BigWigsHuhuran:BigWigs_Message(text)
-	if text == L["stingdelaywarn"] then prior = nil end
 end

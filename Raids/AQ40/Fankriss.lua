@@ -1,10 +1,11 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Fankriss the Unyielding"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
-local worms
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Fankriss the Unyielding", "Ahn'Qiraj")
+
+
 ----------------------------
 --      Localization      --
 ----------------------------
@@ -36,64 +37,90 @@ L:RegisterTranslations("deDE", function() return {
 	wormbar = "Wurm ist w\195\188tend (%d)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsFankriss = BigWigs:NewModule(boss)
-BigWigsFankriss.zonename = AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
-BigWigsFankriss.enabletrigger = boss
-BigWigsFankriss.toggleoptions = {"worm", "entangle", "bosskill"}
-BigWigsFankriss.revision = tonumber(string.sub("$Revision: 20000 $", 12, -3))
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"worm", "entangle", "bosskill"}
+
+
+-- locals
+local timer = {
+	worm = 20,
+}
+local icon = {
+	worm = "Spell_Shadow_UnholyFrenzy",
+}
+local syncName = {
+	worm = "FankrissWormSpawn",
+	entangle = "FankrissEntangle",
+}
+
+local worms
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsFankriss:OnEnable()
-	worms = 0
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Event")
     
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "FankrissWormSpawn", .1)
+	self:ThrottleSync(.1, syncName.worm)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	worms = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsFankriss:Event(msg)
+function module:Event(msg)
     if string.find(msg, L["entangleplayer"]) or string.find(msg, L["entangleplayerother"]) then 
-        
-        self:Sync("FankrissEntangle")
+        self:Sync(syncName.entangle)
     end
 end
 
-function BigWigsFankriss:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if msg == L["wormtrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "FankrissWormSpawn "..tostring(worms + 1) )
+		self:Sync(syncName.worm .. " " .. tostring(worms + 1) )
 	end
 end
 
-function BigWigsFankriss:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "FankrissEntangle" then
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.entangle then
         self:Message(L["entanglewarn"], "Alarm", true, "Alarm")    
-    end
-    
-    if sync ~= "FankrissWormSpawn" then return end
-	if not rest then return end
-	rest = tonumber(rest)
-	if rest == (worms + 1) then
-		-- we accept this worm
-		-- Yes, this could go completely wrong when you don't reset your module and the whole raid does after a wipe
-		-- or you reset your module and the rest doesn't. Anyway. it'll work a lot better than anything else.
-		worms = worms + 1
-		if self.db.profile.worm then
-			self:TriggerEvent("BigWigs_Message", string.format(L["wormwarn"], worms), "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["wormbar"], worms), 20, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-		end	
+    elseif sync == syncName.worm then 
+		if not rest then return end
+		rest = tonumber(rest)
+		if rest == (worms + 1) then
+			-- we accept this worm
+			-- Yes, this could go completely wrong when you don't reset your module and the whole raid does after a wipe
+			-- or you reset your module and the rest doesn't. Anyway. it'll work a lot better than anything else.
+			worms = worms + 1
+			if self.db.profile.worm then
+				self:Message(string.format(L["wormwarn"], worms), "Urgent")
+				self:Bar(string.format(L["wormbar"], worms), timer.worm, icon.worm)
+			end	
+		end
 	end
 end
