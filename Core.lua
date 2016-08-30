@@ -255,7 +255,7 @@ BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
 BigWigs.modulePrototype.started = false
 BigWigs.modulePrototype.zonename = nil -- AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 BigWigs.modulePrototype.enabletrigger = nil -- boss
-BigWigs.modulePrototype.wipemobs = nil -- adds that will be considered in CheckForEngage
+BigWigs.modulePrototype.wipemobs = nil -- adds which will be considered in CheckForEngage
 BigWigs.modulePrototype.toggleoptions = nil -- {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
 BigWigs.modulePrototype.proximityCheck = nil -- function(unit) return CheckInteractDistance(unit, 2) end
 BigWigs.modulePrototype.proximitySilent = nil -- false
@@ -749,12 +749,18 @@ function BigWigs:RegisterModule(name, module)
 		local revision = type(module.revision) == "number" and module.revision or -1
 		--self:Print(name .. " " .. module.bossSync .. " " .. module:ToString())
 		local L2 = AceLibrary("AceLocale-2.2"):new("BigWigs"..name)
+        -- ToDo: remove these line
+        local translatedName = name
+        if module.translatedName then
+            translatedName = module.translatedName
+        end
+        
 		if module.toggleoptions then
 			local m = module
 			cons = {
 				type = "group",
-				name = name,
-				desc = string.format(L["Options for %s (r%s)."], name, revision),
+				name = translatedName,
+				desc = string.format(L["Options for %s (r%s)."], translatedName, revision),
 				args = {
 					[L["toggle"]] = {
 						type = "toggle",

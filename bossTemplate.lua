@@ -3,46 +3,7 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Bossname"
-
---[[-- do not override
-local bossSync = string.gsub(bossName, "%s", "") -- untranslated, unique string
-local module = BigWigs:NewModule(bossSync)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..bossSync)
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-module.translatedName = boss
-]]
-
--- override
 local module, L = BigWigs:ModuleDeclaration("Bossname", "Naxxramas")
-module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
-module.toggleoptions = {"berserk", "bosskill"}
-
--- Proximity Plugin
--- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
--- module.proximitySilent = false
-
----------------------------------
---      Module specific Locals --
----------------------------------
-
-
-local timer = {
-	charge = 10,
-	teleport = 30,
-}
-local icon = {
-	charge = "Spell_Frost_FrostShock",
-	teleport = "Spell_Arcane_Blink",
-}
-local syncName = {
-	teleport = "TwinsTeleport",
-	berserk = "TestbossBerserk"
-}
-
-local berserkannounced = nil
 
 
 ----------------------------
@@ -79,11 +40,42 @@ L:RegisterTranslations("deDE", function() return {
 } end )
 
 
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"berserk", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	charge = 10,
+	teleport = 30,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	teleport = "TwinsTeleport",
+	berserk = "TestbossBerserk"
+}
+
+local berserkannounced = nil
+
+
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-module.wipemobs = { L["add_name"] }
 module:RegisterYellEngage(L["start_trigger"])
 
 -- called after module is enabled

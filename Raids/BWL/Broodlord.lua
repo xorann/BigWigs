@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Broodlord Lashlayer"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Broodlord Lashlayer", "Blackwing Lair")
+
 
 ----------------------------
 --      Localization      --
@@ -61,86 +62,111 @@ L:RegisterTranslations("deDE", function() return {
 	bw_desc = "Zeigt eine Balken mit der m\195\182glichen Druckwelle Abklingzeit.\n\n(Dementi: Diese variiert \195\188berall von 8 bis 15 den Sekunden Sie wurde k\195\188rzeste Intervall für die Sicherheit entschieden.)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsBroodlord = BigWigs:NewModule(boss)
-BigWigsBroodlord.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsBroodlord.enabletrigger = boss
-BigWigsBroodlord.bossSync = "Broodlord"
-BigWigsBroodlord.toggleoptions = {"ms", "bw", "bosskill"}
-BigWigsBroodlord.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
-BigWigsBroodlord:RegisterYellEngage(L["engage_trigger"])
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"ms", "bw", "bosskill"}
+
+
+-- locals
+local timer = {
+	blastWave = 12,
+	mortalStrike = 5,
+}
+local icon = {
+	blastWave = "Spell_Holy_Excorcism_02",
+	mortalStrike = "Ability_Warrior_SavageBlow",
+}
+local syncName = {}
+
+local lastBlastWave = 0
+local lastMS = 0
+local MS = ""
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsBroodlord:OnEnable()
-    self.started = nil
-	self.lastbw = 0
-    self.lastMS = 0
-    self.MS = ""
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
     self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	lastBlastWave = 0
+    lastMS = 0
+    MS = ""
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.bw then
+		self:Bar(L["bw_bar"], timer.blastWave, icon.blastWave, true, "Red")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsBroodlord:Event(msg)
+function module:Event(msg)
 	local _, _, name, detect = string.find(msg, L["ms_trigger"])
 	if name and detect and self.db.profile.ms then
-        self.MS = name
-        self.lastMS = GetTime()
+        MS = name
+        lastMS = GetTime()
 		if detect == L["are"] then
-			self:TriggerEvent("BigWigs_Message", L["ms_warn_you"], "Alarm", true, "Beware")
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], UnitName("player")), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
+			self:Message(L["ms_warn_you"], "Alarm", true, "Beware")
+			self:Bar(string.format(L["ms_bar"], UnitName("player")), timer.mortalStrike, icon.mortalStrike, true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
-            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow", 5)
+            self:WarningSign(icon.mortalStrike, timer.mortalStrike)
 		else
-			self:TriggerEvent("BigWigs_Message", string.format(L["ms_warn_other"], name), "Alarm", true, "Alarm")
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["ms_bar"], name), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow", true, "Black")
+			self:Message(string.format(L["ms_warn_other"], name), "Alarm", true, "Alarm")
+			self:Bar(string.format(L["ms_bar"], name), timer.mortalStrike, icon.mortalStrike, true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 		end
 	elseif string.find(msg, L["bw_trigger"]) and self.db.profile.bw then
-		if GetTime() - self.lastbw > 5 then
-			self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 12, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
+		if GetTime() - lastBlastWave > 5 then
+			self:Bar(L["bw_bar"], timer.blastWave, icon.blastWave, true, "Red")
 			--self:ScheduleEvent("BigWigs_Message", 24, L["bw_warn"], "Urgent", true, "Alert")
 		end
-		self.lastbw = GetTime()
+		lastBlastWave = GetTime()
 	end
 end
 
-function BigWigsBroodlord:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
+function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
 	if not self.db.profile.bw then return end
 	local _, _, deathother = string.find(msg, L["deathother_trigger"])
 	if msg == L["deathyou_trigger"] then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["ms_bar"], UnitName("player")))
+		self:RemoveBar(string.format(L["ms_bar"], UnitName("player")))
 	elseif deathother then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["ms_bar"], deathother))
+		self:RemoveBar(string.format(L["ms_bar"], deathother))
 	end
 end
 
-function BigWigsBroodlord:CHAT_MSG_MONSTER_YELL(msg)
-	if not self.db.profile.bw then return end
-	if string.find(msg, L["engage_trigger"]) and not self.started then
-		self:TriggerEvent("BigWigs_StartBar", self, L["bw_bar"], 12, "Interface\\Icons\\Spell_Holy_Excorcism_02", true, "Red")
-		--self:ScheduleEvent("BigWigs_Message", 7, L["bw_warn"], "Urgent", true, "Alert")
-        self:SendEngageSync()
-	end
-end
-
-function BigWigsBroodlord:PLAYER_TARGET_CHANGED()
-    if (self.lastMS + 5) > GetTime() and UnitName("target") == self.MS then
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow", (self.lastMS + 5) - GetTime())
+function module:PLAYER_TARGET_CHANGED()
+    if (lastMS + 5) > GetTime() and UnitName("target") == MS then
+        self:WarningSign(icon.blastWave, (lastMS + 5) - GetTime())
     else
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Warrior_SavageBlow")
+        self:RemoveWarningSign(icon.blastWave)
     end
 end

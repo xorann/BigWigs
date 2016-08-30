@@ -178,7 +178,7 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.curse and self.db.profile.curse then
 		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Urgent")
-		self:Bar(self, L["curse_bar"], timer.curse, icon.curse)
+		self:Bar(L["curse_bar"], timer.curse, icon.curse)
 	elseif sync == syncName.add and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 2 and flamewaker < rest then

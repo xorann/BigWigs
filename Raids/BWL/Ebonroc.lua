@@ -1,9 +1,9 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Ebonroc"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Ebonroc", "Blackwing Lair")
 
 ----------------------------
 --      Localization      --
@@ -77,89 +77,140 @@ L:RegisterTranslations("deDE", function() return {
 	curse_desc = "Zeigt eine Zeitleiste und k\195\188ndigt an wer Schattenschwinges Schatten bekommt.",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsEbonroc = BigWigs:NewModule(boss)
-BigWigsEbonroc.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsEbonroc.enabletrigger = boss
-BigWigsEbonroc.bossSync = "Ebonroc"
-BigWigsEbonroc.toggleoptions = { "curse", "wingbuffet", "shadowflame", "bosskill" }
-BigWigsEbonroc.revision = tonumber(string.sub("$Revision: 11205 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"curse", "wingbuffet", "shadowflame", "bosskill"}
+
+
+-- locals
+local timer = {
+	wingbuffet = 30,
+	wingbuffetCast = 1,
+	curse = 8,
+	shadowflame = 16,
+	shadowflameCast = 2,
+}
+local icon = {
+	wingbuffet = "INV_Misc_MonsterScales_14",
+	curse = "Spell_Shadow_GatherShadows",
+	shadowflame = "Spell_Fire_Incinerate",	
+}
+local syncName = {
+	wingbuffet = "EbonrocWingBuffet1",
+	shadowflame = "EbonrocShadowflame1",
+	curse = "EbonrocShadow1",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsEbonroc:OnEnable()
-	self.started = nil
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "EbonrocWingBuffetX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "EbonrocShadowflameX", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "EbonrocShadowX", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "EbonrocStart", 10)
+	
+	self:ThrottleSync(10, syncName.wingbuffet)
+	self:ThrottleSync(5, syncName.shadowflame)
+	self:ThrottleSync(5, syncName.curse)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.wingbuffet then
+		self:Bar(self, L["wingbuffet1_bar"], timer.wingbuffet, icon.wingbuffet)
+		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+	end
+	if self.db.profile.curse then
+		self:Bar(L["shadowcurse_Firstbar"], timer.curse, icon.curse, true, "white")
+	end
+	if self.db.profile.shadowflame then
+		self:Bar(L["shadowflame_Nextbar"], timer.shadowflameCast, icon.shadowflame)
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsEbonroc:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["shadowflame_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "EbonrocShadowflameX")
+		self:Sync(syncName.shadowflame)
 	elseif msg == L["wingbuffet_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "EbonrocWingBuffetX")
+		self:Sync(syncName.wingbuffet)
 	end
 end
 
-function BigWigsEbonroc:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self.db.profile.wingbuffet then
-			--self:ScheduleEvent("BigWigs_Message", 14, L["wingbuffet_warning"], "Important")
-            self:DelayedMessage(14, L["wingbuffet_warning"], "Attention", true, "Alert")
-			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-		end
-        if self.db.profile.curse then
-            self:TriggerEvent("BigWigs_StartBar", self, L["shadowcurse_Firstbar"], 8, "Interface\\Icons\\Spell_Shadow_GatherShadows", true, "white")
-        end
-        if self.db.profile.shadowflame then
-            self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
-        end
-	elseif sync == "EbonrocWingBuffetX" and self.db.profile.wingbuffet then
-		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Attention")
-        self:Message(L["wingbuffet_message"], "Important")
-		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Important")
-        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "black")
-		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-	elseif sync == "EbonrocShadowflameX" and self.db.profile.shadowflame then
-		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
-        self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate", true, "red")
-        self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
-	elseif sync == "EbonrocShadowX" and self.db.profile.curse then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["shadowcurse_bar"], rest), 8, "Interface\\Icons\\Spell_Shadow_GatherShadows", true, "white")
-	end
-end
-
-function BigWigsEbonroc:Event(msg)
+function module:Event(msg)
 	local _,_,shadowcurseother,_ = string.find(msg, L["shadowcurseother_trigger"])
 	if string.find(msg, L["shadowcurseyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "EbonrocShadowX "..UnitName("player"))
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_GatherShadows", 8)
+		self:Sync(syncName.curse .. " " .. UnitName("player"))
+        self:WarningSign(icon.curse, timer.curse)
 		if self.db.profile.curse then
-			self:TriggerEvent("BigWigs_Message", L["shadowfcurse_message_you"], "Attention")
+			self:Message(L["shadowfcurse_message_you"], "Attention")
 		end
 	elseif shadowcurseother then
-		self:TriggerEvent("BigWigs_SendSync", "EbonrocShadowX "..shadowcurseother)
+		self:Sync(syncName.curse .. " " .. shadowcurseother)
 		if self.db.profile.curse then
-			self:TriggerEvent("BigWigs_Message", string.format(L["shadowfcurse_message_taunt"], shadowcurseother), "Attention")
+			self:Message(string.format(L["shadowfcurse_message_taunt"], shadowcurseother), "Attention")
 		end
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.wingbuffet then
+		self:WingBuffet()
+	elseif sync == syncName.shadowflame then
+		self:ShadowFlame()
+	elseif sync == syncName.curse and self.db.profile.curse then
+		self:Bar(string.format(L["shadowcurse_bar"], rest), timer.curse, icon.curse, true, "white")
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:WingBuffet()
+	if self.db.profile.wingbuffet then
+		self:Message(L["wingbuffet_message"], "Important")
+		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
+		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+	end
+end
+
+function module:ShadowFlame()
+	if self.db.profile.shadowflame then
+		self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame, true, "red")
+		self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
 	end
 end

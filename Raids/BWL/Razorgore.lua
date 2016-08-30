@@ -3,36 +3,7 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Razorgore the Untamed"
-
--- do not override
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local controller = AceLibrary("Babble-Boss-2.2")["Grethok the Controller"]
-local module = BigWigs:NewModule(boss)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---BigWigsRazorgore = module
-module.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
---module.bossSync = bossName -- untranslated string
-
--- override
-module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = {boss, controller} -- string or table {boss, add1, add2}
-module.wipemobs = nil
-module.toggleoptions = {"phase", "mobs", "eggs", "polymorph", "mc", "icon", "orb", "fireballvolley", "conflagration", "ktm", "bosskill"}
-
-
----------------------------------
---      Module specific Locals --
----------------------------------
-
-local timer = {
-}
-local icon = {
-}
-local syncName = {
-}
-
+local module, L = BigWigs:ModuleDeclaration("Razorgore the Untamed", "Blackwing Lair")
 
 ----------------------------
 --      Localization      --
@@ -200,6 +171,27 @@ L:RegisterTranslations("deDE", function() return {
 	icon_name = "Schlachtzugsymbol auf die Gedankenkontrolle Spieler",
 	icon_desc = "Versetzt eine Schlachtzugsymbol auf der Gedankenkontrolle Spieler.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
 } end)
+
+
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+local controller = AceLibrary("Babble-Boss-2.2")["Grethok the Controller"]
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = {module.translatedName, controller} -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"phase", "mobs", "eggs", "polymorph", "mc", "icon", "orb", "fireballvolley", "conflagration", "ktm", "bosskill"}
+
+
+-- locals
+local timer = {
+}
+local icon = {
+}
+local syncName = {
+}
 
 
 ------------------------------

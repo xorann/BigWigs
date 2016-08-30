@@ -1,12 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Chromaggus"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
-local lastFrenzy = 0
-local _, playerClass = UnitClass("player")
-local breathCache = {}  -- in case your raid wipes
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Chromaggus", "Blackwing Lair")
+
 
 ----------------------------
 --      Localization      --
@@ -65,11 +63,11 @@ L:RegisterTranslations("enUS", function() return {
 	breathcolor4 = "red",
 	breathcolor5 = "blue",
 
-	icon1 = "Interface\\Icons\\Spell_Arcane_PortalOrgrimmar",
-	icon2 = "Interface\\Icons\\Spell_Nature_Acid_01",
-	icon3 = "Interface\\Icons\\Spell_Fire_Fire",
-	icon4 = "Interface\\Icons\\Spell_Shadow_ChillTouch",
-	icon5 = "Interface\\Icons\\Spell_Frost_ChillingBlast",
+	icon1 = "Spell_Arcane_PortalOrgrimmar",
+	icon2 = "Spell_Nature_Acid_01",
+	icon3 = "Spell_Fire_Fire",
+	icon4 = "Spell_Shadow_ChillTouch",
+	icon5 = "Spell_Frost_ChillingBlast",
 
 	castingbar = "Cast %s",
 	frenzy_bar = "Frenzy",
@@ -133,11 +131,11 @@ L:RegisterTranslations("deDE", function() return {
 	breathcolor4 = "red",
 	breathcolor5 = "blue",
 
-	icon1 = "Interface\\Icons\\Spell_Arcane_PortalOrgrimmar",
-	icon2 = "Interface\\Icons\\Spell_Nature_Acid_01",
-	icon3 = "Interface\\Icons\\Spell_Fire_Fire",
-	icon4 = "Interface\\Icons\\Spell_Shadow_ChillTouch",
-	icon5 = "Interface\\Icons\\Spell_Frost_ChillingBlast",
+	icon1 = "Spell_Arcane_PortalOrgrimmar",
+	icon2 = "Spell_Nature_Acid_01",
+	icon3 = "Spell_Fire_Fire",
+	icon4 = "Spell_Shadow_ChillTouch",
+	icon5 = "Spell_Frost_ChillingBlast",
 
 	castingbar = "Wirkt %s",
 	frenzy_bar = "Raserei",
@@ -158,28 +156,62 @@ L:RegisterTranslations("deDE", function() return {
 	thunderfury = "Zorn der Winde",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsChromaggus = BigWigs:NewModule(boss)
-BigWigsChromaggus.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsChromaggus.enabletrigger = boss
-BigWigsChromaggus.bossSync = "Chromaggus"
-BigWigsChromaggus.toggleoptions = { "enrage", "frenzy", "breath", "breathcd", "vulnerability", "bosskill"}
-BigWigsChromaggus.revision = tonumber(string.sub("$Revision: 11211 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"enrage", "frenzy", "breath", "breathcd", "vulnerability", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstBreath = 28.5,
+	secondBreath = 58.5,
+	breathInterval = 60,
+	breathCast = 2,
+	frenzy = 8,
+	nextFrenzy = 11,
+	vulnerability = 45,
+}
+local icon = {
+	unknown = "INV_Misc_QuestionMark",
+	breath1 = "Spell_Arcane_PortalOrgrimmar",
+	breath2 = "Spell_Nature_Acid_01",
+	breath3 = "Spell_Fire_Fire",
+	breath4 = "Spell_Shadow_ChillTouch",
+	breath5 = "Spell_Frost_ChillingBlast",
+	frenzy = "Ability_Druid_ChallangingRoar",
+	tranquil = "Spell_Nature_Drowsy",
+	vulnerability = "Spell_Shadow_BlackPlague",
+}
+local syncName = {
+	breath = "ChromaggusBreath",
+	frenzy = "ChromaggusFrenzyStart",
+	frenzyOver = "ChromaggusFrenzyStop",
+}
+
+local lastFrenzy = 0
+local _, playerClass = UnitClass("player")
+local breathCache = {}  -- in case your raid wipes
+
+local vulnerability = nil
+local twenty = nil
+local frenzied = nil
+local lastVuln = 0
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsChromaggus:OnEnable()
-	self.vulnerability = nil
-	self.twenty = nil
-	self.started = nil
-	self.frenzied = nil
-        self.lastVuln = 0
+--module:RegisterYellEngage(L["start_trigger"])
 
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
@@ -188,144 +220,119 @@ function BigWigsChromaggus:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("UNIT_HEALTH")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "ChromaggusEngage", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ChromaggusBreath", 20)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ChromaggusFrenzyStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ChromaggusFrenzyStop", 5)
+	
+	self:ThrottleSync(10, "ChromaggusEngage")
+	self:ThrottleSync(20, syncName.breath)
+	self:ThrottleSync(5, syncName.frenzy)
+	self:ThrottleSync(5, syncName.frenzyOver)
 end
 
-function BigWigsChromaggus:UNIT_HEALTH( msg )
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	vulnerability = nil
+	twenty = nil
+	self.started = nil
+	frenzied = nil
+    lastVuln = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()        
+	if self.db.profile.breath then
+		local firstBarName  = L["first_bar"]
+		local firstBarMSG   = L["firstbreaths_warning"]
+		local secondBarName = L["second_bar"]
+		local secondBarMSG  = L["firstbreaths_warning"]
+		if table.getn(breathCache) == 2 then
+			-- if we have 2 breaths cached this session means we have wiped already and that after discovering the two breath types
+			firstBarName  = string.format(L["castingbar"], breathCache[1])
+			firstBarMSG   = string.format(L["breath_message"], breathCache[1])
+			secondBarName = string.format(L["castingbar"], breathCache[2])
+			secondBarMSG  = string.format(L["breath_message"], breathCache[2])
+		elseif table.getn(breathCache) == 1 then
+			-- we wiped before but know at least the first breath
+			firstBarName  = string.format(L["castingbar"], breathCache[1])
+			firstBarMSG   = string.format(L["breath_message"], breathCache[1])
+		end
+		self:DelayedMessage(timer.firstBreath - 5, firstBarMSG, "Attention")
+		self:Bar(firstBarName, timer.firstBreath, icon.unknown, true, "cyan")
+		self:DelayedMessage(timer.secondBreath - 5, secondBarMSG, "Attention")
+		self:Bar(secondBarName, timer.secondBreath, icon.unknown, true, "cyan")
+	end
+	if self.db.profile.breathcd then
+		self:DelayedSound(timer.firstBreath - 10, "Ten", "b1_10")
+		self:DelayedSound(timer.firstBreath - 3, "Three", "b1_3")
+		self:DelayedSound(timer.firstBreath - 2, "Two", "b1_2")
+		self:DelayedSound(timer.firstBreath - 1, "One", "b1_1")
+		
+		self:DelayedSound(timer.secondBreath - 10, "Ten", "b2_10")
+		self:DelayedSound(timer.secondBreath - 3, "Three", "b2_3")
+		self:DelayedSound(timer.secondBreath - 2, "Two", "b2_2")
+		self:DelayedSound(timer.secondBreath - 1, "One", "b2_1")
+	end
+	if self.db.profile.frenzy then
+		self:Bar(L["frenzy_Nextbar"], timer.nextFrenzy, icon.frenzy, true, "white") 
+	end
+	self:Bar(format(L["vuln_bar"], "???"), timer.vulnerability, icon.vulnerability)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:UNIT_HEALTH( msg )
 	if self.db.profile.enrage and UnitName(msg) == boss then
 		local health = UnitHealth(msg)
-		if health > 15 and health <= 20 and not self.twenty then
-			self:TriggerEvent("BigWigs_Message", L["enrage_warning"], "Important", true, "Beware")
-			self.twenty = true
-		elseif health > 90 and self.twenty then
-			self.twenty = nil
+		if health > 15 and health <= 20 and not twenty then
+			self:Message(L["enrage_warning"], "Important", true, "Beware")
+			twenty = true
+		elseif health > 90 and twenty then
+			twenty = nil
 		end
 	end
 end
 
-function BigWigsChromaggus:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 	local _,_, spellName = string.find(msg, L["breath_trigger"])
 	if spellName then
 		local breath = L:HasReverseTranslation(spellName) and L:GetReverseTranslation(spellName) or nil
 		if not breath then return end
 		breath = string.sub(breath, -1)
-		self:TriggerEvent("BigWigs_SendSync", "ChromaggusBreath "..breath)
+		self:Sync(syncName.breath .. " " ..breath)
 	end
 end
 
-function BigWigsChromaggus:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and ((sync == "BossEngaged" and rest == "Chromaggus") or (sync == "ChromaggusEngage") ) then
-        if sync ~= "ChromaggusEngage" then self:TriggerEvent("BigWigs_SendSync", "ChromaggusEngage") end
-        
-		if self.db.profile.breath then
-            local firstBarName  = L["first_bar"]
-            local firstBarMSG   = L["firstbreaths_warning"]
-            local secondBarName = L["second_bar"]
-            local secondBarMSG  = L["firstbreaths_warning"]
-            if table.getn(breathCache) == 2 then
-                -- if we have 2 breaths cached this session means we have wiped already and that after discovering the two breath types
-                firstBarName  = string.format(L["castingbar"], breathCache[1])
-                firstBarMSG   = string.format(L["breath_message"], breathCache[1])
-                secondBarName = string.format(L["castingbar"], breathCache[2])
-                secondBarMSG  = string.format(L["breath_message"], breathCache[2])
-            elseif table.getn(breathCache) == 1 then
-                -- we wiped before but know at least the first breath
-                firstBarName  = string.format(L["castingbar"], breathCache[1])
-                firstBarMSG   = string.format(L["breath_message"], breathCache[1])
-            end
-			self:ScheduleEvent("BigWigs_Message", 23.5, firstBarMSG, "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, firstBarName, 28.5, "Interface\\Icons\\INV_Misc_QuestionMark", true, "cyan")
-			self:ScheduleEvent("BigWigs_Message", 53.5, secondBarMSG, "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, secondBarName, 58.5, "Interface\\Icons\\INV_Misc_QuestionMark", true, "cyan")
-		end
-        if self.db.profile.breathcd then
-            self:DelayedSound(18.5, "Ten")
-            self:DelayedSound(25.5, "Three")
-            self:DelayedSound(26.5, "Two")
-            self:DelayedSound(27.5, "One")
-            
-            self:DelayedSound(48.5, "Ten")
-            self:DelayedSound(55.5, "Three")
-            self:DelayedSound(56.5, "Two")
-            self:DelayedSound(57.5, "One")
-        end
-        if self.db.profile.frenzy then
-            self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], 11, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white") 
-        end
-        self:TriggerEvent("BigWigs_StartBar", self, format(L["vuln_bar"], "???"), 45, "Interface\\Icons\\Spell_Shadow_BlackPlague")
-	elseif sync == "ChromaggusBreath" and self.db.profile.breath then
-		local spellName = L:HasTranslation("breath"..rest) and L["breath"..rest] or nil
-		if not spellName then return end
-        if table.getn(breathCache) < 2 then
-            breathCache[table.getn(breathCache)+1] = spellName
-        end
-		self:TriggerEvent("BigWigs_StartBar", self, string.format( L["castingbar"], spellName), 2, L["icon"..rest])
-		self:TriggerEvent("BigWigs_Message", string.format(L["breath_message"], spellName), "Important")
-		self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
-		self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
-        
-        if self.db.profile.breathcd then
-            self:DelayedSound(50, "Ten")
-            self:DelayedSound(57, "Three")
-            self:DelayedSound(58, "Two")
-            self:DelayedSound(59, "One")
-        end
-        
-	elseif sync == "ChromaggusFrenzyStart" then
-		if self.db.profile.frenzy and not self.frenzied then
-			self:TriggerEvent("BigWigs_Message", L["frenzy_message"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
-		end
-        if playerClass == "HUNTER" then
-            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy", 8, true)
-        end
-		self.frenzied = true
-        lastFrenzy = GetTime()
-	elseif sync == "ChromaggusFrenzyStop" then
-		if self.db.profile.frenzy and self.frenzied then
-			self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
-            if lastFrenzy ~= 0 then
-                local NextTime = (lastFrenzy + 11) - GetTime()
-                self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], NextTime, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white")
-            end
-		end
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy")
-		self.frenzied = nil
-	end
-end
-
-function BigWigsChromaggus:CHAT_MSG_MONSTER_EMOTE(msg)
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
 	if string.find(msg, L["frenzy_trigger"]) and arg2 == boss then
-		self:TriggerEvent("BigWigs_SendSync", "ChromaggusFrenzyStart")
+		self:Sync(syncName.frenzy)
 	elseif string.find(msg, L["vulnerability_trigger"]) then
 		if self.db.profile.vulnerability then
-			self:TriggerEvent("BigWigs_Message", L["vulnerability_warning"], "Positive")
-            if self.vulnerability then
-                self:TriggerEvent("BigWigs_StopBar", self, format(L["vuln_bar"], self.vulnerability))
+			self:Message(L["vulnerability_warning"], "Positive")
+            if vulnerability then
+                self:RemoveBar(format(L["vuln_bar"], vulnerability))
             end
-            self:TriggerEvent("BigWigs_StartBar", self, format(L["vuln_bar"], "???"), 45, "Interface\\Icons\\Spell_Shadow_BlackPlague")
+            self:Bar(format(L["vuln_bar"], "???"), timer.vulnerability, icon.vulnerability)
 		end
-        self.lastVuln = GetTime()
-		self.vulnerability = nil
+        lastVuln = GetTime()
+		vulnerability = nil
 	end
 end
 
-function BigWigsChromaggus:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
 	if msg == L["frenzyfade_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ChromaggusFrenzyStop")
+		self:Sync(syncName.frenzyOver)
 	end
 end
 
-function BigWigsChromaggus:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	if not self.db.profile.vulnerability then return end
-	if not self.vulnerability then
+	if not vulnerability then
 		local _, _, dmg, school, userspell, partial = string.find(msg, L["vulnerability_dots_test"])
 		if dmg and school and userspell then
 			if school == L["arcane"] then
@@ -385,9 +392,9 @@ function BigWigsChromaggus:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	end
 end
 
-function BigWigsChromaggus:PlayerDamageEvents(msg)
+function module:PlayerDamageEvents(msg)
 	if not self.db.profile.vulnerability then return end
-	if not self.vulnerability then
+	if not vulnerability then
 		local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
 		if GetLocale() == "deDE" then
 			if string.find(stype, L["crit"]) then stype = L["crit"] else stype = L["hit"] end
@@ -472,15 +479,70 @@ function BigWigsChromaggus:PlayerDamageEvents(msg)
 		end
 	end
  end
+ 
+ 
+------------------------------
+--      Synchronization	    --
+------------------------------
 
-function BigWigsChromaggus:IdentifyVulnerability(school)
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.breath and self.db.profile.breath then
+		local spellName = L:HasTranslation("breath"..rest) and L["breath"..rest] or nil
+		if not spellName then return end
+        if table.getn(breathCache) < 2 then
+            breathCache[table.getn(breathCache)+1] = spellName
+        end
+		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, icon.breath .. rest)
+		self:Message(string.format(L["breath_message"], spellName), "Important")
+		
+		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important")
+		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval - timer.breathCast, icon.breath .. rest, true, L["breathcolor"..rest])
+		--self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
+		--self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
+        
+        if self.db.profile.breathcd then
+            self:DelayedSound(timer.breathInterval - 10, "Ten")
+            self:DelayedSound(timer.breathInterval - 3, "Three")
+            self:DelayedSound(timer.breathInterval - 2, "Two")
+            self:DelayedSound(timer.breathInterval - 1, "One")
+        end
+        
+	elseif sync == syncName.frenzy then
+		if self.db.profile.frenzy and not frenzied then
+			self:Message(L["frenzy_message"], "Attention")
+			self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
+		end
+        if playerClass == "HUNTER" then
+            self:WarningSign(icon.tranquil, timer.frenzy, true)
+        end
+		frenzied = true
+        lastFrenzy = GetTime()
+	elseif sync == syncName.frenzyOver then
+		if self.db.profile.frenzy and frenzied then
+			self:RemoveBar(L["frenzy_bar"])
+            if lastFrenzy ~= 0 then
+                local NextTime = (lastFrenzy + timer.nextFrenzy) - GetTime()
+                self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")
+            end
+		end
+        self:RemoveWarningSign(icon.tranquil)
+		frenzied = nil
+	end
+end
+
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:IdentifyVulnerability(school)
     if not self.db.profile.vulnerability or not type(school) == "string" then return end
-    if (self.lastVuln + 5) > GetTime() then return end -- 5 seconds delay
+    if (lastVuln + 5) > GetTime() then return end -- 5 seconds delay
     
-    self.vulnerability = school
-    self:TriggerEvent("BigWigs_Message", format(L["vulnerability_message"], school), "Positive")
-    if self.lastVuln then
-        self:TriggerEvent("BigWigs_StopBar", self, format(L["vuln_bar"], "???"))
-        self:TriggerEvent("BigWigs_StartBar", self, format(L["vuln_bar"], school), (self.lastVuln + 45) - GetTime(), "Interface\\Icons\\Spell_Shadow_BlackPlague")
+    vulnerability = school
+    self:Message(format(L["vulnerability_message"], school), "Positive")
+    if lastVuln then
+        self:RemoveBar(format(L["vuln_bar"], "???"))
+        self:Bar(format(L["vuln_bar"], school), (lastVuln + timer.vulnerability) - GetTime(), icon.vulnerability)
     end
 end
