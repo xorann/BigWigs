@@ -18,7 +18,7 @@ module.toggleoptions = {"aoeknock", "submerge", "emerge", "adds", "bosskill"}
 ---------------------------------
 
 local timer = {
-	emerge_soon = 64.5,
+	emerge_soon = 40.9, -- 46:30:17 - 47:11:14 = 40.9
 	hammer_of_ragnaros = 11,
 	emerge = 90,
 	submerge = 180,
@@ -50,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 	knockback_trigger = "^TASTE",
 	submerge_trigger = "^COME FORTH,",
 	engage_trigger = "^NOW FOR YOU",
-    engage_soon_trigger = "Impudent whelps!",
+    engage_soon_trigger = "TOO SOON! YOU HAVE AWAKENED ME TOO SOON",
     hammer_trigger = "^BY FIRE BE PURGED!",
 
 	knockback_message = "Knockback!",

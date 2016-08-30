@@ -41,16 +41,24 @@ local syncName = {
     deadenOver = "ShazzrahDeadenMagicOff",
 }
 --[[
-pull: 28:55 (0) 28:55:06
-cs: 29:05 (10) 29:05:01 (9.83)
-deaden: 29:10 (15) 29:10:07 (15)
-cs: 29:19 (14) 29:19:09 (14.27)
-blink: 26:25 (30) 29:25:01 (30)
-cs: 29:33 (14/8) 29:33:03 (13.8)
-deaden: 29:34 (24/9) 29:34:07 (24)
-cs: 29:46 (13) 29:46:10 (13.23)
-deaden: 29:58 (24) 29:58:03 (24)
-cs: 29:59 (13) 29:59:10 (13.0)
+pull:   28:55:06 
+cs:     29:05:01    9.83
+deaden: 29:10:07    15.0
+cs:     29:19:09    14.27
+blink:  29:25:01    30.0
+cs:     29:33:03    13.8
+deaden: 29:34:07    24.0
+cs:     29:46:10    13.23
+deaden: 29:58:03    24.0
+cs:     29:59:10    13.0
+
+pull:   19:59:07    
+curse:  20:07:19    8.4
+cs:     20:09:04    9.9
+curse:  20:26:26    19.23
+blink:  20:29:06    30.0
+cs:     20:35:16    26.4 (13.2)
+deaden: 20:35:29    36
 ]]
 
 local _, playerClass = UnitClass("player")
@@ -166,7 +174,7 @@ function module:OnEnable()
     self:ThrottleSync(10, syncName.curse)
     self:ThrottleSync(5, syncName.deaden)
     self:ThrottleSync(5, syncName.deadenOver)
-    self:ThrottleSync(1, syncName.cs)
+    self:ThrottleSync(0.5, syncName.cs)
 end
 
 -- called after module is enabled and after each wipe

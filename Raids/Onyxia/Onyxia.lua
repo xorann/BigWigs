@@ -44,6 +44,19 @@ local phase = 0
 11:26 deepbreath 32
 11:46 deepbreath 20
 12:07 deepbreath 21
+
+NW-SO
+09:52 p2
+10:24 db 32
+10:48 db 24
+11:12 db 24
+
+West-Ost
+16:39 p2
+17:11 db 32
+17:32 db 21
+
+fear 12s after p3
 ]]
 
 ----------------------------
@@ -269,14 +282,14 @@ function module:Phase2()
 		transitioned = true --to stop sending new syncs
 		phase = 2
 		if self.db.profile.phase then
-			self:Message(L["phase2text"], "Alarm", false, "Alarm")
+			self:Message(L["phase2text"], "Important", false, "Alarm")
 		end
 	end
 end
 
 function module:Phase3()
 	if self.db.profile.phase and phase < 3 then
-		self:Message(L["phase3text"], "Alarm", true, "Beware")
+		self:Message(L["phase3text"], "Important", true, "Beware")
         self:Bar(L["fear_next"], timer.firstFear, icon.fear)
         phase = 3
 	end
