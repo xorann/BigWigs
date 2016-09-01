@@ -131,6 +131,7 @@ function BigWigsVersionQuery:OnEnable()
 	self.zoneRevisions = nil
 	self.currentZone = ""
 	self.OutOfDateShown = false
+	isInitialQuery = true -- reset after /console reloadui
 
 	BWL = AceLibrary("AceLocale-2.2"):new("BigWigs")
 
@@ -139,7 +140,7 @@ function BigWigsVersionQuery:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "BWVR", 0)
 	
 	--BigWigsVersionQuery:QueryVersion("BigWigs")
-    self:ScheduleEvent("versionquerytest", BigWigsVersionQuery.Test, 1, self)
+    self:ScheduleEvent("versionquerytest", BigWigsVersionQuery.Test, 1, self) -- check version in 1s
 end
 
 function BigWigsVersionQuery:PopulateRevisions()
