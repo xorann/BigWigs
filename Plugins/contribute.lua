@@ -31,6 +31,9 @@
 ------------------------------
 --      Are you local?      --
 ------------------------------
+local name = "Contribute"
+local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..name)
+
 local listOfRaidZones   = {
     "Molten Core",
     "Onyxia's Lair",
@@ -54,11 +57,26 @@ local unsupportedRaids  = {
 local footageRequested  = false
 local prefix            = "|cf75DE52f[BigWigs]|r - ";
 
+
+----------------------------
+--      Localization      --
+----------------------------
+
+L:RegisterTranslations("enUS", function() return {
+    ["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."] = true,
+	["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs "] = true,
+} end)
+
+L:RegisterTranslations("deDE", function() return {
+    ["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."] = "Diese |cf75DE52fClassic-WoW|r Version wurde erstellt durch |cff7f7fffDorann|r.",
+	["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs "] = "Dieses Addon befindet sich noch in Arbeit und der Inhalt wird angepasst durch |cff7f7fffDorann|r. Besucht https://github.com/xorann/BigWigs für Updates oder um die Entwicklung mit twitch/youtube Aufnahmen zu unterstützen.",
+} end)
+
 ----------------------------------
 --      Module Declaration      --
 ----------------------------------
 
-BigWigsContribute               = BigWigs:NewModule("Contribute")
+BigWigsContribute               = BigWigs:NewModule(name)
 BigWigsContribute.toggleoptions = {"footage"}
 
 ------------------------------
@@ -80,8 +98,8 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
         for i=1, table.getn(listOfRaidZones) do
             local area = AceLibrary("Babble-Zone-2.2")[listOfRaidZones[i]]
             if area and area == GetRealZoneText() then
-                if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved") then
-                    DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r.")
+                if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved2") then
+                    BigWigs:Print(L["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."])
                 end
                 BigWigsContributeFlag = true
             end
@@ -93,7 +111,7 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
         for i=1, table.getn(unsupportedRaids) do
             local area = AceLibrary("Babble-Zone-2.2")[unsupportedRaids[i]]
             if area and area == GetRealZoneText() then
-                DEFAULT_CHAT_FRAME:AddMessage(prefix .. "This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs ")
+                BigWigs:Print(L["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs "])
                 footageRequested = true
             end
         end
