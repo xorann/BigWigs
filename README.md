@@ -1,4 +1,6 @@
 # BigWigs
+Diese Beschreibung auf <a href="github.com/xorann/BigWigs/README.de.md">Deutsch</a> lesen.
+
 BigWigs is a World of Warcraft AddOn to predict certain AI behaviour to improve the players performance.<br \>
 This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW</b> private Server.
 
@@ -11,26 +13,35 @@ PLEASE NOTE THIS IS STILL A WORK IN PROGRESS <br>
 <b><a href="https://github.com/xorann/BigWigs/releases">Download the latest Release here</a></b>
 
 ## How to install
-<b>a)</b> If you choose to download the .rar file all you have to do is extract the archive in your /World of Warcraft/Interface/AddOns/ directory.<br />
-<b>b)</b> If you download the raw code from GitHub (<b>Download ZIP</b>) you'll have to unzip the downloaded archive and rename the folder from 'BigWigs-master' to 'BigWigs' and place it in your /World of Warcraft/Interface/AddOns/ directory.
+<b>a)</b> If you choose to download the .zip file from the latest Release all you have to do is extract the archive in your /World of Warcraft/Interface/AddOns/ directory.<br />
+<b>b)</b> If you download the raw code from GitHub (<b>Download ZIP</b>) you'll have to unzip the downloaded archive and rename the folder from 'BigWigs-master' to 'BigWigs' and place it in your /World of Warcraft/Interface/AddOns/ directory. If possible you should you the latest Release.
 
 ## Wiki
 <b><a href="https://github.com/xorann/BigWigs/wiki">For more information or help please visit the Wiki</a></b>
 
 ## Included AddOns/Plugins
-I've included several other BigWigs AddOns in this repository, so you only need to download and use the 'BigWigs' folder from this repository. If you happen to have any of the listed AddOns seperately I suggest removing them - in case I adjusted some of those in this repository as well.
+Several other BigWigs Plugins are included in this repository, so you only need to download and use the 'BigWigs' folder from this repository. If you happen to have any of the listed AddOns seperately I suggest removing them - in case I adjusted some of those in this repository as well.
 <ul>
-    <li><b>BigWigs_CommonAuras</b> <br \>  ( keeps track of certain Buffs eg. Fear Ward and Tank cooldowns )</li>
-    <li><b>BigWigs_NefCount</b> <i>deactivated atm (NEEDS REWORK)</i> <br \>  ( improved mechanism for Nefarian phase 1, keeps track of the Adds killed since that triggers phase 2 )
-    <li><b>BigWigs_ZombieFood</b> <i>modified</i> <br>  ( announces if a player is getting dazed )</li>
-    <li><b>BigWigs_LoathebTactical</b> <br>  ( Spore and Consumable warnings for Loatheb )</li>
-    <li><b>BigWigs_RespawnTimers</b> <i>(NEEDS REWORK)</i> <br>  ( Trash respawn timers )</li>
-    <li><b>WarnIcon</b>  <i>own development</i> <br> ( Displays important SpellIcons in the center of your screen. Eg. if you're standing in Rain of Fire at Gehennas or if you're a Hunter and Magmadar/Flamegor/Chromaggus is Frenzied and you need to Tranq )</li>
-    <li><b>BossRecords</b>  <i>own development</i> <br> ( This Plugin will keep record of your time used in bossfights and compare it to your fastest )</li>
-    <li><b>AutoReply</b>  <i>own development (WORK IN PROGRESS)</i> <br> ( This Plugin will answer whispers received during BossFights )</li>
-    <li><b>ReadyCheck</b>  <i>own development (WORK IN PROGRESS)</i> <br> ( This Plugin will implement the needed code for the 'ReadyCheck' button from Blizzward which is in visible in the RaidFrame. Since the missing code was related to missing AddOn communication this Plugin will only work for RaidMembers with one of LYQs BigWigs Version )</li>
-    <li><b>RaidOfficer</b>  <i>own development</i> <br> ( This Plugin will enable for Raid Assistants dragging Players of one Raid-subgroup to another. This was on vanilla previously only enabled for RaidLeaders but the API allows Assistants to do so too )</li>
-    <li><b>AFKick</b>  <i>own development (CONCEPT IN PROGRESS)</i> <br> ( The concept of this Plugin is yet not fully made and can still be cancelled entirely. The Idea of this was from Sulfuras/Feenix Mesmerize version which in that version could get abused. The intent is to give RaidLeaders and Officers the possibility to force Raidmembers to logout IF those players are AFK and are basically blocking one raidslot not just in the raidgroup but the raid instance as such. If I reimplement such feature it will have multiple safety measures which should prevent all kinds of abuse. )</li>
+    <li><b>Bars</b>  <i>modified by Dorann</i> <br> (Shows Bars for important events during a Boss Fight. Added a backport of emphasized bars. Bars that begin at 15s or less or Bars that have less than 10s left move to the emphasized group which can be placed separatly and increases the size of the Bar.)</li>
+	<li><b>BossBlock</b> <br> (Blocks messages from boss mods in the raid chat and raid warning frame (who needs those anyways when you are already using the best bossmod there is? ;-))</li>
+	<li><b>Messages</b> <br> (Shows messages for important events.)
+	<li><b>Proximity</b>  <i>made by Dorann</i> <br> (Backport of the Proximity plugin. Shows you which raid members are in close proximity to yourself (C'Thun phase 1). Since there are only range checks for 9.9y, 11.11y and 26y the list should be taken with a grain of salt and should not be absolutly relied upon.)</li>
+	<li><b>RaidIcon</b> <br> (Puts a Raid Icon (Skull by default) over the head of a raid member)</li>
+	<li><b>Range</b> <br> (Allows you to set the range of the combat log to increase the precision of BigWigs. Using the highest possible setting by Default)</li>
+	<li><b>Sound</b> <i>modified by Dorann</i> <br> (Plays a sound on important events.)</li>
+	<li><b>WarningSign</b>  <i>made by LYQ</i> <br> (Displays important SpellIcons in the center of your screen. Eg. if you're standing in Rain of Fire at Gehennas or if you're a Hunter and Magmadar/Flamegor/Chromaggus is Frenzied and you need to Tranq)</li>
+	<li><b>CustomBar</b> <br> (Allows you to create a custom bar with the following command: /bwcb <seconds> <message>)</li>
+	<li><b>Test</b> <br> (Allows you to Test BigWigs and move the Plugins (Bars, Messages) around.)</li>
+	<li><b>Tranq</b> <br> (Support for Tranquilizing Shot to see which Hunter used it.)</li>
+	<li><b>Version</b>  <i>modified by Dorann</i> <br> (Checks your BigWigs version and warns you if there is a newer version available)</li>
+	<li><b>BigWigs_CommonAuras</b> <br \>  (keeps track of certain Buffs and Cooldowns eg. Shield Wall and Challenging Shout)</li>
+    <li><b>BigWigs_NefCount</b> <i>deactivated atm (NEEDS REWORK)</i> <br \>  (improved mechanism for Nefarian phase 1, keeps track of the Adds killed since that triggers phase 2)
+    <li><b>BigWigs_ZombieFood</b> <i>modified by LYQ</i> <br>  (announces if a player is getting dazed)</li>
+    <li><b>BigWigs_LoathebTactical</b> <br>  (Spore and Consumable warnings for Loatheb)</li>
+    <li><b>BigWigs_RespawnTimers</b> <i>(NEEDS REWORK)</i> <br>  (Trash respawn timers)</li>
+	<li><b>BossRecords</b>  <i>made by LYQ</i> <br> (This Plugin will keep record of your time used in bossfights and compare it to your fastest)</li>
+    <li><b>RaidOfficer</b>  <i>made by LYQ</i> <br> (This Plugin will enable for Raid Assistants dragging Players of one Raid-subgroup to another. This was on vanilla previously only enabled for RaidLeaders but the API allows Assistants to do so too)</li>
+    <li><b>DousedRunes</b>  <i>made by Dorann</i> <br> (Shows you which runes in Molten Core have been doused and which still have to be doused to summon Majordomus. The Frame will be shown after a Rune has been doused and after a boss has been killed (beginning at Magmadar).)</li>
 </ul>
 
 ## Raid Adjustments
@@ -47,14 +58,14 @@ If you want to browse through all the changes and their status regarding each en
 
 
 ## Core/General Adjustments
+- <b>(100%)</b> Reworked the core module and most boss modules to improve the maintainability (see Provided API).
 - <b>(100%)</b> Engage Syncs are now working perfectly on every encounter and do allow communication between clients of different language packs.
 - <b>(100%)</b> Bosskill Syncs were added for every encounter dynamically and do also support communication of different language packs.
-- <b>(QA)</b> BossWipe Syncs were remodelled and added dynamically for every encounter.
+- <b>(100%)</b> BossWipe Syncs were remodelled and added dynamically for every encounter.
 - <b>(100%)</b> KTM compatibility - Bossmodules are now able to set the MasterTarget, reset the Threat or Clear the Master Target. RaidOfficers do need to have this version for that.
-- <b>()</b> to be completed later..
 
 # Provided API
-<a href="http://wow.gamepedia.com/BigWigs/API">BigWigs API</a>
+This is a (incomplete) documentation of the <a href="http://wow.gamepedia.com/BigWigs/API">BigWigs API</a>. This is only important for developers.
 
 function BigWigs.modulePrototype:Bar(text, length, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	self:TriggerEvent("BigWigs_StartBar", self, text, time, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
