@@ -211,7 +211,7 @@ end
 
 function module:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L["endtrigger"] then
-		SendBossDeathSync()
+		self:SendBossDeathSync()
 	end
 end
 
