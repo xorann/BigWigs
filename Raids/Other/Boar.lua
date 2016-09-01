@@ -124,6 +124,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+    BigWigsProximity:BigWigs_HideProximity(self)
 end
 
 

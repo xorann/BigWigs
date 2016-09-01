@@ -71,7 +71,7 @@ L:RegisterTranslations("deDE", function() return {
 	curse_trigger = "von Gehennas(.+)Fluch betroffen",
 	--bolt_trigger = "Gehennas beginnt Schattenblitz",
 	rain_trigger = "Ihr seid von Feuerregen betroffen",
-	rain_run_trigger = "Ihr erleidet (%d+) (.+) von "..boss.." Feuerregen.",	
+	rain_run_trigger = "Ihr erleidet (%d+) (.+) von " .. module.translatedName .. " Feuerregen.",	
 	
 	curse_trigger2 = "Gehennas\' Fluch(.+) widerstanden",
 	dead1 = "Feuerschuppe stirbt",

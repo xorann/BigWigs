@@ -939,7 +939,7 @@ end
 
 -- event handler
 function BigWigs:BigWigs_RebootModule(moduleName)    
-	--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName    
+	local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName    
     local m = self:GetModule(moduleName)
 	if m and m:IsBossModule() then
 		self:DebugMessage("BigWigs:BigWigs_RebootModule(): " .. m:ToString())
@@ -954,13 +954,22 @@ end
 -------------------------------
 
 function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
-	if sync == "EnableModule" and moduleName then
-		--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName        
+	if sync == "EnableModule" and moduleName then        
+		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+
+        -- sanity check
+        local module = nil
+        if self:HasModule(moduleName) then
+            module = self:GetModule(moduleName)
+        else
+            return
+        end
+        
         local isInZone = false
-        if type(self:GetModule(moduleName).zonename) == "string" and self:GetModule(moduleName).zonename == GetRealZoneText() then
+        if type(module.zonename) == "string" and module.zonename == GetRealZoneText() then
             isInZone = true
-        elseif type(self:GetModule(moduleName).zonename) == "table" then
-            for _, v in pairs(self:GetModule(moduleName).zonename) do
+        elseif type(module.zonename) == "table" then
+            for _, v in pairs(module.zonename) do
                 if v == GetRealZoneText() then
                     isInZone = true
                     break
@@ -968,32 +977,50 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
             end
         end
             
-		if self:HasModule(moduleName) and isInZone then self:EnableModule(moduleName, true) end
+		if isInZone then self:EnableModule(moduleName, true) end
 	elseif sync == "EnableExternal" and moduleName then
-		--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-		if self:HasModule(moduleName) and self:GetModule(moduleName).zonename == GetRealZoneText() then self:EnableModule(moduleName, true) end
+        -- sanity check
+        local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+        local module = nil
+        if self:HasModule(moduleName) then
+            module = self:GetModule(moduleName)
+        else
+            return
+        end
+        
+        if self:HasModule(moduleName) and self:GetModule(moduleName).zonename == GetRealZoneText() then      
+            self:EnableModule(moduleName, true)
+        end
 	elseif sync == "RebootModule" and moduleName then
-		if nick ~= UnitName("player") then
+		
+        
+        if nick ~= UnitName("player") then
 			self:Print(string.format(L["%s has requested forced reboot for the %s module."], nick, moduleName))
 		end
 		self:TriggerEvent("BigWigs_RebootModule", moduleName)
     elseif sync == "BossEngaged" and moduleName then 
-		--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-        local m = self:GetModule(moduleName)
-        if m:IsBossModule() then
-            m:Engage() 
-        end   
+		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+        if self:HasModule(moduleName) then
+            local m = self:GetModule(moduleName)
+            if m:IsBossModule() then
+                m:Engage() 
+            end
+        end
 	elseif sync == "BossWipe" and moduleName then
-		--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-		local m = self:GetModule(moduleName)
-        if m:IsBossModule() and BigWigs:IsModuleActive(m) then
-			self:TriggerEvent("BigWigs_RebootModule", moduleName)
-		end
+		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+		if self:HasModule(moduleName) then
+            local m = self:GetModule(moduleName)
+            if m:IsBossModule() and BigWigs:IsModuleActive(m) then
+                self:TriggerEvent("BigWigs_RebootModule", moduleName)
+            end
+        end
     elseif sync == "BossDeath" and moduleName then
-		--local name = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-        local m = self:GetModule(moduleName)
-        if m:IsBossModule() and BigWigs:IsModuleActive(m) then
-            m:Victory()
+		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+        if self:HasModule(moduleName) then
+            local m = self:GetModule(moduleName)
+            if m:IsBossModule() and BigWigs:IsModuleActive(m) then
+                m:Victory()
+            end
         end
 	end
 end
