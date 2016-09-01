@@ -6,7 +6,7 @@ This Modification is build for Patch 1.12.1 and its content for use on the <b>Cl
 
 The adjustments were originally made by LYQ.<br \>
 Adjustments for Classic-WoW made by Dorann.<br \>
-<b><a href="github.com/xorann/BigWigs">Please refer to this repository for more information.</a></b>
+<b><a href="https://github.com/xorann/BigWigs">Please refer to this repository for more information.</a></b>
 
 # Download
 PLEASE NOTE THIS IS STILL A WORK IN PROGRESS <br>
