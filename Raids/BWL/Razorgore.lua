@@ -187,10 +187,27 @@ module.toggleoptions = {"phase", "mobs", "eggs", "polymorph", "mc", "icon", "orb
 
 -- locals
 local timer = {
+	mobspawn = 35,
+	mc = 15,
+	polymorph = 20,
+	conflagrate = 10,
+	volley = 2,
+	egg = 3,
+	orb = 90,
 }
 local icon = {
+	mobspawn = "Spell_Holy_PrayerOfHealing",
+	egg = "INV_Misc_MonsterClaw_02",
+	orb = "INV_Misc_Gem_Pearl_03",
+	volley = "Spell_Fire_FlameBolt",
 }
 local syncName = {
+	egg = "RazorgoreEgg",
+	eggStart = "RazorgoreEggStart",
+	orb = "RazorgoreOrbStart_", -- 19 characters
+	orbOver = "RazorgoreOrbStop_",
+	volley = "RazorgoreVolleyCast",
+	phase2 = "RazorgorePhaseTwo",
 }
 
 
@@ -202,10 +219,6 @@ module:RegisterYellEngage(L["start_trigger"])
 
 -- called after module is enabled
 function module:OnEnable()
-    self.started        = nil
-    self.phase          = 0
-    self.previousorb    = nil
-    self.eggs           = 0
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_BUFF")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Events")
@@ -219,11 +232,11 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE")
     self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-
-	self:TriggerEvent("BigWigs_ThrottleSync", "RazorgoreEgg", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RazorgoreOrbStart_(.+)", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RazorgoreOrbStop_(.+)", 5)
-    self:TriggerEvent("BigWigs_ThrottleSync", "RazorgoreVolleyCast", 3)
+	
+	self:ThrottleSync(5, syncName.egg)
+	self:ThrottleSync(5, syncName.orb .. "(.+)")
+	self:ThrottleSync(5, syncName.orbOver .. "(.+)")
+	self:ThrottleSync(3, syncName.volley)
 end
 
 
@@ -241,8 +254,8 @@ function module:OnEngage()
 		self:Message(L["start_message"], "Attention")
 	end
 	if self.db.profile.mobs then
-		self:Bar(L["mobs_bar"], 35, "Spell_Holy_PrayerOfHealing")
-		self:Message(30, L["mobs_soon"], "Important")
+		self:Bar(L["mobs_bar"], timer.mobspawn, icon.mobspawn)
+		self:Message(timer.mobspawn - 5, L["mobs_soon"], "Important")
 	end
 	self:TriggerEvent("BigWigs_StartCounterBar", self, "Eggs destroyed", 30, "Interface\\Icons\\inv_egg_01")
 	self:TriggerEvent("BigWigs_SetCounterBar", self, "Eggs destroyed", (30 - 0.1))
@@ -258,18 +271,16 @@ end
 ------------------------------
 
 function module:CHAT_MSG_MONSTER_YELL(msg)
-	if string.find(msg, L["start_trigger"]) then
-        self:SendEngageSync()
-	elseif msg == L["phase2_trigger"] then
-		self:Sync("RazorgorePhaseTwo")
+	if msg == L["phase2_trigger"] then
+		self:Sync(syncName.phase2)
 	elseif msg == L["destroyegg_yell1"] or msg == L["destroyegg_yell2"] or msg == L["destroyegg_yell3"] then
-		self:Sync("RazorgoreEgg " .. tostring(self.eggs + 1))
+		self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
 	end
 end
 
 function module:CHAT_MSG_SPELL_FRIENDLYPLAYER_BUFF(msg)
 	if string.find(msg, L["egg_trigger"]) then
-		self:Sync("RazorgoreEggStart")
+		self:Sync(syncName.eggStart)
 	end
 end
 
@@ -277,10 +288,10 @@ function module:CHAT_MSG_MONSTER_EMOTE(msg)
     if string.find(msg, "Razorgore the Untamed casts Destroy Egg") then
         -- as of now, this does also fire on finished 'Destroy Egg' cast. 
         -- but only after a successful one and the range is shitty of this emote.
-        self:Sync("RazorgoreEgg " .. tostring(self.eggs + 1))
+        self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
     elseif string.find(msg, "Nefarian's troops flee as the power") then
         -- there is a really funny emote text bug on the current version on Nostalris, I'll only use this in case they fix it
-        self:Sync("RazorgorePhaseTwo")
+        self:Sync(syncName.phase2)
     end
 end
 
@@ -305,11 +316,11 @@ function module:Events(msg)
 	if self.db.profile.mc then
 		if msg == L["mindcontrolyou_trigger"] then
 			self:Message(L["mindcontrol_message_you"], "Important")
-			self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), 15, "Spell_Shadow_ShadowWordDominate", true, "black")
+			self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), timer.mc, "Spell_Shadow_ShadowWordDominate", true, "black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["mindcontrol_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
 		elseif mcother then
 			self:Message(string.format(L["mindcontrol_message"], mcother), "Important")
-			self:Bar(string.format(L["mindcontrol_bar"], mcother), 15, "Spell_Shadow_ShadowWordDominate", true, "black")
+			self:Bar(string.format(L["mindcontrol_bar"], mcother), timer.mc, "Spell_Shadow_ShadowWordDominate", true, "black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["mindcontrol_bar"], mcother), function(name, button, extra) TargetByName(extra, true) end, mcother)
 		elseif string.find(msg, L["mindcontrolyouend_trigger"]) then
 			self:RemoveBar(string.format(L["mindcontrol_bar"], UnitName("player")))
@@ -321,11 +332,11 @@ function module:Events(msg)
 	if self.db.profile.polymorph then
 		if msg == L["polymorphyou_trigger"] then
 			self:Message(L["polymorph_message_you"], "Important")
-			self:Bar(string.format(L["polymorph_bar"], UnitName("player")), 20, "Interface\\Icons\\Spell_Nature_Brilliance", true, "cyan")
+			self:Bar(string.format(L["polymorph_bar"], UnitName("player")), timer.polymorph, "Spell_Nature_Brilliance", true, "cyan")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["polymorph_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
 		elseif polyother then
 			self:Message(string.format(L["polymorph_message"], polyother), "Important")
-			self:Bar(string.format(L["polymorph_bar"], polyother), 20, "Interface\\Icons\\Spell_Nature_Brilliance", true, "cyan")
+			self:Bar(string.format(L["polymorph_bar"], polyother), timer.polymorph, "Spell_Nature_Brilliance", true, "cyan")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["polymorph_bar"], polyother), function(name, button, extra) TargetByName(extra, true) end, polyother)
 		elseif msg == L["polymorphyouend_trigger"] then
 			self:RemoveBar(string.format(L["polymorph_bar"], UnitName("player")))
@@ -336,14 +347,14 @@ function module:Events(msg)
 	
 	if self.db.profile.orb then
 		if orbother then
-			self:Sync("RazorgoreOrbStart_" .. orbother)
+			self:Sync(syncName.orb .. orbother)
 		elseif msg == L["orbcontrolyou_trigger"] then
-			self:Sync("RazorgoreOrbStart_" .. UnitName("player"))
+			self:Sync(syncName.orb .. UnitName("player"))
 		end
 	end
 	
 	if self.db.profile.conflagration and string.find(msg, L["conflagration_trigger"]) then
-		self:Bar(L["conflagration_bar"], 10, "Spell_Fire_Incinerate", true, "red")
+		self:Bar(L["conflagration_bar"], timer.conflagrate, "Spell_Fire_Incinerate", true, "red")
 	end
 	
 	if deathother then
@@ -371,13 +382,13 @@ end
 
 function module:CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE(msg)
 	if self.db.profile.fireballvolley and msg == L["volley_trigger"] then
-		self:Bar(L["volley_bar"], 2, "Spell_Fire_FlameBolt", true, "blue")
+		self:Bar(L["volley_bar"], timer.volley, icon.volley, true, "blue")
 	end
 end
 
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["volley_trigger"] then
-		self:Sync("RazorgoreVolleyCast")
+		self:Sync(syncName.volley)
 	end
 end
 
@@ -387,7 +398,7 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-    if sync == "RazorgoreEgg" then
+    if sync == syncName.egg then
 		rest = tonumber(rest)
 		if rest == (self.eggs + 1) and self.eggs <= 30 then
 			self.eggs = self.eggs + 1
@@ -396,13 +407,14 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 			end
             self:TriggerEvent("BigWigs_SetCounterBar", self, "Eggs destroyed", (30 - self.eggs))
 		end
-	elseif sync == "RazorgoreEggStart" then
+	elseif sync == syncName.eggStart then
 		--self:CancelScheduledEvent("destroyegg_check")
 		--self:ScheduleEvent("destroyegg_check", self.DestroyEggCheck, 3, self)
 		if self.db.profile.eggs then
-			self:Bar(L["egg_bar"], 3, "INV_Misc_MonsterClaw_02", true, "purple")
+			self:Bar(L["egg_bar"], timer.egg, icon.egg, true, "purple")
 		end
-	elseif string.find(sync, "RazorgoreOrbStart_") then
+		self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
+	elseif string.find(sync, syncName.orb) then
 		rest = string.sub(sync, 19)
 		self:CancelScheduledEvent("destroyegg_check")
 		self:CancelScheduledEvent("orbcontrol_check")
@@ -410,16 +422,16 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 			if self.previousorb ~= nil then
 				self:RemoveBar(string.format(L["orb_bar"], self.previousorb))
 			end
-			self:Bar(string.format(L["orb_bar"], rest), 90, "INV_Misc_Gem_Pearl_03", true, "white")
+			self:Bar(string.format(L["orb_bar"], rest), timer.orb, icon.orb, true, "white")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["orb_bar"], rest), function(name, button, extra) TargetByName(extra, true) end, rest)
 		end
 		self:ScheduleEvent("orbcontrol_check", self.OrbControlCheck, 1, self)
 		self.previousorb = rest
-	elseif string.find(sync, "RazorgoreOrbStop_") then
+	elseif string.find(sync, syncName.orbOver) then
 		self:CancelScheduledEvent("destroyegg_check")
 		self:CancelScheduledEvent("orbcontrol_check")
 		if self.db.profile.orb and self.previousorb then
-			self:Bar(string.format(L["orb_bar"], self.previousorb), 90, "INV_Misc_Gem_Pearl_03", true, "white")
+			self:Bar(string.format(L["orb_bar"], self.previousorb), timer.orb, icon.orb, true, "white")
 		end
 		if self.db.profile.fireballvolley then
 			self:RemoveBar(L["volley_bar"])
@@ -427,11 +439,11 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.eggs then
 			self:RemoveBar(L["egg_bar"])
 		end
-    elseif sync == "RazorgoreVolleyCast" and self.db.profile.fireballvolley then
-        self:Bar(L["volley_bar"], 2, "Spell_Fire_FlameBolt", true, "red")
+    elseif sync == syncName.volley and self.db.profile.fireballvolley then
+        self:Bar(L["volley_bar"], timer.volley, icon.volley, true, "red")
 		self:Message(L["volley_message"], "Urgent")
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Flamebolt", 2)
-    elseif sync == "RazorgorePhaseTwo" and self.phase < 2 then
+        self:WarningSign(icon.volley, 2)
+    elseif sync == syncName.phase2 and self.phase < 2 then
         self.phase = 2
         self:CancelScheduledEvent("destroyegg_check")
 		self:CancelScheduledEvent("orbcontrol_check")
@@ -463,7 +475,7 @@ function module:OrbControlCheck()
 	if bosscontrol then
 		self:ScheduleEvent("orbcontrol_check", self.OrbControlCheck, 1, self)
 	elseif GetRealZoneText() == "Blackwing Lair" then
-		self:Sync("RazorgoreOrbStop_" .. self.previousorb)
+		self:Sync(syncName.orbOver .. self.previousorb)
 	end
 end
 

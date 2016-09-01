@@ -1,29 +1,29 @@
-------------------------------
---      Are you local?      --
-------------------------------
-local boss = AceLibrary("Babble-Boss-2.2")["Nefarian"]
-local victor = AceLibrary("Babble-Boss-2.2")["Lord Victor Nefarius"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
 
-local warnpairs = nil
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Nefarian", "Blackwing Lair")
+
 
 ----------------------------
 --      Localization      --
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	landing_soon_trigger = "Let the games begin!",
+	engage_trigger = "Let the games begin!",
 	landing_trigger = "Enough! Now you",
     landingNOW_trigger = "courage begins to wane",
 	zerg_trigger = "Impossible! Rise my",
 	fear_trigger = "Nefarian begins to cast Bellowing Roar",
+	fear_over_trigger = "Bellowing Roar",
 	shadowflame_trigger = "Nefarian begins to cast Shadow Flame",
 
 	triggerfear = "by Panic.",
 	fbar = "Fear",
 	land = "Estimated Landing",
 	Mob_Spawn = "Mob Spawn",
-	warn = "Fear in 1.5sec!",
+	fear_warn = "Fear NOW!",
 
 	triggershamans	= "Shamans, show me",
 	triggerdruid	= "Druids and your silly",
@@ -86,36 +86,62 @@ L:RegisterTranslations("enUS", function() return {
 	mcare = "are",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsNefarian = BigWigs:NewModule(boss)
-BigWigsNefarian.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsNefarian.enabletrigger = { boss, victor }
-BigWigsNefarian.bossSync = "Nefarian"
-BigWigsNefarian.toggleoptions = {"shadowflame", "fear", "classcall", "otherwarn", "bosskill"}
-BigWigsNefarian.revision = tonumber(string.sub("$Revision: 16639 $", 12, -3))
-BigWigsNefarian:RegisterYellEngage(L["landing_soon_trigger"])
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = {boss, victor} -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"shadowflame", "fear", "classcall", "otherwarn", "bosskill"}
+
+
+-- locals
+local timer = {
+	mobspawn = 10,
+	classcall = 30,
+	mc = 15,
+	shadowflame = 19,
+	shadowflameCast = 2,
+	fear = 28.5,
+	fearCast = 1.5,
+	landing = 15,
+	firstClasscall = 37,
+	firstFear = 30,
+}
+local icon = {
+	mobspawn = "Spell_Holy_PrayerOfHealing",
+	classcall = "Spell_Shadow_Charm",
+	mc = "Spell_Shadow_Charm",
+	fear = "Spell_Shadow_Possession",
+	shadowflame = "Spell_Fire_Incinerate",
+	landing = "INV_Misc_Head_Dragon_Black",
+}
+local syncName = {
+	shadowflame = "NefarianShadowflame",
+	fear = "NefarianFear",
+	landing = "NefarianLandingNOW",
+}
+
+local victor = AceLibrary("Babble-Boss-2.2")["Lord Victor Nefarius"]
+local warnpairs = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsNefarian:OnEnable()
-    self.started = nil
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	--self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBosskill")
     
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "NefarianShadowflame", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "NefarianFear", 15)
-    self.phase2 = nil
-	
 	if not warnpairs then warnpairs = {
 		[L["triggershamans"]] = {L["warnshaman"], true},
 		[L["triggerdruid"]] = {L["warndruid"], true},
@@ -126,44 +152,66 @@ function BigWigsNefarian:OnEnable()
 		[L["triggerrogue"]] = {L["warnrogue"], true},
 		[L["triggerpaladin"]] = {L["warnpaladin"], true},
 		[L["triggermage"]] = {L["warnmage"], true},
-		[L["landing_soon_trigger"]] = {L["landing_soon_warning"]},
 		[L["landing_trigger"]] = {L["landing_warning"]},
 		[L["zerg_trigger"]] = {L["zerg_warning"]},
 	} end
+	
+	self:ThrottleSync(10, syncName.shadowflame)
+	self:ThrottleSync(15, syncName.fear)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	self.phase2 = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Message(L["landing_soon_warning"], "Important", true, "Long")
+	self:Bar(L["Mob_Spawn"], timer.mobspawn, icon.mobspawn)
+	
+	--self:Bar(L["land"], 159, "INV_Misc_Head_Dragon_Black")
+	--self:DelayedMessage(105, L["landing_soon_warning"], "Important", true, "Alarm")
+	--self:DelayedMessage(125, L["landing_very_soon"], "Important", true, "Long")
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsNefarian:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["landingNOW_trigger"]) then
-        self:TriggerEvent("BigWigs_SendSync", "NefarianLandingNOW")
+        self:Sync(syncName.landing)
     end
     
 	for i,v in pairs(warnpairs) do
 		if string.find(msg, i) then
 			if v[2] then
 				if self.db.profile.classcall then
-					self:TriggerEvent("BigWigs_Message", v[1], "Important")
-					self:ScheduleEvent("BigWigs_Message", 27, L["classcall_warning"], "Important")
-					self:TriggerEvent("BigWigs_StartBar", self, v[1], 30, "Interface\\Icons\\Spell_Shadow_Charm")
-                    self:ScheduleEvent("countdown3", "BigWigs_Message", 27, "", "Urgent", true, "Three")
-                    self:ScheduleEvent("countdown2", "BigWigs_Message", 28, "", "Urgent", true, "Two")
-                    self:ScheduleEvent("countdown1", "BigWigs_Message", 29, "", "Urgent", true, "One")
+					self:Message(v[1], "Important")
+					self:DelayedMessage(timer.classcall - 3, L["classcall_warning"], "Important")
+					self:Bar(v[1], timer.classcall, icon.classcall)
+					self:DelayedSound(timer.classcall - 3, "Three")
+					self:DelayedSound(timer.classcall - 2, "Two")
+					self:DelayedSound(timer.classcall - 1, "One")
                     
                     local localizedClass, englishClass = UnitClass("player");
                     if string.find(msg, localizedClass) then
-                        self:TriggerEvent("BigWigs_Message", "", "Urgent", true, "Beware")
+						self:Sound("Beware")
+						self:WarningSign(icon.classcall, 3)
                     end
 				end
 			else
-				if string.find(msg, L["landing_soon_trigger"]) then 
-                    --self:SendEngageSync()
-				elseif self.db.profile.otherwarn and string.find(msg, L["landing_trigger"]) then 
-					--self:TriggerEvent("BigWigs_Message", v[1], "Important", true, "Long")
+				if self.db.profile.otherwarn and string.find(msg, L["landing_trigger"]) then 
+					self:Message(v[1], "Important", true, "Long")
 				elseif self.db.profile.otherwarn and string.find(msg, L["zerg_trigger"]) then 
-					self:TriggerEvent("BigWigs_Message", v[1], "Important", true, "Long")
+					self:Message(v[1], "Important", true, "Long")
 				end
 			end
 			return
@@ -172,58 +220,78 @@ function BigWigsNefarian:CHAT_MSG_MONSTER_YELL(msg)
 end
 
 -- mind control
-function BigWigsNefarian:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(arg1)
+function module:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(arg1)
 	local _,_, player, type = string.find(arg1, L["mcplayer"])
 	if player and type then
 		if player == L["mcyou"] and type == L["mcare"] then
 			player = UnitName("player")
 		end
 		if self.db.profile.mc then 
-            self:TriggerEvent("BigWigs_Message", player .. L["mcplayerwarn"], "Important") 
-            self:TriggerEvent("BigWigs_StartBar", self, player .. L["mcplayerwarn"], 15, "Interface\\Icons\\Spell_Shadow_Charm", "Orange")
+            self:Message(player .. L["mcplayerwarn"], "Important") 
+            self:Bar(player .. L["mcplayerwarn"], timer.mc, icon.mc, "Orange")
         end
 	end
 end
 
-function BigWigsNefarian:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if string.find(msg, L["fear_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "NefarianFear")
+		self:Sync(syncName.fear)
 	elseif string.find(msg, L["shadowflame_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "NefarianShadowflame")
+		self:Sync(syncName.shadowflame)
 	end
 end
 
-function BigWigsNefarian:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:TriggerEvent("BigWigs_Message", L["landing_soon_warning"], "Important", true, "Long")
-        --self:TriggerEvent("BigWigs_StartBar", self, L["land"], 159, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
-        self:TriggerEvent("BigWigs_StartBar", self, L["Mob_Spawn"], 10, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
-        --self:ScheduleEvent("BigWigs_Message", 105, L["landing_soon_warning"], "Important", true, "Alarm")
-        --self:ScheduleEvent("BigWigs_Message", 125, L["landing_very_soon"], "Important", true, "Long")
-	elseif sync == "NefarianShadowflame" and self.db.profile.shadowflame then
-		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
-		self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important", true, "Alarm")
-		self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_bar"], 17, "Interface\\Icons\\Spell_Fire_Incinerate")
-	elseif sync == "NefarianFear" and self.db.profile.fear then
-        self:TriggerEvent("BigWigs_StopBar", self, L["fear_bar"])
-		self:TriggerEvent("BigWigs_Message", L["fear_warning"], "Important", true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, "Fear NOW!", 1.5, "Interface\\Icons\\Spell_Shadow_Charm")
-		self:ScheduleEvent("BigWigs_StartBar", 1.5, self, L["fear_bar"], 27, "Interface\\Icons\\Spell_Shadow_Charm")
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_Possession", 5)
-    elseif sync == "NefarianLandingNOW" and not self.phase2 then
-        self.phase2 = true
-        self:TriggerEvent("BigWigs_StopBar", self, L["land"])
-        self:TriggerEvent("BigWigs_StartBar", self, "Landing NOW!", 15, "Interface\\Icons\\INV_Misc_Head_Dragon_Black")
-        self:TriggerEvent("BigWigs_Message", L["landing_warning"], "Important")
-        self:ScheduleEvent("BigWigs_SendSync", 15, "NefarianLanded")
-	elseif sync == "NefarianLanded" then
-        self:TriggerEvent("BigWigs_StartBar", self, L["classcall_bar"], 37, "Interface\\Icons\\Spell_Shadow_Charm")
-        self:TriggerEvent("BigWigs_StartBar", self, L["fear_bar"], 30, "Interface\\Icons\\Spell_Shadow_PsychicScream")
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+    if string.find(msg, L["fear_over_trigger"]) then
+        self:RemoveWarningSign(icon.fear)
     end
 end
 
-function BigWigsNefarian:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-    if string.find(msg,"Bellowing Roar") then
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Shadow_Possession")
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.shadowflame then
+		self:Shadowflame()
+	elseif sync == syncName.fear then
+		self:Fear()
+    elseif sync == syncName.landing then
+		self:Landing()
     end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Shadowflame()
+	if self.db.profile.shadowflame then
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame)
+		self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
+		self:DelayedBar(timer.shadowflameCast, L["shadowflame_bar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
+	end
+end
+
+function module:Fear()
+	if self.db.profile.fear then
+        self:RemoveBar(L["fear_bar"])
+		self:Message(L["fear_warning"], "Important", true, "Alert")
+		self:Bar(L["fear_warn"], timer.fearCast, icon.fear)
+		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear - timer.fearCast, icon.fear)
+        self:WarningSign(icon.fear, 5)
+	end
+end
+
+function module:Landing()
+	if not self.phase2 then
+        self.phase2 = true
+        self:RemoveBar(L["land"])
+        self:Bar(L["landing_warning"], timer.landing, icon.landing)
+        self:Message(L["landing_warning"], "Important")
+		
+		-- landed after 15s
+		self:DelayedBar(timer.landing, L["classcall_bar"], timer.firstClasscall, icon.classcall)
+        self:DelayedBar(timer.landing, L["fear_bar"], timer.firstFear, icon.fear)
+	end
 end

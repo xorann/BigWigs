@@ -3,47 +3,8 @@
 --      Module Declaration      --
 ----------------------------------
 
--- override
-local bossName = "Vaelastrasz the Corrupt"
+local module, L = BigWigs:ModuleDeclaration("Vaelastrasz the Corrupt", "Blackwing Lair")
 
--- do not override
-local boss = AceLibrary("Babble-Boss-2.2")[bossName]
-local module = BigWigs:NewModule(boss)
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
---BigWigsVaelastrasz = module
-module.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
---module.bossSync = bossName -- untranslated string
-
--- override
-module.revision = 20003 -- To be overridden by the module!
-module.enabletrigger = boss -- string or table {boss, add1, add2}
-module.wipemobs = nil
-module.toggleoptions = {"start", "flamebreath", "adrenaline", "whisper", "tankburn", "icon", "bosskill"}
-
-------------------------------
---      Locals 			    --
-------------------------------
-
-local timer = {
-	adrenaline = 20,
-	flamebreath = 2,
-	tankburn = 44.9,
-	start1 = 38,
-	start2 = 28,
-	start3 = 12,
-}
-local icon = {
-	adrenaline = "INV_Gauntlets_03",
-	flamebreath = "Spell_Fire_Fire",
-	tankburn = "INV_Gauntlets_03",
-	start = "Spell_Holy_PrayerOfHealing",
-}
-local syncName = {
-	adrenaline = "VaelAdrenaline",
-	flamebreath = "VaelBreath",
-	tankburn = "VaelTankBurn",
-	start = "VaelStart",
-}
 
 ----------------------------
 --      Localization      --
@@ -144,6 +105,39 @@ L:RegisterTranslations("deDE", function() return {
 } end)
 
 
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"start", "flamebreath", "adrenaline", "whisper", "tankburn", "icon", "bosskill"}
+
+
+-- locals
+local timer = {
+	adrenaline = 20,
+	flamebreath = 2,
+	tankburn = 44.9,
+	start1 = 38,
+	start2 = 28,
+	start3 = 12,
+}
+local icon = {
+	adrenaline = "INV_Gauntlets_03",
+	flamebreath = "Spell_Fire_Fire",
+	tankburn = "INV_Gauntlets_03",
+	start = "Spell_Holy_PrayerOfHealing",
+}
+local syncName = {
+	adrenaline = "VaelAdrenaline",
+	flamebreath = "VaelBreath",
+	tankburn = "VaelTankBurn",
+}
+
+
 ------------------------------
 --      Initialization      --
 ------------------------------
@@ -156,11 +150,10 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
-
-	self:TriggerEvent("BigWigs_ThrottleSync", syncName.adrenaline, 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", syncName.flamebreath, 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", syncName.tankburn, 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", syncName.start, 5)
+	
+	self:ThrottleSync(2, syncName.adrenaline)
+	self:ThrottleSync(3, syncName.flamebreath)
+	self:ThrottleSync(5, syncName.tankburn)
 end
 
 -- called after module is enabled and after each wipe
@@ -223,6 +216,11 @@ function module:Event(msg)
 	end
 end
 
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
 function module:BigWigs_RecvSync(sync, rest, nick)
     if sync == syncName.flamebreath then
 		self:Flamebreath()
@@ -232,7 +230,6 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Tankburn()
 	end
 end
-
 
 ------------------------------
 --      Sync Handlers	    --

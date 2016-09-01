@@ -1,9 +1,9 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Firemaw"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Firemaw", "Blackwing Lair")
 
 ----------------------------
 --      Localization      --
@@ -26,7 +26,7 @@ L:RegisterTranslations("enUS", function() return {
 	wingbuffet_bar = "Next Wing Buffet",
 	wingbuffet1_bar = "Initial Wing Buffet",
 	shadowflame_bar = "Shadow Flame",
-	shadowflame_Nextbar = "Next Shadow Flame",
+	shadowflame_Nextbar = "~Next Shadow Flame",
 	flamebuffet_bar = "Flame Buffet",
 
 	cmd = "Firemaw",
@@ -61,7 +61,7 @@ L:RegisterTranslations("deDE", function() return {
 	wingbuffet_bar = "N\195\164chster Fl\195\188gelsto\195\159",
 	wingbuffet1_bar = "Erster Fl\195\188gelsto\195\159",
 	shadowflame_bar = "Schattenflamme",
-	shadowflame_Nextbar = "Nächste Schattenflamme",
+	shadowflame_Nextbar = "~Nächste Schattenflamme",
 	flamebuffet_bar = "Flammenpuffer",
 
 	cmd = "Firemaw",
@@ -79,77 +79,102 @@ L:RegisterTranslations("deDE", function() return {
 	shadowflame_desc = "Warnung, wenn Ebonroc Schattenflamme wirkt.",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsFiremaw = BigWigs:NewModule(boss)
-BigWigsFiremaw.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsFiremaw.enabletrigger = boss
-BigWigsFiremaw.bossSync = "Firemaw"
-BigWigsFiremaw.toggleoptions = {"wingbuffet", "shadowflame", "flamebuffet", "bosskill"}
-BigWigsFiremaw.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"wingbuffet", "shadowflame", "flamebuffet", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstWingbuffet = 25,
+	wingbuffet = 30,
+	wingbuffetCast = 1,
+	shadowflame = 16,
+	shadowflameCast = 2,
+}
+local icon = {
+	wingbuffet = "INV_Misc_MonsterScales_14",
+	shadowflame = "Spell_Fire_Incinerate",	
+}
+local syncName = {
+	wingbuffet = "FiremawWingBuffetX",
+	shadowflame = "FiremawShadowflameX",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsFiremaw:OnEnable()
-	self.started = nil
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "FiremawWingBuffetX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FiremawShadowflameX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FiremawStart", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FiremawFirstBuffet", 20)
+	
+	self:ThrottleSync(10, syncName.wingbuffet)
+	self:ThrottleSync(10, syncName.shadowflame)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.wingbuffet then
+		self:DelayedMessage(timer.firstWingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:Bar(L["wingbuffet1_bar"], timer.firstWingbuffet, icon.wingbuffet)
+	end
+	if self.db.profile.shadowflame then
+		self:Bar(L["shadowflame_Nextbar"], timer.shadowflame, icon.shadowflame)
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsFiremaw:Event(msg)
+function module:Event(msg)
 	if msg == L["wingbuffet_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "FiremawWingBuffetX")
+		self:Sync(syncName.wingbuffet)
 	elseif msg == L["shadowflame_trigger"] then 
-		self:TriggerEvent("BigWigs_SendSync", "FiremawShadowflameX")
+		self:Sync(syncName.shadowflame)
+	-- flamebuffet triggers too often on nefarian and therefor this warning doesn't make any sense
 	--elseif (string.find(msg, L["flamebuffetafflicted_trigger"]) or string.find(msg, L["flamebuffetresisted_trigger"]) or string.find(msg, L["flamebuffetimmune_trigger"]) or string.find(msg, L["flamebuffetabsorb1_trigger"]) or string.find(msg, L["flamebuffetabsorb2_trigger"])) and self.db.profile.flamebuffet then
-	--	self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 5, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
+	--	self:Bar(L["flamebuffet_bar"], 5, "Spell_Fire_Fireball", true, "White")
 	end
 end
 
-function BigWigsFiremaw:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:TriggerEvent("BigWigs_SendSync", "FiremawStart")
-		--self:TriggerEvent("BigWigs_SendSync", "FiremawFirstBuffet")
-	elseif sync == "FiremawStart" and not self.started then
-		if self.db.profile.wingbuffet then
-			--self:ScheduleEvent("BigWigs_Message", 20, L["wingbuffet_warning"], "Important")
-            self:DelayedMessage(20, L["wingbuffet_warning"], "Attention", true, "Alert")
-			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 25, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-		end
-        if self.db.profile.shadowflame then
-            self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
-        end
-	elseif sync == "FiremawWingBuffetX" and self.db.profile.wingbuffet then
-		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Attention")
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.wingbuffet and self.db.profile.wingbuffet then
         self:Message(L["wingbuffet_message"], "Important")
-		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Important")
-        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "Black")
-		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-	elseif sync == "FiremawShadowflameX" and self.db.profile.shadowflame then
-		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Alarm")
+		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "Black")
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
+        self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+	elseif sync == syncName.shadowflame and self.db.profile.shadowflame then
         self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate")
-        self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
-	--elseif sync == "FiremawFirstBuffet" and self.db.profile.flamebuffet then
-	--	self:TriggerEvent("BigWigs_StartBar", self, L["flamebuffet_bar"], 4.8, "Interface\\Icons\\Spell_Fire_Fireball", true, "White")
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame)
+        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
 	end
 end

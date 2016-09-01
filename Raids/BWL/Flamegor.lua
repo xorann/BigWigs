@@ -1,11 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Flamegor"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
-local lastFrenzy = 0
-local _, playerClass = UnitClass("player")
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Flamegor", "Blackwing Lair")
+
 
 ----------------------------
 --      Localization      --
@@ -80,97 +79,134 @@ L:RegisterTranslations("deDE", function() return {
 	frenzy_desc = "Warnung, wenn Flamegor in Wutanfall ger\195\164t.",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsFlamegor = BigWigs:NewModule(boss)
-BigWigsFlamegor.zonename = AceLibrary("Babble-Zone-2.2")["Blackwing Lair"]
-BigWigsFlamegor.enabletrigger = boss
-BigWigsFlamegor.bossSync = "Flamegor"
-BigWigsFlamegor.toggleoptions = {"wingbuffet", "shadowflame", "frenzy", "bosskill"}
-BigWigsFlamegor.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"wingbuffet", "shadowflame", "frenzy", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstWingbuffet = 33.5,
+	wingbuffet = 30,
+	wingbuffetCast = 1,
+	firstShadowflame = 15,
+	shadowflame = 16,
+	shadowflameCast = 2,
+	firstFrenzy = 10,
+	frenzy = 10,
+}
+local icon = {
+	wingbuffet = "INV_Misc_MonsterScales_14",
+	shadowflame = "Spell_Fire_Incinerate",
+	frenzy = "Ability_Druid_ChallangingRoar",
+	tranquil = "Spell_Nature_Drowsy",
+}
+local syncName = {
+	wingbuffet = "FlamegorWingBuffetX",
+	shadowflame = "FlamegorShadowflameX",
+	frenzy = "FlamegorFrenzyStart",
+	frenzyOver = "FlamegorFrenzyEnd",
+}
+
+local lastFrenzy = 0
+local _, playerClass = UnitClass("player")
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsFlamegor:OnEnable()
+-- called after module is enabled
+function module:OnEnable()	
 	self.started = nil
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
     self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "FlamegorWingBuffetX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FlamegorShadowflameX", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FlamegorFrenzyStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "FlamegorStart", 10)
+	
+	self:ThrottleSync(10, syncName.wingbuffet)
+	self:ThrottleSync(10, syncName.shadowflame)
+	self:ThrottleSync(5, syncName.frenzy)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	lastFrenzy = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.wingbuffet then
+		self:DelayedMessage(timer.firstWingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:Bar(L["wingbuffet1_bar"], timer.firstWingbuffet, icon.wingbuffet)
+	end
+	if self.db.profile.shadowflame then
+		self:Bar(L["shadowflame_Nextbar"], timer.firstShadowflame, icon.shadowflame)
+	end
+	if self.db.profile.frenzy then
+		self:Bar(L["frenzy_Nextbar"], timer.firstFrenzy, icon.frenzy, true, "white") 
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsFlamegor:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["wingbuffet_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "FlamegorWingBuffetX")
+		self:Sync(syncName.wingbuffet)
 	elseif msg == L["shadowflame_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "FlamegorShadowflameX")
+		self:Sync(syncName.shadowflame)
 	end
 end
 
-function BigWigsFlamegor:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:TriggerEvent("BigWigs_SendSync", "FlamegorStart")
-	elseif sync == "FlamegorStart" and not self.started then
-		if self.db.profile.wingbuffet then
-			--self:ScheduleEvent("BigWigs_Message", 28.5, L["wingbuffet_warning"], "Attention")
-            self:DelayedMessage(28.5, L["wingbuffet_warning"], "Attention", true, "Alert")
-			self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffet1_bar"], 33.5, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-		end
-        if self.db.profile.shadowflame then
-            self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_Nextbar"], 15, "Interface\\Icons\\Spell_Fire_Incinerate")
-        end
-        if self.db.profile.frenzy then
-            self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], 10, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white") 
-        end
-	elseif sync == "FlamegorWingBuffetX" and self.db.profile.wingbuffet then
-		--self:TriggerEvent("BigWigs_Message", L["wingbuffet_message"], "Important")
+function module:Event(msg)
+	if msg == L["frenzygain_trigger"] or msg == L["frenzygain_trigger2"] then
+		self:Sync(syncName.frenzy)
+	elseif msg == L["frenzyend_trigger"] then
+		self:Sync(syncName.frenzyOver)
+	end
+end
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.wingbuffet and self.db.profile.wingbuffet then
         self:Message(L["wingbuffet_message"], "Important")
-		--self:ScheduleEvent("BigWigs_Message", 25, L["wingbuffet_warning"], "Attention")
-        self:DelayedMessage(25, L["wingbuffet_warning"], "Attention", true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, L["wingbuffetcast_bar"], 1, "Interface\\Icons\\INV_Misc_MonsterScales_14", true, "black")
-		self:ScheduleEvent("BigWigs_StartBar", 1, self, L["wingbuffet_bar"], 29, "Interface\\Icons\\INV_Misc_MonsterScales_14")
-	elseif sync == "FlamegorShadowflameX" and self.db.profile.shadowflame then
-		--self:TriggerEvent("BigWigs_Message", L["shadowflame_warning"], "Important")
+        self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
+	elseif sync == syncName.shadowflame and self.db.profile.shadowflame then
         self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["shadowflame_bar"], 2, "Interface\\Icons\\Spell_Fire_Incinerate", true, "red")
-        self:ScheduleEvent("BigWigs_StartBar", 2, self, L["shadowflame_Nextbar"], 14, "Interface\\Icons\\Spell_Fire_Incinerate")
-	elseif sync == "FlamegorFrenzyStart" and self.db.profile.frenzy then
-		self:TriggerEvent("BigWigs_Message", L["frenzy_message"], "Important", nil, true, "Alert")
-		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 10, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "red")
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame, true, "red")
+        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
+	elseif sync == syncName.frenzy and self.db.profile.frenzy then
+		self:Message(L["frenzy_message"], "Important", nil, true, "Alert")
+		self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
         if playerClass == "HUNTER" then
-            self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy", 10, true)
+            self:WarningSign(icon.tranquil, timer.frenzy, true)
         end
         lastFrenzy = GetTime()
-	elseif sync == "FlamegorFrenzyEnd" and self.db.profile.frenzy then
-        self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Spell_Nature_Drowsy")
+	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
+        self:RemoveBar(L["frenzy_bar"])
+        self:RemoveWarningSign(icon.tranquil)
         if lastFrenzy ~= 0 then
-            local NextTime = (lastFrenzy + 10) - GetTime()
-            self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_Nextbar"], NextTime, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "white")
+            local NextTime = (lastFrenzy + timer.frenzy) - GetTime()
+            self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")
         end
-	end
-end
-
-function BigWigsFlamegor:Event(msg)
-	if msg == L["frenzygain_trigger"] then
-		-- self:TriggerEvent("BigWigs_SendSync", "FlamegorFrenzyStart")
-	elseif msg == L["frenzyend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "FlamegorFrenzyEnd")
-    elseif msg == L["frenzygain_trigger2"] then
-        self:TriggerEvent("BigWigs_SendSync", "FlamegorFrenzyStart")
 	end
 end
