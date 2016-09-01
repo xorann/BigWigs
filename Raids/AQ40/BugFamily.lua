@@ -159,10 +159,10 @@ module.toggleoptions = {"panic", "toxicvolley", "heal", "announce", "deathspecia
 
 -- locals
 local timer = {
-	firstPanic = 18.4,
+	firstPanic = 15,
 	panic = 20,
 	firstVolley = 11.4,
-	volley = 10,
+	volley = 5,
 	enrage = 900,
 	heal = 2,
 }
@@ -189,6 +189,11 @@ local vemdead = nil
 local yaujdead = nil
 local healtime = 0
 local castingheal = false
+
+--[[
+16:56 pull
+17:11 fear 15
+]]
 
 ------------------------------
 --      Initialization      --

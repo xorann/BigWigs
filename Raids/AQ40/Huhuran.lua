@@ -85,16 +85,25 @@ module.toggleoptions = {"wyvern", "frenzy", "berserk", "bosskill"}
 -- locals
 local timer = {
 	berserk = 300,
-	sting = 25,
+	sting = 20,
 }
 local icon = {
 	berserk = "INV_Shield_01",
 	sting = "INV_Spear_02",
 }
-local syncName = {}
+local syncName = {
+    sting = "HuhuranWyvernSting",
+}
 
 local berserkannounced = false
 
+--[[
+38:47 pull
+39:09 wyvern
+39:28 wyvern
+39:48 wyvern
+40:08 wyvern
+]]
 
 ------------------------------
 --      Initialization      --
@@ -107,6 +116,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "checkSting")
+    
+    self:ThrottleSync(5, syncName.sting)
 end
 
 -- called after module is enabled and after each wipe
@@ -166,9 +177,21 @@ end
 function module:checkSting(arg1)
 	if self.db.profile.wyvern then 
 		if string.find(arg1, L["stingtrigger"]) then
-			self:Message(L["stingwarn"], "Urgent")
-			self:Bar(L["bartext"], timer.sting, icon.sting)
-			self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent")
+			self:Sync(syncName.sting)
 		end
 	end
 end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.sting then
+        self:Message(L["stingwarn"], "Urgent")
+        self:Bar(L["bartext"], timer.sting, icon.sting)
+        self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent")
+    end
+end
+

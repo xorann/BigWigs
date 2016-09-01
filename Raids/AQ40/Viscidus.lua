@@ -102,7 +102,7 @@ module.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"
 
 -- locals
 local timer = {
-	volley = 10,
+	volley = 12,
 }
 local icon = {
 	volley = "Spell_Nature_CorrosiveBreath",
@@ -111,6 +111,37 @@ local syncName = {}
 
 local prior
 
+--[[
+45:39 pull
+45:41 cloud 2
+45:49 volley
+46:01 volley 12
+46:12 cloud 31
+46:13 volley 12
+46:42 emerge
+46:50 volley
+47:01 volley 11
+47:05 cloud 23/53
+47:14 volley 13
+47:45 emerge
+47:48 volley 
+47:59 cloud 14/54
+48:01 volley 13
+48:16 volley 15
+48:50 emerge
+48:51 volley 
+48:53 cloud 3/54
+49:03 volley 14
+49:16 volley 13
+49:23 cloud 30
+49:50 emerge
+49:54 volley 
+50:05 volley
+50:16 volley
+50:17 cloud 54
+
+cloud: every 30s and 24s delay on explosion
+]]
 
 ------------------------------
 --      Initialization      --

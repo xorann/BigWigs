@@ -4,8 +4,8 @@ Diese Beschreibung auf <a href="README.de.md">Deutsch</a> lesen.
 BigWigs is a World of Warcraft AddOn to predict certain AI behaviour to improve the players performance.<br \>
 This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW</b> private Server.
 
-The adjustments were originally made by LYQ.<br \>
-Adjustments for Classic-WoW made by Dorann.<br \>
+The adjustments were originally made by <b>LYQ</b>.<br \>
+Adjustments for Classic-WoW made by <b>Dorann</b>.<br \>
 <b><a href="https://github.com/xorann/BigWigs">Please refer to this repository for more information.</a></b>
 
 # Download
@@ -13,7 +13,7 @@ PLEASE NOTE THIS IS STILL A WORK IN PROGRESS <br>
 <b><a href="https://github.com/xorann/BigWigs/releases">Download the latest Release here</a></b>
 
 ## How to install
-<b>a)</b> If you choose to download the .zip file from the latest Release all you have to do is extract the archive in your /World of Warcraft/Interface/AddOns/ directory.<br />
+<b>a)</b> If you choose to download the .zip file from the <a href="https://github.com/xorann/BigWigs/releases">latest Release</a> all you have to do is extract the archive in your /World of Warcraft/Interface/AddOns/ directory.<br />
 <b>b)</b> If you download the raw code from GitHub (<b>Download ZIP</b>) you'll have to unzip the downloaded archive and rename the folder from 'BigWigs-master' to 'BigWigs' and place it in your /World of Warcraft/Interface/AddOns/ directory. If possible you should you the latest Release.
 
 ## Wiki
