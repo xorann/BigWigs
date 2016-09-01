@@ -234,6 +234,13 @@ end
 --      Events              --
 ------------------------------
 
+-- override: only check for boss death in phase 2
+function BigWigsThekal:CheckForBossDeath()
+	if self.phase == 2 then
+		BigWigs:CheckForBossDeath()
+	end
+end
+
 function BigWigsThekal:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["phase2_trigger"]) then
         self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")
