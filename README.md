@@ -1,5 +1,5 @@
 # BigWigs
-Diese Beschreibung auf <a href="github.com/xorann/BigWigs/README.de.md">Deutsch</a> lesen.
+Diese Beschreibung auf <a href="README.de.md">Deutsch</a> lesen.
 
 BigWigs is a World of Warcraft AddOn to predict certain AI behaviour to improve the players performance.<br \>
 This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW</b> private Server.
