@@ -175,7 +175,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
@@ -253,8 +253,9 @@ function module:Event(msg)
 	end
 end
 
-function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	if string.find(msg, L["inferno_trigger"]) then
+        BigWigs:Print("real inferno trigger")
 		self:Sync(syncName.inferno)
 	end
 end
