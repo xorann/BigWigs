@@ -1,3 +1,4 @@
+-- debug breath trigger: /run local m=BigWigs:GetModule("Chromaggus"); m:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE("Chromaggus begins to cast Time Lapse.")
 
 ----------------------------------
 --      Module Declaration      --
@@ -223,7 +224,7 @@ function module:OnEnable()
 	self:RegisterEvent("UNIT_HEALTH")
 	
 	self:ThrottleSync(10, "ChromaggusEngage")
-	self:ThrottleSync(20, syncName.breath)
+	self:ThrottleSync(1, syncName.breath)
 	self:ThrottleSync(5, syncName.frenzy)
 	self:ThrottleSync(5, syncName.frenzyOver)
 end
@@ -302,9 +303,10 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 	local _,_, spellName = string.find(msg, L["breath_trigger"])
 	if spellName then
 		local breath = L:HasReverseTranslation(spellName) and L:GetReverseTranslation(spellName) or nil
-		if not breath then return end
-		breath = string.sub(breath, -1)
-		self:Sync(syncName.breath .. " " ..breath)
+		if breath then 
+			breath = string.sub(breath, -1)
+			self:Sync(syncName.breath .. " " ..breath)
+		end
 	end
 end
 
@@ -492,11 +494,12 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         if table.getn(breathCache) < 2 then
             breathCache[table.getn(breathCache)+1] = spellName
         end
-		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, icon.breath .. rest)
+        local b = "breath"..rest
+		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, L["icon"..rest])
 		self:Message(string.format(L["breath_message"], spellName), "Important")
 		
 		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important")
-		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval - timer.breathCast, icon.breath .. rest, true, L["breathcolor"..rest])
+		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval - timer.breathCast, L["icon"..rest], true, L["breathcolor"..rest])
 		--self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
 		--self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
         
