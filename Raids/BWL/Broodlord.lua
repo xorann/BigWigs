@@ -166,8 +166,8 @@ end
 
 function module:PLAYER_TARGET_CHANGED()
     if (lastMS + 5) > GetTime() and UnitName("target") == MS then
-        self:WarningSign(icon.blastWave, (lastMS + 5) - GetTime())
+        self:WarningSign(icon.mortalStrike, (lastMS + 5) - GetTime())
     else
-        self:RemoveWarningSign(icon.blastWave)
+        self:RemoveWarningSign(icon.mortalStrike)
     end
 end
