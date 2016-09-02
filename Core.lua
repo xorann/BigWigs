@@ -276,8 +276,15 @@ function BigWigs.modulePrototype:OnInitialize()
 
 	-- Notify observers that we have loaded.
 	self:TriggerEvent("BigWigs_ModuleLoaded", self.name, self)
+    
+    -- workaround to trigger OnSetup if enabled manually
+    self:RegisterEvent("Ace2_AddonEnabled")
 end
-
+function BigWigs.modulePrototype:Ace2_AddonEnabled(module)
+    if module and type(module) == "table" and module:ToString() == self:ToString() and self:IsBossModule() then
+        BigWigs:SetupModule(module:ToString())
+    end
+end
 
 
 -- override
@@ -659,6 +666,7 @@ function BigWigs:AceEvent_FullyInitialized()
 		self:RegisterEvent("BigWigs_RebootModule")
 	
 		self:RegisterEvent("BigWigs_RecvSync")
+        
 		--self:RegisterEvent("AceEvent_FullyInitialized", function() self:TriggerEvent("BigWigs_ThrottleSync", "BossEngaged", 5) end )
 
 	else
