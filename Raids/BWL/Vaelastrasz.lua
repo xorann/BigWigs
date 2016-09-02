@@ -276,7 +276,7 @@ function module:Adrenaline(name)
 		
 		-- tank burn
 		for i = 1, GetNumRaidMembers() do
-			if UnitExists("raid" .. i .. "target") and UnitName("raid" .. i .. "target") == boss and UnitExists("raid" .. i .. "targettarget") and UnitName("raid" .. i .. "targettarget") == name then
+			if UnitExists("raid" .. i .. "target") and UnitName("raid" .. i .. "target") == self.translatedName and UnitExists("raid" .. i .. "targettarget") and UnitName("raid" .. i .. "targettarget") == name then
 				self:Sync(syncName.tankburn)
 				break
 			end
