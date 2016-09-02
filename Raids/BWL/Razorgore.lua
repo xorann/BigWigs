@@ -1,4 +1,3 @@
--- set ktm in p2
 -- reset orb in p2
 
 ----------------------------------
@@ -459,6 +458,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 			self:Message(L["phase2_message"], "Attention")
 		end
 		
+		self:KTM_SetTarget(self.translatedName)
+		self:KTM_Reset()
 	end
 end
 
@@ -469,7 +470,7 @@ end
 function module:OrbControlCheck()
 	local bosscontrol = false
 	for i = 1, GetNumRaidMembers() do
-		if UnitName("raidpet"..i) == boss then
+		if UnitName("raidpet"..i) == self.translatedName then
 			bosscontrol = true
 			break
 		end
@@ -484,7 +485,7 @@ end
 function module:DestroyEggCheck()
 	local bosscontrol = false
 	for i = 1, GetNumRaidMembers() do
-		if UnitName("raidpet" .. i) == boss then
+		if UnitName("raidpet" .. i) == self.translatedName then
 			bosscontrol = true
 			break
 		end

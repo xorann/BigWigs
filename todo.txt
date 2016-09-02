@@ -1,2 +1,3 @@
 - configuration for warnicon
+
 - don't show version window on joining a raid

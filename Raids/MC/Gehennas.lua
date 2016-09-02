@@ -150,7 +150,7 @@ function module:Event(msg)
 		self:Sync(syncName.curse)
 	elseif (string.find(msg, L["rain_trigger"])) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-		self:Message(L["firewarn"], "Attention", "Alarm")
+		self:Message(L["firewarn"], "Attention", true, "Alarm")
         self:WarningSign(icon.rain, timer.rainDuration)
         --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
 	end

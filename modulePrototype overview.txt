@@ -9,11 +9,11 @@ BigWigs.modulePrototype.core = BigWigs
 BigWigs.modulePrototype.debugFrame = ChatFrame1
 BigWigs.modulePrototype.engaged = false
 BigWigs.modulePrototype.bossSync = nil -- untranslated string
+BigWigs.modulePrototype.zonename = nil -- AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
 
 -- override
 BigWigs.modulePrototype.revision = 1 -- To be overridden by the module!
-BigWigs.modulePrototype.started = false
-BigWigs.modulePrototype.zonename = nil -- AceLibrary("Babble-Zone-2.2")["Ahn'Qiraj"]
+BigWigs.modulePrototype.started = false -- not used anymore
 BigWigs.modulePrototype.enabletrigger = nil -- boss
 BigWigs.modulePrototype.wipemobs = nil -- adds that will be considered in CheckForEngage
 BigWigs.modulePrototype.toggleoptions = nil -- {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}

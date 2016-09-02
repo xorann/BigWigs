@@ -20,7 +20,6 @@ L:RegisterTranslations("enUS", function() return {
 	shadowflame_trigger = "Nefarian begins to cast Shadow Flame",
 
 	triggerfear = "by Panic.",
-	fbar = "Fear",
 	land = "Estimated Landing",
 	Mob_Spawn = "Mob Spawn",
 	fear_warn = "Fear NOW!",
@@ -243,7 +242,7 @@ end
 
 function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg, L["fear_over_trigger"]) then
-        self:RemoveWarningSign(icon.fear)
+        --self:RemoveWarningSign(icon.fear)
     end
 end
 
@@ -279,7 +278,7 @@ function module:Fear()
 		self:Message(L["fear_warning"], "Important", true, "Alert")
 		self:Bar(L["fear_warn"], timer.fearCast, icon.fear)
 		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear - timer.fearCast, icon.fear)
-        self:WarningSign(icon.fear, 5)
+        --self:WarningSign(icon.fear, 5)
 	end
 end
 
