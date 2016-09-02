@@ -1,3 +1,5 @@
+-- set ktm in p2
+-- reset orb in p2
 
 ----------------------------------
 --      Module Declaration      --

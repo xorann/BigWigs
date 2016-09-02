@@ -135,7 +135,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.wingbuffet then
-		self:Bar(self, L["wingbuffet1_bar"], timer.wingbuffet, icon.wingbuffet)
+		self:Bar(L["wingbuffet1_bar"], timer.wingbuffet, icon.wingbuffet)
 		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
 	end
 	if self.db.profile.curse then

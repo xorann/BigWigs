@@ -1,3 +1,4 @@
+-- tank burn on enable
 
 ----------------------------------
 --      Module Declaration      --

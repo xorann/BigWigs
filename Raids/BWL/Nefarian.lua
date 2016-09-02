@@ -4,7 +4,7 @@
 ----------------------------------
 
 local module, L = BigWigs:ModuleDeclaration("Nefarian", "Blackwing Lair")
-
+local victor = AceLibrary("Babble-Boss-2.2")["Lord Victor Nefarius"]
 
 ----------------------------
 --      Localization      --
@@ -124,7 +124,7 @@ local syncName = {
 	landing = "NefarianLandingNOW",
 }
 
-local victor = AceLibrary("Babble-Boss-2.2")["Lord Victor Nefarius"]
+
 local warnpairs = nil
 
 
@@ -293,5 +293,12 @@ function module:Landing()
 		-- landed after 15s
 		self:DelayedBar(timer.landing, L["classcall_bar"], timer.firstClasscall, icon.classcall)
         self:DelayedBar(timer.landing, L["fear_bar"], timer.firstFear, icon.fear)
+        
+        -- set ktm
+        local function setKTM()
+            self:KTM_SetTarget(self:ToString())
+            self:KTM_Reset()
+        end
+        self:ScheduleEvent("bwnefarianktm", setKTM(), timer.landing + 1, self)
 	end
 end
