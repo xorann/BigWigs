@@ -1,8 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
-local boss = AceLibrary("Babble-Boss-2.2")["Gluth"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Gluth", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -27,21 +29,20 @@ L:RegisterTranslations("enUS", function() return {
 	decimate_name = "Decimate Alert",
 	decimate_desc = "Warn for Decimate",
 
-	trigger1 = "%s goes into a frenzy!",
-	ftrigger1 = "gains Frenzy",
-	etrigger1 = "gains Berserk",
-	trigger2 = "by Terrifying Roar.",
+	frenzy_trigger = "%s goes into a frenzy!",
+	berserk_trigger = "gains Berserk",
+	fear_trigger = "by Terrifying Roar.",
 	starttrigger = "devours all nearby zombies!",
 
-	warn1 = "Frenzy Alert!",
-	warn2 = "5 second until AoE Fear!",
-	warn3 = "AoE Fear alert - 20 seconds till next!",
+	frenzy_warn = "Frenzy Alert!",
+	fear_warn_5 = "5 second until AoE Fear!",
+	fear_warn = "AoE Fear alert - 20 seconds till next!",
 
 	enragewarn = "ENRAGE!",
 	enragebartext = "Enrage",
-	ewarn1 = "Enrage in 90 seconds",
-	ewarn2 = "Enrage in 30 seconds",
-	ewarn3 = "Enrage in 10 seconds",
+	enrage_warn_90 = "Enrage in 90 seconds",
+	enrage_warn_30 = "Enrage in 30 seconds",
+	enrage_warn_10 = "Enrage in 10 seconds",
 
 	startwarn = "Gluth Engaged! ~1:45 till Decimate!",
 	decimatesoonwarn = "Decimate Soon!",
@@ -57,135 +58,155 @@ L:RegisterTranslations("enUS", function() return {
 	testtrigger = "testtrigger";
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsGluth = BigWigs:NewModule(boss)
-BigWigsGluth.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsGluth.enabletrigger = boss
-BigWigsGluth.bossSync = "Gluth"
-BigWigsGluth.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill", "zombies"}
-BigWigsGluth.revision = tonumber(string.sub("$Revision: 15380 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill", "zombies"}
+
+
+-- locals
+local timer = {
+	decimateInterval = 104,
+	zombie = 10,
+	enrage = 324,
+	fear = 20,
+}
+local icon = {
+	zombie = "Ability_Seal",
+	enrage = "Spell_Shadow_UnholyFrenzy",
+	fear = "Spell_Shadow_PsychicScream",
+	decimate = "INV_Shield_01",
+}
+local syncName = {}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGluth:OnEnable()
-    self.started = nil
-	self.prior = nil
-	self.zomnum = 1
+module:RegisterYellEngage(L["starttrigger"])
 
-	
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("BigWigs_Message")
-
-	
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Frenzy")
-
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Frenzy")
-
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Enrage")
-
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Fear")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Fear")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Fear")
-
-
-	self:RegisterEvent("BigWigs_RecvSync")
+	
+	--self:ThrottleSync(10, syncName.berserk)
 end
 
-
-function BigWigsGluth:Zombies()	
-	self:TriggerEvent("BigWigs_StartBar", self, string.format(L["zombiebar"],self.zomnum), 10, "Interface\\Icons\\Ability_Seal")	
-
-	if self.zomnum <= 10
-	then
-	self.zomnum = self.zomnum + 1
-	elseif self.zomnum > 10
-	then		
-	self:CancelScheduledEvent("bwgluthzbrepop")	self:TriggerEvent("BigWigs_StopBar", self, string.format(L["zombiebar"], self.zomnum ))
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	self.prior = nil
 	self.zomnum = 1
-	
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.decimate then
+		self:Message(L["startwarn"], "Attention")
+		self:Decimate()
+		self:ScheduleRepeatingEvent( "bwgluthdecimate", self.Decimate, timer.decimateInterval, self )
 	end
-	
-end
-function BigWigsGluth:Zombie()
-	self:ScheduleRepeatingEvent("bwgluthzbrepop", self.Zombies, 10, self)
-end
-
-
-
-
-function BigWigsGluth:Frenzy( msg )
-	if self.db.profile.zombies and msg == L["trigger1"] then
-		self:TriggerEvent("BigWigs_Message", L["warn1"], "Important")
+	if self.db.profile.zombies then
+		self.zomnum = 1
+		self:Bar(string.format(L["zombiebar"],self.zomnum), timer.zombie, icon.zombie)
+		self.zomnum = self.zomnum + 1
+		self:Zombie()
+	end
+	if self.db.profile.enrage then
+		self:Bar(L["enragebartext"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.enrage - 90, L["enrage_warn_90"], "Attention")
+		self:DelayedMessage(timer.enrage - 30, L["enrage_warn_30"], "Attention")
+		self:DelayedMessage(timer.enrage - 10, L["enrage_warn_10"], "Urgent")
 	end
 end
 
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
 
-function BigWigsGluth:Fear( msg )
-	if self.db.profile.fear and not self.prior and string.find(msg, L["trigger2"]) then
-		self:TriggerEvent("BigWigs_Message", L["warn3"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bar1text"], 20, "Interface\\Icons\\Spell_Shadow_PsychicScream")
-		self:ScheduleEvent("BigWigs_Message", 15, L["warn2"], "Urgent")
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:Zombies()	
+	self:Bar(string.format(L["zombiebar"],self.zomnum), timer.zombie, icon.zombie)	
+
+	if self.zomnum <= 10 then
+		self.zomnum = self.zomnum + 1
+	elseif self.zomnum > 10 then		
+		self:CancelScheduledEvent("bwgluthzbrepop")	
+		self:RemoveBar(string.format(L["zombiebar"], self.zomnum ))
+		self.zomnum = 1
+	end
+end
+function module:Zombie()
+	self:ScheduleRepeatingEvent("bwgluthzbrepop", self.Zombies, timer.zombie, self)
+end
+
+function module:Frenzy( msg )
+	if self.db.profile.zombies and msg == L["frenzy_trigger"] then
+		self:Message(L["frenzy_warn"], "Important")
+	end
+end
+
+function module:Fear( msg )
+	if self.db.profile.fear and not self.prior and string.find(msg, L["fear_trigger"]) then
+		self:Message(L["fear_warn"], "Important")
+		self:Bar(L["bar1text"], timer.fear, icon.fear)
+		self:DelayedMessage(timer.fear - 5, L["fear_warn_5"], "Urgent")
 		self.prior = true
 	end
 end
 
-function BigWigsGluth:Decimate()
+function module:Decimate()
 	if self.db.profile.decimate then
-		self:TriggerEvent("BigWigs_StartBar", self, L["decimatebar"], 104, "Interface\\Icons\\INV_Shield_01")
-		self:ScheduleEvent("bwgluthdecimatewarn", "BigWigs_Message", 97, L["decimatesoonwarn"], "Urgent")
+		self:Bar(L["decimatebar"], timer.decimateInterval, timer.decimate)
+		self:DelayedMessage(timer.decimateInterval - 5, L["decimatesoonwarn"], "Urgent")
 	end
 	if self.db.profile.zombies then
 	self.zomnum = 1
-	self:TriggerEvent("BigWigs_StartBar", self, string.format(L["zombiebar"],self.zomnum), 10, "Interface\\Icons\\Ability_Seal")
+	self:Bar(string.format(L["zombiebar"],self.zomnum), timer.zombie, icon.zombie)
 	self.zomnum = self.zomnum + 1
 	self:Zombie()
 	end
 end
 
-
-
-function BigWigsGluth:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then	self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		if self.db.profile.decimate then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Attention")
-			self:Decimate()
-			self:ScheduleRepeatingEvent( "bwgluthdecimate", self.Decimate, 104, self )
+function module:Enrage( msg )
+	if string.find(msg, L["berserk_trigger"]) then
+		if self.db.profile.enrage then 
+			self:Message(L["enragewarn"], "Important") 
 		end
-	if self.db.profile.zombies then
-	self.zomnum = 1
-	self:TriggerEvent("BigWigs_StartBar", self, string.format(L["zombiebar"],self.zomnum), 10, "Interface\\Icons\\Ability_Seal")
-	self.zomnum = self.zomnum + 1
-	self:Zombie()
-	end
-	if self.db.profile.enrage then
-		self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 324, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-		self:ScheduleEvent("bwgluthwarn1", "BigWigs_Message", 254, L["ewarn1"], "Attention")
-		self:ScheduleEvent("bwgluthwarn2", "BigWigs_Message", 294, L["ewarn2"], "Attention")
-		self:ScheduleEvent("bwgluthwarn3", "BigWigs_Message", 314, L["ewarn3"], "Urgent")
-		end
-	end
-end
-
-function BigWigsGluth:Enrage( msg )
-	if string.find(msg, L["etrigger1"]) then
-		if self.db.profile.enrage then self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Important") end
-		self:CancelScheduledEvent("bwgluthdecimate")
+		--[[self:CancelScheduledEvent("bwgluthdecimate")
 		self:CancelScheduledEvent("bwgluthdecimatewarn")
-		self:CancelScheduledEvent("bwgluthwarn1")
-		self:CancelScheduledEvent("bwgluthwarn2")
-		self:CancelScheduledEvent("bwgluthwarn3")
+		self:CancelScheduledEvent("bwgluthfrenzy_warn")
+		self:CancelScheduledEvent("bwgluthfear_warn_5")
+		self:CancelScheduledEvent("bwgluthfear_warn")]]
 	end
 end
 
-function BigWigsGluth:BigWigs_Message(text)
-	if text == L["warn2"] then self.prior = nil end
+function module:BigWigs_Message(text)
+	if text == L["fear_warn_5"] then self.prior = nil end
 end
 
 
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	
+end

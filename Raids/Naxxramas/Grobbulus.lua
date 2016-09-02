@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Grobbulus"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Grobbulus", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -54,88 +55,139 @@ L:RegisterTranslations("enUS", function() return {
 
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsGrobbulus = BigWigs:NewModule(boss)
-BigWigsGrobbulus.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsGrobbulus.enabletrigger = boss
-BigWigsGrobbulus.bossSync = "Grobbulus"
-BigWigsGrobbulus.toggleoptions = { "youinjected", "otherinjected", "icon", "cloud", -1, "enrage", "bosskill" }
-BigWigsGrobbulus.revision = tonumber(string.sub("$Revision: 15709 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"youinjected", "otherinjected", "icon", "cloud", -1, "enrage", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	enrage = 720,
+	inject = 10,
+	cloud = 15,
+}
+local icon = {
+	enrage = "INV_Shield_01",
+	inject = "Spell_Shadow_CallofBone",
+	cloud = "Ability_Creature_Disease_02",
+}
+local syncName = {
+	inject = "GrobbulusInject",
+	cloud = "GrobbulusCloud",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGrobbulus:OnEnable()
-	self.started = nil
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "InjectEvent")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "InjectEvent")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "InjectEvent")
 
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrobbulusInject", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrobbulusCloud", 5)
+	
+	self:ThrottleSync(3, syncName.inject)
+	self:ThrottleSync(5, syncName.cloud)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.enrage then
+		self:Message(L["startwarn"], "Attention")
+		self:Bar(L["enragebar"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.enrage - 10 * 60, L["enrage10min"], "Attention")
+		self:DelayedMessage(timer.enrage - 5 * 60, L["enrage5min"], "Urgent")
+		self:DelayedMessage(timer.enrage - 1 * 50, L["enrage1min"], "Important")
+		self:DelayedMessage(timer.enrage - 30, L["enrage30sec"], "Important")
+		self:DelayedMessage(timer.enrage - 10, L["enrage10sec"], "Important")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsGrobbulus:BigWigs_RecvSync( sync, rest, nick )
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		if self.db.profile.enrage then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["enragebar"], 720, "Interface\\Icons\\INV_Shield_01")
-			self:ScheduleEvent("bwgrobbulusenragewarn1", "BigWigs_Message", 120, L["enrage10min"], "Attention")
-			self:ScheduleEvent("bwgrobbulusenragewarn2", "BigWigs_Message", 420, L["enrage5min"], "Urgent")
-			self:ScheduleEvent("bwgrobbulusenragewarn3", "BigWigs_Message", 660, L["enrage1min"], "Important")
-			self:ScheduleEvent("bwgrobbulusenragewarn4", "BigWigs_Message", 690, L["enrage30sec"], "Important")
-			self:ScheduleEvent("bwgrobbulusenragewarn5", "BigWigs_Message", 710, L["enrage10sec"], "Important")
-		end
-	elseif sync == "GrobbulusInject" and rest then
-		local player = rest
-		if self.db.profile.youinjected and player == UnitName("player") then
-			self:TriggerEvent("BigWigs_Message", L["bomb_message_you"], "Personal", true, "Alarm")
-			self:TriggerEvent("BigWigs_Message", string.format(L["bomb_message_other"], player), "Attention", nil, nil, true)
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bomb_bar"], player), 10,"Interface\\Icons\\Spell_Shadow_CallofBone")
-		elseif self.db.profile.otherinjected then
-			self:TriggerEvent("BigWigs_Message", string.format(L["bomb_message_other"], player), "Attention")
-			self:TriggerEvent("BigWigs_SendTell", player, L["bomb_message_you"])
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bomb_bar"], player), 10,"Interface\\Icons\\Spell_Shadow_CallofBone")
-		end
-		if self.db.profile.icon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", player)
-		end
-	elseif sync == "GrobbulusCloud" then
-		if self.db.profile.cloud then
-			self:TriggerEvent("BigWigs_Message", L["cloud_warn"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["cloud_bar"], 15, "Interface\\Icons\\Ability_Creature_Disease_02")			
-		end
-	end
-end
-
-function BigWigsGrobbulus:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
 	if string.find( msg, L["cloud_trigger"] ) then
-		self:TriggerEvent("BigWigs_SendSync", "GrobbulusCloud")
+		self:Sync(syncName.cloud)
 	end
 end
 
-function BigWigsGrobbulus:InjectEvent( msg )
+function module:InjectEvent( msg )
 	local _, _, eplayer, etype = string.find(msg, L["inject_trigger"])
 	if eplayer and etype then
 		if eplayer == L["you"] and etype == L["are"] then
 			eplayer = UnitName("player")
 		end
-		self:TriggerEvent("BigWigs_SendSync", "GrobbulusInject "..eplayer)
+		self:Sync(syncName.inject .. " " .. eplayer)
 	end
 end
 
 
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync( sync, rest, nick )
+	if sync == syncName.inject and rest then
+		self:Inject(rest)
+	elseif sync == syncName.cloud then
+		self:Cloud()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Inject(player)
+	if player then
+		if self.db.profile.youinjected and player == UnitName("player") then
+			self:Message(L["bomb_message_you"], "Personal", true, "Beware")
+			self:WarningSign(icon.inject, timer.inject)
+			
+			self:Message(string.format(L["bomb_message_other"], player), "Attention", nil, nil, true)
+			self:Bar(string.format(L["bomb_bar"], player), timer.inject, icon.inject)
+		elseif self.db.profile.otherinjected then
+			self:Message(string.format(L["bomb_message_other"], player), "Attention")
+			--self:TriggerEvent("BigWigs_SendTell", player, L["bomb_message_you"]) -- can cause whisper bug on nefarian
+			self:Bar(string.format(L["bomb_bar"], player), timer.inject, icon.inject)
+		end
+		if self.db.profile.icon then
+			self:Icon(player)
+		end
+	end
+end
+
+function module:Cloud()
+	if self.db.profile.cloud then
+		self:Message(L["cloud_warn"], "Urgent")
+		self:Bar(L["cloud_bar"], timer.cloud, icon.cloud)			
+	end
+end

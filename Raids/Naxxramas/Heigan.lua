@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Heigan the Unclean"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Heigan the Unclean", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -35,7 +36,7 @@ L:RegisterTranslations("enUS", function() return {
 	-- [[ Warnings ]]--
 	engage_message = "Heigan the Unclean engaged! 90 sec to teleport!",
 
-	dwarn = "***DISEASE - DISPEL***",
+	dwarn = "DISEASE - DISPEL",
 
 	teleport_1min_message = "Teleport in 1 min",
 	teleport_30sec_message = "Teleport in 30 sec",
@@ -56,90 +57,145 @@ L:RegisterTranslations("enUS", function() return {
 	["Rotting Maggot"] = true,
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsHeigan = BigWigs:NewModule(boss)
-BigWigsHeigan.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsHeigan.enabletrigger = boss
-BigWigsHeigan.bossSync = "Heigan"
-BigWigsHeigan.wipemobs = { L["Eye Stalk"], L["Rotting Maggot"] }
-BigWigsHeigan.toggleoptions = {"engage", "teleport", "disease", "bosskill"}
-BigWigsHeigan.revision = tonumber(string.sub("$Revision: 17550 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["Eye Stalk"], L["Rotting Maggot"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"engage", "teleport", "disease", "bosskill"}
+
+
+-- locals
+local timer = {
+	disease = 15,
+	toRoom = 45,
+	toPlatform = 90,
+}
+local icon = {
+	disease = "Ability_Creature_Disease_03",
+	toRoom = "Spell_Magic_LesserInvisibilty",
+	toPlatform = "Spell_Arcane_Blink",
+}
+local syncName = {
+	teleport = "HeiganTeleport",
+	disease = "HeiganDisease",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsHeigan:OnEnable()
-    self.started = nil
-	self.toRoomTime = 45
-	self.toPlatformTime = 90
+module:RegisterYellEngage(L["starttrigger"])
+module:RegisterYellEngage(L["starttrigger2"])
+module:RegisterYellEngage(L["starttrigger3"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Disease")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Disease")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Disease")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "HeiganTeleport", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "Disease", 5)
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForDisease")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForDisease")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForDisease")
+	
+	self:ThrottleSync(10, syncName.teleport)
+	self:ThrottleSync(5, syncName.disease)
 end
 
-function BigWigsHeigan:CHAT_MSG_MONSTER_EMOTE( msg )
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	timer.toRoom = 45
+	timer.toPlatform = 90
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.engage then
+		self:Message(L["engage_message"], "Important")
+	end
+	if self.db.profile.teleport then
+		self:Bar(L["teleport_bar"], timer.toPlatform, icon.toPlatform)
+		self:DelayedMessage(timer.toPlatform - 60, L["teleport_1min_message"], "Attention")
+		self:DelayedMessage(timer.toPlatform - 30, L["teleport_30sec_message"], "Urgent")
+		self:DelayedMessage(timer.toPlatform - 10, L["teleport_10sec_message"], "Important")
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:CHAT_MSG_MONSTER_EMOTE( msg )
 	if msg == L["die_trigger"] then
-		if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], boss), "Bosskill", nil, "Victory") end
-		self.core:ToggleModuleActive(self, false)
+		self:SendBossDeathSync()
 	end
 end
 
-function BigWigsHeigan:CHAT_MSG_MONSTER_YELL( msg )
-	if string.find(msg, L["starttrigger"]) or string.find(msg, L["starttrigger2"]) or string.find(msg, L["starttrigger3"]) then
-		if self.db.profile.engage then
-			self:TriggerEvent("BigWigs_Message", L["engage_message"], "Important")
-		end
-		if self.db.profile.teleport then
-			self:TriggerEvent("BigWigs_StartBar", self, L["teleport_bar"], self.toPlatformTime, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleEvent("bwheiganwarn1", "BigWigs_Message", self.toPlatformTime-60, L["teleport_1min_message"], "Attention")
-			self:ScheduleEvent("bwheiganwarn2", "BigWigs_Message", self.toPlatformTime-30, L["teleport_30sec_message"], "Urgent")
-			self:ScheduleEvent("bwheiganwarn3", "BigWigs_Message", self.toPlatformTime-10, L["teleport_10sec_message"], "Important")
-		end
-	elseif string.find(msg, L["teleport_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HeiganTeleport")
+function module:CHAT_MSG_MONSTER_YELL( msg )
+	if string.find(msg, L["teleport_trigger"]) then
+		self:Sync(syncName.teleport)
 	end
 end
 
-function BigWigsHeigan:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "HeiganDisease" then
-		self:TriggerEvent("BigWigs_Message", L["dwarn"], "Important") 
-		self:TriggerEvent("BigWigs_StartBar", self, L["dbar"], 15, "Interface\\Icons\\Ability_Creature_Disease_03")
-	elseif sync == "HeiganTeleport" then
-		self:ScheduleEvent( self.BackToRoom, self.toRoomTime, self )
-		if self.db.profile.teleport then
-			self:TriggerEvent("BigWigs_Message", string.format(L["on_platform_message"], self.toRoomTime), "Attention")
-			self:ScheduleEvent("bwheiganwarn2","BigWigs_Message", self.toRoomTime-30, L["to_floor_30sec_message"], "Urgent")
-			self:ScheduleEvent("bwheiganwarn3","BigWigs_Message", self.toRoomTime-10, L["to_floor_10sec_message"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["back_bar"], self.toRoomTime, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
-		end
-	end
-end
-
-function BigWigsHeigan:Disease( msg )
+function module:CheckForDisease( msg )
 	if string.find(msg, L["dtrigger"]) then
 		if self.db.profile.disease then 
-		self:TriggerEvent("BigWigs_SendSync", "HeiganDisease")
+			self:Sync(syncName.disease)
 		end
 	end
 end
 
-function BigWigsHeigan:BackToRoom()
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.disease then
+		self:Disease()
+	elseif sync == syncName.teleport then
+		self:Teleport()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Disease()
+	self:Message(L["dwarn"], "Important") 
+	self:Bar(L["dbar"], timer.disease, icon.disease)
+end
+
+function module:Teleport()
+	self:ScheduleEvent(self.BackToRoom, timer.toRoom, self)
+	
 	if self.db.profile.teleport then
-		self:TriggerEvent("BigWigs_Message", L["on_floor_message"], "Attention")
-		self:ScheduleEvent("bwheiganwarn2","BigWigs_Message", self.toPlatformTime-30, L["teleport_30sec_message"], "Urgent")
-		self:ScheduleEvent("bwheiganwarn3","BigWigs_Message", self.toPlatformTime-10, L["teleport_10sec_message"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["teleport_bar"], self.toPlatformTime, "Interface\\Icons\\Spell_Arcane_Blink")
+		self:Message(string.format(L["on_platform_message"], timer.toRoom), "Attention")
+		self:DelayedMessage(timer.toRoom - 30, L["to_floor_30sec_message"], "Urgent")
+		self:DelayedMessage(timer.toRoom - 10, L["to_floor_10sec_message"], "Important")
+		self:Bar(L["back_bar"], timer.toRoom, icon.toRoom)
+	end
+end
+
+function module:BackToRoom()
+	if self.db.profile.teleport then
+		self:Message(L["on_floor_message"], "Attention")
+		self:DelayedMessage(timer.toPlatform - 30, L["teleport_30sec_message"], "Urgent")
+		self:DelayedMessage(timer.toPlatform - 10, L["teleport_10sec_message"], "Important")
+		self:Bar(L["teleport_bar"], timer.toPlatform, icon.toPlatform)
 	end
 end

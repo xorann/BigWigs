@@ -1,16 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Kel'Thuzad"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
 
-local t
-local t1 = 0    -- saves time of first frostbolt 
-local co = 0	-- counts the number of people hit by frostbolt
-local ua = 0	-- counter for Unstoppable Abomination's
-local sw = 0 	-- counter for Soul Weaver's
-local pstart = 0    -- time of p1 start, used for tracking add count
+local module, L = BigWigs:ModuleDeclaration("Kel'Thuzad", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -142,29 +136,57 @@ L:RegisterTranslations("enUS", function() return {
 	are = "are",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsKelThuzad = BigWigs:NewModule(boss)
-BigWigsKelThuzad.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsKelThuzad.enabletrigger = boss
-BigWigsKelThuzad.toggleoptions = { "frostbolt", "frostboltbar", -1, "frostblast", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill" }
-BigWigsKelThuzad.revision = tonumber(string.sub("$Revision: 11212 $", 12, -3)) 
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	charge = 10,
+	teleport = 30,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	teleport = "TwinsTeleport",
+	berserk = "TestbossBerserk"
+}
+
+local timeLastFrostboltVolley = 0    -- saves time of first frostbolt 
+local numFrostboltVolleyHits = 0	-- counts the number of people hit by frostbolt
+local numAbominations = 0	-- counter for Unstoppable Abomination's
+local numWeavers = 0 	-- counter for Soul Weaver's
+local pstart = 0    -- time of p1 start, used for tracking add count
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsKelThuzad:OnRegister()
-	-- Big evul hack to enable the module when entering Kel'Thuzads chamber.
+module:RegisterYellEngage(L["start_trigger"])
+module:RegisterYellEngage(L["start_trigger1"])
+
+-- Big evul hack to enable the module when entering Kel'Thuzads chamber.
+function module:OnRegister()
 	self:RegisterEvent("MINIMAP_ZONE_CHANGED")
 end
 
-function BigWigsKelThuzad:OnEnable()
-	self.warnedAboutPhase3Soon = nil
-	frostbolttime = 0
-
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
@@ -184,7 +206,6 @@ function BigWigsKelThuzad:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Affliction")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Affliction")
 
-	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelDetonate", 5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelFrostBlast", 5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelFrostbolt", 2)
@@ -193,204 +214,283 @@ function BigWigsKelThuzad:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelAddDiesAbom", 2)
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelAddDiesSoul", 2)
 	self:TriggerEvent("BigWigs_ThrottleSync", "KelDead", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "KelPhase2", 5)
+	self:TriggerEvent("BigWigs_ThrottleSync", "KelPhase3", 5)
+	
+	
+	--self:ThrottleSync(10, syncName.berserk)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.warnedAboutPhase3Soon = nil
+	frostbolttime = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Message(L["start_warning"], "Attention")
+	self:Bar(L["start_bar"], 320 )
+	self:DelayedMessage(300, L["phase1_warn"], "Important")
+	
+	if self.db.profile.addcount then
+	pstart=GetTime() 	-- start of p1, used for tracking add counts
+	numAbominations=0
+	numWeavers=0
+	self:Bar(string.format(L["add_bar"], numAbominations, "Unstoppable Abomination"),320)
+	self:Bar(string.format(L["add_bar"], numWeavers, "Soul Weaver"),320)
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsKelThuzad:MINIMAP_ZONE_CHANGED(msg)
-	if GetMinimapZoneText() ~= L["KELTHUZADCHAMBERLOCALIZEDLOLHAX"] or self.core:IsModuleActive(boss) then return end
+function module:MINIMAP_ZONE_CHANGED(msg)
+	if GetMinimapZoneText() ~= L["KELTHUZADCHAMBERLOCALIZEDLOLHAX"] or self.core:IsModuleActive(module.translatedName) then return end
 	-- Activate the Kel'Thuzad mod!
-	self.core:EnableModule(boss)
+	self.core:EnableModule(module.translatedName)
 end
 
-function BigWigsKelThuzad:UNIT_HEALTH(msg)
-	if not self.db.profile.phase then return end
-
-	if UnitName(msg) == boss then
-		local health = UnitHealth(msg)
-		if health > 35 and health <= 40 and not self.warnedAboutPhase3Soon then
-			self:TriggerEvent("BigWigs_Message", L["phase3_soon_warning"], "Attention")
-			self.warnedAboutPhase3Soon = true
-		elseif health > 40 and self.warnedAboutPhase3Soon then
-			self.warnedAboutPhase3Soon = nil
+-- check for phase 3
+function module:UNIT_HEALTH(msg)
+	if self.db.profile.phase then 
+		if UnitName(msg) == self.translatedName then
+			local health = UnitHealth(msg)
+			if health > 35 and health <= 40 and not self.warnedAboutPhase3Soon then
+				self:Message(L["phase3_soon_warning"], "Attention")
+				self.warnedAboutPhase3Soon = true
+			elseif health > 40 and self.warnedAboutPhase3Soon then
+				self.warnedAboutPhase3Soon = nil
+			end
 		end
 	end
 end
 
-function BigWigsKelThuzad:CHAT_MSG_MONSTER_YELL(msg)
-	if self.db.profile.phase and ( msg == L["start_trigger"] or msg == L["start_trigger1"] ) then 
-		self:TriggerEvent("BigWigs_Message", L["start_warning"], "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, L["start_bar"], 320 ) 					-- 
-		self:ScheduleEvent("phase1_warn", "BigWigs_Message", 300, L["phase1_warn"], "Important")
-		
-		if self.db.profile.addcount then
-		pstart=GetTime() 	-- start of p1, used for tracking add counts
-		ua=0
-		sw=0
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["add_bar"], ua, "Unstoppable Abomination"),320)
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["add_bar"], sw, "Soul Weaver"),320)
-		end
-		
-	elseif ((msg == L["phase2_trigger1"]) or (msg == L["phase2_trigger2"]) or (msg == L["phase2_trigger3"])) then
-		self:TriggerEvent("BigWigs_StartBar", self, L["phase2_bar"], 15)
-		self:TriggerEvent("BigWigs_StartBar", self, L["detonate_possible_bar"], 35)
-		self:TriggerEvent("BigWigs_StartBar", self, L["mcfrostblast_bar"], 45)
-		self:ScheduleEvent("P2warn", "BigWigs_Message", 15, L["phase2_warning"], "Important")
-		self:ScheduleEvent("P2Warn1", "BigWigs_Message", 30, L["phase2_detonate_warning"], "Important")
-		self:ScheduleEvent("P2Warn2", "BigWigs_Message", 40, L["phase2_mcfrostblast_warning"], "Important")
-		
-		if self.db.profile.fbvolley then
-			self:TriggerEvent("BigWigs_StartBar", self, L["frostbolt_volley"], 30, "Interface\\Icons\\Spell_Frost_FrostWard")
-			self:ScheduleEvent("bwfbvolley30", self.Volley, 45, self)
-			self:ScheduleEvent("bwfbvolley45", self.Volley, 60, self)
-			self:ScheduleEvent("bwfbvolley60", self.Volley, 75, self)
-		end
-		
-	elseif self.db.profile.phase and msg == L["phase3_trigger"] then
-		self:TriggerEvent("BigWigs_Message", L["phase3_warning"], "Attention")
+function module:CHAT_MSG_MONSTER_YELL(msg)
+	if ((msg == L["phase2_trigger1"]) or (msg == L["phase2_trigger2"]) or (msg == L["phase2_trigger3"])) then
+		self:Sync("KelPhase2")
+	elseif msg == L["phase3_trigger"] then
+		self:Sync("KelPhase3")
 	elseif msg == L["mc_trigger1"] or msg == L["mc_trigger2"] then
-			self:TriggerEvent("BigWigs_Message", L["mc_warning"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["mc_bar"], 60, "Interface\\Icons\\Inv_Belt_18")
-	-- would cause too much spam, negating ktmreset wont work for some reason
-	
-	if not self.db.profile.ktmreset and IsAddOnLoaded("KLHThreatMeter") and (IsRaidLeader() or IsRaidOfficer()) then --reminder to fix KTM after this. Threat addons with threat addons, boss mod addons with boss mod addons.
-		klhtm.net.clearraidthreat()
-	end
-		
-		
-	elseif self.db.profile.guardians and msg == L["guardians_trigger"] then
-		self:TriggerEvent("BigWigs_Message", L["guardians_warning"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["guardians_bar"], 16)
+		self:Sync("KelMindControl")
+	elseif msg == L["guardians_trigger"] then
+		self:Sync("KelGuardians")
 	elseif msg == L["frostblast_trigger1"] then
-		self:TriggerEvent("BigWigs_Message", L["frostblast_warning"], "Attention")
-		self:ScheduleEvent("bwktfbwarn", "BigWigs_Message", 25, L["frostblast_soon_message"])
-		self:TriggerEvent("BigWigs_StartBar", self, L["frostblast_bar"], 30, "Interface\\Icons\\Spell_Frost_FreezingBreath")
+		self:Sync("KelFrostBlast")
 	end
 end
 
-function BigWigsKelThuzad:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 	if string.find(msg, L["frostbolt_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "KelFrostbolt")
+		self:Sync("KelFrostbolt")
 	end
 end
 
---[[ function BigWigsKelThuzad:CHAT_MSG_SPELL_SELF_DAMAGE( msg )
+--[[ function module:CHAT_MSG_SPELL_SELF_DAMAGE( msg )
 	if string.find(msg, L["fissure_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "KelFizzure")
+		self:Sync("KelFizzure")
 	end
 end ]]-- who needs this
 
-function BigWigsKelThuzad:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	local _,_, mob = string.find(msg, L["add_dead_trigger"])
 	if self.db.profile.addcount and (mob == "Unstoppable Abomination") then
-		self:TriggerEvent("BigWigs_SendSync", "KelAddDiesAbom "..mob)
+		self:Sync("KelAddDiesAbom" .. " " .. mob)
 	elseif self.db.profile.addcount and (mob == "Soul Weaver") then
-		self:TriggerEvent("BigWigs_SendSync", "KelAddDiesSoul "..mob)
+		self:Sync("KelAddDiesSoul" .. " " .. mob)
 	elseif self.db.profile.bosskill and (mob == "Kel'Thuzad") then 
-		self:TriggerEvent("BigWigs_SendSync", "KelDead")
+		self:SendBossDeathSync()
 	end
 end
 
---[[function BigWigsKelThuzad:CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE(msg)
-	if --[[self.db.profile.fbvolley and]] string.find(msg, L["frostbolt_volley_trigger"]) then
-		t=GetTime()
-		if (t-t1)>4 then
-			t1=t
-			co=0
-		else 
-			co=co+1
-		end
-		if (co==4) then 
-		self:CancelScheduledEvent("bwfbvolley30")
-		self:CancelScheduledEvent("bwfbvolley45")
-		self:CancelScheduledEvent("bwfbvolley60") 
-		self:TriggerEvent("BigWigs_StartBar", self, L["frostbolt_volley"], 15, "Interface\\Icons\\Spell_Frost_FrostWard")
-		self:ScheduleEvent("bwfbvolley30", self.Volley, 15, self)
-		self:ScheduleEvent("bwfbvolley45", self.Volley, 30, self)
-		self:ScheduleEvent("bwfbvolley60", self.Volley, 45, self)
-		end
-	end
-end ]]
-
-function BigWigsKelThuzad:Volley()
-	self:TriggerEvent("BigWigs_StartBar", self, L["frostbolt_volley"], 15, "Interface\\Icons\\Spell_Frost_FrostWard")
-end
-
-function BigWigsKelThuzad:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "KelDetonate" and rest and self.db.profile.detonate then
-		self:TriggerEvent("BigWigs_Message", string.format(L["detonate_warning"], rest), "Attention")
-		if self.db.profile.detonateicon then self:TriggerEvent("BigWigs_SetRaidIcon", rest ) end
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["detonate_bar"], rest), 5, "Interface\\Icons\\Spell_Nature_WispSplode")
-		self:TriggerEvent("BigWigs_StartBar", self, L["detonate_possible_bar"], 20, "Interface\\Icons\\Spell_Nature_WispSplode")
-	elseif sync == "KelFrostboltStop" and self.db.profile.frostbolt then
-		self:TriggerEvent("BigWigs_StopBar", self, L["frostbolt_bar"])
-		frostbolttime = 0
-	elseif sync == "KelFrostbolt" and (self.db.profile.frostbolt or self.db.profile.frostboltbar) then       -- changed from only frostbolt (thats only alert, if someone still wants to see the bar, it wouldnt work then)
-		frostbolttime = GetTime()
-		if self.db.profile.frostbolt then
-			self:TriggerEvent("BigWigs_Message", L["frostbolt_warning"], "Personal")
-		end
-		if self.db.profile.frostboltbar then
-			self:TriggerEvent("BigWigs_StartBar", self, L["frostbolt_bar"], 2, "Interface\\Icons\\Spell_Frost_FrostBolt02", true, "blue")
-		end
-	elseif sync == "KelAddDiesAbom" and self.db.profile.addcount then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["add_bar"], ua, rest))
-		ua=ua+1
-		if (ua<14) then self:TriggerEvent("BigWigs_StartBar", self, string.format(L["add_bar"], ua, rest),(pstart+320-GetTime())) end
-	elseif sync == "KelAddDiesSoul" and self.db.profile.addcount then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["add_bar"], sw, rest))
-		sw=sw+1
-		if (sw<14) then self:TriggerEvent("BigWigs_StartBar", self, string.format(L["add_bar"], sw, rest),(pstart+320-GetTime())) end
-	elseif sync == "KelDead" then
-		if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], boss), "Bosskill", nil, "Victory") end
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self.core:ToggleModuleActive(self, false)
-	end
-end
-function BigWigsKelThuzad:Affliction(msg)
+--[[function module:Volley()
+	self:Bar(L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
+end]]
+function module:Affliction(msg)
 	if string.find(msg, L["detonate_trigger"]) then
 		local _,_, dplayer, dtype = string.find( msg, L["detonate_trigger"])
 		if dplayer and dtype then
 			if dplayer == L["you"] and dtype == L["are"] then
 				dplayer = UnitName("player")
 			end
-			self:TriggerEvent("BigWigs_SendSync", "KelDetonate "..dplayer)
+			self:Sync("KelDetonate" .. " ".. dplayer)
 		end
 	end
+	
 	if self.db.profile.fbvolley and string.find(msg, L["frostbolt_volley_trigger"]) then
-		t=GetTime()
-		if (t-t1)>4 then
-			t1=t
-			co=0
+		local now = GetTime()
+		
+		-- only warn if there are more than 3 players hit by frostbolt volley within 4s
+		if now - timeLastFrostboltVolley > 4 then
+			timeLastFrostboltVolley = now
+			numFrostboltVolleyHits = 0
 		else 
-			co=co+1
+			numFrostboltVolleyHits = numFrostboltVolleyHits + 1
 		end
-		if (co==3) then 
-		self:CancelScheduledEvent("bwfbvolley30")
-		self:CancelScheduledEvent("bwfbvolley45")
-		self:CancelScheduledEvent("bwfbvolley60") 
-		self:TriggerEvent("BigWigs_StartBar", self, L["frostbolt_volley"], 15, "Interface\\Icons\\Spell_Frost_FrostWard")
-		self:ScheduleEvent("bwfbvolley30", self.Volley, 15, self)
-		self:ScheduleEvent("bwfbvolley45", self.Volley, 30, self)
-		self:ScheduleEvent("bwfbvolley60", self.Volley, 45, self)
+		if numFrostboltVolleyHits == 3 then 
+			
+			self:Bar(L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
+			
+			--[[self:CancelScheduledEvent("bwfbvolley30")
+			self:CancelScheduledEvent("bwfbvolley45")
+			self:CancelScheduledEvent("bwfbvolley60") 
+			self:ScheduleEvent("bwfbvolley30", self.Volley, 15, self)
+			self:ScheduleEvent("bwfbvolley45", self.Volley, 30, self)
+			self:ScheduleEvent("bwfbvolley60", self.Volley, 45, self) ]] -- why 3 times?
+			
+			self:CancelDelayedBar(L["frostbolt_volley"])
+			self:DelayedBar(15, L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
 		end
 	end
 end
 
-function BigWigsKelThuzad:Event(msg)
+function module:Event(msg)
 	if GetTime() < frostbolttime + 2 then
 		if string.find(msg, L["attack_trigger1"]) or string.find(msg, L["attack_trigger2"]) or string.find(msg, L["attack_trigger3"]) or string.find(msg, L["attack_trigger4"]) then
-			self:TriggerEvent("BigWigs_StopBar", self, L["frostbolt_bar"])
+			self:RemoveBar(L["frostbolt_bar"])
 			frostbolttime = 0
-			self:TriggerEvent("BigWigs_SendSync", "KelFrostboltStop")
+			self:Sync("KelFrostboltStop")
 		elseif string.find(msg, L["kick_trigger1"]) or string.find(msg, L["kick_trigger2"]) or string.find(msg, L["kick_trigger3"]) or string.find(msg, L["pummel_trigger1"]) or string.find(msg, L["pummel_trigger2"]) or string.find(msg, L["pummel_trigger3"]) or string.find(msg, L["shieldbash_trigger1"]) or string.find(msg, L["shieldbash_trigger2"]) or string.find(msg, L["shieldbash_trigger3"]) or string.find(msg, L["earthshock_trigger1"]) or string.find(msg, L["earthshock_trigger2"]) then
-			self:TriggerEvent("BigWigs_StopBar", self, L["frostbolt_bar"])
+			self:RemoveBar(L["frostbolt_bar"])
 			frostbolttime = 0
-			self:TriggerEvent("BigWigs_SendSync", "KelFrostboltStop")
+			self:Sync("KelFrostboltStop")
 		end
 	else
 		frostbolttime = 0
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == "KelPhase2" then
+		self:Phase2()
+	elseif sync == "KelPhase3" then
+		self:Phase3()
+	elseif sync == "KelGuardians" then
+		self:Guardians()
+	elseif sync == "KelMindControl" then
+		self:MindControl()
+	elseif sync == "KelFrostBlast" then
+		self:FrostBlast()
+	elseif sync == "KelDetonate" and rest then
+		self:Detonate()
+	elseif sync == "KelFrostbolt" then       -- changed from only frostbolt (thats only alert, if someone still wants to see the bar, it wouldnt work then)
+		self:Frostbolt()
+	elseif sync == "KelFrostboltStop" then
+		self:FrostboltOver()
+	elseif sync == "KelAddDiesAbom" and rest then
+		self:AbominationDies(rest)
+	elseif sync == "KelAddDiesSoul" and rest then
+		
+	end
+end
+
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Phase2()
+	self:Bar(L["phase2_bar"], 15)
+	self:Bar(L["detonate_possible_bar"], 35)
+	self:Bar(L["mcfrostblast_bar"], 45)
+	self:DelayedMessage(15, L["phase2_warning"], "Important")
+	self:DelayedMessage(30, L["phase2_detonate_warning"], "Important")
+	self:DelayedMessage(40, L["phase2_mcfrostblast_warning"], "Important")
+	
+	if self.db.profile.fbvolley then
+		self:Bar(L["frostbolt_volley"], 30, "Spell_Frost_FrostWard")
+		self:DelayedMessage(self.Volley, 45, self)
+		self:DelayedMessage(self.Volley, 60, self)
+		self:DelayedMessage(self.Volley, 75, self)
+	end
+	
+	self:KTM_Reset()
+	-- proximity silent
+end
+
+function module:Phase3()
+	if self.db.profile.phase then
+		self:Message(L["phase3_warning"], "Attention", nil, "Beware")
+	end
+end
+
+function module:MindControl()
+	self:Message(L["mc_warning"], "Urgent")
+	self:Bar(L["mc_bar"], 60, "Inv_Belt_18")
+	
+	self:KTM_Reset()
+end
+
+function module:Guardians()
+	if self.db.profile.guardians then
+		self:Message(L["guardians_warning"], "Important")
+		self:Bar(L["guardians_bar"], 16)
+	end
+end
+
+function module:FrostBlast()
+	self:Message(L["frostblast_warning"], "Attention")
+	self:ScheduleEvent("bwktfbwarn", "BigWigs_Message", 25, L["frostblast_soon_message"])
+	self:Bar(L["frostblast_bar"], 30, "Spell_Frost_FreezingBreath")
+end
+
+function module:Detonate(name)
+	if name and self.db.profile.detonate then
+		self:Message(string.format(L["detonate_warning"], name), "Attention")
+		if self.db.profile.detonateicon then 
+			self:Icon(name) 
+		end
+		self:Bar(string.format(L["detonate_bar"], name), 5, "Spell_Nature_WispSplode")
+		self:Bar(L["detonate_possible_bar"], 20, "Spell_Nature_WispSplode")
+	end
+end
+
+function module:Frostbolt()
+	if self.db.profile.frostbolt or self.db.profile.frostboltbar then
+		frostbolttime = GetTime()
+		if self.db.profile.frostbolt then
+			self:Message(L["frostbolt_warning"], "Personal")
+		end
+		if self.db.profile.frostboltbar then
+			self:Bar(L["frostbolt_bar"], 2, "Spell_Frost_FrostBolt02", true, "blue")
+		end
+	end
+end
+
+function module:FrostboltOver()
+	if self.db.profile.frostbolt then
+		self:RemoveBar(L["frostbolt_bar"])
+		frostbolttime = 0
+	end
+end
+
+function module:AbominationDies(name)
+	if name and self.db.profile.addcount then
+		self:RemoveBar(string.format(L["add_bar"], numAbominations, name))
+		numAbominations=numAbominations+1
+		if (numAbominations<14) then 
+			self:Bar(string.format(L["add_bar"], numAbominations, name),(pstart+320-GetTime())) 
+		end	
+	end
+end
+
+function module:WeaverDies(name)
+	if name and self.db.profile.addcount then
+		self:RemoveBar(string.format(L["add_bar"], numWeavers, name))
+		numWeavers=numWeavers+1
+		if (numWeavers<14) then 
+			self:Bar(string.format(L["add_bar"], numWeavers, name),(pstart+320-GetTime())) 
+		end
 	end
 end

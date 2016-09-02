@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Gothik the Harvester"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Gothik the Harvester", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -40,11 +41,11 @@ L:RegisterTranslations("enUS", function() return {
 	riderdiewarn = "Rider dead!",
 	dkdiewarn = "Death Knight dead!",
 
-	warn1 = "In room in ~3 minutes",
-	warn2 = "In room in ~90 seconds",
-	warn3 = "In room in ~60 seconds",
-	warn4 = "In room in ~30 seconds",
-	warn5 = "Gothik Incoming in 10 seconds",
+	warn_inroom_3m = "In room in 3 minutes",
+	warn_inroom_90 = "In room in 90 seconds",
+	warn_inroom_60 = "In room in 60 seconds",
+	warn_inroom_30 = "In room in 30 seconds",
+	warn_inroom_10 = "Gothik Incoming in 10 seconds",
 
 	wave = "%d/22: ", -- its only 22 waves not 26
 
@@ -62,59 +63,123 @@ L:RegisterTranslations("enUS", function() return {
 	inroombartext = "In Room",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsGothik = BigWigs:NewModule(boss)
-BigWigsGothik.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsGothik.enabletrigger = { boss }
-BigWigsGothik.bossSync = "Gothik"
-BigWigsGothik.wipemobs = {
-	L["rider_name"], L["deathknight_name"], L["trainee_name"],
-	L["spectral_rider_name"], L["spectral_deathknight_name"], L["spectral_trainee_name"]
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["rider_name"], L["deathknight_name"], L["trainee_name"],
+	L["spectral_rider_name"], L["spectral_deathknight_name"], L["spectral_trainee_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"room", -1, "add", "adddeath", "bosskill"}
+
+
+-- locals
+local timer = {
+	inroom = 273,
+	trainee = 20.3, -- its 20.5 seconds not 21
+	deathknight = 25,
+	rider = 30,
 }
-BigWigsGothik.toggleoptions = { "room", -1, "add", "adddeath", "bosskill" }
-BigWigsGothik.revision = tonumber(string.sub("$Revision: 15773 $", 12, -3))
+local icon = {
+	inroom = "Spell_Magic_LesserInvisibilty",
+	trainee = "Ability_Seal",
+	deathknight = "INV_Boots_Plate_08",
+	rider = "Spell_Shadow_DeathPact",
+}
+local syncName = {
+	teleport = "TwinsTeleport",
+	berserk = "TestbossBerserk"
+}
+
+local wave = 0
+local numTrainees = 0
+local numDeathknights = 0
+local numRiders = 0
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGothik:OnEnable()
-    self.started = nil
-	self.wave = 0
-	self.tratime = 20 -- testing from 21
-	self.dktime = 72
-	self.ridertime = 132
-	self.tranum = 1
-	self.dknum = 1
-	self.ridernum = 1
+module:RegisterYellEngage(L["starttrigger1"])
+module:RegisterYellEngage(L["starttrigger2"])
 
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL") 	
-	--self:RegisterEvent("CHAT_MSG_SAY") -- test trigger
+	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 end
 
-function BigWigsGothik:CHAT_MSG_COMBAT_HOSTILE_DEATH( msg )
-	if self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["rider_name"]) then
-		self:TriggerEvent("BigWigs_Message", L["riderdiewarn"], "Important")
-	elseif self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["deathknight_name"]) then
-		self:TriggerEvent("BigWigs_Message", L["dkdiewarn"], "Important")
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	wave = 0
+	numTrainees = 0
+	numDeathknights = 0
+	numRiders = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.room then
+		self:Message(L["startwarn"], "Important")
+		self:Bar(L["inroombartext"], timer.inroom, icon.inroom)
+		self:DelayedMessage(timer.inroom - 3 * 60, L["warn_inroom_3m"], "Attention")
+		self:DelayedMessage(timer.inroom - 90, L["warn_inroom_90"], "Attention")
+		self:DelayedMessage(timer.inroom - 60, L["warn_inroom_60"], "Urgent")
+		self:DelayedMessage(timer.inroom - 30, L["warn_inroom_30"], "Important")
+		self:DelayedMessage(timer.inroom - 10, L["warn_inroom_10"], "Important")
+	end
+
+	if self.db.profile.add then
+		self:Trainee()
+		self:DeathKnight()
+		self:Rider()
 	end
 end
 
-function BigWigsGothik:StopRoom()
-	self:TriggerEvent("BigWigs_StopBar", self, L["inroombartext"])
-	self:CancelScheduledEvent("bwgothikwarn1")
-	self:CancelScheduledEvent("bwgothikwarn2")
-	self:CancelScheduledEvent("bwgothikwarn3")
-	self:CancelScheduledEvent("bwgothikwarn4")
-	self:CancelScheduledEvent("bwgothikwarn5")
-	--if self.tranum and self.dknum and self.ridernum then
-	--	self:TriggerEvent("BigWigs_StopBar", self, string.format(L["trabar"], self.tranum - 1)) -- disabled for custom cancel
-	--	self:TriggerEvent("BigWigs_StopBar", self, string.format(L["dkbar"], self.dknum - 1)) -- too
-	--	self:TriggerEvent("BigWigs_StopBar", self, string.format(L["riderbar"], self.ridernum - 1)) -- too
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Event Handlers	    --
+------------------------------
+
+function module:CHAT_MSG_MONSTER_YELL( msg )
+	if msg == L["inroomtrigger"] then
+		if self.db.profile.room then 
+			self:Message(L["inroomwarn"], "Important") 
+		end
+		self:StopRoom()
+	elseif string.find(msg, L["disabletrigger"]) then
+		self:SendBossDeathSync()
+	end
+end
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH( msg )
+	if self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["rider_name"]) then
+		self:Message(L["riderdiewarn"], "Important")
+	elseif self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["deathknight_name"]) then
+		self:Message(L["dkdiewarn"], "Important")
+	end
+end
+
+function module:StopRoom()
+	self:RemoveBar(L["inroombartext"])
+	self:CancelDelayedMessage(L["warn_inroom_3m"])
+	self:CancelDelayedMessage(L["warn_inroom_90"])
+	self:CancelDelayedMessage(L["warn_inroom_60"])
+	self:CancelDelayedMessage(L["warn_inroom_30"])
+	self:CancelDelayedMessage(L["warn_inroom_10"])
+	
+	--if numTrainees and numDeathknights and numRiders then
+	--	self:RemoveBar(string.format(L["trabar"], numTrainees - 1)) -- disabled for custom cancel
+	--	self:RemoveBar(string.format(L["dkbar"], numDeathknights - 1)) -- too
+	--	self:RemoveBar(string.format(L["riderbar"], numRiders - 1)) -- too
 	--end
 	--self:CancelScheduledEvent("bwgothiktrawarn")
 	--self:CancelScheduledEvent("bwgothikdkwarn")
@@ -122,98 +187,75 @@ function BigWigsGothik:StopRoom()
 	--self:CancelScheduledEvent("bwgothiktrarepop")
 	--self:CancelScheduledEvent("bwgothikdkrepop")
 	--self:CancelScheduledEvent("bwgothikriderrepop")
-	self.wave = 0
-	self.tranum = 1
-	self.dknum = 1
-	self.ridernum = 1
+	
+	wave = 0
+	numTrainees = 0
+	numDeathknights = 0
+	numRiders = 0
 end
 
-function BigWigsGothik:WaveWarn(message, L, color)
-	self.wave = self.wave + 1
-	if self.db.profile.add then self:TriggerEvent("BigWigs_Message", string.format(L["wave"], self.wave) .. message, color) end
-end
 
-function BigWigsGothik:Trainee()
-	if self.db.profile.add then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["trabar"], self.tranum), self.tratime, "Interface\\Icons\\Ability_Seal")
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:WaveWarn(message, L, color)
+	wave = wave + 1
+	if self.db.profile.add then 
+		self:Message(string.format(L["wave"], wave) .. message, color) 
 	end
-	self:ScheduleEvent("bwgothiktrawarn", self.WaveWarn, self.tratime - 3, self, L["trawarn"], L, "Attention")
-	self:ScheduleRepeatingEvent("bwgothiktrarepop", self.Trainee, self.tratime, self)
-	self.tranum = self.tranum + 1
+end
 
-	if self.tranum >= 13 then  -- cancels bar after wave 11
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["trabar"], self.tranum - 1))
+function module:Trainee()
+	numTrainees = numTrainees + 1
+	
+	if self.db.profile.add then
+		self:Bar(string.format(L["trabar"], numTrainees), timer.trainee, icon.trainee)
+	end
+	self:ScheduleEvent("bwgothiktrawarn", self.WaveWarn, timer.trainee - 3, self, L["trawarn"], L, "Attention")
+	self:ScheduleRepeatingEvent("bwgothiktrarepop", self.Trainee, timer.trainee, self)
+	
+
+	if numTrainees >= 13 then  -- cancels bar after wave 11
+		self:RemoveBar(string.format(L["trabar"], numTrainees - 1))
 		self:CancelScheduledEvent("bwgothiktrawarn")
 		self:CancelScheduledEvent("bwgothiktrarepop")
-		self.tranum = 1
+		numTrainees = 0
 	end
 	
 end
 
-function BigWigsGothik:DeathKnight()
+function module:DeathKnight()
+	numDeathknights = numDeathknights + 1
+	
 	if self.db.profile.add then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["dkbar"], self.dknum), self.dktime, "Interface\\Icons\\INV_Boots_Plate_08")
+		self:Bar(string.format(L["dkbar"], numDeathknights), timer.deathknight, icon.deathknight)
 	end
-	self:ScheduleEvent("bwgothikdkwarn", self.WaveWarn, self.dktime - 3, self, L["dkwarn"], L, "Urgent")
-	self:ScheduleRepeatingEvent("bwgothikdkrepop", self.DeathKnight, self.dktime, self)
-	self.dknum = self.dknum + 1
+	self:ScheduleEvent("bwgothikdkwarn", self.WaveWarn, timer.deathknight - 3, self, L["dkwarn"], L, "Urgent")
+	self:ScheduleRepeatingEvent("bwgothikdkrepop", self.DeathKnight, timer.deathknight, self)
+	
 
-	if self.dknum >= 9 then  -- cancels bar after wave 7
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["dkbar"], self.dknum - 1))
+	if numDeathknights >= 9 then  -- cancels bar after wave 7
+		self:RemoveBar(string.format(L["dkbar"], numDeathknights - 1))
 		self:CancelScheduledEvent("bwgothikdkwarn")
 		self:CancelScheduledEvent("bwgothikdkrepop")
-		self.dknum = 1
+		numDeathknights = 0
 	end
 end
 
-function BigWigsGothik:Rider()
+function module:Rider()
+	numRiders = numRiders + 1
+	
 	if self.db.profile.add then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["riderbar"], self.ridernum), self.ridertime, "Interface\\Icons\\Spell_Shadow_DeathPact")
+		self:Bar(string.format(L["riderbar"], numRiders), timer.rider, icon.rider)
 	end
-	self:ScheduleEvent("bwgothikriderwarn", self.WaveWarn, self.ridertime - 3, self, L["riderwarn"], L, "Important")
-	self:ScheduleRepeatingEvent("bwgothikriderrepop", self.Rider, self.ridertime, self)
-	self.ridernum = self.ridernum + 1
-		
-	if self.ridernum >= 6 then  -- cancels bar after wave 4
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["riderbar"], self.ridernum - 1)) 
+	self:ScheduleEvent("bwgothikriderwarn", self.WaveWarn, timer.rider - 3, self, L["riderwarn"], L, "Important")
+	self:ScheduleRepeatingEvent("bwgothikriderrepop", self.Rider, timer.rider, self)
+	
+	if numRiders >= 6 then  -- cancels bar after wave 4
+		self:RemoveBar(string.format(L["riderbar"], numRiders - 1)) 
 		self:CancelScheduledEvent("bwgothikriderwarn")
 		self:CancelScheduledEvent("bwgothikriderrepop")
-		self.ridernum = 1
-		
+		numRiders = 0
 	end
 end
-
-function BigWigsGothik:CHAT_MSG_MONSTER_YELL( msg )
-	if msg == L["starttrigger1"] or msg == L["starttrigger2"] then
-		if self.db.profile.room then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["inroombartext"], 273, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
-			self:ScheduleEvent("bwgothikwarn1", "BigWigs_Message", 93, L["warn1"], "Attention")
-			self:ScheduleEvent("bwgothikwarn2", "BigWigs_Message", 183, L["warn2"], "Attention")
-			self:ScheduleEvent("bwgothikwarn3", "BigWigs_Message", 213, L["warn3"], "Urgent")
-			self:ScheduleEvent("bwgothikwarn4", "BigWigs_Message", 243, L["warn4"], "Important")
-			self:ScheduleEvent("bwgothikwarn5", "BigWigs_Message", 263, L["warn5"], "Important")
-		end
-		self.wave = 0
-		self.tranum = 1
-		self.dknum = 1
-		self.ridernum = 1
-		if self.db.profile.add then
-			self:Trainee()
-			self:DeathKnight()
-			self:Rider()
-		end
-		-- set the new times
-		self.tratime = 20.3 -- its 20.5 seconds not 21
-		self.dktime = 25
-		self.ridertime = 30
-	elseif msg == L["inroomtrigger"] then
-		if self.db.profile.room then self:TriggerEvent("BigWigs_Message", L["inroomwarn"], "Important") end
-		self:StopRoom()
-	elseif string.find(msg, L["disabletrigger"]) then
-		if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], boss), "Bosskill", nil, "Victory") end
-		self.core:ToggleModuleActive(self, false)
-	end
-end
-
-
