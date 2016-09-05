@@ -1,9 +1,12 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Loatheb"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+-- trigger for spore spawn missing
+
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Loatheb", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -42,107 +45,172 @@ L:RegisterTranslations("enUS", function() return {
 	are = "are",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsLoatheb = BigWigs:NewModule(boss)
-BigWigsLoatheb.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsLoatheb.enabletrigger = boss
-BigWigsLoatheb.bossSync = "Loatheb"
-BigWigsLoatheb.toggleoptions = {"doom", "curse", "bosskill"}
-BigWigsLoatheb.revision = tonumber(string.sub("$Revision: 15709 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"doom", "curse", "bosskill"}
+
+
+-- locals
+local timer = {
+	softEnrage = 300,
+	firstDoom = 120,
+	doomLong = 30,
+	doomShort = 15,
+	doom = 0, -- this variable will be changed during the encounter
+	spore = 12,
+	curse = 30,
+}
+local icon = {
+	softEnrage = "Spell_Shadow_UnholyFrenzy",
+	doom = "Spell_Shadow_NightOfTheDead",
+	spore = "Ability_TheBlackArrow",
+	curse = "Spell_Holy_RemoveCurse",
+}
+local syncName = {
+	doom = "LoathebDoom2",
+	spore = "LoathebSporeSpawn2",
+	curse = "LoathebRemoveCurse",
+}
+
+local numSpore = 0 -- how many spores have been spawned
+local numDoom = 0 -- how many dooms have been casted
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsLoatheb:OnEnable()
-    self.started = nil
-	self.doomTime = 30
-	self.sporeCount = 1
-	self.doomCount = 1
-
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
-
 	self:RegisterEvent("CHAT_MSG_SPELL_BREAK_AURA", "Curse")
 
-	self:RegisterEvent("BigWigs_RecvSync")
-
 	-- 2: Doom and SporeSpawn versioned up because of the sync including the
-	-- doom/spore count now, so we don't hold back the counter.
-	self:TriggerEvent("BigWigs_ThrottleSync", "LoathebDoom2", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LoathebSporeSpawn2", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "LoathebRemoveCurse", 5)
+	-- doom/spore count now, so we don't hold back the counter.	
+	self:ThrottleSync(10, syncName.doom)
+	self:ThrottleSync(5, syncName.spore)
+	self:ThrottleSync(5, syncName.curse)
 end
 
-function BigWigsLoatheb:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then
-			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		end
-		if self.db.profile.doom then
-			self:TriggerEvent("BigWigs_StartBar", self, L["doomtimerbar"], 300, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-			self:ScheduleEvent("bwloathebtimerreduce1", "BigWigs_Message", 240, string.format(L["doomtimerwarn"], 60), "Attention")
-			self:ScheduleEvent("bwloathebtimerreduce2", "BigWigs_Message", 270, string.format(L["doomtimerwarn"], 30), "Attention")
-			self:ScheduleEvent("bwloathebtimerreduce3", "BigWigs_Message", 290, string.format(L["doomtimerwarn"], 10), "Urgent")
-			self:ScheduleEvent("bwloathebtimerreduce4", "BigWigs_Message", 295, string.format(L["doomtimerwarn"], 5), "Important")
-			self:ScheduleEvent("bwloathebtimerreduce5", "BigWigs_Message", 300, L["doomtimerwarnnow"], "Important")
-			self:ScheduleEvent("bwloathebdoomtimerreduce", function () BigWigsLoatheb.doomTime = 15 end, 300)
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Red")
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["doombar"], self.doomCount), 120, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
-			self:ScheduleEvent("bwloathebdoom", "BigWigs_Message", 115, string.format(L["doomwarn5sec"], self.doomCount), "Urgent")
-		end
-	elseif sync == "LoathebDoom2" and rest then
-		rest = tonumber(rest)
-		if not rest then return end
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	numSpore = 0 -- how many spores have been spawned
+	numDoom = 0 -- how many dooms have been casted
+	timer.doom = timer.firstDoom
+end
 
-		if rest == (self.doomCount + 1) then
-			if self.db.profile.doom then
-				self:TriggerEvent("BigWigs_Message", string.format(L["doomwarn"], self.doomCount, self.doomTime), "Important")
-			end
-			self.doomCount = self.doomCount + 1
-			if self.db.profile.doom then
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["doombar"], self.doomCount), self.doomTime, "Interface\\Icons\\Spell_Shadow_NightOfTheDead")
-				self:ScheduleEvent("bwloathebdoom", "BigWigs_Message", self.doomTime - 5, string.format(L["doomwarn5sec"], self.doomCount), "Urgent")
-			end
-		end
-	
-	elseif sync == "LoathebSporeSpawn2" and rest then
-		rest = tonumber(rest)
-		if not rest then return end
-
-		if rest == (self.sporeCount + 1) then
-			if self.db.profile.spore then
-				self:TriggerEvent("BigWigs_Message", string.format(L["sporewarn"], self.sporeCount), "Important")
-			end
-			self.sporeCount = self.sporeCount + 1
-			if self.db.profile.spore then
-				self:TriggerEvent("BigWigs_StartBar", self, string.format(L["sporebar"], self.sporeCount), 12, "Interface\\Icons\\Ability_TheBlackArrow")
-			end
-		end
-
-	elseif sync == "LoathebRemoveCurse" then
-		if self.db.profile.curse then
-			self:TriggerEvent("BigWigs_Message", L["cursewarn"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["cursebar"], 30, "Interface\\Icons\\Spell_Holy_RemoveCurse")
-		end
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.doom then
+		self:Bar(L["doomtimerbar"], timer.softEnrage, icon.softEnrage)
+		self:DelayedMessage(timer.softEnrage - 60, string.format(L["doomtimerwarn"], 60), "Attention")
+		self:DelayedMessage(timer.softEnrage - 30, string.format(L["doomtimerwarn"], 30), "Attention")
+		self:DelayedMessage(timer.softEnrage - 10, string.format(L["doomtimerwarn"], 10), "Urgent")
+		self:DelayedMessage(timer.softEnrage - 5, string.format(L["doomtimerwarn"], 5), "Important")
+		self:DelayedMessage(timer.softEnrage, L["doomtimerwarnnow"], "Important")
+		
+		-- soft enrage after 5min: Doom every 15s instead of every 30s
+		--self:ScheduleEvent("bwloathebdoomtimerreduce", function() module.doomTime = 15 end, 300)
+		self:ScheduleEvent("bwloathebdoomtimerreduce", self.SoftEnrage, timer.softEnrage)
+		self:Message(L["startwarn"], "Red")
+		self:Bar(string.format(L["doombar"], numDoom + 1), timer.doom, icon.doom)
+		self:DelayedMessage(timer.doom - 5, string.format(L["doomwarn5sec"], numDoom + 1), "Urgent")
+		timer.doom = timer.doomLong -- reduce doom timer from 120s to 30s
 	end
 end
 
-function BigWigsLoatheb:Event( msg )
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:Event( msg )
 	if string.find(msg, L["doomtrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LoathebDoom2 "..tostring(self.doomCount + 1))
+		self:Sync(syncName.doom .. " " .. tostring(numDoom + 1))
 	end
 end
 
-function BigWigsLoatheb:Curse( msg )
+function module:Curse( msg )
 	if string.find(msg, L["cursetrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "LoathebRemoveCurse")
+		self:Sync(syncName.curse)
 	end
 end
 
 
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.doom and rest then
+		self:Doom(rest)
+	elseif sync == syncName.spore and rest then
+		self:Spore(rest)
+	elseif sync == syncName.curse then
+		self:Curse()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Doom(syncNumDoom)
+	syncNumDoom = tonumber(syncNumDoom)
+	if syncNumDoom then
+		if syncNumDoom == (numDoom + 1) then
+			numDoom = numDoom + 1
+			if self.db.profile.doom then
+				self:Message(string.format(L["doomwarn"], numDoom, timer.doom), "Important")
+			end
+			if self.db.profile.doom then
+				self:Bar(string.format(L["doombar"], numDoom + 1), timer.doom, icon.doom)
+				self:DelayedMessage(timer.doom - 5, string.format(L["doomwarn5sec"], numDoom + 1), "Urgent")
+			end
+		end
+	end
+end
+
+function module:Spore(syncNumSpore)
+	syncNumSpore = tonumber(syncNumSpore)
+	if not syncNumSpore then
+		if syncNumSpore == (numSpore + 1) then
+			numSpore = numSpore
+			if self.db.profile.spore then
+				self:Message(string.format(L["sporewarn"], numSpore), "Important")
+			end			
+			if self.db.profile.spore then
+				self:Bar(string.format(L["sporebar"], numSpore + 1), timer.spore, icon.spore)
+			end
+		end
+	end
+end
+
+function module:Curse()
+	if self.db.profile.curse then
+		self:Message(L["cursewarn"], "Important")
+		self:Bar(L["cursebar"], timer.curse, icon.curse)
+	end
+end
+
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:SoftEnrage()
+	timer.doom = timer.doomShort -- reduce doom timer from 30s to 15s
+end

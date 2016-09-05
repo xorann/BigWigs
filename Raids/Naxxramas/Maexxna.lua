@@ -1,12 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Maexxna"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
 
-local times = {}
-local prior = nil
+local module, L = BigWigs:ModuleDeclaration("Maexxna", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -58,29 +56,43 @@ L:RegisterTranslations("enUS", function() return {
 	are = "are",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsMaexxna = BigWigs:NewModule(boss)
-BigWigsMaexxna.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsMaexxna.enabletrigger = boss
-BigWigsMaexxna.bossSync = "Maexxna"
-BigWigsMaexxna.toggleoptions = {"spray", "poison", "cocoon", "enrage", "bosskill"}
-BigWigsMaexxna.revision = tonumber(string.sub("$Revision: 15520 $", 12, -3))
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"spray", "poison", "cocoon", "enrage", "bosskill"}
+
+
+-- locals
+local timer = {
+	poison = 20,
+	cocoon = 20,
+	spider = 35,
+	webspray = 40,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	webspray = "MaexxnaWebspray",
+	poison = "MaexxnaPoison",
+	cocoon = "MaexxnaCocoon",
+}
+
+local times = {}
+local enrageannounced = false
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsMaexxna:OnEnable()
-    self.started = nil
-	self.enrageannounced = nil
-	prior = nil
-	times = {}
-
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Enrage")
 	self:RegisterEvent("UNIT_HEALTH")
 
@@ -88,23 +100,39 @@ function BigWigsMaexxna:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "SprayEvent")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "SprayEvent")
 
-	self:RegisterEvent("BigWigs_Message")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "MaexxnaWebspray", 8)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MaexxnaPoison", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MaexxnaCocoon", 0)
+	self:ThrottleSync(8, syncName.webspray)
+	self:ThrottleSync(5, syncName.poison)
+	self:ThrottleSync(0, syncName.cocoon)
 	-- the MaexxnaCocoon sync is left unthrottled, it's throttled inside the module itself
 	-- because the web wrap happens to a lot of players at once.
-
 end
 
-function BigWigsMaexxna:SprayEvent( msg )
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	enrageannounced = false
+	times = {}
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Webspray()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:SprayEvent(msg)
 	-- web spray warning
-	if string.find(msg, L["webspraytrigger"]) and not prior then
-		self:TriggerEvent("BigWigs_SendSync", "MaexxnaWebspray")
+	if string.find(msg, L["webspraytrigger"]) then
+		self:Sync(syncName.webspray)
 	elseif string.find(msg, L["poisontrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "MaexxnaPoison")
+		self:Sync(syncName.poison)
 	elseif string.find(msg, L["cocoontrigger"]) then
 		local _,_,wplayer,wtype = string.find(msg, L["cocoontrigger"])
 		if wplayer and wtype then
@@ -112,74 +140,85 @@ function BigWigsMaexxna:SprayEvent( msg )
 				wplayer = UnitName("player")
 			end
 			local t = GetTime()
-			if ( not times[wplayer] ) or ( times[wplayer] and ( times[wplayer] + 10 ) < t) then
-				self:TriggerEvent("BigWigs_SendSync", "MaexxnaCocoon "..wplayer)
+			if (not times[wplayer]) or (times[wplayer] and (times[wplayer] + 10) < t) then
+				self:Sync(syncName.cocoon .. " " .. wplayer)
 			end
 		end
 	end
 end
 
-function BigWigsMaexxna:BigWigs_RecvSync( sync, rest )
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		self:BigWigs_RecvSync("MaexxnaWebspray", nil, nil)
-	elseif sync == "MaexxnaWebspray" then
-		if prior then return end
-		prior = true
-
-		self:CancelScheduledEvent("bwmaexxna30")
-		self:CancelScheduledEvent("bwmaexxna20")
-		self:CancelScheduledEvent("bwmaexxna10")
-		self:CancelScheduledEvent("bwmaexxna5")
-
-		self:TriggerEvent("BigWigs_Message", L["webspraywarn"], "Important")
-		self:ScheduleEvent("bwmaexxna30", "BigWigs_Message", 10, L["webspraywarn30sec"], "Attention")
-		self:ScheduleEvent("bwmaexxna20", "BigWigs_Message", 20, L["webspraywarn20sec"], "Attention")
-		self:ScheduleEvent("bwmaexxna10", "BigWigs_Message", 30, L["webspraywarn10sec"], "Attention")
-		self:ScheduleEvent("bwmaexxna5", "BigWigs_Message", 35, L["webspraywarn5sec"], "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, L["cocoonbar"], 20, "Interface\\Icons\\Spell_Nature_Web" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["spiderbar"], 35, "Interface\\Icons\\INV_Misc_MonsterSpiderCarapace_01" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["webspraybar"], 40, "Interface\\Icons\\Ability_Ensnare" )
-
-	elseif sync == "MaexxnaPoison" then
-		if self.db.profile.poison then 
-		self:TriggerEvent("BigWigs_Message", L["poisonwarn"], "Important") end
-		self:TriggerEvent("BigWigs_StartBar", self, L["poisonbar"], 20, "Interface\\Icons\\Ability_Creature_Poison_03" )
-
-	elseif sync == "MaexxnaCocoon" then
-		local t = GetTime()
-		if ( not times[rest] ) or ( times[rest] and ( times[rest] + 10 ) < t) then
-			if self.db.profile.cocoon then self:TriggerEvent("BigWigs_Message", string.format(L["cocoonwarn"], rest), "Urgent" ) end
-			times[rest] = t
-		end
-	end
-end
-
-function BigWigsMaexxna:UNIT_HEALTH( msg )
+function module:UNIT_HEALTH( msg )
 	if UnitName(msg) == boss then
 		local health = UnitHealth(msg)
-		if (health > 30 and health <= 33 and not self.enrageannounced) then
+		if (health > 30 and health <= 33 and not enrageannounced) then
 			if self.db.profile.enrage then 
-			self:TriggerEvent("BigWigs_Message", L["enragesoonwarn"], "Important") end
-			self.enrageannounced = true
-		elseif (health > 40 and self.enrageannounced) then
-			self.enrageannounced = nil
+				self:Message(L["enragesoonwarn"], "Important") 
+			end
+			enrageannounced = true
+		elseif (health > 40 and enrageannounced) then
+			enrageannounced = false
 		end
 	end
 end
 
-function BigWigsMaexxna:Enrage( msg )
+function module:Enrage( msg )
 	if string.find(msg, L["etrigger1"]) then
 		if self.db.profile.enrage then 
-		self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Important") 
+			self:Message(L["enragewarn"], "Important", nil, "Beware") 
 		end
 	end
 end
 
-function BigWigsMaexxna:BigWigs_Message(text)
-	if text == L["webspraywarn10sec"] then
-		prior = nil
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest)
+	if sync == syncName.webspray then
+		self:Webspray()
+	elseif sync == syncName.poison then
+		self:Poison()
+	elseif sync == syncName.cocoon and rest then
+		self:Cocoon(rest)
 	end
 end
 
 
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Webspray()
+	self:CancelDelayedMessage(L["webspraywarn30sec"])
+	self:CancelDelayedMessage(L["webspraywarn20sec"])
+	self:CancelDelayedMessage(L["webspraywarn10sec"])
+	self:CancelDelayedMessage(L["webspraywarn5sec"])
+
+	self:Message(L["webspraywarn"], "Important")
+	self:Bar(L["cocoonbar"], timer.cocoon, "Spell_Nature_Web")
+	self:Bar(L["spiderbar"], timer.spider, "INV_Misc_MonsterSpiderCarapace_01")
+	self:Bar(L["webspraybar"], timer.webspray, "Ability_Ensnare")
+	
+	self:DelayedMessage(timer.webspray - 30, L["webspraywarn30sec"], "Attention")
+	self:DelayedMessage(timer.webspray - 20, L["webspraywarn20sec"], "Attention")
+	self:DelayedMessage(timer.webspray - 10, L["webspraywarn10sec"], "Attention")
+	self:DelayedMessage(timer.webspray - 5, L["webspraywarn5sec"], "Attention")
+end
+
+function module:Poison()
+	if self.db.profile.poison then 
+		self:Message(L["poisonwarn"], "Important")
+		self:Bar(L["poisonbar"], timer.poison, "Ability_Creature_Poison_03")
+	end
+end
+
+function module:Cocoon(player)
+	local t = GetTime()
+	if (not times[player]) or (times[player] and (times[player] + 10) < t) then
+		if self.db.profile.cocoon then 
+			self:Message(string.format(L["cocoonwarn"], player), "Urgent") 
+		end
+		times[player] = t
+	end
+end

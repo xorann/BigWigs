@@ -104,8 +104,8 @@ L:RegisterTranslations("enUS", function() return {
 	guardians_warning = "Guardians incoming in ~10sec!",
 	guardians_bar = "Guardians incoming!",
 
---	fissure_trigger = "cast Shadow Fissure.",
---	fissure_warning = "Shadow Fissure!",
+	fissure_trigger = "cast Shadow Fissure.",
+	fissure_warning = "Shadow Fissure!",
 
 	frostbolt_trigger = "Kel'Thuzad begins to cast Frostbolt.",
 	frostbolt_warning = "Frostbolt! Interrupt!",
@@ -134,6 +134,10 @@ L:RegisterTranslations("enUS", function() return {
 	
 	you = "You",
 	are = "are",
+	
+	proximity_cmd = "proximity",
+    proximity_name = "Proximity Warning",
+    proximity_desc = "Show Proximity Warning Frame",
 } end )
 
 
@@ -145,32 +149,60 @@ L:RegisterTranslations("enUS", function() return {
 module.revision = 20003 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
+module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "proximity", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
 
 -- Proximity Plugin
--- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
--- module.proximitySilent = false
+module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+module.proximitySilent = true
 
 
 -- locals
 local timer = {
-	charge = 10,
-	teleport = 30,
+	phase1 = 320,
+	firstFrostboltVolley = 30,
+	frostboltVolley = 15,
+	frostbolt = 2,
+	phase2 = 15,
+	firstDetonate = 35,
+	detonate = 20,
+	firstFrostblast = 45,
+	mindcontrol = 60,
+	guardians = 16,
+	frostblast = 30,
+	detonate = 5,
+	nextDetonate = 20,
 }
 local icon = {
-	charge = "Spell_Frost_FrostShock",
-	teleport = "Spell_Arcane_Blink",
+	abomination = "",
+	soulWeaver = "",
+	frostboltVolley = "Spell_Frost_FrostWard",
+	mindcontrol = "Inv_Belt_18",
+	phase1 = "",
+	phase2 = "",
+	guardians = "",
+	frostblast = "Spell_Frost_FreezingBreath",
+	detonate = "Spell_Nature_WispSplode",
+	frostbolt = "Spell_Frost_FrostBolt02",
 }
 local syncName = {
-	teleport = "TwinsTeleport",
-	berserk = "TestbossBerserk"
+	detonate = "KelDetonate",
+	frostblast = "KelFrostBlast",
+	frostbolt = "KelFrostbolt",
+	frostboltOver = "KelFrostboltStop",
+	fissure = "KelFissure",
+	mindcontrol = "KelMindControl",
+	abomination = "KelAddDiesAbom",
+	soulWeaver = "KelAddDiesSoul",
+	phase2 = "KelPhase2",
+	phase3 = "KelPhase3",
+	guardians = "KelGuardians",
 }
 
 local timeLastFrostboltVolley = 0    -- saves time of first frostbolt 
 local numFrostboltVolleyHits = 0	-- counts the number of people hit by frostbolt
 local numAbominations = 0	-- counter for Unstoppable Abomination's
 local numWeavers = 0 	-- counter for Soul Weaver's
-local pstart = 0    -- time of p1 start, used for tracking add count
+local timePhase1Start = 0    -- time of p1 start, used for tracking add count
 
 
 ------------------------------
@@ -205,20 +237,16 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Affliction")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Affliction")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Affliction")
-
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelDetonate", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelFrostBlast", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelFrostbolt", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelFrostboltStop", 2)
---	self:TriggerEvent("BigWigs_ThrottleSync", "KelFizzure", 2)					-- this isnt used anyway?
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelAddDiesAbom", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelAddDiesSoul", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelDead", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelPhase2", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "KelPhase3", 5)
 	
-	
-	--self:ThrottleSync(10, syncName.berserk)
+	self:ThrottleSync(5, syncName.detonate)
+	self:ThrottleSync(5, syncName.frostblast)
+	self:ThrottleSync(2, syncName.frostbolt)
+	self:ThrottleSync(2, syncName.frostboltOver)
+	self:ThrottleSync(2, syncName.fissure)
+	self:ThrottleSync(2, syncName.abomination)
+	self:ThrottleSync(2, syncName.soulWeaver)
+	self:ThrottleSync(5, syncName.phase2)
+	self:ThrottleSync(5, syncName.phase3)
 end
 
 -- called after module is enabled and after each wipe
@@ -230,20 +258,21 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:Message(L["start_warning"], "Attention")
-	self:Bar(L["start_bar"], 320 )
-	self:DelayedMessage(300, L["phase1_warn"], "Important")
+	self:Bar(L["start_bar"], timer.phase1, icon.phase1)
+	self:DelayedMessage(timer.phase1 - 20, L["phase1_warn"], "Important")
 	
 	if self.db.profile.addcount then
-	pstart=GetTime() 	-- start of p1, used for tracking add counts
-	numAbominations=0
-	numWeavers=0
-	self:Bar(string.format(L["add_bar"], numAbominations, "Unstoppable Abomination"),320)
-	self:Bar(string.format(L["add_bar"], numWeavers, "Soul Weaver"),320)
+		timePhase1Start = GetTime() 	-- start of p1, used for tracking add counts
+		numAbominations = 0
+		numWeavers = 0
+		self:Bar(string.format(L["add_bar"], numAbominations, "Unstoppable Abomination"), timer.phase1, icon.abomination)
+		self:Bar(string.format(L["add_bar"], numWeavers, "Soul Weaver"), timer.phase1, icon.soulWeaver)
 	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	BigWigsProximity:BigWigs_HideProximity(self)
 end
 
 
@@ -274,43 +303,37 @@ end
 
 function module:CHAT_MSG_MONSTER_YELL(msg)
 	if ((msg == L["phase2_trigger1"]) or (msg == L["phase2_trigger2"]) or (msg == L["phase2_trigger3"])) then
-		self:Sync("KelPhase2")
+		self:Sync(syncName.phase2)
 	elseif msg == L["phase3_trigger"] then
-		self:Sync("KelPhase3")
+		self:Sync(syncName.phase3)
 	elseif msg == L["mc_trigger1"] or msg == L["mc_trigger2"] then
-		self:Sync("KelMindControl")
+		self:Sync(syncName.mindcontrol)
 	elseif msg == L["guardians_trigger"] then
-		self:Sync("KelGuardians")
+		self:Sync(syncName.guardians)
 	elseif msg == L["frostblast_trigger1"] then
-		self:Sync("KelFrostBlast")
+		self:Sync(syncName.frostblast)
 	end
 end
 
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 	if string.find(msg, L["frostbolt_trigger"]) then
-		self:Sync("KelFrostbolt")
+		self:Sync(syncName.frostbolt)
 	end
 end
-
---[[ function module:CHAT_MSG_SPELL_SELF_DAMAGE( msg )
-	if string.find(msg, L["fissure_trigger"]) then
-		self:Sync("KelFizzure")
-	end
-end ]]-- who needs this
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	local _,_, mob = string.find(msg, L["add_dead_trigger"])
 	if self.db.profile.addcount and (mob == "Unstoppable Abomination") then
-		self:Sync("KelAddDiesAbom" .. " " .. mob)
+		self:Sync(syncName.abomination .. " " .. mob)
 	elseif self.db.profile.addcount and (mob == "Soul Weaver") then
-		self:Sync("KelAddDiesSoul" .. " " .. mob)
+		self:Sync(syncName.soulWeaver .. " " .. mob)
 	elseif self.db.profile.bosskill and (mob == "Kel'Thuzad") then 
 		self:SendBossDeathSync()
 	end
 end
 
 --[[function module:Volley()
-	self:Bar(L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
+	self:Bar(L["frostbolt_volley"], 15, icon.frostboltVolley)
 end]]
 function module:Affliction(msg)
 	if string.find(msg, L["detonate_trigger"]) then
@@ -319,23 +342,24 @@ function module:Affliction(msg)
 			if dplayer == L["you"] and dtype == L["are"] then
 				dplayer = UnitName("player")
 			end
-			self:Sync("KelDetonate" .. " ".. dplayer)
+			self:Sync(syncName.detonate .. " ".. dplayer)
 		end
 	end
 	
 	if self.db.profile.fbvolley and string.find(msg, L["frostbolt_volley_trigger"]) then
 		local now = GetTime()
 		
-		-- only warn if there are more than 3 players hit by frostbolt volley within 4s
+		-- only warn if there are more than 4 players hit by frostbolt volley within 4s
 		if now - timeLastFrostboltVolley > 4 then
 			timeLastFrostboltVolley = now
-			numFrostboltVolleyHits = 0
+			numFrostboltVolleyHits = 1
 		else 
 			numFrostboltVolleyHits = numFrostboltVolleyHits + 1
 		end
-		if numFrostboltVolleyHits == 3 then 
+		
+		if numFrostboltVolleyHits == 4 then 
 			
-			self:Bar(L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
+			self:Bar(L["frostbolt_volley"], timer.frostboltVolley, icon.frostboltVolley)
 			
 			--[[self:CancelScheduledEvent("bwfbvolley30")
 			self:CancelScheduledEvent("bwfbvolley45")
@@ -345,21 +369,31 @@ function module:Affliction(msg)
 			self:ScheduleEvent("bwfbvolley60", self.Volley, 45, self) ]] -- why 3 times?
 			
 			self:CancelDelayedBar(L["frostbolt_volley"])
-			self:DelayedBar(15, L["frostbolt_volley"], 15, "Spell_Frost_FrostWard")
+			self:DelayedBar(timer.frostboltVolley, L["frostbolt_volley"], timer.frostboltVolley, icon.frostboltVolley)
 		end
 	end
 end
 
 function module:Event(msg)
-	if GetTime() < frostbolttime + 2 then
+	-- shadow fissure
+	if string.find(msg, L["fissure_trigger"]) then
+		self:Sync(syncName.fissure)
+	end
+
+	-- frost bolt
+	if GetTime() < frostbolttime + timer.frostbolt then
 		if string.find(msg, L["attack_trigger1"]) or string.find(msg, L["attack_trigger2"]) or string.find(msg, L["attack_trigger3"]) or string.find(msg, L["attack_trigger4"]) then
 			self:RemoveBar(L["frostbolt_bar"])
 			frostbolttime = 0
-			self:Sync("KelFrostboltStop")
-		elseif string.find(msg, L["kick_trigger1"]) or string.find(msg, L["kick_trigger2"]) or string.find(msg, L["kick_trigger3"]) or string.find(msg, L["pummel_trigger1"]) or string.find(msg, L["pummel_trigger2"]) or string.find(msg, L["pummel_trigger3"]) or string.find(msg, L["shieldbash_trigger1"]) or string.find(msg, L["shieldbash_trigger2"]) or string.find(msg, L["shieldbash_trigger3"]) or string.find(msg, L["earthshock_trigger1"]) or string.find(msg, L["earthshock_trigger2"]) then
+			self:Sync(syncName.frostboltOver)
+		elseif string.find(msg, L["kick_trigger1"]) or string.find(msg, L["kick_trigger2"]) or string.find(msg, L["kick_trigger3"]) -- kicked
+			or string.find(msg, L["pummel_trigger1"]) or string.find(msg, L["pummel_trigger2"]) or string.find(msg, L["pummel_trigger3"]) -- pummeled
+			or string.find(msg, L["shieldbash_trigger1"]) or string.find(msg, L["shieldbash_trigger2"]) or string.find(msg, L["shieldbash_trigger3"]) -- shield bashed
+			or string.find(msg, L["earthshock_trigger1"]) or string.find(msg, L["earthshock_trigger2"]) then -- earth shocked
+			
 			self:RemoveBar(L["frostbolt_bar"])
 			frostbolttime = 0
-			self:Sync("KelFrostboltStop")
+			self:Sync(syncName.frostboltOver)
 		end
 	else
 		frostbolttime = 0
@@ -372,26 +406,28 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "KelPhase2" then
+	if sync == syncName.phase2 then
 		self:Phase2()
-	elseif sync == "KelPhase3" then
+	elseif sync == syncName.phase3 then
 		self:Phase3()
-	elseif sync == "KelGuardians" then
+	elseif sync == syncName.guardians then
 		self:Guardians()
-	elseif sync == "KelMindControl" then
+	elseif sync == syncName.mindcontrol then
 		self:MindControl()
-	elseif sync == "KelFrostBlast" then
+	elseif sync == syncName.frostblast then
 		self:FrostBlast()
-	elseif sync == "KelDetonate" and rest then
+	elseif sync == syncName.detonate and rest then
 		self:Detonate()
-	elseif sync == "KelFrostbolt" then       -- changed from only frostbolt (thats only alert, if someone still wants to see the bar, it wouldnt work then)
+	elseif sync == syncName.frostbolt then       -- changed from only frostbolt (thats only alert, if someone still wants to see the bar, it wouldnt work then)
 		self:Frostbolt()
-	elseif sync == "KelFrostboltStop" then
+	elseif sync == syncName.frostboltOver then
 		self:FrostboltOver()
-	elseif sync == "KelAddDiesAbom" and rest then
+	elseif sync == syncName.fissure then
+		self:Fissure()
+	elseif sync == syncName.abomination and rest then
 		self:AbominationDies(rest)
-	elseif sync == "KelAddDiesSoul" and rest then
-		
+	elseif sync == syncName.soulWeaver and rest then
+		self:WeaverDies(rest)
 	end
 end
 
@@ -401,22 +437,22 @@ end
 ------------------------------
 
 function module:Phase2()
-	self:Bar(L["phase2_bar"], 15)
-	self:Bar(L["detonate_possible_bar"], 35)
-	self:Bar(L["mcfrostblast_bar"], 45)
-	self:DelayedMessage(15, L["phase2_warning"], "Important")
-	self:DelayedMessage(30, L["phase2_detonate_warning"], "Important")
-	self:DelayedMessage(40, L["phase2_mcfrostblast_warning"], "Important")
+	self:Bar(L["phase2_bar"], timer.phase2, icon.phase2)
+	self:Bar(L["detonate_possible_bar"], timer.firstDetonate, icon.detonate)
+	self:Bar(L["mcfrostblast_bar"], timer.firstFrostblast, icon.frostblast)
+	self:DelayedMessage(timer.phase2, L["phase2_warning"], "Important")
+	self:DelayedMessage(timer.firstDetonate - 5, L["phase2_detonate_warning"], "Important")
+	self:DelayedMessage(timer.firstFrostblast - 5, L["phase2_mcfrostblast_warning"], "Important")
 	
 	if self.db.profile.fbvolley then
-		self:Bar(L["frostbolt_volley"], 30, "Spell_Frost_FrostWard")
-		self:DelayedMessage(self.Volley, 45, self)
-		self:DelayedMessage(self.Volley, 60, self)
-		self:DelayedMessage(self.Volley, 75, self)
+		self:Bar(L["frostbolt_volley"], timer.firstFrostboltVolley, icon.frostboltVolley)
 	end
 	
+	-- master target should be automatically set, as soon as a raid assistant targets kel'thuzad
 	self:KTM_Reset()
+	
 	-- proximity silent
+	BigWigsProximity:BigWigs_ShowProximity(self)
 end
 
 function module:Phase3()
@@ -427,7 +463,7 @@ end
 
 function module:MindControl()
 	self:Message(L["mc_warning"], "Urgent")
-	self:Bar(L["mc_bar"], 60, "Inv_Belt_18")
+	self:Bar(L["mc_bar"], timer.mindcontrol, icon.mindcontrol)
 	
 	self:KTM_Reset()
 end
@@ -435,14 +471,14 @@ end
 function module:Guardians()
 	if self.db.profile.guardians then
 		self:Message(L["guardians_warning"], "Important")
-		self:Bar(L["guardians_bar"], 16)
+		self:Bar(L["guardians_bar"], timer.guardians, icon.guardians)
 	end
 end
 
 function module:FrostBlast()
 	self:Message(L["frostblast_warning"], "Attention")
-	self:ScheduleEvent("bwktfbwarn", "BigWigs_Message", 25, L["frostblast_soon_message"])
-	self:Bar(L["frostblast_bar"], 30, "Spell_Frost_FreezingBreath")
+	self:DelayedMessage(timer.frostblast - 5, L["frostblast_soon_message"])
+	self:Bar(L["frostblast_bar"], timer.frostblast, icon.frostblast)
 end
 
 function module:Detonate(name)
@@ -451,8 +487,8 @@ function module:Detonate(name)
 		if self.db.profile.detonateicon then 
 			self:Icon(name) 
 		end
-		self:Bar(string.format(L["detonate_bar"], name), 5, "Spell_Nature_WispSplode")
-		self:Bar(L["detonate_possible_bar"], 20, "Spell_Nature_WispSplode")
+		self:Bar(string.format(L["detonate_bar"], name), timer.detonate, icon.detonate)
+		self:Bar(L["detonate_possible_bar"], timer.nextDetonate, icon.detonate)
 	end
 end
 
@@ -463,7 +499,7 @@ function module:Frostbolt()
 			self:Message(L["frostbolt_warning"], "Personal")
 		end
 		if self.db.profile.frostboltbar then
-			self:Bar(L["frostbolt_bar"], 2, "Spell_Frost_FrostBolt02", true, "blue")
+			self:Bar(L["frostbolt_bar"], timer.frostbolt, icon.frostbolt, true, "blue")
 		end
 	end
 end
@@ -475,12 +511,19 @@ function module:FrostboltOver()
 	end
 end
 
+function module:Fissure()
+	if self.db.profile.fissure then
+		self:Message(L["fissure_warning"], "Urgent", true, "Alarm")
+		-- add bar?
+	end
+end
+
 function module:AbominationDies(name)
 	if name and self.db.profile.addcount then
 		self:RemoveBar(string.format(L["add_bar"], numAbominations, name))
-		numAbominations=numAbominations+1
-		if (numAbominations<14) then 
-			self:Bar(string.format(L["add_bar"], numAbominations, name),(pstart+320-GetTime())) 
+		numAbominations = numAbominations + 1
+		if numAbominations < 14 then 
+			self:Bar(string.format(L["add_bar"], numAbominations, name), (timePhase1Start + timer.phase1 - GetTime()), icon.abomination) 
 		end	
 	end
 end
@@ -488,9 +531,9 @@ end
 function module:WeaverDies(name)
 	if name and self.db.profile.addcount then
 		self:RemoveBar(string.format(L["add_bar"], numWeavers, name))
-		numWeavers=numWeavers+1
-		if (numWeavers<14) then 
-			self:Bar(string.format(L["add_bar"], numWeavers, name),(pstart+320-GetTime())) 
+		numWeavers = numWeavers + 1
+		if numWeavers < 14 then 
+			self:Bar(string.format(L["add_bar"], numWeavers, name), (timePhase1Start + timer.phase1 - GetTime()), icon.soulWeaver) 
 		end
 	end
 end
