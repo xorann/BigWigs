@@ -1095,6 +1095,14 @@ function BigWigs:AddLoDMenu( zonename )
 		zone = L["Other"]
 	end
 	if zone then
+        if BZ:HasReverseTranslation(zonename) and L:HasTranslation(BZ:GetReverseTranslation(zonename)) then
+            zone = L[BZ:GetReverseTranslation(zonename)]
+        elseif L:HasTranslation(zonename) then
+            zone = L[zonename]
+        end
+        
+        
+        
 		if not self.cmdtable.args[L["boss"]].args[zone] then
 			self.cmdtable.args[L["boss"]].args[zone] = {
 				type = "group",
