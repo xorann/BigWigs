@@ -523,6 +523,17 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
     self:SetCandyBarScale(id, scale)
     
 	self:StartCandyBar(id, true)
+	
+	--[[
+	local function OnBarClick(id)
+		local exists, time, elapsed, running, paused = self:CandyBarStatus(id)
+		if exists then
+			BigWigs:TriggerEvent("BigWigs_Message", id .. " in " .. time .. "s", "Urgent", false, nil, true)
+		end
+	end
+	
+	self:SetCandyBarOnClick(id, OnBarClick, id)
+	]]
 end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
