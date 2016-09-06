@@ -290,7 +290,7 @@ end
 function module:Phase3()
 	if self.db.profile.phase and phase < 3 then
 		self:Message(L["phase3text"], "Important", true, "Beware")
-        self:Bar(L["fear_next"], timer.firstFear, icon.fear)
+        self:Bar(L["fear_next"], timer.firstFear + timer.fearCast, icon.fear)
         phase = 3
 	end
 end
@@ -317,9 +317,11 @@ end
 
 function module:Fear()
 	if self.db.profile.onyfear then
+		self:RemoveBar(L["fear_next"]) -- has 1.5s left
+		
 		self:Message(L["feartext"], "Important", true, "Alarm")
 		self:Bar(L["fear_cast"], timer.fearCast, icon.fear, true, "white")
-		self:DelayedBar(timer.fearCast, L["fear_next"], timer.fear - timer.fearCast, icon.fear)
+		self:DelayedBar(timer.fearCast, L["fear_next"], timer.fear, icon.fear)
         self:WarningSign(icon.fear, 5)
 	end
 end
