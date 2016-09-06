@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Patchwerk"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Patchwerk", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -23,59 +24,112 @@ L:RegisterTranslations("enUS", function() return {
 	starttrigger2 = "Kel'Thuzad make Patchwerk his Avatar of War!",
 	startwarn = "Patchwerk Engaged! Enrage in 7 minutes!",
 	enragebartext = "Enrage",
-	warn1 = "Enrage in 5 minutes",
-	warn2 = "Enrage in 3 minutes",
-	warn3 = "Enrage in 90 seconds",
-	warn4 = "Enrage in 60 seconds",
-	warn5 = "Enrage in 30 seconds",
-	warn6 = "Enrage in 10 seconds",
+	warn5m = "Enrage in 5 minutes",
+	warn3m = "Enrage in 3 minutes",
+	warn90 = "Enrage in 90 seconds",
+	warn60 = "Enrage in 60 seconds",
+	warn30 = "Enrage in 30 seconds",
+	warn10 = "Enrage in 10 seconds",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsPatchwerk = BigWigs:NewModule(boss)
-BigWigsPatchwerk.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsPatchwerk.enabletrigger = boss
-BigWigsPatchwerk.bossSync = "Patchwerk"
-BigWigsPatchwerk.toggleoptions = {"enrage", "bosskill"}
-BigWigsPatchwerk.revision = tonumber(string.sub("$Revision: 15709 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"enrage", "bosskill"}
+
+-- locals
+local timer = {
+	enrage = 420,
+}
+local icon = {
+	enrage = "Spell_Shadow_UnholyFrenzy",
+}
+local syncName = {
+	enrage = "PatchwerkEnrage",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsPatchwerk:OnEnable()
-    self.started = nil
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+module:RegisterYellEngage(L["starttrigger1"])
+module:RegisterYellEngage(L["starttrigger2"])
+
+-- called after module is enabled
+function module:OnEnable()
+	self:ThrottleSync(10, syncName.enrage)
 end
 
-function BigWigsPatchwerk:CHAT_MSG_MONSTER_YELL( msg )
-	if self.db.profile.enrage and ( msg == L["starttrigger1"] or msg == L["starttrigger2"] ) then
-		self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["enragebartext"], 420, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-		self:ScheduleEvent("bwpatchwarn1", "BigWigs_Message", 120, L["warn1"], "Attention")
-		self:ScheduleEvent("bwpatchwarn2", "BigWigs_Message", 240, L["warn2"], "Attention")
-		self:ScheduleEvent("bwpatchwarn3", "BigWigs_Message", 330, L["warn3"], "Urgent")
-		self:ScheduleEvent("bwpatchwarn4", "BigWigs_Message", 360, L["warn4"], "Urgent")
-		self:ScheduleEvent("bwpatchwarn5", "BigWigs_Message", 390, L["warn5"], "Important")
-		self:ScheduleEvent("bwpatchwarn6", "BigWigs_Message", 410, L["warn6"], "Important")
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = false
+	berserkannounced = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.enrage then
+		self:Message(L["startwarn"], "Important")
+		self:Bar(L["enragebartext"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.enrage - 5 * 60, L["warn5m"], "Attention")
+		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3m"], "Attention")
+		self:DelayedMessage(timer.enrage - 90, L["warn90"], "Urgent")
+		self:DelayedMessage(timer.enrage - 60, L["warn60"], "Urgent")
+		self:DelayedMessage(timer.enrage - 30, L["warn30"], "Important")
+		self:DelayedMessage(timer.enrage - 10, L["warn10"], "Important")
 	end
 end
 
-function BigWigsPatchwerk:CHAT_MSG_MONSTER_EMOTE( msg )
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Event Handlers	    --
+------------------------------
+
+function module:CHAT_MSG_MONSTER_EMOTE( msg )
 	if msg == L["enragetrigger"] then
-		if self.db.profile.enrage then
-			self:TriggerEvent("BigWigs_Message", L["enragewarn"], "Important")
-		end
-		self:TriggerEvent("BigWigs_StopBar", self, L["enragebartext"])
-		self:CancelScheduledEvent("bwpatchwarn1")
-		self:CancelScheduledEvent("bwpatchwarn2")
-		self:CancelScheduledEvent("bwpatchwarn3")
-		self:CancelScheduledEvent("bwpatchwarn4")
-		self:CancelScheduledEvent("bwpatchwarn5")
-		self:CancelScheduledEvent("bwpatchwarn6")
+		self:Sync(syncName.enrage)
 	end
 end
 
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.enrage then
+		self:Enrage()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Enrage()
+	if self.db.profile.enrage then
+		self:Message(L["enragewarn"], "Important", nil, "Beware")
+
+		self:RemoveBar(L["enragebartext"])
+		
+		self:CancelDelayedMessage(L["warn5m"])
+		self:CancelDelayedMessage(L["warn3m"])
+		self:CancelDelayedMessage(L["warn90"])
+		self:CancelDelayedMessage(L["warn60"])
+		self:CancelDelayedMessage(L["warn30"])
+		self:CancelDelayedMessage(L["warn10"])
+	end
+end

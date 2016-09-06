@@ -1,13 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Sapphiron"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
 
-local time
-local cachedUnitId
-local lastTarget
+local module, L = BigWigs:ModuleDeclaration("Sapphiron", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -56,27 +53,55 @@ L:RegisterTranslations("enUS", function() return {
 	icebolt_yell = "I'm an Ice Block!",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsSapphiron = BigWigs:NewModule(boss)
-BigWigsSapphiron.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsSapphiron.enabletrigger = boss
-BigWigsSapphiron.bossSync = "Sapphiron"
-BigWigsSapphiron.toggleoptions = { "berserk", "lifedrain", "deepbreath", "icebolt", "bosskill" }
-BigWigsSapphiron.revision = tonumber(string.sub("$Revision: 17541 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"berserk", "lifedrain", "deepbreath", "icebolt", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	berserk = 900,
+	deepbreathInc = 23,
+	deepbreath = 7,
+	lifedrainAfterFlight = 14,
+	lifedrain = 24,
+	groundPhase = 50,
+}
+local icon = {
+	deepbreath = "Spell_Frost_FrostShock",
+	deepbreathInc = "Spell_Arcane_PortalIronForge",
+	lifedrain = "Spell_Shadow_LifeDrain02",
+	berserk = "INV_Shield_01",
+}
+local syncName = {
+	lifedrain = "SapphironLifeDrain",
+	flight = "SapphironFlight",
+}
+
+local timeLifeDrain = nil
+local cachedUnitId = nil
+local lastTarget = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsSapphiron:OnEnable()
-    self.started = nil
-	time = nil
-	cachedUnitId = nil
-	lastTarget = nil
+--module:RegisterYellEngage(L["start_trigger"])
 
+-- called after module is enabled
+function module:OnEnable()
 	if self:IsEventScheduled("bwsapphtargetscanner") then
 		self:CancelScheduledEvent("bwsapphtargetscanner")
 	end
@@ -84,108 +109,145 @@ function BigWigsSapphiron:OnEnable()
 		self:CancelScheduledEvent("bwsapphdelayed")
 	end
 
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
+	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "CheckForDeepBreath")
 
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "LifeDrain")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "LifeDrain")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "LifeDrain")
-
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "SapphironLifeDrain", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SapphironFlight", 5)
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForLifeDrain")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForLifeDrain")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForLifeDrain")
+	
+	self:ThrottleSync(4, syncName.lifedrain)
+	self:ThrottleSync(5, syncName.flight)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	timeLifeDrain = nil
+	cachedUnitId = nil
+	lastTarget = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.berserk then
+		self:Message(L["engage_message"], "Attention")
+		self:Bar(L["berserk_bar"], timer.berserk, icon.berserk)
+		self:DelayedMessage(timer.berserk - 10 * 60, L["berserk_warn_10min"], "Attention")
+		self:DelayedMessage(timer.berserk - 5 * 60, L["berserk_warn_5min"], "Attention")
+		self:DelayedMessage(timer.berserk - 60, string.format(L["berserk_warn_rest"], 60), "Urgent")
+		self:DelayedMessage(timer.berserk - 30, string.format(L["berserk_warn_rest"], 30), "Important")
+		self:DelayedMessage(timer.berserk - 10, string.format(L["berserk_warn_rest"], 10), "Important")
+		self:DelayedMessage(timer.berserk - 5, string.format(L["berserk_warn_rest"], 5), "Important")
+	end
+	if self.db.profile.deepbreath then
+		-- Lets start a repeated event after 5 seconds of combat so that
+		-- we're sure that the entire raid is in fact in combat when we
+		-- start it.
+		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 5, self)
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+	if self:IsEventScheduled("bwsapphtargetscanner") then
+		self:CancelScheduledEvent("bwsapphtargetscanner")
+	end
+	if self:IsEventScheduled("bwsapphdelayed") then
+		self:CancelScheduledEvent("bwsapphdelayed")
+	end
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsSapphiron:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if self:IsEventRegistered("PLAYER_REGEN_DISABLED") then self:UnregisterEvent("PLAYER_REGEN_DISABLED") end
-		if self:IsEventScheduled("bwsapphtargetscanner") then
-			self:CancelScheduledEvent("bwsapphtargetscanner")
-		end
-		if self:IsEventScheduled("bwsapphdelayed") then
-			self:CancelScheduledEvent("bwsapphdelayed")
-		end
-		if self.db.profile.berserk then
-			self:TriggerEvent("BigWigs_Message", L["engage_message"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["berserk_bar"], 900, "Interface\\Icons\\INV_Shield_01")
-			self:ScheduleEvent("bwsapphberserk1", "BigWigs_Message", 300, L["berserk_warn_10min"], "Attention")
-			self:ScheduleEvent("bwsapphberserk2", "BigWigs_Message", 600, L["berserk_warn_5min"], "Attention")
-			self:ScheduleEvent("bwsapphberserk3", "BigWigs_Message", 840, string.format(L["berserk_warn_rest"], 60), "Urgent")
-			self:ScheduleEvent("bwsapphberserk4", "BigWigs_Message", 870, string.format(L["berserk_warn_rest"], 30), "Important")
-			self:ScheduleEvent("bwsapphberserk5", "BigWigs_Message", 890, string.format(L["berserk_warn_rest"], 10), "Important")
-			self:ScheduleEvent("bwsapphberserk6", "BigWigs_Message", 895, string.format(L["berserk_warn_rest"], 5), "Important")
-		end
-		if self.db.profile.deepbreath then
-			-- Lets start a repeated event after 5 seconds of combat so that
-			-- we're sure that the entire raid is in fact in combat when we
-			-- start it.
-			self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 5, self)
-		end
-	elseif sync == "SapphironLifeDrain" and self.db.profile.lifedrain then
-		self:TriggerEvent("BigWigs_Message", L["lifedrain_message"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["lifedrain_bar"], 24, "Interface\\Icons\\Spell_Shadow_LifeDrain02")
-	elseif sync == "SapphironFlight" and self.db.profile.deepbreath and self.started then
-		if self:IsEventScheduled("bwsapphtargetscanner") then
-			self:CancelScheduledEvent("bwsapphtargetscanner")
-		end
-		if self:IsEventScheduled("bwsapphdelayed") then
-			self:CancelScheduledEvent("bwsapphdelayed")
-		end
-		self:TriggerEvent("BigWigs_Message", L["deepbreath_incoming_message"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["deepbreath_incoming_bar"], 23, "Interface\\Icons\\Spell_Arcane_PortalIronForge")
-		lastTarget = nil
-		cachedUnitId = nil
-		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 50, self)
-	end
-end
-
-function BigWigsSapphiron:LifeDrain(msg)
+function module:CheckForLifeDrain(msg)
 	if string.find(msg, L["lifedrain_trigger"]) or string.find(msg, L["lifedrain_trigger2"]) then
-		if not time or (time + 2) < GetTime() then
-			self:TriggerEvent("BigWigs_SendSync", "SapphironLifeDrain")
-			time = GetTime()
+		if not timeLifeDrain or (timeLifeDrain + 2) < GetTime() then
+			self:Sync(syncName.lifedrain)
+			timeLifeDrain = GetTime()
 		end
 	elseif string.find(msg, L["icebolt_trigger"]) and self.db.profile.icebolt then
-		SendChatMessage(L["icebolt_yell"] ,"YELL")
+		SendChatMessage(L["icebolt_yell"], "YELL")
 	end
 end
 
-function BigWigsSapphiron:CHAT_MSG_MONSTER_EMOTE(msg)
+function module:CheckForDeepBreath(msg)
 	if msg == L["deepbreath_trigger"] then
 		if self.db.profile.deepbreath then
-			self:TriggerEvent("BigWigs_Message", L["deepbreath_warning"], "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["deepbreath_bar"], 7, "Interface\\Icons\\Spell_Frost_FrostShock")
+			self:Message(L["deepbreath_warning"], "Important")
+			self:Bar(L["deepbreath_bar"], timer.deepbreath, icon.deepbreath)
 		end
-		self:TriggerEvent("BigWigs_StopBar", self, L["lifedrain_bar"])
+		
+		self:RemoveBar(L["lifedrain_bar"])
 		if self.db.profile.lifedrain then
-			self:TriggerEvent("BigWigs_StartBar", self, L["lifedrain_bar"], 14, "Interface\\Icons\\Spell_Shadow_LifeDrain02")
+			self:Bar(L["lifedrain_bar"], timer.lifedrainAfterFlight, icon.lifedrain)
 		end
 	end
 end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.lifedrain then
+		self:LifeDrain()
+	elseif sync == syncName.flight then
+		self:Flight()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:LifeDrain()
+	if self.db.profile.lifedrain then
+		self:Message(L["lifedrain_message"], "Urgent")
+		self:Bar(L["lifedrain_bar"], timer.lifedrain, icon.lifedrain)
+	end
+end
+
+function module:Flight()
+	if  self.db.profile.deepbreath and self.engaged then
+		if self:IsEventScheduled("bwsapphtargetscanner") then
+			self:CancelScheduledEvent("bwsapphtargetscanner")
+		end
+		if self:IsEventScheduled("bwsapphdelayed") then
+			self:CancelScheduledEvent("bwsapphdelayed")
+		end
+		self:Message(L["deepbreath_incoming_message"], "Urgent")
+		self:Bar(L["deepbreath_incoming_bar"], timer.deepbreathInc, icon.deepbreathInc)
+		lastTarget = nil
+		cachedUnitId = nil
+		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, timer.groundPhase, self)
+	end
+end
+
 
 ------------------------------
 --      Target Scanning     --
 ------------------------------
 
-function BigWigsSapphiron:StartTargetScanner()
-	if self:IsEventScheduled("bwsapphtargetscanner") or not self.started then return end
-
-	-- Start a repeating event that scans the raid for targets every 1 second.
-	self:ScheduleRepeatingEvent("bwsapphtargetscanner", self.RepeatedTargetScanner, 1, self)
+function module:StartTargetScanner()
+	if not self:IsEventScheduled("bwsapphtargetscanner") and self.engaged then 
+		-- Start a repeating event that scans the raid for targets every 1 second.
+		self:ScheduleRepeatingEvent("bwsapphtargetscanner", self.RepeatedTargetScanner, 1, self)
+	end
 end
 
-function BigWigsSapphiron:RepeatedTargetScanner()
+function module:RepeatedTargetScanner()
 	if not UnitAffectingCombat("player") then
 		self:CancelScheduledEvent("bwsapphtargetscanner")
 		return
 	end
 
-	if not self.started then return end
+	if not self.engaged then 
+		return 
+	end
 	local found = nil
 
 	-- If we have a cached unit (which we will if we found someone with the boss
@@ -215,7 +277,9 @@ function BigWigsSapphiron:RepeatedTargetScanner()
 	-- We've checked everything. If nothing was found, just return home.
 	-- We basically shouldn't return here, because someone should always have
 	-- him targetted.
-	if not found then return end
+	if not found then 
+		return 
+	end
 
 	local inFlight = nil
 
@@ -236,13 +300,13 @@ function BigWigsSapphiron:RepeatedTargetScanner()
 	end
 
 	-- He's not flying, so we're just going to continue scanning.
-	if not inFlight then return end
+	if not inFlight then 
+		return 
+	end
 
 	-- He's in flight! (I hope)
 	if self:IsEventScheduled("bwsapphtargetscanner") then
 		self:CancelScheduledEvent("bwsapphtargetscanner")
 	end
-	self:TriggerEvent("BigWigs_SendSync", "SapphironFlight")
+	self:Sync(syncName.flight)
 end
-
-

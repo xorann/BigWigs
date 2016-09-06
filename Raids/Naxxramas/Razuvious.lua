@@ -1,10 +1,11 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Instructor Razuvious"]
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Instructor Razuvious", "Naxxramas")
 local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+
 
 ----------------------------
 --      Localization      --
@@ -39,8 +40,7 @@ L:RegisterTranslations("enUS", function() return {
 	noshoutwarn = "No shout! Next in 20secs",
 	shoutbar = "Disrupting Shout",
 
-
-        unbalance_trigger = "afflicted by Unbalancing Strike",
+    unbalance_trigger = "afflicted by Unbalancing Strike",
 	unbalancesoonwarn = "Unbalancing Strike coming soon!",
 	unbalancewarn = "Unbalancing Strike! Next in ~30sec",
 	unbalancebar = "Unbalancing Strike",
@@ -49,113 +49,152 @@ L:RegisterTranslations("enUS", function() return {
 	shieldwallbar       = "Shield Wall",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsRazuvious = BigWigs:NewModule(boss)
-BigWigsRazuvious.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsRazuvious.enabletrigger = { boss }
-BigWigsRazuvious.bossSync = "Razuvious"
-BigWigsRazuvious.wipemobs = { understudy }
-BigWigsRazuvious.toggleoptions = {"shout", "unbalance", "shieldwall", "bosskill"}
-BigWigsRazuvious.revision = tonumber(string.sub("$Revision: 15233 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = {understudy} -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"shout", "unbalance", "shieldwall", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstShout = 20,
+	shout = 25,
+	noShoutDelay = 5,
+	unbalance = 30,
+	shieldwall = 20,
+}
+local icon = {
+	shout = "Ability_Warrior_WarCry",
+	unbalance = "Ability_Warrior_DecisiveStrike",
+	shieldwall = "Ability_Warrior_ShieldWall",
+}
+local syncName = {
+	shout = "RazuviousShout",
+	shieldwall = "RazuviousShieldwall",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsRazuvious:OnEnable()
-    self.started = nil
-	self.timeShout = 30
-	self.prior = nil
+module:RegisterYellEngage(L["starttrigger1"])
+module:RegisterYellEngage(L["starttrigger2"])
+module:RegisterYellEngage(L["starttrigger3"])
 
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Shout")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Shout")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Shout")
+-- called after module is enabled
+function module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CheckForShout")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckForShout")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckForShout")
 
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Unbalance")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Unbalance")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Unbalance")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "Unbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForUnbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForUnbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForUnbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "CheckForUnbalance")
 
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS", "Shieldwall")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS", "Shieldwall")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_BUFFS", "Shieldwall")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Shieldwall")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS", "CheckForShieldwall")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS", "CheckForShieldwall")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_BUFFS", "CheckForShieldwall")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckForShieldwall")
 
-	self:RegisterEvent("BigWigs_Message")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "RazuviousShout", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RazuviousShieldwall", 5)
+	self:ThrottleSync(5, syncName.shout)
+	self:ThrottleSync(5, syncName.shieldwall)
 end
 
-function BigWigsRazuvious:CHAT_MSG_MONSTER_YELL( msg )
-	if msg == L["starttrigger1"] or msg == L["starttrigger2"] or msg == L["starttrigger3"] then
-		if self.db.profile.shout then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Attention", nil, "Urgent")
-			self:ScheduleEvent("bwrazuviousshout7sec", "BigWigs_Message", 13, L["shout7secwarn"], "Urgent")
-			self:ScheduleEvent("bwrazuviousshout3sec", "BigWigs_Message", 17, L["shout3secwarn"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["shoutbar"], 20, "Interface\\Icons\\Ability_Warrior_WarCry")
-		end
-		self:ScheduleEvent("bwrazuviousnoshout", self.noShout, self.timeShout - 5, self ) -- praeda first no shout fix
-	end
+-- called after module is enabled and after each wipe
+function module:OnSetup()
 end
 
-function BigWigsRazuvious:BigWigs_Message(text)
-	if text == L["shout7secwarn"] then self.prior = nil end
-end
-
-function BigWigsRazuvious:Shieldwall( msg ) 
-	if string.find(msg, L["shieldwalltrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "RazuviousShieldwall")
-	end
-end
-
-function BigWigsRazuvious:Shout( msg )
-	if string.find(msg, L["shouttrigger"]) and not self.prior then
-		self:TriggerEvent("BigWigs_SendSync", "RazuviousShout")
-	end
-end
-
-function BigWigsRazuvious:noShout()	
-	self:CancelScheduledEvent("bwrazuviousnoshout")
-	self:ScheduleEvent("bwrazuviousnoshout", self.noShout, self.timeShout - 5, self )
+-- called after boss is engaged
+function module:OnEngage()
 	if self.db.profile.shout then
-		self:TriggerEvent("BigWigs_Message", L["noshoutwarn"], "Attention")
-		self:ScheduleEvent("bwrazuviousshout7sec", "BigWigs_Message", 13, L["shout7secwarn"], "Urgent")
-		self:ScheduleEvent("bwrazuviousshout3sec", "BigWigs_Message", 17, L["shout3secwarn"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["shoutbar"], 20, "Interface\\Icons\\Ability_Warrior_WarCry")
+		self:Message(L["startwarn"], "Attention", nil, "Urgent")
+		self:DelayedMessage(timer.firstShout - 7, L["shout7secwarn"], "Urgent")
+		self:DelayedMessage(timer.firstShout - 3, L["shout3secwarn"], "Urgent")
+		self:Bar(L["shoutbar"], timer.firstShout, icon.shout)
+	end
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self) -- praeda first no shout fix
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:CheckForShieldwall(msg) 
+	if string.find(msg, L["shieldwalltrigger"]) then
+		self:Sync(syncName.shieldwall)
 	end
 end
 
-function BigWigsRazuvious:Unbalance(msg)	
+function module:CheckForShout(msg)
+	if string.find(msg, L["shouttrigger"]) then
+		self:Sync(syncName.shout)
+	end
+end
+
+-- 5s after expected shout
+function module:NoShout()	
+	self:CancelScheduledEvent("bwrazuviousnoshout")
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)
+	if self.db.profile.shout then
+		self:Message(L["noshoutwarn"], "Attention") -- is this message useful?		
+		self:Bar(L["shoutbar"], timer.shout - timer.noShoutDelay, icon.shout)
+		self:DelayedMessage(timer.shout - timer.noShoutDelay - 7, L["shout7secwarn"], "Urgent")
+		self:DelayedMessage(timer.shout - timer.noShoutDelay - 3, L["shout3secwarn"], "Urgent")
+	end
+end
+
+function module:CheckForUnbalance(msg)	
 	if string.find(msg, L["unbalance_trigger"]) then
-		self:TriggerEvent("BigWigs_Message", L["unbalancewarn"], "Urgent")
-		self:ScheduleEvent("bwrazuviousunbalance5sec", "BigWigs_Message", 25, L["unbalancesoonwarn"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["unbalancebar"], 30, "Interface\\Icons\\Ability_Warrior_DecisiveStrike")
+		self:Message(L["unbalancewarn"], "Urgent")
+		self:DelayedMessage(timer.unbalance - 5, L["unbalancesoonwarn"], "Urgent")
+		self:Bar(L["unbalancebar"], timer.unbalance, icon.unbalance)
 	end
 end
 
 
-function BigWigsRazuvious:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "RazuviousShout" then
-		self:CancelScheduledEvent("bwrazuviousnoshout")
-		self:ScheduleEvent("bwrazuviousnoshout", self.noShout, self.timeShout, self )		
-		if self.db.profile.shout then
-			self:TriggerEvent("BigWigs_Message", L["shoutwarn"], "Attention", nil, "Alarm")
-			self:ScheduleEvent("bwrazuviousshout7sec", "BigWigs_Message", 18, L["shout7secwarn"], "Urgent")
-			self:ScheduleEvent("bwrazuviousshout3sec", "BigWigs_Message", 22, L["shout3secwarn"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["shoutbar"], 25, "Interface\\Icons\\Ability_Warrior_WarCry")
-		end
-		self.prior = true
-	elseif sync == "RazuviousShieldwall" then
-		if self.db.profile.shieldwall then
-			self:TriggerEvent("BigWigs_StartBar", self, L["shieldwallbar"], 20, "Interface\\Icons\\Ability_Warrior_ShieldWall")
-		end
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.shout then
+		self:Shout()
+	elseif sync == syncName.shieldwall then
+		self:Shieldwall()
 	end
 end
 
+------------------------------
+--      Sync Handlers	    --
+------------------------------
 
+function module:Shout()
+	self:CancelScheduledEvent("bwrazuviousnoshout")
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)		
+	
+	if self.db.profile.shout then
+		self:Message(L["shoutwarn"], "Attention", nil, "Alarm")
+		self:DelayedMessage(timer.shout - 7, L["shout7secwarn"], "Urgent")
+		self:DelayedMessage(timer.shout - 3, L["shout3secwarn"], "Urgent")
+		self:Bar(L["shoutbar"], timer.shout, icon.shout)
+	end
+end
+
+function module:Shieldwall()
+	if self.db.profile.shieldwall then
+		self:Bar(L["shieldwallbar"], timer.shieldwall, icon.shieldwall)
+	end
+end

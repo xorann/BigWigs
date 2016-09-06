@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Noth the Plaguebringer"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Noth the Plaguebringer", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -37,20 +38,20 @@ L:RegisterTranslations("enUS", function() return {
 
 	blinktrigger = "Noth the Plaguebringer gains Blink.",
 	blinkwarn = "Blink!",
-	blinkwarn2 = "Blink in ~5 seconds!",
-	blinkwarn3 = "Blink in ~10 seconds!",
+	blinkwarn5 = "Blink in ~5 seconds!",
+	blinkwarn10 = "Blink in ~10 seconds!",
 	blinkbar = "Blink",
 
 	teleportwarn = "Teleport! He's on the balcony!",
-	teleportwarn2 = "Teleport in 10 seconds!",
-	teleportwarn3 = "Teleport in 30 seconds!",
+	teleportwarn10 = "Teleport in 10 seconds!",
+	teleportwarn30 = "Teleport in 30 seconds!",
 
 	teleportbar = "Teleport!",
 	backbar = "Back in room!",
 
 	backwarn = "He's back in the room for %d seconds!",
-	backwarn2 = "10 seconds until he's back in the room!",
-	backwarn3 = "30 seconds until he's back in the room!",
+	backwarn10 = "10 seconds until he's back in the room!",
+	backwarn30 = "30 seconds until he's back in the room!",
 
 	cursetrigger = "afflicted by Curse of the Plaguebringer",
 	cursewarn = "Curse! next in ~28 seconds",
@@ -64,153 +65,222 @@ L:RegisterTranslations("enUS", function() return {
 	wave2_message = "Wave 2 in 10sec",
 	wave2s_message = "Wave 2 Spawning!",
 } end )
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsNoth = BigWigs:NewModule(boss)
-BigWigsNoth.zonename = AceLibrary("Babble-Zone-2.2")["Naxxramas"]
-BigWigsNoth.enabletrigger = boss
-BigWigsNoth.bossSync = "Noth"
-BigWigsNoth.toggleoptions = {"blink", "teleport", "curse", "wave", "bosskill"}
-BigWigsNoth.revision = tonumber(string.sub("$Revision: 15520 $", 12, -3))
+
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20003 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"blink", "teleport", "curse", "wave", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstBlink = 25,
+	secondBlink = 11,
+	thirdBlink = 22,
+	blinkAfterTeleport = 0, -- will be changed during the encounter
+	regularBlink = 25,
+	firstRoom = 90,
+	secondRoom = 110,
+	thirdRoom = 180,
+	room = 0, -- will be changed during the encounter
+	firstBalcony = 70,
+	secondBalcony = 95,
+	thirdBalcony = 120,
+	balcony = 0, -- will be changed during the encounter
+	curse = 28,
+	wave1 = 5,
+	wave2 = 41,
+	wave3 = 80,
+}
+local icon = {
+	balcony = "Spell_Magic_LesserInvisibilty",
+	blink = "Spell_Arcane_Blink",
+	wave = "Spell_ChargePositive",
+	curse = "Spell_Shadow_AnimateDead",
+}
+local syncName = {
+	blink = "NothBlink",
+	curse = "NothCurse",
+}
+
+local berserkannounced = nil
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsNoth:OnEnable()
-    self.started = nil
-	self.timeblink = 25
-	self.timeroom = 90
-	self.timebalcony = 70
-	self.cursetime = 28
-	self.wave1time = 5
-	self.wave2time = 41
-	self.wave3time = 70	
-	self.prior = nil
+module:RegisterYellEngage(L["starttrigger1"])
+module:RegisterYellEngage(L["starttrigger2"])
+module:RegisterYellEngage(L["starttrigger3"])
 
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
+-- called after module is enabled
+function module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckForBlink")
 
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "NothBlink", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "NothCurse", 5)
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForCurse")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForCurse")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForCurse")
+	
+	self:ThrottleSync(5, syncName.blink)
+	self:ThrottleSync(5, syncName.curse)
+end
 
-	self:RegisterEvent("BigWigs_Message")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Curse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Curse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Curse")
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	timer.blinkAfterTeleport = timer.firstBlink -- sets timer for first blink after first balcony
+	timer.room = timer.firstRoom
+	timer.balcony = timer.firstBalcony
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.teleport then
+		self:Message(L["startwarn"], "Important")
+		self:Bar(L["teleportbar"], timer.room, icon.balcony)
+		self:DelayedMessage(timer.room - 30, L["teleportwarn30"], "Urgent")
+		self:DelayedMessage(timer.room - 10, L["teleportwarn10"], "Urgent")
+	end
+	if self.db.profile.blink then
+		self:Bar(L["blinkbar"], timer.blinkAfterTeleport, icon.blink)
+		self:DelayedMessage(timer.blinkAfterTeleport - 10, L["blinkwarn10"], "Attention")
+		self:DelayedMessage(timer.blinkAfterTeleport - 5, L["blinkwarn5"], "Attention")
+	end
+
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
 end
 
 
-function BigWigsNoth:Curse( msg )
-	if string.find(msg, L["cursetrigger"]) and not self.prior then
-		self:TriggerEvent("BigWigs_SendSync", "NothCurse")
+--[[
+90s  room
+25s  blink
+50s  blink
+70s  balcony
+110s room
+22s  blink
+47s  blink
+72s  blink
+95s  balcony
+180s room
+11s  blink
+36s  blink
+61s  blink
+86s  blink
+111s blink
+120s balcony
+??s  room
+??s  blink
+]]
+
+------------------------------
+--      Initialization      --
+------------------------------
+
+function module:CheckForCurse(msg)
+	if string.find(msg, L["cursetrigger"]) then
+		self:Sync(syncName.curse)
 	end
 end
 
-function BigWigsNoth:CHAT_MSG_MONSTER_YELL( msg )
-	if msg == L["starttrigger1"] or msg == L["starttrigger2"] or msg == L["starttrigger3"] then
-		self.timeroom = 90
-		self.timebalcony = 70
-		self.timeblink = 11 -- sets timer for first blink after first balcony
-
-		if self.db.profile.teleport then
-			self:TriggerEvent("BigWigs_Message", L["startwarn"], "Important")
-			self:ScheduleEvent("BigWigs_Message", self.timeroom-10, L["teleportwarn2"], "Urgent")
-			self:ScheduleEvent("BigWigs_Message", self.timeroom-30, L["teleportwarn3"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["teleportbar"], self.timeroom, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
-		end
-		if self.db.profile.blink then
-			self:TriggerEvent("BigWigs_StartBar", self, L["blinkbar"], 25, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleEvent("bwnothblink", "BigWigs_Message", 15, L["blinkwarn3"], "Attention")
-			self:ScheduleEvent("bwnothblink2", "BigWigs_Message", 20, L["blinkwarn2"], "Attention")
-		end
-
-		self:ScheduleEvent("bwnothtobalcony", self.teleportToBalcony, self.timeroom, self)
-	end
-end
-
-function BigWigsNoth:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
+function module:CheckForBlink(msg)
 	if msg == L["blinktrigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "NothBlink")
+		self:Sync(syncName.blink)
 	end
 end
 
-function BigWigsNoth:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "NothCurse" then
-		if self.db.profile.curse then
-			self:TriggerEvent("BigWigs_Message", L["cursewarn"], "Important", nil, "Alarm")
-			self:ScheduleEvent("bwnothcurse", "BigWigs_Message", self.cursetime-10, L["curse10secwarn"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["cursebar"], self.cursetime, "Interface\\Icons\\Spell_Shadow_AnimateDead")
-		end
-		self.prior = true
-	elseif sync == "NothBlink" then
-		if self.db.profile.blink then
-			self:TriggerEvent("BigWigs_Message", L["blinkwarn"], "Important")
-			self:ScheduleEvent("bwnothblink", "BigWigs_Message", 15, L["blinkwarn3"], "Attention")
-			self:ScheduleEvent("bwnothblink2", "BigWigs_Message", 20, L["blinkwarn2"], "Attention")
-			self:TriggerEvent("BigWigs_StartBar", self, L["blinkbar"], 25, "Interface\\Icons\\Spell_Arcane_Blink")
-		end
-	end
-end
-
-function BigWigsNoth:BigWigs_Message(text)
-	if text == L["curse10secwarn"] then self.prior = nil end
-end
-
-function BigWigsNoth:teleportToBalcony()
-	if self.timeroom == 90 then
-		self.timeroom = 110	
-	elseif self.timeroom == 110 then
-		self.timeroom = 180
-		self.timeblink = 22 -- 2nd teleport to balcony
-		
-		
+function module:TeleportToBalcony()
+	if timer.room == timer.firstRoom then
+		timer.room = timer.secondRoom
+		timer.blinkAfterTeleport = timer.secondBlink
+	elseif timer.room == timer.secondRoom then
+		timer.room = timer.thirdRoom
+		timer.blinkAfterTeleport = timer.thirdBlink -- 2nd teleport to balcony
 	end
 
-	self:CancelScheduledEvent("bwnothblink")
-	self:CancelScheduledEvent("bwnothcurse")
-	self:TriggerEvent("BigWigs_StopBar", self, L["blinkbar"])
-	self:TriggerEvent("BigWigs_StopBar", self, L["cursebar"])
+	self:CancelDelayedMessage(L["teleportwarn10"])
+	self:CancelDelayedMessage(L["teleportwarn30"])
+	self:CancelDelayedMessage(L["curse10secwarn"])
+	
+	self:RemoveBar(L["blinkbar"])
+	self:RemoveBar(L["cursebar"])
 
 	if self.db.profile.teleport then 
-		self:TriggerEvent("BigWigs_Message", L["teleportwarn"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["backbar"], self.timebalcony, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
-		self:ScheduleEvent("bwnothback", "BigWigs_Message", self.timebalcony - 30, L["backwarn3"], "Urgent")
-		self:ScheduleEvent("bwnothback2", "BigWigs_Message", self.timebalcony - 10, L["backwarn2"], "Urgent")
-			end
-	if self.db.profile.wave then
-		self:TriggerEvent("BigWigs_StartBar", self, L["wave1bar"], self.wave1time, "Interface\\Icons\\Spell_ChargePositive" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["wave2bar"], self.wave2time, "Interface\\Icons\\Spell_ChargePositive" )
-		self:TriggerEvent("BigWigs_StartBar", self, L["wave3bar"], self.wave3time, "Interface\\Icons\\Spell_ChargePositive" )
-		self:ScheduleEvent("bwnothwave2inc", "BigWigs_Message", self.wave2time - 10, L["wave2_message"], "Urgent")
-		self:ScheduleEvent("bwnothwave2spawn", "BigWigs_Message", self.wave2time, L["wave2s_message"], "Urgent")
+		self:Message(L["teleportwarn"], "Important")
+		self:Bar(L["backbar"], timer.balcony, icon.balcony)
+		self:DelayedMessage(timer.balcony - 30, L["backwarn30"], "Urgent")
+		self:DelayedMessage(timer.balcony - 10, L["backwarn10"], "Urgent")
 	end
-	self:ScheduleEvent("bwnothtoroom", self.teleportToRoom, self.timebalcony, self)
+	if self.db.profile.wave then
+		self:Bar(L["wave1bar"], timer.wave1, icon.wave )
+		self:Bar(L["wave2bar"], timer.wave2, icon.wave )
+		self:Bar(L["wave3bar"], timer.wave3, icon.wave )
+		self:DelayedMessage(timer.wave2 - 10, L["wave2_message"], "Urgent")
+		self:DelayedMessage(timer.wave2, L["wave2s_message"], "Urgent")
+	end
+	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.balcony, self)
 end
 
-function BigWigsNoth:teleportToRoom()
-	if self.timebalcony == 70 then
-		self.timebalcony = 95
-	elseif self.timebalcony == 95 then
-		self.timebalcony = 120
-		
+function module:TeleportToRoom()
+	if timer.balcony == timer.firstBalcony then
+		timer.balcony = timer.secondBalcony
+	elseif timer.balcony == timer.secondBalcony then
+		timer.balcony = timer.thirdBalcony
 	end
 
 	if self.db.profile.teleport then
-		self:TriggerEvent("BigWigs_Message", string.format(L["backwarn"], self.timeroom), "Important")
-			self:TriggerEvent("BigWigs_StartBar", self, L["blinkbar"], self.timeblink, "Interface\\Icons\\Spell_Arcane_Blink")
-			self:ScheduleEvent("bwnothblink2", "BigWigs_Message", self.timeblink - 10, L["blinkwarn3"], "Attention") -- praeda
-			self:ScheduleEvent("bwnothblink2", "BigWigs_Message", self.timeblink - 5, L["blinkwarn2"], "Attention") -- praeda
+		self:Message(string.format(L["backwarn"], timer.room), "Important")
+		self:Bar(L["blinkbar"], timer.blinkAfterTeleport, icon.blink)
+		self:DelayedMessage(timer.blinkAfterTeleport - 10, L["blinkwarn10"], "Attention") -- praeda
+		self:DelayedMessage(timer.blinkAfterTeleport - 5, L["blinkwarn5"], "Attention") -- praeda
 		
-		self:TriggerEvent("BigWigs_StartBar", self, L["teleportbar"], self.timeroom, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
-		self:ScheduleEvent("bwnothteleport", "BigWigs_Message", self.timeroom - 10, L["teleportwarn2"], "Urgent")
-		self:ScheduleEvent("bwnothteleport2", "BigWigs_Message", self.timeroom - 10, L["teleportwarn3"], "Urgent")
+		self:Bar(L["teleportbar"], timer.room, icon.balcony)
+		self:DelayedMessage(timer.room - 30, L["teleportwarn30"], "Urgent")
+		self:DelayedMessage(timer.room - 10, L["teleportwarn10"], "Urgent")
 	end
-	self.prior = nil
-	self:ScheduleEvent("bwnothtobalcony", self.teleportToBalcony, self.timeroom, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
 end
 
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.curse then
+		self:Curse()
+	elseif sync == syncName.blink then
+		self:Blink()
+	end
+end
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:Curse()
+	if self.db.profile.curse then
+		self:Message(L["cursewarn"], "Important", nil, "Alarm")
+		self:DelayedMessage(timer.curse - 10, L["curse10secwarn"], "Urgent")
+		self:Bar(L["cursebar"], timer.curse, icon.curse)
+	end
+end
+
+function module:Blink()
+	if self.db.profile.blink then
+		self:Message(L["blinkwarn"], "Important")
+		self:DelayedMessage(timer.regularBlink - 10, L["blinkwarn10"], "Attention")
+		self:DelayedMessage(timer.regularBlink - 5, L["blinkwarn5"], "Attention")
+		self:Bar(L["blinkbar"], timer.regularBlink, icon.blink)
+	end
+	
+	-- aggro reset?
+end
