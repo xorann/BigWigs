@@ -166,6 +166,7 @@ local timer = {
 	enrage = 900,
 	heal = 2,
 }
+-- first panic seems to be random (15-20s)
 local icon = {
 	panic = "Spell_Shadow_DeathScream",
 	volley = "Spell_Nature_Corrosivebreath",
