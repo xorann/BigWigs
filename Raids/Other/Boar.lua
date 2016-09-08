@@ -92,6 +92,7 @@ L:RegisterTranslations("deDE", function() return {
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 
+    self:RegisterEvent("CHAT_MSG_COMBAT_SELF_HITS", "PlayerDamageEvents")
     self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents")
@@ -158,6 +159,10 @@ end
 function module:PlayerDamageEvents(msg)
     if not string.find(msg, "Eye of C'Thun") then
         local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
+        --if GetLocale() == "deDE" then
+		--	if string.find(stype, L["crit"]) then stype = L["crit"] else stype = L["hit"] end
+		--	school = string.gsub(school, "schaden", "")
+		--end
         if stype and dmg and school then
             if tonumber(dmg) > 300 then
                 -- trigger weakend

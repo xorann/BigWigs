@@ -398,10 +398,10 @@ function module:PlayerDamageEvents(msg)
 	if not self.db.profile.vulnerability then return end
 	if not vulnerability then
 		local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
-		if GetLocale() == "deDE" then
-			if string.find(stype, L["crit"]) then stype = L["crit"] else stype = L["hit"] end
-			school = string.gsub(school, "schaden", "")
-		end
+		--if GetLocale() == "deDE" then
+		--	if string.find(stype, L["crit"]) then stype = L["crit"] else stype = L["hit"] end
+		--	school = string.gsub(school, "schaden", "")
+		--end
 		if stype and dmg and school then
 			if school == L["arcane"] then
 				if string.find(userspell, L["starfire"]) then
