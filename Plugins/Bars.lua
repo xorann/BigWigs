@@ -86,6 +86,7 @@ L:RegisterTranslations("enUS", function() return {
     ["Move"] = true,
 	["Move bars that are emphasized to a second anchor."] = true,
     ["Set the scale for emphasized bars."] = true,
+    ["Emphasize Bars"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -133,7 +134,7 @@ L:RegisterTranslations("deDE", function() return {
     ["Move"] = "Bewegen",
 	["Move bars that are emphasized to a second anchor."] = "Hervorgehobene Anzeigebalken zu einem zweiten Ankerpunkt bewegen.",
     ["Set the scale for emphasized bars."] = "Die Skalierung für hervorgehobene Anzeigebalken festlegen.",
-
+    ["Emphasize Bars"] = "Hervorgehobene Balken",
 } end)
 
 ----------------------------------
@@ -855,7 +856,7 @@ function BigWigsBars:SetupFrames(emphasize)
 	leftbutton:SetWidth(40)
 	leftbutton:SetHeight(25)
 	leftbutton:SetPoint("RIGHT", frame, "CENTER", -10, -15)
-	leftbutton:SetScript( "OnClick", function()  self:TriggerEvent("BigWigs_Test") end )
+	leftbutton:SetScript("OnClick", function()  self:TriggerEvent("BigWigs_Test") end )
 
 	
 	t = leftbutton:CreateTexture()
@@ -922,6 +923,7 @@ function BigWigsBars:SetupFrames(emphasize)
     
     if emphasize then
         self.frames.emphasizeAnchor = frame
+        self.frames.emphasizeAnchor.cheader:SetText(L["Emphasize Bars"])
         
         local x = self.db.profile.emphasizePosX
 		local y = self.db.profile.emphasizePosY
@@ -971,7 +973,7 @@ function BigWigsBars:ResetAnchor(specific)
 		if not self.frames.anchor then self:SetupFrames() end
 		self.frames.anchor:ClearAllPoints()
 		if self.db.profile.emphasize and self.db.profile.emphasizeMove then
-			self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 0, -25)
+			self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 0, 0)
 		else
 			self.frames.anchor:SetPoint("CENTER", UIParent, "CENTER")
 		end
@@ -994,7 +996,8 @@ function BigWigsBars:SavePosition()
 	local s = self.frames.anchor:GetEffectiveScale()
 	self.db.profile.posx = self.frames.anchor:GetLeft() * s
 	self.db.profile.posy = self.frames.anchor:GetTop() * s
-
+    BigWigs:Print(self.db.profile.posy)
+    
 	if self.db.profile.emphasize and self.db.profile.emphasizeMove then
 		if not self.frames.emphasizeAnchor then self:SetupFrames(true) end
 		s = self.frames.emphasizeAnchor:GetEffectiveScale()

@@ -47,7 +47,7 @@ L:RegisterTranslations("deDE", function() return {
 	deathother_trigger = "(.*) stirbt.",
 	splitsoon_message = "Abbilder bald! Sei bereit!",
 	split_message = "Abbilder!",
-	kill_trigger = "You only delay",
+	kill_trigger = "You only delay", -- translation missing
 	
 	cmd = "Skeram",
 
@@ -131,6 +131,45 @@ end
 --      Event Handlers      --
 ------------------------------
 
+-- override
+function module:CheckForBossDeath(msg)
+    if msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
+		-- check that it wasn't only a copy
+		local function IsBossInCombat()
+            local t = module.enabletrigger
+            if not t then return false end
+            if type(t) == "string" then t = {t} end
+
+            if UnitExists("target") and UnitAffectingCombat("target") then
+                local target = UnitName("target")
+                for _, mob in pairs(t) do
+                    if target == mob then
+                        return true
+                    end
+                end
+            end
+
+            local num = GetNumRaidMembers()
+            for i = 1, num do
+                local raidUnit = string.format("raid%starget", i)
+                if UnitExists(raidUnit) and UnitAffectingCombat(raidUnit) then
+                    local target = UnitName(raidUnit)
+                    for _, mob in pairs(t) do
+                        if target == mob then
+                            return true
+                        end
+                    end
+                end
+            end
+            return false
+        end
+		
+		if not IsBossInCombat() then
+			self:SendBossDeathSync()
+		end
+	end
+end
+
 function module:Event(msg)
 	local _,_, mindcontrolother, mctype = string.find(msg, L["mcplayerother"])
 	local _,_, mindcontrolotherend, mctype = string.find(msg, L["mcplayerotherend"])
@@ -152,13 +191,13 @@ end
 
 function module:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["kill_trigger"]) then
-		BigWigs:Print("yell kill trigger")
+		BigWigs:Debug("yell kill trigger")
 		--if self.db.profile.bosskill then
 		--	self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
 		--end
 		--self:TriggerEvent("BigWigs_RemoveRaidIcon")
 		--self.core:ToggleModuleActive(self, false)
-		self:SendBossDeathSync()
+		--self:SendBossDeathSync()
 	end
 end
 

@@ -1,3 +1,10 @@
 - improve configuration for warnicon
 
-- enrage plugin: show 2 bars on top of each other. one for the enrage timer and one with the boss hp.
+
+- enrage plugin: 
+	- show 2 bars on top of each other. one for the enrage timer and one with the boss hp.
+	- hp bar color coded (green: over 3% ahead, orange: within 3% of enrage, red: over 3% behind)
+- interrupt plugin: 
+	- list of names with a bar right of the name. the bar shows the cooldown of the interrupt skill or if it's available. 
+	- configuration which classes should be shown
+	- text color coded (green: ready, orange: cooldown, red: dead)

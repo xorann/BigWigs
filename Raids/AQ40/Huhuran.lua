@@ -25,8 +25,8 @@ L:RegisterTranslations("enUS", function() return {
 	berserk_name = "Berserk Alert",
 	berserk_desc = "Warn for Berserk",
 
-	frenzytrigger = "%s goes into a frenzy!",
-	berserktrigger = "%s goes into a berserker rage!",
+	frenzytrigger = "%s gains Frenzy.",
+	berserktrigger = "%s gains Berserk!",
 	frenzywarn = "Frenzy - Tranq Shot!",
 	berserkwarn = "Berserk! Berserk! Berserk!",
 	berserksoonwarn = "Berserk Soon!",
@@ -53,12 +53,12 @@ L:RegisterTranslations("deDE", function() return {
 	berserk_name = "Berserkerwut",
 	berserk_desc = "Warnung, wenn Huhuran in Berserkerwut verf\195\164llt.",
 
-	frenzytrigger = "%s ger\195\164t in Raserei!",
-	berserktrigger = "%s verf\195\164llt in Berserkerwut!",
+	frenzytrigger = "%s ger\195\164t in Raserei!", -- translation missing
+	berserktrigger = "%s verf\195\164llt in Berserkerwut!", -- translation missing
 	frenzywarn = "Raserei - Einlullender Schuss!",
 	berserkwarn = "Berserkerwut!",
 	berserksoonwarn = "Berserkerwut in K\195\188rze!",
-	stingtrigger = "von Stich des Fl\195\188geldrachen betroffen",
+	stingtrigger = "von Stich des Flügeldrachen betroffen",
 	stingwarn = "Stich des Fl\195\188geldrachen!",
 	stingdelaywarn = "M\195\182glicher Stich des Fl\195\188geldrachen in ~3 Sekunden!",
 	bartext = "Stich",

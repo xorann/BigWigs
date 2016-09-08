@@ -53,8 +53,8 @@ L:RegisterTranslations("enUS", function() return {
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-	volley_name = "Poison Volley Alert", -- ?
-	volley_desc = "Warn for Poison Volley", -- ?
+	volley_name = "Giftblitzsalve Alarm", -- ?
+	volley_desc = "Warnt vor Giftblitzsalve", -- ?
 
 	toxinyou_name = "Toxin Wolke",
 	toxinyou_desc = "Warnung, wenn Du in einer Toxin Wolke stehst.",
@@ -70,7 +70,7 @@ L:RegisterTranslations("deDE", function() return {
 	frozen_trigger 	= "ist tiefgefroren!",
 	crack_trigger 	= "geht die Puste aus!", --CHECK
 	shatter_trigger 	= "ist kurz davor, zu zerspringen!",
-	volley_trigger	= "afflicted by Poison Bolt Volley", -- ?
+	volley_trigger	= "ist von Giftblitzsalve betroffen.",
 	toxin_trigger 	= "^([^%s]+) ([^%s]+) von Toxin betroffen.$",
 
 	you 		= "Ihr",
@@ -81,12 +81,12 @@ L:RegisterTranslations("deDE", function() return {
 	frozen_warn 		= "Dritte Freeze Phase!",
 	crack1_warn 		= "Zerspringen - etwas noch!",
 	crack2_warn 		= "Zerspringen - fast da!",
-	volley_warn		= "Poison Bolt Volley!", -- ?
-	volley_soon_warn		= "Incoming Poison Bolt Volley in ~3 Sekunden!", -- ?
+	volley_warn		= "Giftblitzsalve!", -- ?
+	volley_soon_warn		= "Giftblitzsalve in ~3 Sekunden!", -- ?
 	toxin_warn		= " ist in einer Toxin Wolke!",
 	toxin_self_warn		= "Du bist in einer Toxin Wolke!",
 
-	volley_bar        = "Poison Bolt Volley",
+	volley_bar        = "Giftblitzsalve",
 } end )
 
 ---------------------------------

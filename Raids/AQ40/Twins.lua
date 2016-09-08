@@ -50,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 	explodebugtrigger = "gains Explode Bug",
 	explodebugwarn = "Bug exploding nearby!",
 	enragetrigger = "becomes enraged.",
-	trigger = "Blizzard",
+	--trigger = "Blizzard",
 	enragewarn = "Twins are enraged",
 	healtrigger1 = "'s Heal Brother heals",
 	healtrigger2 = " Heal Brother heals",
@@ -106,7 +106,7 @@ L:RegisterTranslations("deDE", function() return {
 	portdelaywarn = "Teleport in ~5 Sekunden!",
 	portdelaywarn10 = "Teleport in ~10 Sekunden!",
 	bartext = "Teleport",
-	explodebugtrigger = "bekommt 'K\195\164fer explodieren lassen'",
+	explodebugtrigger = "bekommt 'Käfer explodieren lassen'",
 	explodebugwarn = "K\195\164fer explodiert!",
 	enragetrigger = "wird w\195\188tend.", -- ? "bekommt 'Wutanfall'"
 	enragewarn = "Zwillings Imperatoren sind w\195\188tend!",
@@ -124,7 +124,7 @@ L:RegisterTranslations("deDE", function() return {
 	warn7 = "Wutanfall in 10 Sekunden",
     
     blizzard_trigger = "Ihr seid von Blizzard betroffen.",
-    blizzard_gone_trigger = "Blizzard schwindet von Euch.",
+    blizzard_gone_trigger = "'Blizzard' schwindet von Euch.",
 	blizzard_warn = "Lauf aus Blizzard!",
             
     pull_trigger1 = "Ihr seid nichts weiter als",

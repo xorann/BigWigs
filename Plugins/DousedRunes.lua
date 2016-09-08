@@ -128,7 +128,7 @@ BigWigsDousedRunes.consoleOptions = {
 			type = "toggle",
 			name = L["Show on Boss Kill"],
 			desc = L["Show the display after a boss has been killed."],
-			order = 101,
+			order = 102,
             get = function() return BigWigsDousedRunes.db.profile.showOnBossKill end,
             set = function(v) BigWigsDousedRunes.db.profile.showOnBossKill = v end,
 		},
@@ -136,13 +136,13 @@ BigWigsDousedRunes.consoleOptions = {
             type = "execute",
 			name = L["Reset position"],
 			desc = L["Reset the frame position."],
-			order = 102,
+			order = 103,
 			func = function() BigWigsDousedRunes:ResetPosition() end,
         },
 		--[[spacer = {
 			type = "header",
 			name = " ",
-			order = 103,
+			order = 104,
 		},]]
 	}
 }

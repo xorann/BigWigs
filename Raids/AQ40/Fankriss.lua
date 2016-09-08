@@ -25,7 +25,7 @@ L:RegisterTranslations("enUS", function() return {
     entangle_desc = "Warn for Entangle and incoming Bugs",
     entangleplayer = "You are afflicted by Entangle.",
 	entangleplayerother = "(.*) is afflicted by Entangle.",
-    entanglewarn,
+    entanglewarn = "Entangle!",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -35,6 +35,12 @@ L:RegisterTranslations("deDE", function() return {
 	wormtrigger = "Fankriss der Unnachgiebige wirkt Wurm beschw\195\182ren.",
 	wormwarn = "Wurm wurde beschworen! (%d)",
 	wormbar = "Wurm ist w\195\188tend (%d)",
+	
+	entangle_name = "Umschlingen Warnung",
+    entangle_desc = "Warnt vor Umschlingen und den Käfern",
+    entangleplayer = "Ihr seid von Umschlingen betroffen.",
+	entangleplayerother = "(.*) ist von Umschlingen betroffen.",
+    entanglewarn = "Umschlingen!",
 } end )
 
 ---------------------------------
