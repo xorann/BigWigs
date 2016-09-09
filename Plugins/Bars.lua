@@ -367,10 +367,12 @@ function BigWigsBars:OnEnable()
 	        end)
 	end
     
-    self.frames.emphasizeAnchor.flashTimers = new()
-	self.frames.emphasizeAnchor.emphasizeTimers = new()
-	self.frames.emphasizeAnchor.moduleBars = new()
-	self.frames.emphasizeAnchor.movingBars = new()
+    if self.frames.emphasizeAnchor then
+        self.frames.emphasizeAnchor.flashTimers = new()
+        self.frames.emphasizeAnchor.emphasizeTimers = new()
+        self.frames.emphasizeAnchor.moduleBars = new()
+        self.frames.emphasizeAnchor.movingBars = new()
+    end
 end
 
 function BigWigsBars:OnDisable()
@@ -447,9 +449,13 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
 	local id = "BigWigsBar "..text
     if not self.frames.anchor then self:SetupFrames() end
     
-    if not self.frames.emphasizeAnchor.moduleBars[module] then self.frames.emphasizeAnchor.moduleBars[module] = {} end
-	self.frames.emphasizeAnchor.moduleBars[module][id] = true
-    
+    if self.frames.emphasizeAnchor then
+        if not self.frames.emphasizeAnchor.moduleBars[module] then 
+            self.frames.emphasizeAnchor.moduleBars[module] = {} 
+        end
+        self.frames.emphasizeAnchor.moduleBars[module][id] = true
+    end
+        
 	local bc, balpha, txtc
 	if BigWigsColors and type(BigWigsColors) == "table" then
 		if type(otherc) ~= "boolean" or not otherc then c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 = BigWigsColors:BarColor(time) end
