@@ -451,7 +451,7 @@ end
 
 function BigWigs:CheckForWipe(module)    
     if module and module:IsBossModule() then
-        module:DebugMessage("BigWigs." .. module:ToString() .. ":CheckForWipe()")
+        --module:DebugMessage("BigWigs." .. module:ToString() .. ":CheckForWipe()")
 
         -- start wipe check in regular intervals
         local running = module:IsEventScheduled(module:ToString().."_CheckWipe")
