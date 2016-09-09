@@ -378,10 +378,12 @@ end
 function BigWigsBars:OnDisable()
 	self:BigWigs_HideAnchors()
 
-	self.frames.emphasizeAnchor.flashTimers = del(self.frames.emphasizeAnchor.flashTimers)
-	self.frames.emphasizeAnchor.emphasizeTimers = del(self.frames.emphasizeAnchor.emphasizeTimers)
-	self.frames.emphasizeAnchor.moduleBars = del(self.frames.emphasizeAnchor.moduleBars)
-	self.frames.emphasizeAnchor.movingBars = del(self.frames.emphasizeAnchor.movingBars)
+    if self.frames.emphasizeAnchor then
+        self.frames.emphasizeAnchor.flashTimers = del(self.frames.emphasizeAnchor.flashTimers)
+        self.frames.emphasizeAnchor.emphasizeTimers = del(self.frames.emphasizeAnchor.emphasizeTimers)
+        self.frames.emphasizeAnchor.moduleBars = del(self.frames.emphasizeAnchor.moduleBars)
+        self.frames.emphasizeAnchor.movingBars = del(self.frames.emphasizeAnchor.movingBars)
+    end
 end
 
 
@@ -390,7 +392,7 @@ end
 ------------------------------
 
 function BigWigsBars:Disable(module)
-	if self.frames.emphasizeAnchor.moduleBars[module] then
+	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.moduleBars[module] then
 		if self.frames.emphasizeAnchor.emphasizeTimers[module] then
 			for k, v in pairs(self.frames.emphasizeAnchor.emphasizeTimers[module]) do
 				self:CancelScheduledEvent(v)
@@ -545,7 +547,7 @@ end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
     if not text then return end
-	if self.frames.emphasizeAnchor.moduleBars[module] then
+	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.moduleBars[module] then
 		local id = "BigWigsBar "..text
 
 		if self.frames.emphasizeAnchor.movingBars[id] then
@@ -693,7 +695,7 @@ end
 
 function BigWigsBars:FlashBar(module, id)
 	if not flashColors then generateColors() end
-	if self.frames.emphasizeAnchor.flashTimers[module] then self.frames.emphasizeAnchor.flashTimers[module][id] = nil end
+	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.flashTimers[module] then self.frames.emphasizeAnchor.flashTimers[module][id] = nil end
 	-- Start flashing the bar
 	currentColor[id] = 1
 	self:ScheduleRepeatingEvent(id, flashBarUp, 0.1, id)
@@ -713,33 +715,35 @@ end
 function BigWigsBars:UpdateBars()
 	local now, count = GetTime(), 0
 
-	for bar, opt in pairs(self.frames.emphasizeAnchor.movingBars) do
-		local stop, scale = opt.stop
-		count = count + 1
-		if stop < now then
-			self.frames.emphasizeAnchor.movingBars[bar] = del(self.frames.emphasizeAnchor.movingBars[bar])
-			self:RegisterCandyBarWithGroup(bar, self.frames.emphasizeAnchor.candyBarGroupId)
-            self:SetCandyBarScale(bar, self.db.profile.emphasizeScale or 1)
-			return
-		end
+    if self.frames.emphasizeAnchor then
+        for bar, opt in pairs(self.frames.emphasizeAnchor.movingBars) do
+            local stop, scale = opt.stop
+            count = count + 1
+            if stop < now then
+                self.frames.emphasizeAnchor.movingBars[bar] = del(self.frames.emphasizeAnchor.movingBars[bar])
+                self:RegisterCandyBarWithGroup(bar, self.frames.emphasizeAnchor.candyBarGroupId)
+                self:SetCandyBarScale(bar, self.db.profile.emphasizeScale or 1)
+                return
+            end
 
-		local centerX, centerY = self:GetCandyBarCenter(bar)
-		if type(centerX) == "number" and type(centerY) == "number" then
-			local effscale = self:GetCandyBarEffectiveScale(bar)
-			local tempX, tempY = centerX*effscale, centerY*effscale
+            local centerX, centerY = self:GetCandyBarCenter(bar)
+            if type(centerX) == "number" and type(centerY) == "number" then
+                local effscale = self:GetCandyBarEffectiveScale(bar)
+                local tempX, tempY = centerX*effscale, centerY*effscale
 
-			tempX = CosineInterpolate(tempX, opt.targetX, 1 - ((stop - now) / self.db.profile.duration) )
-			tempY = CosineInterpolate(tempY, opt.targetY, 1 - ((stop - now) / self.db.profile.duration) )
-			scale = (opt.stopScale - opt.startScale) * (1 - ((stop - now) / self.db.profile.duration))
+                tempX = CosineInterpolate(tempX, opt.targetX, 1 - ((stop - now) / self.db.profile.duration) )
+                tempY = CosineInterpolate(tempY, opt.targetY, 1 - ((stop - now) / self.db.profile.duration) )
+                scale = (opt.stopScale - opt.startScale) * (1 - ((stop - now) / self.db.profile.duration))
 
-			self:SetCandyBarScale(bar, scale + opt.startScale)
-			effscale = self:GetCandyBarEffectiveScale(bar)
+                self:SetCandyBarScale(bar, scale + opt.startScale)
+                effscale = self:GetCandyBarEffectiveScale(bar)
 
-			local point, rframe, rpoint = self:GetCandyBarPoint(bar)
-			self:SetCandyBarPoint(bar, point, rframe, rpoint, tempX/effscale, tempY/effscale)
-		end
-	end
-
+                local point, rframe, rpoint = self:GetCandyBarPoint(bar)
+                self:SetCandyBarPoint(bar, point, rframe, rpoint, tempX/effscale, tempY/effscale)
+            end
+        end
+    end
+    
 	if count == 0 then
 		self:CancelScheduledEvent("BigWigsBarMover")
 	end
@@ -749,7 +753,9 @@ function BigWigsBars:EmphasizeBar(module, id)
 	local centerX, centerY = self:GetCandyBarCenter(id)
 	if type(centerX) ~= "number" or type(centerY) ~= "number" then return end
 
-	if self.frames.emphasizeAnchor.emphasizeTimers[module] then self.frames.emphasizeAnchor.emphasizeTimers[module][id] = nil end
+	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.emphasizeTimers[module] then 
+        self.frames.emphasizeAnchor.emphasizeTimers[module][id] = nil 
+    end
 
 	if not self.frames.emphasizeAnchor then self:SetupFrames(true) end
 
