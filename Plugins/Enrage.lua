@@ -10,32 +10,8 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigsEnrage")
 local paint = AceLibrary("PaintChips-2.0")
 local minscale, maxscale = 0.25, 2
 local candybar = AceLibrary("CandyBar-2.1")
-
 local surface = AceLibrary("Surface-1.0")
 
-local count = 1
-
-local new, del
-do
-	local cache = setmetatable({},{__mode="k"})
-	function new()
-		local t = next(cache)
-		if t then
-			cache[t] = nil
-			return t
-		else
-			return {}
-		end
-	end
-	function del(t)
-        if not t then return nil end
-		for k in pairs(t) do
-			t[k] = nil
-		end
-		cache[t] = true
-		return nil
-	end
-end
 
 ----------------------------
 --      Localization      --

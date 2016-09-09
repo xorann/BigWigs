@@ -87,7 +87,7 @@ L:RegisterTranslations("enUS", function() return {
 	blink_bar = "Possible Blink",
 	deaden_bar = "Deaden Magic",
 	curse_bar = "Shazzrah's Curse",
-	cs_bar = "Counterspell",
+	cs_bar = "Possible Counterspell",
 
 	cmd = "Shazzrah",
 	
@@ -129,7 +129,7 @@ L:RegisterTranslations("deDE", function() return {
 	blink_bar = "Mögliches Blinzeln",
 	deaden_bar = "Magie d\195\164mpfen",
 	curse_bar = "N\195\164chster Fluch",
-	cs_bar = "N\195\164chster Gegenzauber",
+	cs_bar = "Möglicher Gegenzauber",
 	
 	cmd = "Shazzrah",
 	

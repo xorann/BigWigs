@@ -272,7 +272,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
-	BigWigsProximity:BigWigs_HideProximity(self)
+    self:RemoveProximity()
 end
 
 
@@ -452,7 +452,7 @@ function module:Phase2()
 	self:KTM_Reset()
 	
 	-- proximity silent
-	BigWigsProximity:BigWigs_ShowProximity(self)
+	self:Proximity()
 end
 
 function module:Phase3()

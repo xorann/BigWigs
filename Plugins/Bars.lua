@@ -953,7 +953,7 @@ function BigWigsBars:SetupFrames(emphasize)
 		if x and y then
 			local s = self.frames.anchor:GetEffectiveScale()
 			self.frames.anchor:ClearAllPoints()
-			self.frames.anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+			self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 0, 0)--self.frames.anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
 		else
 			self:ResetAnchor("normal")
 		end
@@ -996,7 +996,6 @@ function BigWigsBars:SavePosition()
 	local s = self.frames.anchor:GetEffectiveScale()
 	self.db.profile.posx = self.frames.anchor:GetLeft() * s
 	self.db.profile.posy = self.frames.anchor:GetTop() * s
-    BigWigs:Print(self.db.profile.posy)
     
 	if self.db.profile.emphasize and self.db.profile.emphasizeMove then
 		if not self.frames.emphasizeAnchor then self:SetupFrames(true) end

@@ -327,6 +327,8 @@ function BigWigs.modulePrototype:Disengage()
 		self:RemoveWarningSign("", true)
         BigWigsBars:Disable(self)
         BigWigsBars:BigWigs_HideCounterBars()
+        
+        self:RemoveProximity()
 		
 		self:OnDisengage()
     end
@@ -589,6 +591,20 @@ function BigWigs.modulePrototype:Say(msg)
 end
 
 -- proximity
+function BigWigs:Proximity(moduleName)
+    self:TriggerEvent("BigWigs_ShowProximity", moduleName)
+end
+function BigWigs.modulePrototype:Proximity()
+    BigWigs:Proximity(self:ToString())
+end
+
+function BigWigs:RemoveProximity()
+    self:TriggerEvent("BigWigs_HideProximity")
+end
+function BigWigs.modulePrototype:RemoveProximity()
+    BigWigs:RemoveProximity()
+end
+
 -- doused runes
 
 -- KLHThreatMeter

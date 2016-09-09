@@ -252,6 +252,7 @@ function module:OnEnable()
 	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Emote")		-- weakened triggering, does not work on nefarian
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Emote")		-- weakened triggering, does not work on nefarian
+	self:RegisterEvent("CHAT_MSG_COMBAT_SELF_HITS", "PlayerDamageEvents")				-- alternative weaken trigger for nefarian
     self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "PlayerDamageEvents") 				-- alternative weaken trigger for nefarian
 	self:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE", "PlayerDamageEvents") 				-- alternative weaken trigger for nefarian
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "PlayerDamageEvents") 			-- alternative weaken trigger for nefarian
@@ -283,7 +284,7 @@ function module:OnSetup()
 
 	tentacletime = timer.p1Tentacle
     
-    BigWigsProximity:BigWigs_HideProximity(self)
+    self:RemoveProximity() 
 end
 
 -- called after boss is engaged
@@ -421,7 +422,7 @@ function module:CThunStart()
 		self:ScheduleEvent("bwcthungroupwarningstart", self.GroupWarning, timer.p1GlareStart - 1, self)
 		self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, timer.target, self)
         
-        BigWigsProximity:BigWigs_ShowProximity(self)
+        self:Proximity()
 	end
 end
 
@@ -478,7 +479,7 @@ function module:CThunP2Start()
         
         timer.lastEyeTentaclesSpawn = GetTime() + 10
         
-        BigWigsProximity:BigWigs_HideProximity(self)
+        self:RemoveProximity()
 	end
 
 end

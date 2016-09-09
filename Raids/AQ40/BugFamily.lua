@@ -24,6 +24,7 @@ L:RegisterTranslations("enUS", function() return {
 	attack_trigger3 = "Princess Yauj hits",
 	attack_trigger4 = "Princess Yauj crits",
 	panic_bar = "Panic",
+	first_panic_bar = "Possible Panic (+/- 3s)",
 	panic_message = "Fear in 3 Seconds!",
 	toxicvolleyhit_trigger = "Toxic Volley hits",
 	toxicvolleyafflicted_trigger = "afflicted by Toxic Volley\.",
@@ -91,6 +92,7 @@ L:RegisterTranslations("deDE", function() return {
 	attack_trigger3 = "Prinzessin Yauj trifft",
 	attack_trigger4 = "Prinzessin Yauj trifft (.+) kritisch",
 	panic_bar = "Furcht",
+	first_panic_bar = "Mögliche Furcht (+/- 3s)",
 	panic_message = "Furcht in 3 Sekunden!",
 	toxicvolleyhit_trigger = "Toxische Salve trifft",
 	toxicvolleyafflicted_trigger = "von Toxische Salve betroffen",
@@ -159,7 +161,7 @@ module.toggleoptions = {"panic", "toxicvolley", "heal", "announce", "deathspecia
 
 -- locals
 local timer = {
-	firstPanic = 15,
+	firstPanic = 17.5,
 	panic = 20,
 	firstVolley = 11.4,
 	volley = 5,
@@ -242,8 +244,8 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.panic then
-		self:Bar(L["panic_bar"], timer.firstPanic, icon.panic, true, "white")
-		self:DelayedMessage(timer.firstPanic - 3, L["panic_message"], "Urgent", true, "Alarm") 
+		self:Bar(L["first_panic_bar"], timer.firstPanic, icon.panic, true, "white")
+		--self:DelayedMessage(timer.firstPanic - 3, L["panic_message"], "Urgent", true, "Alarm") 
 	end
 	if self.db.profile.toxicvolley then
 		self:Bar(L["toxicvolley_bar"], timer.firstVolley, icon.volley, true, "green")

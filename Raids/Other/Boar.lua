@@ -120,12 +120,12 @@ function module:OnEngage()
 
 	self:Sync("TwinsTeleport")
 		
-	BigWigsProximity:BigWigs_ShowProximity(self)
+	self:Proximity()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
-    BigWigsProximity:BigWigs_HideProximity(self)
+    self:RemoveProximity()
 end
 
 

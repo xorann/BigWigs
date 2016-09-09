@@ -193,7 +193,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		if string.find(msg, i) then
 			if v[2] then
 				if self.db.profile.classcall then
-					self:Message(v[1], "Important")
+					self:Message(v[1], "Core")
 					self:DelayedMessage(timer.classcall - 3, L["classcall_warning"], "Important")
 					self:Bar(v[1], timer.classcall, icon.classcall)
 					self:DelayedSound(timer.classcall - 3, "Three")
@@ -298,6 +298,6 @@ function module:Landing()
             self:KTM_SetTarget(self:ToString())
             self:KTM_Reset()
         end
-        self:ScheduleEvent("bwnefarianktm", setKTM(), timer.landing + 1, self)
+        self:ScheduleEvent("bwnefarianktm", setKTM, timer.landing + 1, self)
 	end
 end

@@ -35,7 +35,7 @@ L:RegisterTranslations("enUS", function() return {
 	vulnerability_desc = "Warn for Vulnerability changes.",
 
 	breath_trigger = "Chromaggus begins to cast (.+)\.",
-	vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
+	vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)", -- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
 	vulnerability_dots_test = "^Chromaggus suffers ([%d]+) ([%w]+) damage from [%w]+[%s's]* ([%w%s:]+)%.[%s%(]*([%d]*)",
 	frenzy_trigger = "goes into a killing frenzy",
 	frenzyfade_trigger = "Frenzy fades from Chromaggus\.",
@@ -397,12 +397,25 @@ end
 function module:PlayerDamageEvents(msg)
 	if not self.db.profile.vulnerability then return end
 	if not vulnerability then
-		local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
-		--if GetLocale() == "deDE" then
-		--	if string.find(stype, L["crit"]) then stype = L["crit"] else stype = L["hit"] end
-		--	school = string.gsub(school, "schaden", "")
-		--end
+		local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"]) 
+		-- "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)"
+		-- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
+		-- [Fashu's] [Feuerblitz] [trifft] Schlachtwache Sartura für [44] [Feuerschaden]. ([14] widerstanden)
+		-- userspell: Firebolt; stype: hits; dmg: 44; school: Fire; partial: 14
+		
+		-- Kan's Life Steal crits Battleguard Sartura for 45 Shadow damage. (15 resisted)
+		-- Kan's Lebensdiebstahl trifft Schlachtwache Sartura kritisch für 45 Schattenschaden. (15 widerstanden)
+		
 		if stype and dmg and school then
+			-- german combat log entries for a crit are a bit special (<name> hits <enemy> critically for <x> damage.)
+			if GetLocale() == "deDE" then
+				if string.find(msg, L["crit"]) then 
+					stype = L["crit"] 
+				else 
+					stype = L["hit"] 
+				end
+				school = string.gsub(school, "schaden", "") -- turn "Feuerschaden" into "Feuer"
+			end
 			if school == L["arcane"] then
 				if string.find(userspell, L["starfire"]) then
 					if partial and partial ~= "" then

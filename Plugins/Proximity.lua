@@ -217,12 +217,16 @@ end
 --      Event Handlers
 -----------------------------------------------------------------------
 
-function BigWigsProximity:BigWigs_ShowProximity(module)
+function BigWigsProximity:BigWigs_ShowProximity(moduleName)
 	--[[if active then
         error("The proximity module is already running for another boss module.")
     end]]
-    
-    self:OpenProximity(module)
+    if moduleName and BigWigs:HasModule(moduleName) then
+        local module = BigWigs:GetModule(moduleName)
+        self:OpenProximity(module)
+    else
+        self:OpenProximity()
+    end
 end
 
 function BigWigsProximity:BigWigs_HideProximity()
