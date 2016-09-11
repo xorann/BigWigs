@@ -231,7 +231,8 @@ end
 function BigWigsMessages:BigWigs_Message(text, color, noraidsay, sound, broadcastonly)
 	if not text then return end
 	if broadcastonly then return end
-	local r, g, b
+	
+    local r, g, b
 	if color ~= nil and type(color) == "table" and type(color.r) == "number" and type(color.g) == "number" and type(color.b) == "number" then
 		r, g, b = color.r, color.g, color.b
 	else

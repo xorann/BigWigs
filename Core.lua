@@ -334,12 +334,16 @@ function BigWigs.modulePrototype:Disengage()
     end
 end
 function BigWigs.modulePrototype:Victory()
-    if self.db.profile.bosskill then self:Message(string.format(L["%s has been defeated"], self.translatedName), "Bosskill", nil, "Victory") end
+    if self.engaged then
+        if self.db.profile.bosskill then 
+            self:Message(string.format(L["%s has been defeated"], self.translatedName), "Bosskill", nil, "Victory") 
+        end
     
-    BigWigsBossRecords:EndBossfight(self)
-    
-    self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
-    self.core:DisableModule(self:ToString())
+        BigWigsBossRecords:EndBossfight(self)
+
+        self:DebugMessage("Boss dead, disabling module ["..self:ToString().."].")
+        self.core:DisableModule(self:ToString())
+    end
 end
 function BigWigs.modulePrototype:Disable()
     self:Disengage()

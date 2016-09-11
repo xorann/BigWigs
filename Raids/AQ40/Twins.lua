@@ -309,6 +309,6 @@ function module:Teleport()
         self:DelayedSound(timer.teleport - 3, "Three")
         self:DelayedSound(timer.teleport - 2, "Two")
         self:DelayedSound(timer.teleport - 1, "One")
-        self:DelayedMessage(timer.teleport, L["portwarn"], "Attention", true, "Alarm")
+        self:DelayedMessage(timer.teleport - 0.1, L["portwarn"], "Attention", false, "Alarm")
 	end
 end

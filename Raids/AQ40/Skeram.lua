@@ -33,6 +33,7 @@ L:RegisterTranslations("enUS", function() return {
 	split_cmd = "split",
 	split_name = "Split Alert",
 	split_desc = "Warn before Splitting",
+    ["You have slain %s!"] = true,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -58,6 +59,7 @@ L:RegisterTranslations("deDE", function() return {
 	split_cmd = "split",
 	split_name = "Abbilder",
 	split_desc = "Alarm vor der Aufteilung",
+    ["You have slain %s!"] = "Ihr habt %s getötet!",
 } end )
 
 ---------------------------------
@@ -133,7 +135,8 @@ end
 
 -- override
 function module:CheckForBossDeath(msg)
-    if msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
+    if msg == string.format(UNITDIESOTHER, self:ToString()) 
+        or msg == string.format(L["You have slain %s!"], self.translatedName) then
 		-- check that it wasn't only a copy
 		local function IsBossInCombat()
             local t = module.enabletrigger
