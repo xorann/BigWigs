@@ -372,7 +372,7 @@ function BigWigsBossBlock:ChatFrame_OnEvent(event)
 		return
 	end
 	if type(self.hooks["ChatFrame_OnEvent"]) == "function" and event then
-        --BigWigs:Print("ChatFrame_OnEvent " .. event)
+        BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
 		self.hooks["ChatFrame_OnEvent"](event)
 	else
 		return self.hooks["ChatFrame_MessageEventHandler"](event)

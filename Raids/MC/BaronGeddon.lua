@@ -31,7 +31,7 @@ local icon = {
 local syncName = {
 	bomb = "GeddonBombX",
 	bombStop = "GeddonBombStop",
-	inferno = "GeddonInfernoX",
+	inferno = "GeddonInferno1",
 	ignite = "GeddonManaIgniteX",
 	service = "GeddonServiceX",
 }
@@ -255,7 +255,7 @@ end
 
 function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	if string.find(msg, L["inferno_trigger"]) then
-        BigWigs:Print("real inferno trigger")
+        BigWigs:DebugMessage("inferno trigger")
 		self:Sync(syncName.inferno)
 	end
 end
@@ -290,11 +290,12 @@ end
 ------------------------------
 
 function module:Inferno()
-	self:DelayedSync(timer.nextInferno, syncName.inferno)
+	--self:DelayedSync(timer.nextInferno, syncName.inferno)
 	
 	if self.db.profile.inferno then
 		if firstinferno then
 			self:Bar(L["inferno_bar"], timer.nextInferno, icon.inferno)
+            firstinferno = false
 		else
 			self:Message(L["inferno_message"], "Important")
 			self:Bar(L["inferno_channel"], timer.inferno, icon.inferno)
@@ -309,9 +310,10 @@ end
 
 function module:ManaIgnite()
 	if self.db.profile.mana then
-		if firstignite then
+		if not firstignite then
 			self:Message(L["ignite_message"], "Important")
 		end
+        firstignite = false
 		self:Bar(L["ignite_bar"], timer.ignite, icon.ignite)
 	end
 end

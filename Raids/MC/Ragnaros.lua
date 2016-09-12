@@ -93,7 +93,7 @@ L:RegisterTranslations("deDE", function() return {
 	knockback_trigger = "DIE FLAMMEN VON SULFURON",
 	submerge_trigger = "^Kommt herbei, meine Diener!",
 	engage_trigger = "^NUN ZU EUCH,",
-    engage_soon_trigger = "Unversch\195\164mte Welpen!",
+    engage_soon_trigger = "ZU FRÜH!",
     hammer_trigger = "^DAS FEUER WIRD EUCH!",
 
 	knockback_message = "R\195\188cksto\195\159!",
