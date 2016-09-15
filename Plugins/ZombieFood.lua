@@ -33,7 +33,7 @@ L:RegisterTranslations("enUS", function() return {
 BigWigsZombieFood = BigWigs:NewModule(name)
 BigWigsZombieFood.defaultDB = {
 	broadcast = false,
-	on = true,
+	on = false,
 }
 
 BigWigsZombieFood.consoleCmd = L["zombiefood"]

@@ -368,11 +368,11 @@ end
 
 function BigWigsBossBlock:ChatFrame_OnEvent(event)
 	if self:IsChannelSuppressed(event) and self:IsSpam(arg1) then
-		self:Debug(L["Suppressing Chatframe"], event, arg1)
+		--self:Debug(L["Suppressing Chatframe"], event, arg1)
 		return
 	end
 	if type(self.hooks["ChatFrame_OnEvent"]) == "function" and event then
-        BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
+        --BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
 		self.hooks["ChatFrame_OnEvent"](event)
 	else
 		return self.hooks["ChatFrame_MessageEventHandler"](event)

@@ -76,7 +76,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Nr Replies"] = "Anzahl der Antworten",
 	["Ancient"] = "Alt",
             
-    ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = "Deine Version von Big Wigs Classic-WoW ist veraltet! Bitte downloade die neuste Version von https://github.com/xorann/BigWigs/releases.",
+    ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = "Deine Version von Big Wigs Classic-WoW ist veraltet! Bitte downloade die neuste Version von https://github.com/xorann/BigWigs/releases",
     ["Close"] = "Schliessen",
     ["Cancel"] = "Abbrechen",
 } end )

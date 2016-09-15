@@ -466,7 +466,7 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
 
     local groupId = self.frames.anchor.candyBarGroupId
 	local scale = self.db.profile.scale or 1
-    if self.db.profile.emphasize and (self.db.profile.emphasizeMove or self.db.profile.emphasizeFlash) then
+    if self.frames.emphasizeAnchor and self.db.profile.emphasize and (self.db.profile.emphasizeMove or self.db.profile.emphasizeFlash) then
         -- If the bar is started at more than 15 seconds, it won't be emphasized
 		-- right away, but if it's started at 15 or less, it will be.
 		if time > 15 then
