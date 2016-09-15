@@ -83,6 +83,103 @@ L:RegisterTranslations("enUS", function() return {
 	mcplayerwarn = " is mindcontrolled!",
 	mcyou = "You",
 	mcare = "are",
+            
+    -- nef counter
+    ["NefCounter_Trigger"] = "^([%w ]+) dies.",
+
+	["NefCounter_RED"] = "Red Drakonid",
+	["NefCounter_GREEN"] = "Green Drakonid",
+	["NefCounter_BLUE"] = "Blue Drakonid",
+	["NefCounter_BRONZE"] = "Bronze Drakonid",
+	["NefCounter_BLACK"] = "Black Drakonid",
+	["NefCounter_CHROMATIC"] = "Chromatic Drakonid",
+	["NefCounter_TOTAL"] = "Drakonids total",
+} end)
+
+L:RegisterTranslations("deDE", function() return {
+	engage_trigger = "Lasst die Spiele beginnen!",
+	landing_trigger = "GENUG! Nun sollt ihr Ungeziefer",
+    landingNOW_trigger = "Der Mut der Sterblichen scheint zu schwinden",
+	zerg_trigger = "Unmöglich! Erhebt Euch, meine Diener!",
+	fear_trigger = "Nefarian beginnt Dröhnendes Gebrüll zu wirken.",
+	fear_over_trigger = "Dröhnendes Gebrüll",
+	shadowflame_trigger = "Nefarian beginnt Schattenflamme zu wirken.",
+
+	triggerfear = "von Panik",
+	land = "Estimated Landing",
+	Mob_Spawn = "Mob Spawn",
+	fear_warn = "Furcht JETZT!",
+
+	triggershamans	= "Schamanen",
+	triggerdruid	= "Druiden",
+	triggerwarlock	= "Hexenmeister",
+	triggerpriest	= "Priester",
+	triggerhunter	= "Jäger",
+	triggerwarrior	= "Krieger",
+	triggerrogue	= "Schurken",
+	triggerpaladin	= "Paladine",
+	triggermage		= "Magier",
+
+	landing_soon_warning = "Nefarian landet in 30 Sekunden!",
+	landing_very_soon = "Nefarian landet in 10 Sekunden!",
+	landing_warning = "Nefarian landet!",
+	zerg_warning = "Zerg kommt!",
+	fear_warning = "Furcht in 2s!",
+	fear_soon_warning = "Mögliche Furcht in 5s",
+	shadowflame_warning = "Schattenflamme!",
+	shadowflame_bar = "Schattenflamme",
+	classcall_warning = "Classcall",
+
+	warnshaman	= "Schamanen - Totems spawned!",
+	warndruid	= "Druiden - stecken in Katzenform!",
+	warnwarlock	= "Hexenmeister - Infernals!",
+	warnpriest	= "Priester - Heilung schmerzt!",
+	warnhunter	= "Jäger - Bogen/Gewehr kaputt!",
+	warnwarrior	= "Krieger - stecken in Berserkerhaltung!",
+	warnrogue	= "Schurken - teleportiert und gewurzelt!",
+	warnpaladin	= "Paladine - Segen des Schutzes!",
+	warnmage	= "Magier - polymorphs!",
+
+	classcall_bar = "Classcall",
+	fear_bar = "Mögliche Furcht",
+
+	--cmd = "Nefarian",
+
+	--shadowflame_cmd = "shadowflame",
+	shadowflame_name = "Schattenflamme Warnung",
+	shadowflame_desc = "Warnt vor Schattenflamme",
+
+	--fear_cmd = "fear",
+	fear_name = "Furcht Warnung",
+	fear_desc = "Warnt wenn Nefarian die AoE Furcht zaubert",
+
+	--classcall_cmd = "classcall",
+	classcall_name = "Klassenruf Warnung",
+	classcall_desc = "Warn for Class Calls",
+
+	--otherwarn_cmd = "otherwarn",
+	otherwarn_name = "Other alerts",
+	otherwarn_desc = "Landing and Zerg warnings",
+            
+    --mc_cmd = "mc",
+	mc_name = "Mind Control Alert",
+	mc_desc = "Warn for Mind Control",
+    mcwarn = "Gedankencontrolle!",
+	mcplayer = "^([^%s]+) ([^%s]+) von Schattenbefehl betroffen.",
+	mcplayerwarn = " ist gedankenkontrolliert.",
+	mcyou = "Ihr",
+	mcare = "seid",
+            
+    -- nef counter
+    ["NefCounter_Trigger"] = "^([%w ]+) stirbt.",
+
+	["NefCounter_RED"] = "Roter Drakonid",
+	["NefCounter_GREEN"] = "Grüner Drakonid",
+	["NefCounter_BLUE"] = "Blauer Drakonid",
+	["NefCounter_BRONZE"] = "Bronzener Drakonid",
+	["NefCounter_BLACK"] = "Schwarzer Drakonid",
+	["NefCounter_CHROMATIC"] = "Chromatischer Drakonid",
+	["NefCounter_TOTAL"] = "Drakonide total",
 } end)
 
 ---------------------------------
@@ -90,7 +187,7 @@ L:RegisterTranslations("enUS", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20004 -- To be overridden by the module!
 module.enabletrigger = {boss, victor} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"shadowflame", "fear", "classcall", "otherwarn", "bosskill"}
@@ -125,6 +222,7 @@ local syncName = {
 
 
 local warnpairs = nil
+local nefCounter = nil
 
 
 ------------------------------
@@ -163,6 +261,9 @@ end
 function module:OnSetup()
 	self.started = nil
 	self.phase2 = nil
+    nefCounter = 0
+    
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged
@@ -183,6 +284,17 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    BigWigs:CheckForBossDeath(msg, self)
+    
+    local _, _, drakonid = string.find(msg, L["NefCounter_Trigger"])
+    if drakonid and L:HasReverseTranslation(drakonid) then
+        --self:OnKill(L:GetReverseTranslation(drakonid))
+        nefCounter = nefCounter + 1
+        BigWigs:Print("Drakonids dead: " .. nefCounter .. " Name: " .. drakonid)
+    end
+end
 
 function module:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["landingNOW_trigger"]) then
