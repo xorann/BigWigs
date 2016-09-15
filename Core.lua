@@ -402,7 +402,7 @@ end
 BigWigs:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 
 function BigWigs:CheckForEngage(module)
-    if module and module:IsBossModule() then
+    if module and module:IsBossModule() and not module.engaged then
         local function IsBossInCombat()
             local t = module.enabletrigger
             local a = module.wipemobs
@@ -921,7 +921,6 @@ function BigWigs:EnableModule(moduleName, nosync)
 				self:Print("translatedName for module " .. m:ToString() .. " missing")
 			end
 			self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m.translatedName or "??"), "Core", true)
-			
 		end
 		
 		--if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. m.bossSync or (BB:GetReverseTranslation(moduleName))) end

@@ -165,7 +165,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20004 -- To be overridden by the module!
 local eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 local cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]
 module.enabletrigger = {eyeofcthun, cthun} -- string or table {boss, add1, add2}
@@ -246,8 +246,7 @@ local eyeTarget = nil
 ------------------------------
 
 -- called after module is enabled
-function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+function module:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe") -- we get out of combat between phases
 	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Emote")		-- weakened triggering, does not work on nefarian
@@ -274,14 +273,17 @@ function module:OnEnable()
 end
 
 -- called after module is enabled and after each wipe
-function module:OnSetup()
+function module:OnSetup()	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+    
 	self.started = nil
 	eyeTarget = nil
 	cthunstarted = nil
 	firstGlare = nil
 	firstWarning = nil
 	phase2started = nil
-
+    doCheckForWipe = false
+    
 	tentacletime = timer.p1Tentacle
     
     self:RemoveProximity() 
@@ -302,6 +304,8 @@ end
 ----------------------
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    BigWigs:CheckForBossDeath(msg, self)
+    
 	if (msg == string.format(UNITDIESOTHER, eyeofcthun)) then
 		self:Sync(syncName.p2Start)
 	elseif (msg == string.format(UNITDIESOTHER, gianteye)) then
@@ -314,6 +318,7 @@ end
 
 function module:CheckForWipe(event)
     if doCheckForWipe then
+        BigWigs:DebugMessage("doCheckForWipe")
         BigWigs:CheckForWipe(self)
     end
 end
@@ -445,6 +450,7 @@ function module:CThunP2Start()
 		self:RemoveWarningSign(icon.darkGlare)
         
         -- cancel eye tentacles
+        
 		self:RemoveBar(L["barTentacle"] )
 		self:RemoveBar(L["barNoRape"] )
 		self:CancelDelayedMessage(self.db.profile.rape and L["tentacle"] or L["norape"])

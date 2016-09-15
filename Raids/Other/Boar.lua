@@ -102,7 +102,7 @@ function module:OnEnable()
 
     self:RegisterEvent("UNIT_HEALTH")
     
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe") -- we want to override this function
+	--self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe") -- we want to override this function
 	
 	--self:ThrottleSync(28, syncName.teleport)
 end
@@ -110,6 +110,8 @@ end
 -- called after module is enabled and after each wipe
 function module:OnSetup()
 	self.started = false
+    
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH") -- CHAT_MSG_COMBAT_HOSTILE_DEATH is registered in the SetupModule function for the CheckBossDeath function. To make sure we are overriding it, we have to register the event in the OnSetup function of the module and add the CheckBossDeath functionality there.
 end
 
 -- called after boss is engaged
@@ -132,6 +134,11 @@ end
 ------------------------------
 --      Event Handlers	    --
 ------------------------------
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    BigWigs:CheckForBossDeath(msg, self)
+    BigWigs:Print("hostile death: " .. msg) 
+end
 
 function module:CheckForWipe(event)
     self:DebugMessage("BigWigsBoar:CheckForWipe()")

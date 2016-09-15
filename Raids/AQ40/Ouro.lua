@@ -114,7 +114,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20004 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"sweep", "sandblast", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
@@ -153,7 +153,7 @@ local berserkannounced = nil
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "EmergeCheck")
+    
 	self:RegisterEvent("UNIT_HEALTH")
 	
 	self:ThrottleSync(10, syncName.sweep)
@@ -166,7 +166,8 @@ end
 -- called after module is enabled and after each wipe
 function module:OnSetup()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+    
 	berserkannounced = nil
 	self.started = nil
     self.phase = nil
@@ -215,7 +216,8 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
 	end
 end
 
-function module:EmergeCheck(msg)
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+    BigWigs:CheckForBossDeath(msg, self)
     if string.find(msg, L["emergetrigger"]) then
         self:Sync(syncName.emerge)
     end
@@ -243,6 +245,7 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
+    self:DebugMessage("Ouro sync: " .. sync)
 	if sync == syncName.sweep then
 		self:Sweep()
 	elseif sync == syncName.sandblast then
