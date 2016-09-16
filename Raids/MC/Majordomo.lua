@@ -184,7 +184,7 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	if string.find(msg, L["healdead"]) then
 		self:Sync(syncName.healerDead .. " " .. tostring(self.hdead + 1))
 	elseif string.find(msg, L["elitedead"]) then
-        self:Sync(sync.Name.eliteDead .. " " .. tostring(self.edead + 1))
+        self:Sync(syncName.eliteDead .. " " .. tostring(self.edead + 1))
 	end
 end
 

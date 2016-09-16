@@ -87,6 +87,8 @@ L:RegisterTranslations("enUS", function() return {
 	aoeknock_cmd = "aoeknock",
 	aoeknock_name = "Knockback alert",
 	aoeknock_desc = "Warn for Wrath of Ragnaros knockback",
+    
+    ["Combat"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -130,6 +132,8 @@ L:RegisterTranslations("deDE", function() return {
 	--aoeknock_cmd = "aoeknock",
 	aoeknock_name = "Alarm für Rücksto\195\159",
 	aoeknock_desc = "Warnen, wenn Zorn des Ragnaros zurückstö\195\159t",
+            
+    ["Combat"] = "Kampf beginnt",
 } end)
 
 ------------------------------
@@ -173,7 +177,7 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	BigWigs:CheckForBossDeath(msg, self)
 
 	if string.find(msg, L["sonofflame"]) then
-		self:Sync(syncName.sons .. " " .. tostring(self.sonsdead + 1))
+		self:Sync(syncName.sons .. " " .. tostring(sonsdead + 1))
 	end
 end
 
@@ -185,7 +189,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 	elseif string.find(msg, L["engage_trigger"]) then
 		self:SendEngageSync()
     elseif string.find(msg, L["engage_soon_trigger"]) then
-        self:Bar("Combat", timer.emerge_soon, icon.emerge_soon)
+        self:Bar(L["Combat"], timer.emerge_soon, icon.emerge_soon)
     elseif string.find(msg ,L["hammer_trigger"]) then
         --self:Bar("Hammer of Ragnaros", timer.hammer_of_ragnaros, icon.hammer_of_ragnaros) -- doesn't do anything on nefarian
 	end
@@ -198,14 +202,14 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.sons and rest and rest ~= "" then
         rest = tonumber(rest)
-        if rest <= 8 and self.sonsdead < rest then
-            self.sonsdead = rest
+        if rest <= 8 and sonsdead < rest then
+            sonsdead = rest
             if self.db.profile.adds then
-                self:Message(string.format(L["sonsdeadwarn"], self.sonsdead), "Positive")
+                self:Message(string.format(L["sonsdeadwarn"], sonsdead), "Positive")
             end
-            if self.sonsdead == 8 then
+            if sonsdead == 8 then
             end
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Sons dead", (8 - self.sonsdead))
+            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Sons dead", (8 - sonsdead))
         end
 	elseif sync == syncName.knockback then
 		self:Knockback()

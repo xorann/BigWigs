@@ -186,7 +186,7 @@ function BigWigsDousedRunes:CHAT_MSG_MONSTER_YELL(msg)
 end
 
 function BigWigsDousedRunes:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-    --self:DebugMessage("BigWigsDousedRunes death: " .. msg)
+    self:DebugMessage("BigWigsDousedRunes death: " .. msg)
     if self.db.profile.showOnBossKill then
         for key, value in pairs(self.db.profile.runes) do
             if string.find(msg, key) then
@@ -217,6 +217,7 @@ function BigWigsDousedRunes:Hide()
 end
 
 function BigWigsDousedRunes:Ace2_AddonDisabled()
+    self:DebugMessage("BigWigsDousedRunes:Ace2_AddonDisabled()")
     self:Hide()
 end
 
