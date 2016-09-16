@@ -170,11 +170,10 @@ function BigWigsVenoxis:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
+	--self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+	--self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisPhaseOne", 10)
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisPhaseTwo", 10)
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisRenewStart", 2)
@@ -183,6 +182,10 @@ function BigWigsVenoxis:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisHolyFireStop", 2)
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisEnrage", 5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisVenoxisDead", 3)
+end
+
+function BigWigsVenoxis:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 ------------------------------
@@ -251,6 +254,8 @@ function BigWigsVenoxis:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
 end
 
 function BigWigsVenoxis:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if string.find(msg, L["deadaddtrigger"]) then
 		self:TriggerEvent("BigWigs_SendSync", "VenoxisAddDead " .. tostring(self.cobra + 1))
 	elseif string.find(msg, L["deadbosstrigger"]) then

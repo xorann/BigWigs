@@ -97,7 +97,7 @@ L:RegisterTranslations("deDE", function() return {
 	toxicvolleyhit_trigger = "Toxische Salve trifft",
 	toxicvolleyafflicted_trigger = "von Toxische Salve betroffen",
 	toxicvolleyresist_trigger = "Toxische Salve(.+) widerstanden",
-	toxicvolleyimmune_trigger = "Toxische Salve fail(.+) immun",
+	toxicvolleyimmune_trigger = "Toxische Salve(.+) Ein Fehlschlag(.+) immun",
 	toxicvolley_bar = "Toxische Salve",
 	toxicvolley_message = "Toxische Salve in 3 Sekunden!",
 	panic_trigger = "von Furcht betroffen",
@@ -205,7 +205,6 @@ local castingheal = false
 -- called after module is enabled
 function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "Melee")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES", "Melee")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_HITS", "Melee")
@@ -239,6 +238,8 @@ function module:OnSetup()
 	yaujdead = nil
 	healtime = 0
 	castingheal = false
+	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged
@@ -278,6 +279,8 @@ function module:CHAT_MSG_MONSTER_EMOTE(msg)
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+
 	if msg == string.format(UNITDIESOTHER, kri) then
 		self:Sync(syncName.kriDead)
 	elseif msg == string.format(UNITDIESOTHER, yauj) then

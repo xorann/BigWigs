@@ -50,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 	-- Warnings and bar texts
 	frenzyann = "Frenzy! Tranq now!",
 	fearsoon = "Panic incoming soon!",
-	feartime = "Fear! ~30 seconds until next!",
+	feartime = "Fear! 30 seconds until next!",
 	fearbar = "Panic",
 
 	-- AceConsole strings
@@ -66,7 +66,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	frenzy_trigger = "wird m\195\182rderisch wahnsinnig!",
+	frenzy_trigger = "wird mörderisch wahnsinnig!",
 	panic_trigger = "von Panik betroffen",
 	panic_trigger2 = "Panik(.+)immun",
 	panic_trigger3 = "Panik(.+)widerstanden",
@@ -75,16 +75,16 @@ L:RegisterTranslations("deDE", function() return {
 
 	frenzyann = "Raserei! Tranq jetzt!",
 	fearsoon = "Panik in 5 Sekunden!",
-	feartime = "AoE Furcht! N\195\164chste in ~30 Sekunden!",
+	feartime = "AoE Furcht! Nächste in 30 Sekunden!",
 	fearbar = "Panik",
 
-	panic_cmd = "panic",
-	panic_name = "Alarm f\195\188r Panik",
+	--panic_cmd = "panic",
+	panic_name = "Alarm für Panik",
 	panic_desc = "Warnung, wenn Magmadar AoE Furcht wirkt.",
 	
-	frenzy_cmd = "frenzy",
-	frenzy_name = "Alarm f\195\188r Raserei",
-	frenzy_desc = "Warnung, wenn Magmadar in Raserei ger\195\164t.",
+	--frenzy_cmd = "frenzy",
+	frenzy_name = "Alarm für Raserei",
+	frenzy_desc = "Warnung, wenn Magmadar in Raserei gerät.",
 } end)
 
 ------------------------------

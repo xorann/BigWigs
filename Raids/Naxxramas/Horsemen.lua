@@ -107,7 +107,6 @@ local times = nil
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "SkillEvent")
@@ -125,6 +124,8 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
 	self.marks = 0
 	self.deaths = 0
 

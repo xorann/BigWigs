@@ -93,7 +93,7 @@ L:RegisterTranslations("enUS", function() return {
 	["NefCounter_BRONZE"] = "Bronze Drakonid",
 	["NefCounter_BLACK"] = "Black Drakonid",
 	["NefCounter_CHROMATIC"] = "Chromatic Drakonid",
-	["NefCounter_TOTAL"] = "Drakonids total",
+	["Drakonids dead"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -179,7 +179,7 @@ L:RegisterTranslations("deDE", function() return {
 	["NefCounter_BRONZE"] = "Bronzener Drakonid",
 	["NefCounter_BLACK"] = "Schwarzer Drakonid",
 	["NefCounter_CHROMATIC"] = "Chromatischer Drakonid",
-	["NefCounter_TOTAL"] = "Drakonide total",
+	["Drakonids dead"] = "Drakonide total",
 } end)
 
 ---------------------------------
@@ -190,12 +190,12 @@ L:RegisterTranslations("deDE", function() return {
 module.revision = 20004 -- To be overridden by the module!
 module.enabletrigger = {boss, victor} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"shadowflame", "fear", "classcall", "otherwarn", "bosskill"}
+module.toggleoptions = {"mc", "shadowflame", "fear", "classcall", "otherwarn", "bosskill"}
 
 
 -- locals
 local timer = {
-	mobspawn = 10,
+	mobspawn = 6,
 	classcall = 30,
 	mc = 15,
 	shadowflame = 19,
@@ -218,11 +218,13 @@ local syncName = {
 	shadowflame = "NefarianShadowflame",
 	fear = "NefarianFear",
 	landing = "NefarianLandingNOW",
+	addDead = "NefCounter"
 }
 
 
 local warnpairs = nil
 local nefCounter = nil
+local nefCounterMax = 42 -- how many adds have to be killed to trigger phase 2?
 
 
 ------------------------------
@@ -239,19 +241,21 @@ function module:OnEnable()
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
     
-	if not warnpairs then warnpairs = {
-		[L["triggershamans"]] = {L["warnshaman"], true},
-		[L["triggerdruid"]] = {L["warndruid"], true},
-		[L["triggerwarlock"]] = {L["warnwarlock"], true},
-		[L["triggerpriest"]] = {L["warnpriest"], true},
-		[L["triggerhunter"]] = {L["warnhunter"], true},
-		[L["triggerwarrior"]] = {L["warnwarrior"], true},
-		[L["triggerrogue"]] = {L["warnrogue"], true},
-		[L["triggerpaladin"]] = {L["warnpaladin"], true},
-		[L["triggermage"]] = {L["warnmage"], true},
-		[L["landing_trigger"]] = {L["landing_warning"]},
-		[L["zerg_trigger"]] = {L["zerg_warning"]},
-	} end
+	if not warnpairs then 
+		warnpairs = {
+			[L["triggershamans"]] = {L["warnshaman"], true},
+			[L["triggerdruid"]] = {L["warndruid"], true},
+			[L["triggerwarlock"]] = {L["warnwarlock"], true},
+			[L["triggerpriest"]] = {L["warnpriest"], true},
+			[L["triggerhunter"]] = {L["warnhunter"], true},
+			[L["triggerwarrior"]] = {L["warnwarrior"], true},
+			[L["triggerrogue"]] = {L["warnrogue"], true},
+			[L["triggerpaladin"]] = {L["warnpaladin"], true},
+			[L["triggermage"]] = {L["warnmage"], true},
+			[L["landing_trigger"]] = {L["landing_warning"]},
+			[L["zerg_trigger"]] = {L["zerg_warning"]},
+		} 
+	end
 	
 	self:ThrottleSync(10, syncName.shadowflame)
 	self:ThrottleSync(15, syncName.fear)
@@ -274,6 +278,9 @@ function module:OnEngage()
 	--self:Bar(L["land"], 159, "INV_Misc_Head_Dragon_Black")
 	--self:DelayedMessage(105, L["landing_soon_warning"], "Important", true, "Alarm")
 	--self:DelayedMessage(125, L["landing_very_soon"], "Important", true, "Long")
+	
+	self:TriggerEvent("BigWigs_StartCounterBar", self, L["Drakonids dead"], nefCounterMax, "Interface\\Icons\\inv_egg_01")
+	self:TriggerEvent("BigWigs_SetCounterBar", self, L["Drakonids dead"], (nefCounterMax - 0.1))
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -291,8 +298,9 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     local _, _, drakonid = string.find(msg, L["NefCounter_Trigger"])
     if drakonid and L:HasReverseTranslation(drakonid) then
         --self:OnKill(L:GetReverseTranslation(drakonid))
-        nefCounter = nefCounter + 1
-        BigWigs:Print("Drakonids dead: " .. nefCounter .. " Name: " .. drakonid)
+        --nefCounter = nefCounter + 1
+        self:DebugMessage("Drakonids dead: " .. tostring(nefCounter + 1) .. " Name: " .. drakonid)
+		self:Sync(syncName.addDead .. " " .. tostring(nefCounter + 1))
     end
 end
 
@@ -305,18 +313,19 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		if string.find(msg, i) then
 			if v[2] then
 				if self.db.profile.classcall then
-					self:Message(v[1], "Core")
-					self:DelayedMessage(timer.classcall - 3, L["classcall_warning"], "Important")
+                    local localizedClass, englishClass = UnitClass("player");
+                    if string.find(msg, localizedClass) then
+						self:Message(v[1], "Core", nil, "Beware")
+						self:WarningSign(icon.classcall, 3)
+					else 
+						self:Message(v[1], "Core", nil, "Long")
+                    end
+					
 					self:Bar(v[1], timer.classcall, icon.classcall)
+					self:DelayedMessage(timer.classcall - 3, L["classcall_warning"], "Important")
 					self:DelayedSound(timer.classcall - 3, "Three")
 					self:DelayedSound(timer.classcall - 2, "Two")
 					self:DelayedSound(timer.classcall - 1, "One")
-                    
-                    local localizedClass, englishClass = UnitClass("player");
-                    if string.find(msg, localizedClass) then
-						self:Sound("Beware")
-						self:WarningSign(icon.classcall, 3)
-                    end
 				end
 			else
 				if self.db.profile.otherwarn and string.find(msg, L["landing_trigger"]) then 
@@ -369,6 +378,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Fear()
     elseif sync == syncName.landing then
 		self:Landing()
+	elseif sync == syncName.addDead and rest then
+		self:NefCounter(rest)
     end
 end
 
@@ -398,10 +409,12 @@ function module:Landing()
 	if not self.phase2 then
         self.phase2 = true
         self:RemoveBar(L["land"])
-        self:Bar(L["landing_warning"], timer.landing, icon.landing)
-        self:Message(L["landing_warning"], "Important")
+		self:TriggerEvent("BigWigs_StopCounterBar", self, L["Drakonids dead"])
 		
-		-- landed after 15s
+        self:Bar(L["landing_warning"], timer.landing, icon.landing)
+        self:Message(L["landing_warning"], "Important", nil, "Beware")
+		
+		-- landing in 15s
 		self:DelayedBar(timer.landing, L["classcall_bar"], timer.firstClasscall, icon.classcall)
         self:DelayedBar(timer.landing, L["fear_bar"], timer.firstFear, icon.fear)
         
@@ -411,5 +424,16 @@ function module:Landing()
             self:KTM_Reset()
         end
         self:ScheduleEvent("bwnefarianktm", setKTM, timer.landing + 1, self)
+	end
+end
+
+function module:NefCounter(n)
+	n = tonumber(n)
+	if not self.phase2 and n == (nefCounter + 1) and nefCounter <= nefCounterMax then
+		nefCounter = nefCounter + 1
+		--[[if self.db.profile.adds then
+			self:Message(string.format(L["add_message"], nefCounter), "Positive")
+		end]]
+		self:TriggerEvent("BigWigs_SetCounterBar", self, L["Drakonids dead"], (nefCounterMax - nefCounter))
 	end
 end

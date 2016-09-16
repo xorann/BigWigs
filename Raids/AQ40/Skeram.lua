@@ -99,7 +99,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	--self:RegisterEvent("UNIT_HEALTH")
 	
 	--[[self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit80Soon", 100)

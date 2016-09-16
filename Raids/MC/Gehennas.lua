@@ -113,7 +113,6 @@ function module:OnEnable()
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE",     "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE",               "Event")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
 	self:ThrottleSync(10, syncName.curse)
 end
@@ -122,6 +121,8 @@ end
 function module:OnSetup()
 	self.started = false
 	flamewaker = 0
+	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged
@@ -164,6 +165,8 @@ function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
     --DEFAULT_CHAT_FRAME:AddMessage("CHAT_MSG_COMBAT_HOSTILE_DEATH: " .. msg)
 	if string.find(msg, L["dead1"]) then
 		self:Sync(syncName.add .. " " .. tostring(flamewaker + 1))

@@ -86,8 +86,8 @@ L:RegisterTranslations("enUS", function() return {
   
 L:RegisterTranslations("deDE", function() return {
 	["%s mod enabled"] = "%s Modul aktiviert",
-	["Target monitoring enabled"] = "Ziel\195\188berwachung aktiviert",
-	["Target monitoring disabled"] = "Ziel\195\188berwachung deaktiviert",
+	["Target monitoring enabled"] = "Zielüberwachung aktiviert",
+	["Target monitoring disabled"] = "Zielüberwachung deaktiviert",
 	["%s engaged!"] = "%s angegriffen!",
 	["%s has been defeated"] = "%s wurde besiegt",     -- "<boss> has been defeated"
 	["%s have been defeated"] = "%s wurden besiegt",    -- "<bosses> have been defeated"
@@ -95,15 +95,15 @@ L:RegisterTranslations("deDE", function() return {
 	-- AceConsole strings
 	-- ["boss"] = true,
 	["Bosses"] = "Bosse",
-	["Options for boss modules."] = "Optionen f\195\188r Boss Module.",
-	["Options for bosses in %s."] = "Optionen f\195\188r Bosse in %s.", -- "Options for bosses in <zone>"
-	["Options for %s (r%s)."] = "Optionen f\195\188r %s (r%s).",     -- "Options for <boss> (<revision>)"
+	["Options for boss modules."] = "Optionen für Boss Module.",
+	["Options for bosses in %s."] = "Optionen für Bosse in %s.", -- "Options for bosses in <zone>"
+	["Options for %s (r%s)."] = "Optionen für %s (r%s).",     -- "Options for <boss> (<revision>)"
 	-- ["plugin"] = true,
 	["Plugins"] = "Plugins",
-	["Options for plugins."] = "Optionen f\195\188r Plugins.",
+	["Options for plugins."] = "Optionen für Plugins.",
 	-- ["extra"] = true,
 	["Extras"] = "Extras",
-	["Options for extras."] = "Optionen f\195\188r Extras.",
+	["Options for extras."] = "Optionen für Extras.",
 	-- ["toggle"] = true,
 	["Active"] = "Aktivieren",
 	["Activate or deactivate this module."] = "Aktiviert oder deaktiviert dieses Modul.",
@@ -114,8 +114,8 @@ L:RegisterTranslations("deDE", function() return {
 	-- ["debug"] = true,
 	["Debugging"] = "Debugging",
 	["Show debug messages."] = "Zeige Debug Nachrichten.",
-	["Forces the module to reset for everyone in the raid.\n\n(Requires assistant or higher)"] = "Erzwingt das Modul f\195\188r jeden im Raid zur\195\188ckgesetzt.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
-	["%s has requested forced reboot for the %s module."] = "%s hat beantragt Zwangs Neustart f\195\188r die %s-Modul.",
+	["Forces the module to reset for everyone in the raid.\n\n(Requires assistant or higher)"] = "Erzwingt dass das Modul für jeden im Raid zurückgesetzt wird.\n\n(Benötigt Schlachtzugleiter oder Assistent)",
+	["%s has requested forced reboot for the %s module."] = "%s hat einen Zwangsneustart für das %s-Modul beantragt.",
 	-- bosskill_cmd = "kill",
 	bosskill_name = "Boss besiegt",
 	bosskill_desc = "Melde, wenn ein Boss besiegt wurde.",
@@ -168,7 +168,7 @@ BigWigs.cmdtable = {type = "group", handler = BigWigs, args = {
 }}
 BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, BigWigs.cmdtable)
 BigWigs.debugFrame = ChatFrame1
-BigWigs.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
+BigWigs.revision = 20004
 
 
 function BigWigs:DebugMessage(msg, module)
@@ -981,16 +981,14 @@ end
 -------------------------------
 
 function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
-	if sync == "EnableModule" and moduleName then        
-		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-
-        -- sanity check
-        local module = nil
-        if self:HasModule(moduleName) then
-            module = self:GetModule(moduleName)
-        else
-            return
-        end
+	local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	local module = nil
+	if self:HasModule(moduleName) then
+		module = self:GetModule(moduleName)
+	end
+	
+	if module and sync == "EnableModule" then        
+		moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
         
         local isInZone = false
         if type(module.zonename) == "string" and module.zonename == GetRealZoneText() then
@@ -1005,49 +1003,26 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
         end
             
 		if isInZone then self:EnableModule(moduleName, true) end
-	elseif sync == "EnableExternal" and moduleName then
-        -- sanity check
-        local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-        local module = nil
-        if self:HasModule(moduleName) then
-            module = self:GetModule(moduleName)
-        else
-            return
-        end
-        
-        if self:HasModule(moduleName) and self:GetModule(moduleName).zonename == GetRealZoneText() then      
+	elseif module and sync == "EnableExternal" then        
+        if module.zonename == GetRealZoneText() then      
             self:EnableModule(moduleName, true)
         end
 	elseif sync == "RebootModule" and moduleName then
-		
-        
         if nick ~= UnitName("player") then
 			self:Print(string.format(L["%s has requested forced reboot for the %s module."], nick, moduleName))
 		end
 		self:TriggerEvent("BigWigs_RebootModule", moduleName)
-    elseif sync == "BossEngaged" and moduleName then 
-		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-        if self:HasModule(moduleName) then
-            local m = self:GetModule(moduleName)
-            if m:IsBossModule() then
-                m:Engage() 
-            end
-        end
-	elseif sync == "BossWipe" and moduleName then
-		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-		if self:HasModule(moduleName) then
-            local m = self:GetModule(moduleName)
-            if m:IsBossModule() and BigWigs:IsModuleActive(m) then
-                self:TriggerEvent("BigWigs_RebootModule", moduleName)
-            end
-        end
-    elseif sync == "BossDeath" and moduleName then
-		local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-        if self:HasModule(moduleName) then
-            local m = self:GetModule(moduleName)
-            if m:IsBossModule() and BigWigs:IsModuleActive(m) then
-                m:Victory()
-            end
+    elseif module and sync == module:GetEngageSync() then	
+		if module:IsBossModule() then
+			module:Engage() 
+		end
+	elseif module and sync == module:GetWipeSync() then
+		if module:IsBossModule() and BigWigs:IsModuleActive(module) then
+			self:TriggerEvent("BigWigs_RebootModule", moduleName)
+		end
+    elseif module and sync == module:GetBossDeathSync() then
+		if module:IsBossModule() and BigWigs:IsModuleActive(module) then
+            module:Victory()
         end
 	end
 end

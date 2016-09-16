@@ -78,8 +78,8 @@ L:RegisterTranslations("deDE", function() return {
 	triggercast = "beginnt Dunkle Besserung",
     spear_cast = "beginnt Flammenspeer zu wirken",
 	healbar = "Dunkle Besserung",
-	knockbacktimer = "~AoE R\195\188cksto\195\159",
-	knockbackannounce = "3 Sekunden bis R\195\188cksto\195\159!",
+	knockbacktimer = "~AoE Rücksto\195\159",
+	knockbackannounce = "3 Sekunden bis Rücksto\195\159!",
 	healwarn = "Heilung!",
 	knockback1 = "trifft(.+)Hand von Ragnaros",
 	knockback11 = "Hand von Ragnaros(.+)trifft",
@@ -96,16 +96,16 @@ L:RegisterTranslations("deDE", function() return {
 	cmd = "Sulfuron",
 	
 	knockback_cmd = "knockback",
-	knockback_name = "Verk\195\188ndet Hand von Ragnaros",
-	knockback_desc = "Zeige Timer f\195\188r R\195\188ckst\195\182\195\159e",
+	knockback_name = "Verkündet Hand von Ragnaros",
+	knockback_desc = "Zeige Timer für Rückstö\195\159e",
 	
 	heal_cmd = "heal",
 	heal_name = "Heilung der Adds",
-	heal_desc = "Verk\195\188ndet Heilung der Flamewaker Priest",
+	heal_desc = "Verkündet Heilung der Flamewaker Priest",
 	
 	adds_cmd = "adds",
-	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Flamewaker Priests Tod",
+	adds_name = "Zähler für tote Adds",
+	adds_desc = "Verkündet Flamewaker Priests Tod",
 } end)
 
 
@@ -117,7 +117,6 @@ module.wipemobs = { L["flamewakerpriest_name"] }
 
 -- called after module is enabled
 function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Events")
@@ -130,6 +129,8 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
 	self.started = nil
     deadpriests = 0
 end
@@ -153,6 +154,8 @@ end
 ------------------------------
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if string.find(msg, L["triggeradddead"]) then
 		self:Sync(syncName.add_dead .. " " .. tostring(deadpriests + 1))
 	end

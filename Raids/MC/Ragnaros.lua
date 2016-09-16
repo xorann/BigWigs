@@ -96,9 +96,9 @@ L:RegisterTranslations("deDE", function() return {
     engage_soon_trigger = "ZU FRÜH!",
     hammer_trigger = "^DAS FEUER WIRD EUCH!",
 
-	knockback_message = "R\195\188cksto\195\159!",
-	knockback_soon_message = "5 Sekunden bis R\195\188cksto\195\159!",
-	submerge_message = "Ragnaros ist untergetaucht! Son of Flame kommen!",
+	knockback_message = "Rücksto\195\159!",
+	knockback_soon_message = "5 Sekunden bis Rücksto\195\159!",
+	submerge_message = "Ragnaros ist untergetaucht! Söhne der Flamme kommen!",
 	emerge_soon_message = "15 Sekunden bis Ragnaros auftaucht",
 	emerge_message = "Ragnaros ist aufgetaucht, Untertauchen in 3 Minuten!",
 	submerge_60sec_message = "Auftauchen in 60 Sekunden!",
@@ -106,30 +106,30 @@ L:RegisterTranslations("deDE", function() return {
 	submerge_10sec_message = "Auftauchen in 10 Sekunden!",
 	submerge_5sec_message = "Auftauchen in 5 Sekunden!",
 
-	knockback_bar = "AoE R\195\188cksto\195\159",
+	knockback_bar = "AoE Rücksto\195\159",
 	emerge_bar = "Ragnaros taucht auf",
 	submerge_bar = "Ragnaros taucht unter",
 
 	sonofflame = "Sohn der Flamme",
 	sonsdeadwarn = "%d/8 Sohn der Flamme tot!",
 
-	cmd = "Ragnaros",
+	--cmd = "Ragnaros",
 
-	emerge_cmd = "emerge",
-	emerge_name = "Alarm f\195\188r Abtauchen",
+	--emerge_cmd = "emerge",
+	emerge_name = "Alarm für Abtauchen",
 	emerge_desc = "Warnen, wenn Ragnaros auftaucht",
 
-	adds_cmd = "adds",
-	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Sohn der Flamme Tod",
+	--adds_cmd = "adds",
+	adds_name = "Zähler für tote Adds",
+	adds_desc = "Verkündet Sohn der Flamme Tod",
 
-	submerge_cmd = "submerge",
-	submerge_name = "Alarm f\195\188r Untertauchen",
+	--submerge_cmd = "submerge",
+	submerge_name = "Alarm für Untertauchen",
 	submerge_desc = "Warnen, wenn Ragnaros untertaucht",
 
-	aoeknock_cmd = "aoeknock",
-	aoeknock_name = "Alarm f\195\188r R\195\188cksto\195\159",
-	aoeknock_desc = "Warnen, wenn Zorn des Ragnaros zur\195\188ckst\195\182\195\159t",
+	--aoeknock_cmd = "aoeknock",
+	aoeknock_name = "Alarm für Rücksto\195\159",
+	aoeknock_desc = "Warnen, wenn Zorn des Ragnaros zurückstö\195\159t",
 } end)
 
 ------------------------------
@@ -142,15 +142,15 @@ module.wipemobs = { L["sonofflame"] }
 -- called after module is enabled
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
 	self:ThrottleSync(5, syncName.knockback)
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-	self.started = nil
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
+	self.started = nil	
 	firstKnockback = true
 	sonsdead = 0
 end
@@ -170,6 +170,8 @@ end
 ------------------------------
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+
 	if string.find(msg, L["sonofflame"]) then
 		self:Sync(syncName.sons .. " " .. tostring(self.sonsdead + 1))
 	end

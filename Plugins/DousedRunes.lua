@@ -197,12 +197,15 @@ function BigWigsDousedRunes:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 end
 
 function BigWigsDousedRunes:Show()
-    self:DebugMessage("BigWigsDousedRunes:Show()")
+    self:DebugMessage("BigWigsDousedRunes:Show() 1")
     if not frame then
         self:SetupFrames()
     end
+	self:DebugMessage("BigWigsDousedRunes:Show() 2")
     self:Update() -- reset if necessary
+	self:DebugMessage("BigWigsDousedRunes:Show() 3")
     frame:Show()
+	self:DebugMessage("BigWigsDousedRunes:Show() 4")
     BigWigsDousedRunes.db.profile.isVisible = true
 end
 

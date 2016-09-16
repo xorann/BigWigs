@@ -122,7 +122,6 @@ function BigWigsJindo:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "FadeFrom")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "FadeFrom")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
@@ -132,6 +131,10 @@ function BigWigsJindo:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "JindoCurse", 5)
 	self:TriggerEvent("BigWigs_ThrottleSync", "JindoHexStart", 4)
 	self:TriggerEvent("BigWigs_ThrottleSync", "JindoHexStop", 4)
+end
+
+function BigWigsJindo:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 ------------------------------
@@ -210,6 +213,8 @@ function BigWigsJindo:FadeFrom(msg)
 end
 
 function BigWigsJindo:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if msg == L["brainwash_death"] then
 		self:TriggerEvent("BigWigs_StopBar", self, L["brainwash_bar"])
 	elseif msg == L["healing_death"] then

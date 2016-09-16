@@ -46,16 +46,16 @@ L:RegisterTranslations("enUS", function() return {
 L:RegisterTranslations("deDE", function() return {
 	corerager_name = "Kernw\195\188terich",
 	earthquakesoonwarn = "Erdbeben bald",
-	golemaggenrage = "Golemagg the Incinerator bekommt \'Wutanfall",
+	golemaggenrage = "Golemagg der Verbrenner bekommt \'Wutanfall",
 	enragewarn = "Boss ist in Raserei!",
 
-	cmd = "Golemagg",
+	--cmd = "Golemagg",
 	
-	enraged_cmd = "enraged",
+	--enraged_cmd = "enraged",
 	enraged_name = "Verk\195\188ndet Boss' Raserei",
 	enraged_desc = "L\195\164sst dich wissen, wenn Boss h\195\164rter zuschl\195\164gt",
 	
-	earthquake_cmd = "earthquake",
+	--earthquake_cmd = "earthquake",
 	earthquake_name = "Verk\195\188ndet erdbeben",
 	earthquake_desc = "Sagt an, wenn es f\195\188r die Melees zeit ist, weg zu gehen",
 } end)

@@ -94,9 +94,9 @@ L:RegisterTranslations("deDE", function() return {
 
 	["bars"] = "balken",
 
-	["Options for the timer bars."] = "Optionen f\195\188r die Timer Anzeigebalken.",
+	["Options for the timer bars."] = "Optionen für die Timer Anzeigebalken.",
 	["Show the bar anchor frame."] = "Verankerung der Anzeigebalken anzeigen.",
-	["Set the bar scale."] = "Skalierung der Anzeigebalken w\195\164hlen.",
+	["Set the bar scale."] = "Skalierung der Anzeigebalken wählen.",
 	["Group upwards"] = "Nach oben fortsetzen",
 	["Toggle bars grow upwards/downwards from anchor."] = "Anzeigebalken von der Verankerung aus nach oben/unten fortsetzen.",
 
@@ -116,7 +116,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Close"] = "Schlie\195\159en",
 
 	["Texture"] = "Textur",
-	["Set the texture for the timerbars."] = "Textur der Anzeigebalken w\195\164hlen.",
+	["Set the texture for the timerbars."] = "Textur der Anzeigebalken wählen.",
             
             
     

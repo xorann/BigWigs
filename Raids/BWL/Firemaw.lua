@@ -26,7 +26,7 @@ L:RegisterTranslations("enUS", function() return {
 	wingbuffet_bar = "Next Wing Buffet",
 	wingbuffet1_bar = "Initial Wing Buffet",
 	shadowflame_bar = "Shadow Flame",
-	shadowflame_Nextbar = "~Next Shadow Flame",
+	shadowflame_Nextbar = "Possible Shadow Flame",
 	flamebuffet_bar = "Flame Buffet",
 
 	cmd = "Firemaw",
@@ -61,7 +61,7 @@ L:RegisterTranslations("deDE", function() return {
 	wingbuffet_bar = "N\195\164chster Fl\195\188gelsto\195\159",
 	wingbuffet1_bar = "Erster Fl\195\188gelsto\195\159",
 	shadowflame_bar = "Schattenflamme",
-	shadowflame_Nextbar = "~Nächste Schattenflamme",
+	shadowflame_Nextbar = "Mögliche Schattenflamme",
 	flamebuffet_bar = "Flammenpuffer",
 
 	cmd = "Firemaw",

@@ -93,7 +93,8 @@ L:RegisterTranslations("deDE", function() return {
 	engage_message = "Ouro engaged! Possible Submerge in 90sec!",
 	possible_submerge_bar = "Possible submerge",
 
-	emergetrigger = "Dirt Mound casts Summon Ouro Scarabs.", -- ?
+	--emergetrigger = "Dirt Mound casts Summon Ouro Scarabs.",
+    emergetrigger = "Dirt Mound dies", -- ?
 	emergeannounce = "Ouro ist aufgetaucht!",
 	emergewarn = "15 sec to possible submerge!",
 	emergebartext = "Untertauchen",
@@ -218,6 +219,7 @@ end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     BigWigs:CheckForBossDeath(msg, self)
+	
     if string.find(msg, L["emergetrigger"]) then
         self:Sync(syncName.emerge)
     end

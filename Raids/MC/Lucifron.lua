@@ -50,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 	curse_warn_soon = "5 seconds until Lucifron's Curse!",
 	curse_warn_now = "Lucifron's Curse - 20 seconds until next!",
 	doom_warn_soon = "5 seconds until Impending Doom!",
-	doom_warn_now = "Impending Doom - 20 seconds until next!",
+	doom_warn_now = "Impending Doom - 15 seconds until next!",
 	mindcontrolyou_trigger = "You are afflicted by Dominate Mind.",
 	mindcontrolother_trigger = "(.*) is afflicted by Dominate Mind.",
 	mindcontrolyouend_trigger = "Dominate Mind fades from you.",
@@ -101,22 +101,22 @@ L:RegisterTranslations("deDE", function() return {
 	doom_trigger2 = "Drohende Verdammnis wurde von(.+) widerstanden",
 	
 	curse_warn_soon = "5 Sekunden bis Lucifrons Fluch!",
-	curse_warn_now = "Lucifrons Fluch - 20 Sekunden bis zu n\195\164chsten!",
+	curse_warn_now = "Lucifrons Fluch - 20 Sekunden bis zum nächsten!",
 	doom_warn_soon = "5 Sekunden bis Drohende Verdammnis!",
-	doom_warn_now = "Drohende Verdammnis - 20 Sekunden bis zu n\195\164chsten!",
+	doom_warn_now = "Drohende Verdammnis - 15 Sekunden bis zur nächsten!",
 	mindcontrolyou_trigger = "Ihr seid von Gedanken beherrschen betroffen.",
 	mindcontrolother_trigger = "(.*) ist von Gedanken beherrschen betroffen.",
 	mindcontrolyouend_trigger = "Gedanken beherrschen\' schwindet von Euch.",
 	mindcontrolotherend_trigger = "Gedanken beherrschen schwindet von (.*).",
-	deathyou_trigger = "Du stirbst.",
+	deathyou_trigger = "Ihr sterbt.",
 	deathother_trigger = "(.*) stirbt.",
-	deadaddtrigger = "Feuerschuppenbesch\195\188tzer stirbt", --"Besch\195\188tzer der Flammensch\195\188rer stirbt.",
-	add_name = "Feuerschuppenbesch\195\188tzer",
+	deadaddtrigger = "Feuerschuppenbeschützer stirbt", --"Besch\195\188tzer der Flammensch\195\188rer stirbt.",
+	add_name = "Feuerschuppenbeschützer",
 	
-	mindcontrol_message = "%s ist ferngesteuert!",
-	mindcontrol_message_you = "Du bist ferngesteuert!",
+	mindcontrol_message = "%s ist gedankenkontrolliert!",
+	mindcontrol_message_you = "Du bist gedankenkontrolliert!",
 	mindcontrol_bar = "GK: %s",
-	addmsg = "%d/2 Feuerschuppenbesch\195\188tzer tot!",
+	addmsg = "%d/2 Feuerschuppenbeschützer tot!",
 
 	curse_bar = "Lucifrons Fluch",
 	doom_bar = "Drohende Verdammnis",
@@ -125,23 +125,23 @@ L:RegisterTranslations("deDE", function() return {
 	--cmd = "Lucifron",
 
 	--adds_cmd = "adds",
-	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Flamewaker Protectors Tod",
+	adds_name = "Zähler für tote Adds",
+	adds_desc = "Verkündet Feuerschuppenbeschützer Tod",
 	
 	--mc_cmd = "mc",
 	mc_name = "Gedankenkontrolle",
-	mc_desc = "Warnen, wenn jemand \195\188bernommen ist",
+	mc_desc = "Warnen, wenn jemand übernommen ist",
 	
 	--curse_cmd = "curse",
-	curse_name = "Alarm f\195\188r Lucifrons Fluch",
+	curse_name = "Alarm für Lucifrons Fluch",
 	curse_desc = "Warnen vor Lucifrons Fluch",
 	
 	--doom_cmd = "doom",
-	doom_name = "Alarm f\195\188r Drohende Verdammnis",
+	doom_name = "Alarm für Drohende Verdammnis",
 	doom_desc = "Warnen vor Drohender Verdammnis",
 	
 	--shock_cmd = "shock",
-	shock_name = "Alarm f\195\188r Schattenschock ",
+	shock_name = "Alarm für Schattenschock ",
 	shock_desc  = "Warnen vor Schattenschock",
 } end)
 
@@ -164,8 +164,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 
 	self:ThrottleSync(0.5, syncName.mc .. "(.*)")
 	self:ThrottleSync(0.5, syncName.mcEnd .. "(.*)")
@@ -178,6 +177,8 @@ end
 function module:OnSetup()
 	self.started = nil
 	self.protector = 0
+	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged
@@ -204,7 +205,7 @@ end
 function module:Event(msg)
 	local _,_,mindcontrolother,_ = string.find(msg, L["mindcontrolother_trigger"])
 	local _,_,mindcontrolotherend,_ = string.find(msg, L["mindcontrolotherend_trigger"])
-	local _,_,mindcontrolotherdeath,_ = string.find(msg, L["deathother_trigger"])
+	--local _,_,mindcontrolotherdeath,_ = string.find(msg, L["deathother_trigger"])
 	if ((string.find(msg, L["curse_trigger"])) or (string.find(msg, L["curse_trigger2"]))) then
 		self:Sync(syncName.curse)
 	elseif ((string.find(msg, L["doom_trigger"])) or (string.find(msg, L["doom_trigger2"]))) then
@@ -221,12 +222,14 @@ function module:Event(msg)
 		self:Sync(syncName.mc .. mindcontrolother)
 	elseif mindcontrolotherend then
 		self:Sync(syncName.mcEnd .. mindcontrolotherend)
-	elseif mindcontrolotherdeath then
-		self:Sync(syncName.mcEnd .. mindcontrolotherdeath)
+	--elseif mindcontrolotherdeath then
+	--	self:Sync(syncName.mcEnd .. mindcontrolotherdeath)
 	end
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if string.find(msg, L["deadaddtrigger"]) then
 		self:Sync(syncName.add .. " " .. tostring(self.protector + 1))
 	end

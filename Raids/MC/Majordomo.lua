@@ -26,7 +26,9 @@ local icon = {
 }
 local syncName = {
 	dmg = "DomoAuraDamage",
-	magic = "DomoAuraMagic"
+	magic = "DomoAuraMagic",
+	healerDead = "DomoHealerDead",
+	eliteDead = "DomoEliteDead",
 }
 
 
@@ -77,40 +79,40 @@ L:RegisterTranslations("enUS", function() return {
 
 L:RegisterTranslations("deDE", function() return {
 	disabletrigger = "Ich werde euch nun verlassen",
-    engage_trigger = "Niemand fordert die S\195\182hne der Lebenden Flamme heraus", --"Reckless mortals, none may challenge the sons of the living flame!",
+    engage_trigger = "Niemand fordert die Söhne der Lebenden Flamme heraus", --"Reckless mortals, none may challenge the sons of the living flame!",
 
 	magic_trigger = "bekommt \'Magiereflexion'",
 	dmg_trigger = "bekommt \'Schadensschild'",
 	magic_over_trigger = "Magiereflexion schwindet von",
 	damage_over_trigger = "Schadensschild schwindet von",
-	healdead = "Flamewaker Healer stirbt",
-	elitedead = "Flamewaker Elite stirbt",
-	elitename = "Flamewaker Elite",
-	healername = "Flamewaker Healer",
+	healdead = "Feuerschuppenheiler stirbt",
+	elitedead = "Feuerschuppenelite stirbt",
+	elitename = "Feuerschuppenelite",
+	healername = "Feuerschuppenheiler",
 
-	magic_warn = "Magiereflexion f\195\188r 10 Sekunden!",
-	dmg_warn = "Schadensschild f\195\188r 10 Sekunden!",
+	magic_warn = "Magiereflexion für 10 Sekunden!",
+	dmg_warn = "Schadensschild für 10 Sekunden!",
 	shield_warn_soon = "Neue Schilder in 3 Sekunden!",
 	magic_over_warn = "Magiereflexion beendet!",
 	dmg_over_warn = "Schadensschild beendet!",
 	hdeadmsg = "%d/4 Heiler tot!",
 	edeadmsg = "%d/4 Elite tot!",
 
-	cmd = "Majordomo",
+	--cmd = "Majordomo",
 	
 	magic_bar = "Magiereflexion",
 	dmg_bar = "Schadensschild",
-	shield_bar = "N\195\164chstes Schild",
+	shield_bar = "Nächstes Schild",
 
-	adds_cmd = "adds",
-	adds_name = "Z\195\164hler f\195\188r tote Adds",
-	adds_desc = "Verk\195\188ndet Flamewaker Healers und Flamewaker Elites Tod.",
+	--adds_cmd = "adds",
+	adds_name = "Zähler für tote Adds",
+	adds_desc = "Verkündet Feuerschuppenheiler und Feuerschuppenelite Tod.",
 	
-	magic_cmd = "magic",
+	--magic_cmd = "magic",
 	magic_name = "Magiereflexion",
 	magic_desc = "Warnung, wenn Magiereflexion aktiv.",
 	
-	dmg_cmd = "dmg",
+	--dmg_cmd = "dmg",
 	dmg_name = "Schadensschild",
 	dmg_desc = "Warnung, wenn Schadensschild aktiv.",
 } end)
@@ -125,7 +127,6 @@ module:RegisterYellEngage(L["engage_trigger"])
 
 -- called after module is enabled
 function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	
@@ -135,6 +136,8 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
 	self.started = nil
 	self.hdead = 0
 	self.edead = 0
@@ -176,10 +179,12 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if string.find(msg, L["healdead"]) then
-		self:Sync("DomoHealerDead " .. tostring(self.hdead + 1))
+		self:Sync(syncName.healerDead .. " " .. tostring(self.hdead + 1))
 	elseif string.find(msg, L["elitedead"]) then
-        self:Sync("DomoEliteDead " .. tostring(self.edead + 1))
+        self:Sync(sync.Name.eliteDead .. " " .. tostring(self.edead + 1))
 	end
 end
 

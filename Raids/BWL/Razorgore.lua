@@ -229,7 +229,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Events")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Events")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Events")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE")
     self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
@@ -302,7 +302,7 @@ function module:Events(msg)
 	local _, _, polyother = string.find(msg, L["polymorphother_trigger"])
 	local _, _, polyotherend = string.find(msg, L["polymorphotherend_trigger"])
 	local _, _, orbother = string.find(msg, L["orbcontrolother_trigger"])
-	local _, _, deathother = string.find(msg, L["deathother_trigger"])
+	--local _, _, deathother = string.find(msg, L["deathother_trigger"])
 	
 	if self.db.profile.icon then
 		if mcother then
@@ -358,7 +358,7 @@ function module:Events(msg)
 		self:Bar(L["conflagration_bar"], timer.conflagrate, "Spell_Fire_Incinerate", true, "red")
 	end
 	
-	if deathother then
+	--[[if deathother then
 		if self.db.profile.mc then
 			self:RemoveBar(string.format(L["mindcontrol_bar"], deathother))
 		end
@@ -378,7 +378,7 @@ function module:Events(msg)
 		if self.db.profile.orb then
 			self:RemoveBar(string.format(L["orb_bar"], UnitName("player")))
 		end
-	end
+	end]]
 end
 
 function module:CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE(msg)

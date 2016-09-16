@@ -112,41 +112,41 @@ L:RegisterTranslations("enUS", function() return {
 
 L:RegisterTranslations("deDE", function() return {
 	blink_trigger = "Shazzrah wirkt Portal von Shazzrah",
-	deaden_trigger = "Shazzrah bekommt \'Magie d\195\164mpfen",
+	deaden_trigger = "Shazzrah bekommt \'Magie dämpfen",
 	curse_trigger = "von Shazzrahs Fluch betroffen",
 	cs_trigger2 = "Shazzrah wirkt Gegenzauber",
     cs_trigger = "Shazzrahs Gegenzauber wurde von (.+) widerstanden",
 	curse_trigger2 = "Shazzrahs Fluch(.)widerstanden",
-	deaden_over_trigger = "Magie d\195\164mpfen schwindet von Shazzrah",
+	deaden_over_trigger = "Magie dämpfen schwindet von Shazzrah",
 
-	blink_warn = "Blinzeln! N\195\164chstes in ~45 Sekunden!",
+	blink_warn = "Blinzeln! Nächstes in ~45 Sekunden!",
 	blink_soon_warn = "Blinzeln in ~5 Sekunden!",
-	deaden_warn = "Magie d\195\164mpfen auf Shazzrah! Entferne magie!",
+	deaden_warn = "Magie dämpfen auf Shazzrah! Entferne magie!",
 	curse_warn = "Shazzrahs Fluch! Entfluche JETZT!",
-	cs_now_warn = "Gegenzauber - 40 Sekunden bis zum n\195\164chsten!",
+	cs_now_warn = "Gegenzauber - 40 Sekunden bis zum nächsten!",
 	cs_soon_warn = "3 Sekunden bis Gegenzauber!",
 
 	blink_bar = "Mögliches Blinzeln",
-	deaden_bar = "Magie d\195\164mpfen",
-	curse_bar = "N\195\164chster Fluch",
+	deaden_bar = "Magie dämpfen",
+	curse_bar = "Nächster Fluch",
 	cs_bar = "Möglicher Gegenzauber",
 	
-	cmd = "Shazzrah",
+	--cmd = "Shazzrah",
 	
-	counterspell_cmd = "Gegenzauber",
-	counterspell_name = "Alarm f\195\188r Gegenzauber",
+	--counterspell_cmd = "Gegenzauber",
+	counterspell_name = "Alarm für Gegenzauber",
 	counterspell_desc = "Warnen vor Shazzrahs Gegenzauber",
 	
-	curse_cmd = "curse",
-	curse_name = "Alarm f\195\188r Shazzrahs Fluch",
+	--curse_cmd = "curse",
+	curse_name = "Alarm für Shazzrahs Fluch",
 	curse_desc = "Warnen vor Shazzrahs Fluch",
 	
-	deaden_cmd = "deaden",
-	deaden_name = "Alarm f\195\188r Magie d\195\164mpfen",
-	deaden_desc = "Warnen wenn Shazzrah Magie d\195\164mpfen hat",
+	--deaden_cmd = "deaden",
+	deaden_name = "Alarm für Magie dämpfen",
+	deaden_desc = "Warnen wenn Shazzrah Magie dämpfen hat",
 	
-	blink_cmd = "blink",
-	blink_name = "Alarm f\195\188r Blinzeln",
+	--blink_cmd = "blink",
+	blink_name = "Alarm für Blinzeln",
 	blink_desc = "Warnen wenn Shazzrah blinzelt",
 } end)
 

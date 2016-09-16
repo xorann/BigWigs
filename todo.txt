@@ -1,10 +1,9 @@
 Important:
 - improve configuration for warnicon
-
-
-
 - verify german translations for all MC, BWL and AQ40 boss modules
-
+	- Ragnaros:
+		- Son of Flame
+		
 Nice to have:
 - refactoring of all ZG and AQ20 boss modules
 - enrage plugin: 

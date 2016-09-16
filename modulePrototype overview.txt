@@ -53,9 +53,12 @@ void BigWigs.modulePrototype:SendBossDeathSync()
 -- event handler, override only if necessary (e.g. c'thun phase transition requires overriding CheckForWipe())
 void BigWigs.modulePrototype:RegisterYellEngage(yell)
 
-void BigWigs.modulePrototype:CheckForEngage()
-void BigWigs.modulePrototype:CheckForWipe()
-void BigWigs.modulePrototype:CheckForBossDeath(msg)
+void BigWigs.modulePrototype:CheckForEngage() -- registers the PLAYER_REGEN_DISABLED event. If you have to use this event, register it in the OnSetup function 
+-- and call the BigWigs:CheckForEngage(self) function within your event handler.
+void BigWigs.modulePrototype:CheckForWipe() --registers the PLAYER_REGEN_ENABLED and CHAT_MSG_COMBAT_FRIENDLY_DEATH events. If you have to use either of these events, 
+-- register it in the OnSetup function and call the BigWigs:CheckForWipe(self) function within your event handler.
+void BigWigs.modulePrototype:CheckForBossDeath(msg) -- registers the CHAT_MSG_COMBAT_HOSTILE_DEATH event. If you have to use this event, register it in the OnSetup function 
+-- and call the BigWigs:CheckForBossDeath(self) function within your event handler.
 
 -- override
 void BigWigs.modulePrototype:BigWigs_RecvSync(sync, rest, nick)

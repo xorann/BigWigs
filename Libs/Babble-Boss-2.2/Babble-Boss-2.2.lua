@@ -251,7 +251,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Nefarian"] = "Nefarian",
 		["Vaelastrasz the Corrupt"] = "Vaelastrasz der Verdorbene",
 		["Razorgore the Untamed"] = "Feuerkralle der Ungezähmte",
-		["Broodlord Lashlayer"] = "Brutwächter Lashlayer",
+		["Broodlord Lashlayer"] = "Brutwächter Lashlayer", -- should be "Brutwächter Dreschbringer" but Nefarian is a strange realm
 		["Chromaggus"] = "Chromaggus",
 		["Ebonroc"] = "Schattenschwinge",
 		["Firemaw"] = "Feuerschwinge",
@@ -259,7 +259,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		
 		-- MC
 		["Majordomo Executus"] = "Majordomus Exekutus",
-		["Ragnaros"] = "Ragnaros",f
+		["Ragnaros"] = "Ragnaros",
 		["Baron Geddon"] = "Baron Geddon",
 		["Golemagg the Incinerator"] = "Golemagg der Verbrenner",
 		["Garr"] = "Garr",

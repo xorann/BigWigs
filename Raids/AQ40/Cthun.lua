@@ -247,7 +247,6 @@ local eyeTarget = nil
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "CheckForWipe") -- we get out of combat between phases
 	
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Emote")		-- weakened triggering, does not work on nefarian
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Emote")		-- weakened triggering, does not work on nefarian

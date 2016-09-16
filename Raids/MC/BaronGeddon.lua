@@ -114,7 +114,7 @@ L:RegisterTranslations("deDE", function() return {
 	bombotherend_trigger = "Lebende Bombe schwindet von (.*).",
 	ignitemana_trigger1 = "von Mana entz\195\188nden betroffen",
 	ignitemana_trigger2 = "Mana entz\195\188nden(.+)widerstanden",
-	deathyou_trigger = "Du stirbst.",
+	deathyou_trigger = "Ihr sterbt.",
 	deathother_trigger = "(.*) stirbt",
 
 	bomb_message_you = "Du bist die Bombe!",
@@ -179,7 +179,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	
 	self:ThrottleSync(5, syncName.bomb)
@@ -215,7 +215,7 @@ end
 function module:Event(msg)
 	local _,_, bombother, mcverb = string.find(msg, L["bombother_trigger"])
 	local _,_, bombotherend, mcverb = string.find(msg, L["bombotherend_trigger"])
-	local _,_, bombotherdeath,mctype = string.find(msg, L["deathother_trigger"])
+	--local _,_, bombotherdeath,mctype = string.find(msg, L["deathother_trigger"])
 	if string.find(msg, L["bombyou_trigger"]) then
 		self:Sync(syncName.bomb)
 		if self.db.profile.bomb then
@@ -246,8 +246,8 @@ function module:Event(msg)
 		end
 	elseif bombotherend then
 		self:RemoveBar(string.format(L["bomb_bar"], bombotherend))
-	elseif string.find(msg, L["deathother_trigger"]) then
-		self:RemoveBar(string.format(L["bomb_bar"], bombotherdeath))
+	--elseif string.find(msg, L["deathother_trigger"]) then
+	--	self:RemoveBar(string.format(L["bomb_bar"], bombotherdeath))
 	elseif (string.find(msg, L["ignitemana_trigger1"]) or string.find(msg, L["ignitemana_trigger2"])) then
 		self:Sync(syncName.ignite)
 	end

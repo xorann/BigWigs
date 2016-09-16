@@ -37,13 +37,13 @@ L:RegisterTranslations("enUS", function() return {
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-	cmd = "Broodlord",
+	--cmd = "Broodlord",
 	
-	engage_trigger = "None of your kind should be here",
+	engage_trigger = "Euresgleichen sollte nicht hier sein!",
 	ms_trigger = "^(.+) (.+) von T\195\182dlicher Sto\195\159 betroffen",
 	bw_trigger = "^(.+) (.+) von Druckwelle betroffen",
-	deathyou_trigger = "Du stirbst\.",
-	deathother_trigger = "(.+) stirbt\.",
+	deathyou_trigger = "Ihr sterbt.",
+	deathother_trigger = "(.+) stirbt.",
 	ms_warn_you = "T\195\182dlicher Sto\195\159 auf Dir!",
 	ms_warn_other = "T\195\182dlicher Sto\195\159 auf %s!",
 	bw_warn = "Druckwelle bald!",
@@ -53,13 +53,13 @@ L:RegisterTranslations("deDE", function() return {
 	you = "Ihr",
 	are = "seid",
 
-	ms_cmd = "ms",
+	--ms_cmd = "ms",
 	ms_name = "T\195\182dlicher Sto\195\159",
-	ms_desc = "Warnung, wenn Spieler von T\195\182dlicher Sto\195\159 betroffen sind und beginnt einen anklickbaren Balken f\195\188r einfache Auswahl.",
+	ms_desc = "Warnung wenn ein Spieler von Tödlicher Sto\195\159 betroffen ist und startet einen anklickbaren Balken für eine einfache Auswahl.",
 	
-	bw_cmd = "bw",
+	--bw_cmd = "bw",
 	bw_name = "Druckwelle",
-	bw_desc = "Zeigt eine Balken mit der m\195\182glichen Druckwelle Abklingzeit.\n\n(Dementi: Diese variiert \195\188berall von 8 bis 15 den Sekunden Sie wurde k\195\188rzeste Intervall für die Sicherheit entschieden.)",
+	bw_desc = "Zeigt einen Balken mit der möglichen Druckwellenabklingzeit.\n\n(Hinweis: Diese variiert von 8 bis 15 Sekunden. Zur Sicherheit wurde der kürzeste Intervall gewählt.)",
 } end )
 
 
@@ -102,7 +102,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
     self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
 end
 
 -- called after module is enabled and after each wipe
@@ -135,12 +135,12 @@ function module:Event(msg)
         MS = name
         lastMS = GetTime()
 		if detect == L["are"] then
-			self:Message(L["ms_warn_you"], "Alarm", true, "Beware")
+			self:Message(L["ms_warn_you"], "Core", true, "Beware")
 			self:Bar(string.format(L["ms_bar"], UnitName("player")), timer.mortalStrike, icon.mortalStrike, true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], UnitName("player")), function(name, button, extra) TargetByName(extra, true) end, UnitName("player"))
             self:WarningSign(icon.mortalStrike, timer.mortalStrike)
 		else
-			self:Message(string.format(L["ms_warn_other"], name), "Alarm", true, "Alarm")
+			self:Message(string.format(L["ms_warn_other"], name), "Core", true, "Alarm")
 			self:Bar(string.format(L["ms_bar"], name), timer.mortalStrike, icon.mortalStrike, true, "Black")
 			self:SetCandyBarOnClick("BigWigsBar "..string.format(L["ms_bar"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 		end
@@ -153,7 +153,7 @@ function module:Event(msg)
 	end
 end
 
-function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
+--[[function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
 	if not self.db.profile.bw then return end
 	local _, _, deathother = string.find(msg, L["deathother_trigger"])
 	if msg == L["deathyou_trigger"] then
@@ -161,7 +161,7 @@ function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
 	elseif deathother then
 		self:RemoveBar(string.format(L["ms_bar"], deathother))
 	end
-end
+end]]
 
 function module:PLAYER_TARGET_CHANGED()
     if (lastMS + 5) > GetTime() and UnitName("target") == MS then

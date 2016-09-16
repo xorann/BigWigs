@@ -108,12 +108,13 @@ module:RegisterYellEngage(L["starttrigger2"])
 
 -- called after module is enabled
 function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
 	self.started = nil
 	wave = 0
 	numTrainees = 0
@@ -161,6 +162,8 @@ function module:CHAT_MSG_MONSTER_YELL( msg )
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH( msg )
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["rider_name"]) then
 		self:Message(L["riderdiewarn"], "Important")
 	elseif self.db.profile.adddeath and msg == string.format(UNITDIESOTHER, L["deathknight_name"]) then

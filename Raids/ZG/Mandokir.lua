@@ -135,7 +135,7 @@ function BigWigsMandokir:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
+	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirWWStart", 5)
@@ -179,7 +179,7 @@ end
 function BigWigsMandokir:Event(msg)
 	local _,_,gazedplayer,_ = string.find(msg, L["gazeafflictother"])
 	local _,_,gazedplayerend,_ = string.find(msg, L["gazeendother"])
-	local _,_,gazeddeathend,_ = string.find(msg, L["deathother"])
+	--local _,_,gazeddeathend,_ = string.find(msg, L["deathother"])
 	if msg == L["wwgain"] then
 		self:TriggerEvent("BigWigs_SendSync", "MandokirWWStart")
 	elseif msg == L["wwloss"] then
@@ -200,10 +200,10 @@ function BigWigsMandokir:Event(msg)
 		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..UnitName("player"))
 	elseif gazedplayerend and gazedplayerend~=L["you"] then
 		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..gazedplayerend)
-	elseif msg == L["deathyou"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..UnitName("player"))
-	elseif gazeddeathend then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..gazeddeathend)
+	--elseif msg == L["deathyou"] then
+	--	self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..UnitName("player"))
+	--elseif gazeddeathend then
+	--	self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..gazeddeathend)
 	end
 end
 

@@ -110,7 +110,7 @@ function BigWigsKazzak:OnEnable()
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_MISSES", "Melee")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
+	
 	self:RegisterEvent("BigWigs_RecvSync")
 	self:TriggerEvent("BigWigs_ThrottleSync", "LordKazzakMarkStart", 2)
 	self:TriggerEvent("BigWigs_ThrottleSync", "LordKazzakMarkStop", 2)
@@ -122,7 +122,11 @@ function BigWigsKazzak:OnEnable()
 	self:TriggerEvent("BigWigs_ThrottleSync", "LordKazzakDead", 5)
 end
 
+function BigWigsKazzak:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
+end
 function BigWigsKazzak:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
+	BigWigs:CheckForWipe(self)
 	local _,_,otherdeath,_ = string.find(msg, L["deathother_trigger"])
 	if msg == L["deathyou_trigger"] then
 		if self.db.profile.markofkazzak then

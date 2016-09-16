@@ -151,7 +151,6 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
 	self:ThrottleSync(3, syncName.whirlwind)
 	self:ThrottleSync(3, syncName.whirlwindOver)
@@ -164,6 +163,8 @@ end
 function module:OnSetup()
 	self.started = nil
 	guard = 0
+	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged
@@ -204,6 +205,8 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
 	if msg == L["deadaddtrigger"] then
 		self:Sync(syncName.add)
 	end

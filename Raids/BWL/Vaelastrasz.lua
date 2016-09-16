@@ -150,7 +150,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
+	
 	
 	self:ThrottleSync(2, syncName.adrenaline)
 	self:ThrottleSync(3, syncName.flamebreath)
@@ -159,6 +159,7 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH")
 	self.barstarted = false
 	self.started = false
 end
@@ -196,17 +197,17 @@ function module:CheckForEngage()
     if IsHostile() then
         BigWigs:CheckForEngage(self)
     end
-    
+    --[[
     local running = module:IsEventScheduled(module:ToString().."_CheckStart")
-    if IsHostile() then
-        module:DebugMessage("Vael is hostile.")
-        module:CancelScheduledEvent(module:ToString().."_CheckStart")
+		if IsHostile() then
+			module:DebugMessage("Vael is hostile.")
+			module:CancelScheduledEvent(module:ToString().."_CheckStart")
 
-        BigWigs:CheckForEngage(self)
-    elseif not running then
-        module:ScheduleRepeatingEvent(module:ToString().."_CheckStart", module.CheckForEngage, .5, module)
-    end
-end
+			BigWigs:CheckForEngage(self)
+		elseif not running then
+			module:ScheduleRepeatingEvent(module:ToString().."_CheckStart", module.CheckForEngage, .5, module)
+		end
+	end
     if module and module:IsBossModule() then
         local function IsBossInCombat()
             local t = module.enabletrigger
@@ -253,7 +254,8 @@ end
             module:ScheduleRepeatingEvent(module:ToString().."_CheckStart", module.CheckForEngage, .5, module)
         end
     end
-
+	]]
+end
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["flamebreath_trigger"] then
 		self:Sync(syncName.flamebreath)
@@ -261,6 +263,8 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 end
 
 function module:CHAT_MSG_COMBAT_FRIENDLY_DEATH(msg)
+	BigWigs:CheckForWipe(self)
+	
 	local _, _, deathother = string.find(msg, L["deathother_trigger"])
 	if msg == L["deathyou_trigger"] then
 		if self.db.profile.adrenaline then
@@ -323,7 +327,7 @@ end
 
 function module:Flamebreath()
 	if self.db.profile.flamebreath then
-		self:Bar(L["breath_bar"], timer.flamebreath, timer.flamebreath, true, "Red")
+		self:Bar(L["breath_bar"], timer.flamebreath, icon.flamebreath, true, "Red")
 		self:Message(L["breath_message"], "Urgent")
 	end
 end

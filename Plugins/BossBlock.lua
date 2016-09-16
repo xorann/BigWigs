@@ -133,33 +133,33 @@ L:RegisterTranslations("zhTW", function() return {
 
 L:RegisterTranslations("deDE", function() return {
 	["BossBlock"] = "BossBlock",
-	["Suppress bossmod chat from other players."] = "Bossmod Chat von anderen Spielern unterdr\195\188cken.",
+	["Suppress bossmod chat from other players."] = "Bossmod Meldungen von anderen Spielern unterdrücken.",
  	 
-	["Suppress Raid Chat"] = "Raid Chat unterdr\195\188cken",
-	["Suppress messages in the raid channel."] = "Nachrichten im Raid Channel unterdr\195\188cken",
+	["Suppress Raid Chat"] = "Raid Chat unterdrücken",
+	["Suppress messages in the raid channel."] = "Nachrichten im Raid Channel unterdrücken",
  
-	["Suppress RaidWarn Chat"] = "RaidWarn Chat unterdr\195\188cken",
-	["Suppress RaidWarn messages in the chat frames."] = "RaidWarn Nachrichten im Chat Fenster unterdr\195\188cken.",
+	["Suppress RaidWarn Chat"] = "RaidWarn Chat unterdrücken",
+	["Suppress RaidWarn messages in the chat frames."] = "RaidWarn Nachrichten im Chat Fenster unterdrücken.",
  
-	["Suppress RaidWarn"] = "RaidWarn unterdr\195\188cken",
-	["Suppress RaidWarn popup messages."] = "RaidWarn Popup-Nachrichten unterdr\195\188cken.",
+	["Suppress RaidWarn"] = "RaidWarn unterdrücken",
+	["Suppress RaidWarn popup messages."] = "RaidWarn Popup-Nachrichten unterdrücken.",
  
-	["Suppress RaidSay"] = "RaidSay unterdr\195\188cken",
-	["Suppress CTRA RaidSay popup messages."] = "CTRA RaidSay Popup Nachrichten unterdr\195\188cken.",
-	["Suppress oRA RaidSay popup messages."] = "oRA RaidSay Popup Nachrichten unterdr\195\188cken.",
-	["Suppress oRA2 RaidSay popup messages."] = "oRA2 RaidSay Popup Nachrichten unterdr\195\188cken.",
+	["Suppress RaidSay"] = "RaidSay unterdrücken",
+	["Suppress CTRA RaidSay popup messages."] = "CTRA RaidSay Popup Nachrichten unterdrücken.",
+	["Suppress oRA RaidSay popup messages."] = "oRA RaidSay Popup Nachrichten unterdrücken.",
+	["Suppress oRA2 RaidSay popup messages."] = "oRA2 RaidSay Popup Nachrichten unterdrücken.",
  
-	["Suppress Tells"] = "Fl\195\188stern unterdr\195\188cken",
-	["Suppress Tell messages."] = "Fl\195\188stern Nachrichten unterdr\195\188cken.",
+	["Suppress Tells"] = "Flüstern unterdrücken",
+	["Suppress Tell messages."] = "Flüstern Nachrichten unterdrücken.",
 
 	["Debugging"] = "Debugging",
 	["Show debug messages."] = "Debug Nachrichten anzeigen.",
  
-	["Suppressing Chatframe"] = "Chatframe unterdr\195\188ckt",
-	["Suppressing RaidWarningFrame"] = "RaidWarningFrame unterdr\195\188cket",
-	["Suppressing CT_RAMessageFrame"] = "CT_RAMessageFrame unterdr\195\188ckt",
+	["Suppressing Chatframe"] = "Chatframe unterdrückt",
+	["Suppressing RaidWarningFrame"] = "RaidWarningFrame unterdrücket",
+	["Suppressing CT_RAMessageFrame"] = "CT_RAMessageFrame unterdrückt",
  
-	["Suppressed"] = "Unterdr\195\188ckt",
+	["Suppressed"] = "Unterdrückt",
 	["Shown"] = "Angezeigt",
 } end)
 

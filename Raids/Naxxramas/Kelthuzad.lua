@@ -221,7 +221,6 @@ end
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
 	self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "Event")
@@ -251,6 +250,8 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
 	self.warnedAboutPhase3Soon = nil
 	frostbolttime = 0
 end
@@ -322,6 +323,8 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+
 	local _,_, mob = string.find(msg, L["add_dead_trigger"])
 	if self.db.profile.addcount and (mob == "Unstoppable Abomination") then
 		self:Sync(syncName.abomination .. " " .. mob)

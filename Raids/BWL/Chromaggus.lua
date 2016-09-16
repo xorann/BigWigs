@@ -105,9 +105,9 @@ L:RegisterTranslations("deDE", function() return {
 	breath_trigger = "^Chromaggus beginnt (.+) zu wirken\.",
 	vulnerability_direct_test = "^(.+) trifft Chromaggus(.+) ([%d]+) ([%w]+)%.[%s%(]*([%d]*)",
 	vulnerability_dots_test = "^Chromaggus erleidet ([%d]+) ([%w]+)schaden[%svon]*[%s%w]* %(durch ([%w%s:]+)%)%.[%s%(]*([%d]*)",
-	frenzy_trigger = "goes into a killing frenzy",
+	frenzy_trigger = "Chromaggus wird mörderisch wahnsinnig!",
 	frenzyfade_trigger = "Raserei schwindet von Chromaggus\.",
-	vulnerability_trigger = "flinches as its skin shimmers.",
+	vulnerability_trigger = "Chromaggus weicht zurück, als die Haut schimmert.",
 
 	hit = "trifft",
 	crit = "kritisch",
