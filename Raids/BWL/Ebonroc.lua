@@ -44,8 +44,8 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-	wingbuffet_trigger = "Ebonroc beginnt Fl\195\188gelsto\195\159 zu wirken.",
-	shadowflame_trigger = "Ebonroc beginnt Schattenflamme zu wirken.",
+	wingbuffet_trigger = "Schattenschwinge beginnt Fl\195\188gelsto\195\159 zu wirken.",
+	shadowflame_trigger = "Schattenschwinge beginnt Schattenflamme zu wirken.",
 	shadowcurseyou_trigger = "Ihr seid von Schattenschwinges Schatten betroffen.",
 	shadowcurseother_trigger = "(.+) ist von Schattenschwinges Schatten betroffen.",
 	wingbuffet_message = "Fl\195\188gelsto\195\159! N\195\164chster in 30 Sekunden!",

@@ -250,8 +250,8 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Lord Victor Nefarius"] = "Lord Victor Nefarius",
 		["Nefarian"] = "Nefarian",
 		["Vaelastrasz the Corrupt"] = "Vaelastrasz der Verdorbene",
-		["Razorgore the Untamed"] = "Razorgore the Untamed",
-		["Broodlord Lashlayer"] = "Broodlord Lashlayer",
+		["Razorgore the Untamed"] = "Feuerkralle der Ungezähmte",
+		["Broodlord Lashlayer"] = "Brutwächter Lashlayer",
 		["Chromaggus"] = "Chromaggus",
 		["Ebonroc"] = "Schattenschwinge",
 		["Firemaw"] = "Feuerschwinge",
@@ -259,7 +259,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		
 		-- MC
 		["Majordomo Executus"] = "Majordomus Exekutus",
-		["Ragnaros"] = "Ragnaros",
+		["Ragnaros"] = "Ragnaros",f
 		["Baron Geddon"] = "Baron Geddon",
 		["Golemagg the Incinerator"] = "Golemagg der Verbrenner",
 		["Garr"] = "Garr",

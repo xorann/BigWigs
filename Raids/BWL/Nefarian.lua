@@ -110,7 +110,7 @@ L:RegisterTranslations("deDE", function() return {
 	Mob_Spawn = "Mob Spawn",
 	fear_warn = "Furcht JETZT!",
 
-	triggershamans	= "Schamanen",
+	triggershamans	= "Schamane",
 	triggerdruid	= "Druiden",
 	triggerwarlock	= "Hexenmeister",
 	triggerpriest	= "Priester",
