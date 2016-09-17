@@ -918,7 +918,7 @@ function BigWigs:EnableModule(moduleName, nosync)
 			--m.bossSync = m:ToString()
 			if not m.translatedName then
 				m.translatedName = m:ToString()
-				self:Print("translatedName for module " .. m:ToString() .. " missing")
+				self:DebugMessage("translatedName for module " .. m:ToString() .. " missing")
 			end
 			self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m.translatedName or "??"), "Core", true)
 		end
@@ -981,6 +981,31 @@ end
 -------------------------------
 
 function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
+    local s, m, n = "-", "-", "-"
+    if sync then
+        if type(sync) == "string" then
+            s = sync
+        else
+            s = type(sync)
+        end
+    end
+    if moduleName then
+        if type(moduleName) == "string" then
+            m = moduleName
+        else
+            m = type(moduleName)
+        end
+    end
+    if nick then
+        if type(nick) == "string" then
+            n = nick
+        else
+            n = type(nick)
+        end
+    end
+    self:DebugMessage("sync: " .. s .. " rest: " .. m .. " nick: " .. n)
+    
+    
 	local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
 	local module = nil
 	if self:HasModule(moduleName) then

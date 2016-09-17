@@ -238,9 +238,10 @@ end
 function BigWigsThekal:CheckForBossDeath()
 	if self.phase == 2 then
 		BigWigs:CheckForBossDeath()
-	end
+	else
+        self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")
+    end
 end
-
 function BigWigsThekal:CHAT_MSG_MONSTER_YELL(msg)
     if string.find(msg, L["phase2_trigger"]) then
         self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")

@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["High Priestess Mar'li"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("High Priestess Mar'li", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -54,7 +55,7 @@ L:RegisterTranslations("enUS", function() return {
 L:RegisterTranslations("deDE", function() return {
 	spawn_name = "Spawn of Mar'li",
 	
-	cmd = "Marli",
+	--cmd = "Marli",
 
 	spiders_trigger = "Aid me my brood!",
 	drainlifeyoustart_trigger = "Ihr seid von Blutsauger betroffen\.",
@@ -76,41 +77,62 @@ L:RegisterTranslations("deDE", function() return {
 	spiderphase_trigger1 = "Draw me to your web mistress Shadra",
 	spiderphase_trigger2 = "Shadra, make of me your avatar",
 
-	spider_cmd = "spider",
+	--spider_cmd = "spider",
 	spider_name = "Alarm f\195\188r Spinnen",
 	spider_desc = "Warnung wenn Spinnen erscheinen",
 
-	volley_cmd = "volley",
+	--volley_cmd = "volley",
 	volley_name = "Alarm f\195\188r Giftblitzsalve",
 	volley_desc = "Warnen vor Giftblitzsalve\n\n(Dementi: Dieser Balken hat eine \194\1772 Sekunden Fehler)",
 
-	drain_cmd = "drain",
+	--drain_cmd = "drain",
 	drain_name = "Alarm f\195\188r Blutsauger",
 	drain_desc = "Warnen vor Blutsauger",
 	
-	phase_cmd = "phase",
+	--phase_cmd = "phase",
 	phase_name = "Phasen-Benachrichtigung",
 	phase_desc = "Verk\195\188ndet den Phasenwechsel des Bosses",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsMarli = BigWigs:NewModule(boss)
-BigWigsMarli.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsMarli.enabletrigger = boss
-BigWigsMarli.bossSync = "Mar'li"
-BigWigsMarli.wipemobs = { L["spawn_name"] }
-BigWigsMarli.toggleoptions = {"phase", "spider", "drain", "volley", "bosskill"}
-BigWigsMarli.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["spawn_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"phase", "spider", "drain", "volley", "bosskill"}
+
+
+-- locals
+local timer = {
+	charge = 10,
+	teleport = 30,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	drain = "MarliDrainStart",
+	drainOver = "MarliDrainEnd",
+	trollPhase = "MarliTrollPhase",
+	spiderPhase = "MarliSpiderPhase",
+	spiders = "MarliSpiders",
+	volley = "MarliVolley",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsMarli:OnEnable()
-    self.started = nil
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
@@ -121,27 +143,39 @@ function BigWigsMarli:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliDrainStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliDrainEnd", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliTrollPhase", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliSpiderPhase", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliSpiders", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MarliVolley", 11)
+	
+	self:ThrottleSync(5, syncName.drain)
+	self:ThrottleSync(5, syncName.drainOver)
+	self:ThrottleSync(5, syncName.trollPhase)
+	self:ThrottleSync(5, syncName.spiderPhase)
+	self:ThrottleSync(5, syncName.spiders)
+	self:ThrottleSync(11, syncName.volley)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
---      Events          --
+--      Event Handlers	    --
 ------------------------------
 
 function BigWigsMarli:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["spiders_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "MarliSpiders")
+		self:Sync(syncName.spiders)
 	elseif string.find(msg, L["trollphase_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "MarliTrollPhase")
+		self:Sync(syncName.trollPhase)
 	elseif string.find(msg, L["spiderphase_trigger1"]) or string.find(msg, L["spiderphase_trigger2"]) then
-		self:TriggerEvent("BigWigs_SendSync", "MarliSpiderPhase")
+		self:Sync(syncName.spiderPhase)
 	end
 end
 
@@ -149,42 +183,51 @@ function BigWigsMarli:Event(msg)
 	local _,_,drainlifeotherstart,_ = string.find(msg, L["drainlifeotherstart_trigger"])
 	local _,_,drainlifeotherend,_ = string.find(msg, L["drainlifeotherend_trigger"])
 	if string.find(msg, L["pbvafflicts_trigger"]) or string.find(msg, L["pbvhits_trigger"]) or msg == L["pbvresist_trigger"] or msg == L["pbvimmune_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "MarliVolley")
+		self:Sync(syncName.volley)
 	elseif string.find(msg, L["drainlife"]) then
 		if msg == L["drainlifeyoustart_trigger"] then
-			self:TriggerEvent("BigWigs_SendSync", "MarliDrainStart")
+			self:Sync(syncName.drain)
 		elseif msg == L["drainlifeyouend_trigger"] then
-			self:TriggerEvent("BigWigs_SendSync", "MarliDrainEnd")
+			self:Sync(syncName.drainOver)
 		elseif drainlifeotherstart and (UnitIsInRaidByName(drainlifeotherstart) or UnitIsPetByName(drainlifeotherstart)) then
-			self:TriggerEvent("BigWigs_SendSync", "MarliDrainStart")
+			self:Sync(syncName.drain)
 		elseif drainlifeotherend and drainlifeotherend ~= L["you"] and (UnitIsInRaidByName(drainlifeotherstart) or UnitIsPetByName(drainlifeotherstart)) then
-			self:TriggerEvent("BigWigs_SendSync", "MarliDrainEnd")
+			self:Sync(syncName.drainOver)
 		end
 	end
 end
 
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
 function BigWigsMarli:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "MarliSpiders" and self.db.profile.spider then
-		self:TriggerEvent("BigWigs_Message", L["spiders_message"], "Attention")
-	elseif sync == "MarliTrollPhase" and self.db.profile.phase then
-		self:TriggerEvent("BigWigs_Message", L["trollphase"], "Attention")
-	elseif sync == "MarliSpiderPhase" then
+    if sync == syncName.spiders and self.db.profile.spider then
+		self:Message(L["spiders_message"], "Attention")
+	elseif sync == syncName.trollPhase and self.db.profile.phase then
+		self:Message(L["trollphase"], "Attention")
+	elseif sync == syncName.spiderPhase then
 		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["spiderphase"], "Attention")
+			self:Message(L["spiderphase"], "Attention")
 		end
 		if self.db.profile.drain then
-			self:TriggerEvent("BigWigs_StopBar", self, L["drainlife"])
+			self:RemoveBar(L["drainlife"])
 		end
 		if self.db.profile.volley then
-			self:TriggerEvent("BigWigs_StopBar", self, L["pbv"])
+			self:RemoveBar(L["pbv"])
 		end
-	elseif sync == "MarliVolley" and self.db.profile.volley then
-		self:TriggerEvent("BigWigs_StartBar", self, L["pbv"], 13, "Interface\\Icons\\Spell_Nature_CorrosiveBreath")
-	elseif sync == "MarliDrainStart" and self.db.profile.drain then
-		self:TriggerEvent("BigWigs_StartBar", self, L["drainlife"], 7, "Interface\\Icons\\Spell_Shadow_LifeDrain02")
-		self:TriggerEvent("BigWigs_Message", L["drainlife_message"], "Attention")
-	elseif sync == "MarliDrainEnd" and self.db.profile.drain then
-		self:TriggerEvent("BigWigs_StopBar", self, L["drainlife"])
+	elseif sync == syncName.volley and self.db.profile.volley then
+		self:Bar(L["pbv"], 13, "Spell_Nature_CorrosiveBreath")
+	elseif sync == syncName.drain and self.db.profile.drain then
+		self:Bar(L["drainlife"], 7, "Spell_Shadow_LifeDrain02")
+		self:Message(L["drainlife_message"], "Attention")
+	elseif sync == syncName.drainOver and self.db.profile.drain then
+		self:RemoveBar(L["drainlife"])
 	end
 end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
