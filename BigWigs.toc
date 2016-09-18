@@ -80,6 +80,7 @@ Plugins\RaidOfficer.lua
 Plugins\AutoReply.lua
 Plugins\Proximity.lua
 Plugins\DousedRunes.lua
+Plugins\Enrage.lua
 
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua
@@ -141,7 +142,7 @@ Raids\Other\Lethon.lua
 Raids\Other\Taerar.lua
 Raids\Other\Ysondre.lua
 
-#Raids\Other\Boar.lua
+Raids\Other\Boar.lua
 
 Raids\Onyxia\Onyxia.lua
 

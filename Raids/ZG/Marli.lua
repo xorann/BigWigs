@@ -169,7 +169,7 @@ end
 --      Event Handlers	    --
 ------------------------------
 
-function BigWigsMarli:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["spiders_trigger"]) then
 		self:Sync(syncName.spiders)
 	elseif string.find(msg, L["trollphase_trigger"]) then
@@ -179,7 +179,7 @@ function BigWigsMarli:CHAT_MSG_MONSTER_YELL(msg)
 	end
 end
 
-function BigWigsMarli:Event(msg)
+function module:Event(msg)
 	local _,_,drainlifeotherstart,_ = string.find(msg, L["drainlifeotherstart_trigger"])
 	local _,_,drainlifeotherend,_ = string.find(msg, L["drainlifeotherend_trigger"])
 	if string.find(msg, L["pbvafflicts_trigger"]) or string.find(msg, L["pbvhits_trigger"]) or msg == L["pbvresist_trigger"] or msg == L["pbvimmune_trigger"] then
@@ -202,7 +202,7 @@ end
 --      Synchronization	    --
 ------------------------------
 
-function BigWigsMarli:BigWigs_RecvSync(sync, rest, nick)
+function module:BigWigs_RecvSync(sync, rest, nick)
     if sync == syncName.spiders and self.db.profile.spider then
 		self:Message(L["spiders_message"], "Attention")
 	elseif sync == syncName.trollPhase and self.db.profile.phase then

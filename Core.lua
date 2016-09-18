@@ -981,7 +981,7 @@ end
 -------------------------------
 
 function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
-    local s, m, n = "-", "-", "-"
+    local s, m, n, playername = "-", "-", "-", UnitName("player")
     if sync then
         if type(sync) == "string" then
             s = sync
@@ -998,7 +998,11 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
     end
     if nick then
         if type(nick) == "string" then
-            n = nick
+            if nick == playername then
+                n = "you"
+            else
+                n = nick
+            end
         else
             n = type(nick)
         end

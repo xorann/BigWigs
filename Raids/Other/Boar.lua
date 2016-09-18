@@ -121,6 +121,7 @@ function module:OnEngage()
 	end
 
 	self:Sync("TwinsTeleport")
+    self:TriggerEvent("BigWigs_Enrage", 30, self.translatedName)
 		
 	self:Proximity()
 end
@@ -128,6 +129,7 @@ end
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
     self:RemoveProximity()
+    self:TriggerEvent("BigWigs_EnrageStop")
 end
 
 

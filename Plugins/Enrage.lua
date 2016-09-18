@@ -31,6 +31,10 @@ L:RegisterTranslations("enUS", function() return {
 	["Set the frame scale."] = true,
 	["Texture"] = true,
 	["Set the texture for the timerbars."] = true,
+    ["Health"] = true,
+            
+    ["Test"] = true,
+    ["Close"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -42,7 +46,7 @@ L:RegisterTranslations("deDE", function() return {
 ----------------------------------
 
 BigWigsEnrage = BigWigs:NewModule(L["Enrage"])
-BigWigsEnrage.revision = 20003
+BigWigsEnrage.revision = 20004
 BigWigsEnrage.defaultDB = {
 	scale = 1.0,
 	texture = "BantoBar",
@@ -65,14 +69,14 @@ BigWigsEnrage.consoleOptions = {
 			name = L["Show anchor"],
 			desc = L["Show the bar anchor frame."],
             order = 1,
-			func = function() self:ShowAnchor() end,
+			func = function() BigWigsEnrage:BigWigs_ShowAnchors() end,
 		},
         reset = {
 			type = "execute",
 			name = L["Reset position"],
 			desc = L["Reset the anchor position, moving it to the original position."],
 			order = 2,
-			func = function() self:ResetAnchor() end,
+			func = function() BigWigsEnrage:RestorePosition() end,
 		},
 		scale = {
 			type = "range",
@@ -82,16 +86,16 @@ BigWigsEnrage.consoleOptions = {
 			min = 0.2,
 			max = 2.0,
 			step = 0.1,
-			get = function() return self.db.profile.scale end,
-			set = function(v) self.db.profile.scale = v end,
+			get = function() return BigWigsEnrage.db.profile.scale end,
+			set = function(v) BigWigsEnrage.db.profile.scale = v end,
 		},
 		texture = {
 			type = "text",
 			name = L["Texture"],
 			desc = L["Set the texture for the timerbars."],
             order = 16,
-			get = function() return self.db.profile.texture end,
-			set = function(v) self.db.profile.texture = v end,
+			get = function() return BigWigsEnrage.db.profile.texture end,
+			set = function(v) BigWigsEnrage.db.profile.texture = v end,
 			validate = surface:List(),
         },
 	},
@@ -103,9 +107,9 @@ BigWigsEnrage.consoleOptions = {
 ------------------------------
 
 function BigWigsEnrage:OnRegister()
-	self.consoleOptions.args[L["Texture"]].validate = surface:List()
+	self.consoleOptions.args.texture.validate = surface:List()
     self:RegisterEvent("Surface_Registered", function()
-		self.consoleOptions.args[L["Texture"]].validate = surface:List()
+		self.consoleOptions.args.texture.validate = surface:List()
     end)
 end
 
@@ -115,10 +119,12 @@ function BigWigsEnrage:OnEnable()
 	end
 	
 	self:SetupFrames()
+    self:RegisterEvent("BigWigs_Enrage", "Start")
+    self:RegisterEvent("BigWigs_EnrageStop", "Stop")
 	self:RegisterEvent("BigWigs_ShowAnchors")
 	self:RegisterEvent("BigWigs_HideAnchors")
-	self:RegisterEvent("BigWigs_StartBar")
-	self:RegisterEvent("BigWigs_StopBar")
+	--self:RegisterEvent("BigWigs_StartBar")
+	--self:RegisterEvent("BigWigs_StopBar")
 	
 	if not self:IsEventRegistered("Surface_Registered") then 
 	    self:RegisterEvent("Surface_Registered", function()
@@ -138,6 +144,7 @@ function BigWigsEnrage:Start(enrageTimer, bossName)
 		
 		self:TimerBar(enrageTimer)
 		self:HPBar(bossName)
+        self:SetHPBar(100)
 		
 		self:RegisterEvent("UNIT_HEALTH")
 	end
@@ -146,7 +153,9 @@ end
 function BigWigsEnrage:Stop()
 	self:UnregisterCandyBar("BigWigsEnrage " .. L["Enrage"])
 	self:UnregisterCandyBar("BigWigsEnrage " .. L["Health"])
-	self:UnregisterEvent("UNIT_HEALTH")
+	if self:IsEventRegistered("UNIT_HEALTH") then
+        self:UnregisterEvent("UNIT_HEALTH")
+    end
 end
 
 
@@ -170,7 +179,7 @@ function BigWigsEnrage:HPBar(bossName)
 			elseif t == 0 then 
 				timetext = "0%%" 
 			else 
-				timetext = string.format("%d", t) 
+				timetext = string.format("%d", t)  .. "%"
 			end 
 			return timetext 
 		end)	
@@ -182,7 +191,7 @@ function BigWigsEnrage:SetHPBar(value)
 	local id = "BigWigsEnrage " .. L["Health"]
 	local bar = candybar.var.handlers[id]
 	if not bar then return end
-	bar.elapsed = value
+	bar.elapsed = 100 - value
 	candybar:Update(id)
 	if bar.time <= value then
 		--BigWigsEnrage:BigWigs_StopBar(module, text)
@@ -302,7 +311,7 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.cheader = self.frames.anchor:CreateFontString(nil,"OVERLAY")
 	self.frames.cheader:SetFont(f, 14)
 	self.frames.cheader:SetWidth(150)
-	self.frames.cheader:SetText(L["Bars"])
+	self.frames.cheader:SetText(L["Enrage"])
 	self.frames.cheader:SetTextColor(1, .8, 0)
 	self.frames.cheader:ClearAllPoints()
 	self.frames.cheader:SetPoint("TOP", self.frames.anchor, "TOP", 0, -10)
@@ -339,13 +348,14 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.leftbuttontext:SetFontObject(GameFontHighlight)
 	self.frames.leftbuttontext:SetText(L["Test"])
 	self.frames.leftbuttontext:SetAllPoints(self.frames.leftbutton)
-
+    
 	self.frames.rightbutton = CreateFrame("Button", nil, self.frames.anchor)
 	self.frames.rightbutton.owner = self
 	self.frames.rightbutton:SetWidth(40)
 	self.frames.rightbutton:SetHeight(25)
 	self.frames.rightbutton:SetPoint("LEFT", self.frames.anchor, "CENTER", 10, -15)
 	self.frames.rightbutton:SetScript( "OnClick", function() self:BigWigs_HideAnchors() end )
+    
 
 	
 	t = self.frames.rightbutton:CreateTexture()
