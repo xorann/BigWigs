@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Wushoolay"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Wushoolay", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -45,46 +46,59 @@ L:RegisterTranslations("deDE", function() return {
 	lightningcloud_desc = "Warnt dich wenn du in Blitzschlagwolke stehst.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsWushoolay = BigWigs:NewModule(boss)
-BigWigsWushoolay.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsWushoolay.enabletrigger = boss
-BigWigsWushoolay.bossSync = "Wushoolay"
-BigWigsWushoolay.toggleoptions = {"chainlightning", "lightningcloud", "bosskill"}
-BigWigsWushoolay.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.toggleoptions = {"chainlightning", "lightningcloud", "bosskill"}
+
+
+-- locals
+local timer = {
+	chainlightning = 1.5,
+}
+local icon = {
+	chainlightning = "Spell_Nature_ChainLightning",
+}
+local syncName = {
+	chainlightning = "WushoolayChainLightning",
+}
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsWushoolay:OnEnable()
-    self.started = nil
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "WushoolayChainLightning", 3)
+	
+	self:ThrottleSync(3, syncName.chainlightning)
 end
 
 ------------------------------
 --      Events              --
 ------------------------------
 
-function BigWigsWushoolay:Event(msg)
+function module:Event(msg)
 	if msg == L["lightningcloud_trigger"] and self.db.profile.lightningcloud then
-		self:TriggerEvent("BigWigs_Message", L["lightningcloud_message"], "Attention", "Alarm")
+		self:Message(L["lightningcloud_message"], "Attention", "Alarm")
 	elseif msg == L["chainlightning_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "WushoolayChainLightning")
+		self:Sync(syncName.chainlightning)
 	end
 end
 
-function BigWigsWushoolay:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "WushoolayChainLightning" and self.db.profile.chainlightning then
-		self:TriggerEvent("BigWigs_Message", L["chainlightning_message"], "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["chainlightning_bar"], 1.5, "Interface\\Icons\\Spell_Nature_ChainLightning")
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.chainlightning and self.db.profile.chainlightning then
+		self:Message(L["chainlightning_message"], "Important")
+		self:Bar(L["chainlightning_bar"], timer.chainlightning, icon.chainlightning)
 	end
 end

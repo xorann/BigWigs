@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["High Priestess Arlokk"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("High Priestess Arlokk", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -83,124 +84,179 @@ L:RegisterTranslations("deDE", function() return {
 	puticon_desc = "Versetzt eine Schlachtzugsymbol auf der markiert Spieler.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsArlokk = BigWigs:NewModule(boss)
-BigWigsArlokk.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsArlokk.enabletrigger = boss
-BigWigsArlokk.bossSync = "High Priestess Arlokk"
-BigWigsArlokk.toggleoptions = {"phase", "whirlwind", "vanish", "mark", "puticon", "bosskill"}
-BigWigsArlokk.revision = tonumber(string.sub("$Revision: 11205 $", 12, -3))
-BigWigsArlokk:RegisterYellEngage(L["engage_trigger"])
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"phase", "whirlwind", "vanish", "mark", "puticon", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	firstVanish = 35,
+	vanish = 44.8,
+	whirlwind = 2,
+}
+local icon = {
+	vanish = "Ability_Vanish",
+	whirlwind = "Ability_Whirlwind",
+}
+local syncName = {
+	trollPhase = "ArlokkPhaseTroll",
+	vanishPhase = "ArlokkPhaseVanish",
+	pantherPhase = "ArlokkPhasePanther",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsArlokk:OnEnable()
-	self.started = nil
-	vanished = nil
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "ArlokkPhaseTroll", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ArlokkPhaseVanish", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ArlokkPhasePanther", 3)
+	
+	self:ThrottleSync(3, syncName.berserk)
+	self:ThrottleSync(3, syncName.berserk)
+	self:ThrottleSync(3, syncName.berserk)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	vanished = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:CancelScheduledEvent("checkvanish")
+	if self.db.profile.phase then
+		self:Message(L["trollphase_message"], "Attention")
+	end
+	self:Bar(L["vanish_Nextbar"], timer.firstVanish, icon.vanish)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
---      Events              --
+--      Event Handlers	    --
 ------------------------------
 
-function BigWigsArlokk:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg,L["engage_trigger"]) then
-        --self:SendEngageSync()
-    else
-        local _,_, n = string.find(msg, L["mark_trigger"])
-        if n then
-            if self.db.profile.mark then
-                if n == UnitName("player") then
-                    self:TriggerEvent("BigWigs_Message", L["mark_warning_self"], "Attention", true, "Alarm")
-                else
-                    self:TriggerEvent("BigWigs_Message", string.format(L["mark_warning_other"], n), "Attention")
-                end
-            end
-            if self.db.profile.puticon then
-                self:TriggerEvent("BigWigs_SetRaidIcon", n)
-            end
-            self:TriggerEvent("BigWigs_SendSync", "ArlokkPhaseVanish")
-        end
+function module:CHAT_MSG_MONSTER_YELL(msg)
+	local _,_, n = string.find(msg, L["mark_trigger"])
+	if n then
+		if self.db.profile.mark then
+			if n == UnitName("player") then
+				self:Message(L["mark_warning_self"], "Attention", true, "Alarm")
+			else
+				self:Message(string.format(L["mark_warning_other"], n), "Attention")
+			end
+		end
+		if self.db.profile.puticon then
+			self:Icon(n)
+		end
+		self:Sync(sycnName.vanishPhase)
 	end
 end
 
-function BigWigsArlokk:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if msg == L["ww_trigger"] and self.db.profile.whirlwind then
-		self:TriggerEvent("BigWigs_StartBar", self, L["ww_bar"], 2, "Interface\\Icons\\Ability_Whirlwind")
+		self:Bar(L["ww_bar"], timer.whirlwind, icon.whirlwind)
 	end
 end
 
-function BigWigsArlokk:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:CancelScheduledEvent("checkvanish")
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["trollphase_message"], "Attention")
-		end
-		self:TriggerEvent("BigWigs_StartBar", self, L["vanish_Nextbar"], 35, "Interface\\Icons\\Ability_Vanish")
-	elseif sync == "ArlokkPhasePanther" then
-		self:CancelScheduledEvent("checkunvanish")
-		if self.db.profile.vanish then
-			self:TriggerEvent("BigWigs_StopBar", self, L["vanish_bar"])
-		end
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["pantherphase_message"], "Attention")
-		end
-		if not vanished then
-			self:ScheduleRepeatingEvent("checkvanish", self.CheckVanish, 0.5, self)
-		end
-	elseif sync == "ArlokkPhaseVanish" then
-		vanished = true
-		self:CancelScheduledEvent("checkvanish")
-		self:CancelScheduledEvent("trollphaseinc")
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["vanishphase_message"], "Attention")
-		end
-		if self.db.profile.vanish then
-			self:TriggerEvent("BigWigs_StartBar", self, L["vanish_bar"], 44.7, "Interface\\Icons\\Ability_Vanish", true, "White")
-		end
-		self:ScheduleRepeatingEvent("checkunvanish", self.CheckUnvanish, 0.5, self)
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == sycnName.pantherPhase then
+		self:PantherPhase()
+	elseif sync == sycnName.vanishPhase then
+		self:VanishPhase()
 	end
 end
 
-function BigWigsArlokk:CheckUnvanish()
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:PantherPhase()
+	self:CancelScheduledEvent("checkunvanish")
+	if self.db.profile.vanish then
+		self:RemoveBar(L["vanish_bar"])
+	end
+	if self.db.profile.phase then
+		self:Message(L["pantherphase_message"], "Attention")
+	end
+	if not vanished then
+		self:ScheduleRepeatingEvent("checkvanish", self.CheckVanish, 0.5, self)
+	end
+end
+
+function module:VanishPhase()
+	vanished = true
+	self:CancelScheduledEvent("checkvanish")
+	self:CancelScheduledEvent("trollphaseinc")
+	if self.db.profile.phase then
+		self:Message(L["vanishphase_message"], "Attention")
+	end
+	if self.db.profile.vanish then
+		self:Bar(L["vanish_bar"], timer.vanish, icon.vanish, true, "White")
+	end
+	self:ScheduleRepeatingEvent("checkunvanish", self.CheckUnvanish, 0.5, self)
+end
+
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:CheckUnvanish()
 	if UnitExists("target") and UnitName("target") == "High Priestess Arlokk" and UnitExists("targettarget") then
-		self:TriggerEvent("BigWigs_SendSync", "ArlokkPhasePanther")
-		self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", 44.8, "ArlokkPhaseTroll")
+		self:Sync(sycnName.pantherPhase)
+		self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 		return
 	end
 	local num = GetNumRaidMembers()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
 		if UnitExists(raidUnit) and UnitName(raidUnit) == "High Priestess Arlokk" and UnitExists(raidUnit.."target") then
-			self:TriggerEvent("BigWigs_SendSync", "ArlokkPhasePanther")
-			self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", 44.8, "ArlokkPhaseTroll")
+			self:Sync(sycnName.pantherPhase)
+			self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 			return
 		end
 	end
 end
 
-function BigWigsArlokk:CheckVanish()
-	if UnitExists("target") and UnitName("target") == "High Priestess Arlokk" and UnitExists("targettarget") then
+function module:CheckVanish()
+	if UnitExists("target") and UnitName("target") == self.translatedName and UnitExists("targettarget") then
 		return
 	end
 	local num = GetNumRaidMembers()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
-		if UnitExists(raidUnit) and UnitName(raidUnit) == "High Priestess Arlokk" and UnitExists(raidUnit.."target") then
+		if UnitExists(raidUnit) and UnitName(raidUnit) == self.translatedName and UnitExists(raidUnit.."target") then
 			return
 		end
 	end
-	self:TriggerEvent("BigWigs_SendSync", "ArlokkPhaseVanish")
+	self:Sync(sycnName.vanishPhase)
 end

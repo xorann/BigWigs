@@ -45,9 +45,9 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20004 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
-module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"berserk", "bosskill"}
 
 -- Proximity Plugin
@@ -76,7 +76,7 @@ local berserkannounced = nil
 --      Initialization      --
 ------------------------------
 
-module:RegisterYellEngage(L["start_trigger"])
+--module:RegisterYellEngage(L["start_trigger"])
 
 -- called after module is enabled
 function module:OnEnable()	

@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Renataki"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Renataki", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -49,74 +50,81 @@ L:RegisterTranslations("deDE", function() return {
 	enraged_desc = "L\195\164sst dich wissen, wenn Boss h\195\164rter zuschl\195\164gt.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsRenataki = BigWigs:NewModule(boss)
-BigWigsRenataki.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsRenataki.enabletrigger = boss
-BigWigsRenataki.bossSync = "Renataki"
-BigWigsRenataki.toggleoptions = {"vanish", "enraged", "bosskill"}
-BigWigsRenataki.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.toggleoptions = {"vanish", "enraged", "bosskill"}
+
+-- locals
+local timer = {
+	vanishSoon = 22,
+	unvanish = 30,
+}
+local icon = {
+	vanish = "Ability_Stealth",
+}
+local syncName = {
+	unvanish = "RenatakiUnvanish",
+	enrage = "RenatakiEnrage",
+	enrageSoon = "RenatakiEnrageSoon",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsRenataki:OnEnable()
-	enrageannounced = nil
-	self.started = nil
-	vanished = nil
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "RenatakiUnvanish", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RenatakiEnrage", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RenatakiEnrageSoon", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "RenatakiStarted", 10)
+	
+	self:ThrottleSync(5, syncName.unvanish)
+	self:ThrottleSync(5, syncName.enrage)
+	self:ThrottleSync(10, syncName.enrageSoon)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	enrageannounced = nil
+	vanished = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.vanish then
+		self:DelayedMessage(timer.vanishSoon, L["vanishsoon_message"], "Urgent")
+	end
+	self:ScheduleRepeatingEvent("renatakivanishcheck", self.VanishCheck, 2, self)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
---      Events              --
+--      Event Handlers	    --
 ------------------------------
 
-function BigWigsRenataki:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if msg == L["enrage_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "RenatakiEnrage")
+		self:Sync(syncName.enrage)
 	end
 end
 
-function BigWigsRenataki:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		self:TriggerEvent("BigWigs_SendSync", "RenatakiStarted")
-	elseif sync == "RenatakiStarted" then
-		started = true
-		if self.db.profile.vanish then
-			self:ScheduleEvent("BigWigs_Message", 22, L["vanishsoon_message"], "Urgent")
-		end
-		self:ScheduleRepeatingEvent("renatakivanishcheck", self.VanishCheck, 2, self)
-	elseif sync == "RenatakiEnrageSoon" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enragesoon_message"], "Urgent")
-	elseif sync == "RenatakiEnrage" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enrage_message"], "Attention")
-	elseif sync == "RenatakiUnvanish" then
-		vanished = nil
-		if self.db.profile.vanish then
-			self:TriggerEvent("BigWigs_StopBar", self, L["vanish_bar"])
-			self:TriggerEvent("BigWigs_Message", L["unvanish_message"], "Attention")
-			self:ScheduleEvent("BigWigs_Message", 22, L["vanishsoon_message"], "Urgent")
-		end
-		self:ScheduleRepeatingEvent("renatakivanishcheck", self.VanishCheck, 2, self)
-	end
-end
-
-function BigWigsRenataki:UNIT_HEALTH(arg1)
+function module:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		if health > 25 and health <= 30 and not enrageannounced then
-			self:TriggerEvent("BigWigs_SendSync", "RenatakiEnrageSoon")
+			self:Sync(syncName.enrageSoon)
 			enrageannounced = true
 		elseif health > 30 and enrageannounced then
 			enrageannounced = nil
@@ -124,18 +132,44 @@ function BigWigsRenataki:UNIT_HEALTH(arg1)
 	end
 end
 
-function BigWigsRenataki:IsVanished()
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.enrageSoon and self.db.profile.enraged then
+		self:Message(L["enragesoon_message"], "Urgent")
+	elseif sync == syncName.enrage and self.db.profile.enraged then
+		self:Message(L["enrage_message"], "Attention")
+	elseif sync == syncName.unvanish then
+		vanished = nil
+		if self.db.profile.vanish then
+			self:RemoveBar(L["vanish_bar"])
+			self:Message(L["unvanish_message"], "Attention")
+			self:DelayedMessage(timer.vanishSoon, L["vanishsoon_message"], "Urgent")
+		end
+		self:ScheduleRepeatingEvent("renatakivanishcheck", self.VanishCheck, 2, self)
+	end
+end
+
+
+------------------------------
+--      Utility	Functions   --
+------------------------------
+
+function module:IsVanished()
 	vanished = true
 	self:CancelScheduledEvent("renatakivanishcheck")
 	if self.db.profile.vanish then
-		self:TriggerEvent("BigWigs_Message", L["vanish_message"], "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, L["vanish_bar"], 30, "Interface\\Icons\\Ability_Stealth")
+		self:Message(L["vanish_message"], "Attention")
+		self:Bar(L["vanish_bar"], timer.unvanish, icon.vanish)
 	end
 	self:ScheduleRepeatingEvent("renatakiunvanishcheck", self.UnvanishCheck, 2, self)
-	self:ScheduleEvent("renatakiunvanish", self.Unvanish, 30, self)
+	self:ScheduleEvent(syncName.unvanish, self.Unvanish, timer.unvanish, self)
 end
 
-function BigWigsRenataki:UnvanishCheck()
+function module:UnvanishCheck()
 	if UnitExists("target") and UnitName("target") == "Renataki" and UnitExists("targettarget") then
 		if vanished then
 			vanished = nil
@@ -156,11 +190,11 @@ function BigWigsRenataki:UnvanishCheck()
 	end
 end
 
-function BigWigsRenataki:VanishCheck()
+function module:VanishCheck()
 	local num = GetNumRaidMembers()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
-		if UnitExists(raidUnit) and UnitClassification(raidUnit) == "worldboss" and UnitName(raidUnit) == "Renataki" and UnitExists(raidUnit.."target") then
+		if UnitExists(raidUnit) and UnitClassification(raidUnit) == "worldboss" and UnitName(raidUnit) == self.translatedName and UnitExists(raidUnit.."target") then
 			if vanished then
 				vanished = nil
 			end
@@ -170,8 +204,8 @@ function BigWigsRenataki:VanishCheck()
 	self:IsVanished()
 end
 
-function BigWigsRenataki:Unvanish()
+function module:Unvanish()
 	self:CancelScheduledEvent("renatakiunvanishcheck")
 	self:CancelScheduledEvent("renatakiunvanish")
-	self:TriggerEvent("BigWigs_SendSync", "RenatakiUnvanish")
+	self:Sync(syncName.unvanish)
 end

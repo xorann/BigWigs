@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["High Priest Venoxis"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("High Priest Venoxis", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -133,29 +134,51 @@ L:RegisterTranslations("deDE", function() return {
 	enrage_desc = "L\195\164sst dich wissen, wenn Boss h\195\164rter zuschl\195\164gt",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsVenoxis = BigWigs:NewModule(boss)
-BigWigsVenoxis.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsVenoxis.enabletrigger = boss
-BigWigsVenoxis.bossSync = "High Priest Venoxis"
-BigWigsVenoxis.wipemobs = { L["add_name"] }
-BigWigsVenoxis.toggleoptions = {"phase", "adds", "renew", "holyfire", "enrage", "announce", "bosskill"}
-BigWigsVenoxis.revision = tonumber(string.sub("$Revision: 11205 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"phase", "adds", "renew", "holyfire", "enrage", "announce", "bosskill"}
+
+
+-- locals
+local timer = {
+	holyfireCast = 3.5,
+	holyfire = 12,
+	renew = 15,
+}
+local icon = {
+	addDead = "INV_WAEPON_BOW_ZULGRUB_D_01",
+	cloud = "Ability_Creature_Disease_02",
+	renew = "Spell_Holy_Renew",
+	holyfire = "Spell_Holy_SearingLight",
+}
+local syncName = {
+	phase2 = "VenoxisPhaseTwo",
+	renew = "VenoxisRenewStart",
+	renewOver = "VenoxisRenewStop",
+	holyfire = "VenoxisHolyFireStart",
+	holyfireOver = "VenoxisHolyFireStop",
+	enrage = "VenoxisEnrage",
+	addDead = "VenoxisAddDead",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsVenoxis:OnEnable()
-    self.started = nil
-	self.cobra = 0
-    
-	castingholyfire = 0
-	holyfiretime = 0
-	
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "Event")
@@ -172,56 +195,82 @@ function BigWigsVenoxis:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-	--self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	--self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisPhaseOne", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisPhaseTwo", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisRenewStart", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisRenewStop", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisHolyFireStart", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisHolyFireStop", 2)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisEnrage", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "VenoxisVenoxisDead", 3)
+	
+	self:ThrottleSync(10, syncName.phase2)
+	self:ThrottleSync(2, syncName.renew)
+	self:ThrottleSync(2, syncName.renewOver)
+	self:ThrottleSync(2, syncName.holyfire)
+	self:ThrottleSync(2, syncName.holyfireOver)
+	self:ThrottleSync(5, syncName.enrage)
 end
 
-function BigWigsVenoxis:OnSetup()
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
+	self.cobra = 0
+    
+	castingholyfire = 0
+	holyfiretime = 0
+	
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.phase then
+		self:Message(L["phase1_message"], "Attention")
+	end
+	--self:TriggerEvent("BigWigs_StartCounterBar", self, "Snakes dead", 4, icon.addDead)
+	--self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - 0.1))
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Events              --
 ------------------------------
 
-function BigWigsVenoxis:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
-	if string.find(msg, L["renew_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisRenewStart")
-	elseif string.find(msg, L["enrage_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisEnrage")
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
+	if string.find(msg, L["deadaddtrigger"]) then
+		self:Sync(syncName.addDead .. " " .. tostring(self.cobra + 1))
 	end
 end
 
-function BigWigsVenoxis:Event(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+	if string.find(msg, L["renew_trigger"]) then
+		self:Sync(syncName.renew)
+	elseif string.find(msg, L["enrage_trigger"]) then
+		self:Sync(syncName.enrage)
+	end
+end
+
+function module:Event(msg)
 	local _,_,poisoncloudhitsother,_ = string.find(msg, L["poisoncloudhitsother_trigger"])
 	local _,_,poisoncloudabsorb,_ = string.find(msg, L["poisoncloudabsorb_trigger"])
 	local _,_,poisoncloudresist,_ = string.find(msg, L["poisoncloudresist_trigger"])
 	local _,_,poisoncloudimmune,_ = string.find(msg, L["poisoncloudimmune_trigger"])
 	if string.find(msg, L["holyfire_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisHolyFireStart")
+		self:Sync(syncName.holyfire)
 	elseif string.find(msg, L["attack_trigger1"]) or string.find(msg, L["attack_trigger2"]) or string.find(msg, L["attack_trigger3"]) or string.find(msg, L["attack_trigger4"]) then
 		if castingholyfire == 1 then 
-			if (GetTime()-holyfiretime)<3.5 then
-				self:TriggerEvent("BigWigs_SendSync", "VenoxisHolyFireStop")
-			elseif (GetTime()-holyfiretime)>=3.5 then
+			if (GetTime() - holyfiretime) < timer.holyfireCast then
+				self:Sync("VenoxisHolyFireStop")
+			elseif (GetTime() - holyfiretime) >= timer.holyfireCast then
 				castingholyfire = 0
 			end
 		end
     elseif msg == L["poisoncloud_on_you"] then
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Ability_Creature_Disease_02", 5)
-        self:TriggerEvent("BigWigs_Message", L["poisonyou_message"], "Attention", "Alarm")
+        self:WarningSign(icon.cloud, 5)
+        self:Message(L["poisonyou_message"], "Attention", "Alarm")
 	elseif string.find(msg, L["poisoncloud_trigger"]) then
 		if self.db.profile.announce then
 			if string.find(msg, L["poisoncloudhitsyou_trigger"]) or msg == L["poisoncloudresistyou_trigger"] or msg == L["poisoncloudabsorbyou_trigger"] or msg == L["poisoncloudimmuneyou_trigger"] then
-				self:TriggerEvent("BigWigs_Message", L["poisonyou_message"], "Attention", "Alarm")
+				self:Message(L["poisonyou_message"], "Attention", "Alarm")
 			elseif poisoncloudhitsother and poisoncloudhitsother~=L["you"] then
 				self:TriggerEvent("BigWigs_SendTell", poisoncloudhitsother, L["poison_message"])
 			elseif poisoncloudresist then
@@ -235,86 +284,69 @@ function BigWigsVenoxis:Event(msg)
 	end
 end
 
-function BigWigsVenoxis:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["phase2_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisPhaseTwo")
+		self:Sync(syncName.phase2)
 	end
 end
 
-function BigWigsVenoxis:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
 	if string.find(msg, L["renewend_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisRenewStop")
+		self:Sync(syncName.renewOver)
 	end
 end
 
-function BigWigsVenoxis:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg, L["poisoncloud_trigger"]) then
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Creature_Disease_02")
+        self:RemoveWarningSign(icon.cloud)
     end
 end
 
-function BigWigsVenoxis:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	BigWigs:CheckForBossDeath(msg, self)
-	
-	if string.find(msg, L["deadaddtrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisAddDead " .. tostring(self.cobra + 1))
-	elseif string.find(msg, L["deadbosstrigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "VenoxisVenoxisDead")
-	end
-end
 
-function BigWigsVenoxis:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "VenoxisPhaseOne")) then
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phase1_message"], "Attention")
-		end
-        --self:TriggerEvent("BigWigs_StartCounterBar", self, "Snakes dead", 4, "Interface\\Icons\\INV_WAEPON_BOW_ZULGRUB_D_01")
-        --self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - 0.1))
-	elseif sync == "VenoxisPhaseTwo" then
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.phase2 then
 		self:KTM_Reset()
 		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phase2_message"], "Attention")
+			self:Message(L["phase2_message"], "Attention")
 		end
 		if self.db.profile.holyfire then
-			self:TriggerEvent("BigWigs_StopBar", self, L["holyfirebar"])
+			self:RemoveBar(L["holyfirebar"])
 		end
-	elseif sync == "VenoxisRenewStart" then
+	elseif sync == syncName.renew then
 		if self.db.profile.renew then
-			self:TriggerEvent("BigWigs_Message", L["renew_message"], "Urgent")
-			self:TriggerEvent("BigWigs_StartBar", self, L["renewbar"], 15, "Interface\\Icons\\Spell_Holy_Renew")
+			self:Message(L["renew_message"], "Urgent")
+			self:Bar(L["renewbar"], timer.renew, icon.renew)
 		end
-	elseif sync == "VenoxisRenewStop" then
+	elseif sync == syncName.renewOver then
 		if self.db.profile.renew then
-			self:TriggerEvent("BigWigs_StopBar", self, L["renewbar"])
+			self:RemoveBar(L["renewbar"])
 		end
-	elseif sync == "VenoxisHolyFireStart" then
+	elseif sync == syncName.holyfire then
 		holyfiretime = GetTime()
 		castingholyfire = 1
 		if self.db.profile.holyfire then
-			self:TriggerEvent("BigWigs_StartBar", self, L["holyfirebar"], 3.5, "Interface\\Icons\\Spell_Holy_SearingLight", true, "red")
-			self:TriggerEvent("BigWigs_StartBar", self, "Next Holy Fire", 12, "Interface\\Icons\\Spell_Holy_SearingLight")
+			self:Bar(L["holyfirebar"], timer.holyfireCast, icon.holyfire, true, "red")
+			self:Bar("Next Holy Fire", timer.holyfire, icon.holyfire)
 		end
 	elseif sync == "VenoxisHolyFireStop" then
 		castingholyfire = 0
 		if self.db.profile.holyfire then
-			self:TriggerEvent("BigWigs_StopBar", self, L["holyfirebar"])
+			self:RemoveBar(L["holyfirebar"])
 		end
-	elseif sync == "VenoxisEnrage" then
+	elseif sync == syncName.enrage then
 		if self.db.profile.enrage then
-			self:TriggerEvent("BigWigs_Message", L["enrage_message"], "Attention")
+			self:Message(L["enrage_message"], "Attention")
 		end
-	elseif sync == "VenoxisAddDead" and rest and rest ~= "" then
+	elseif sync == syncName.addDead and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.cobra < rest then
             self.cobra = rest
-            self:TriggerEvent("BigWigs_Message", string.format(L["addmsg"], self.cobra), "Positive")
+            self:Message(string.format(L["addmsg"], self.cobra), "Positive")
             --self:TriggerEvent("BigWigs_SetCounterBar", self, "Snakes dead", (4 - self.cobra))
         end
-	elseif sync == "VenoxisVenoxisDead" then
-		venoxisdead = 1
-		if self.db.profile.bosskill then
-            -- need to take a look at this syntax later
-			--self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
-		end
 	end
 end

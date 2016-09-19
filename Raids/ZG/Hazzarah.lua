@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Hazza'rah"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Hazza'rah", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -30,42 +31,57 @@ L:RegisterTranslations("deDE", function() return {
 	nightmaresummon_desc = "Zeigt eine Warnung wenn der Boss Alptraumillusionen beschw\195\182rt.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsHazzarah = BigWigs:NewModule(boss)
-BigWigsHazzarah.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsHazzarah.enabletrigger = boss
-BigWigsHazzarah.bossSync = "Hazza'rah"
-BigWigsHazzarah.toggleoptions = {"nightmaresummon", "bosskill"}
-BigWigsHazzarah.revision = tonumber(string.sub("$Revision: 11203 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.toggleoptions = {"nightmaresummon", "bosskill"}
+
+
+-- locals
+local timer = {}
+local icon = {}
+local syncName = {
+	illusions = "HazzarahIllusions",
+}
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsHazzarah:OnEnable()
-    self.started = nil
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "HazzarahIllusions", 5)
+	
+	self:ThrottleSync(5, syncName.illusions)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = false
+	berserkannounced = false
 end
 
 ------------------------------
 --      Events              --
 ------------------------------
 
-function BigWigsHazzarah:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	if msg == L["nightmaresummon_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HazzarahIllusions")
+		self:Sync(syncName.illusions)
 	end
 end
 
-function BigWigsHazzarah:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-	elseif sync == "HazzarahIllusions" and self.db.profile.nightmaresummon then
-		self:TriggerEvent("BigWigs_Message", L["nightmaresummon_message"], "Important", true, "Alarm")
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.illusions and self.db.profile.nightmaresummon then
+		self:Message(L["nightmaresummon_message"], "Important", true, "Alarm")
 	end
 end

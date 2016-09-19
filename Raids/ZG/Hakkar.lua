@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Hakkar"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Hakkar", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -195,24 +196,67 @@ L:RegisterTranslations("deDE", function() return {
 	puticon_desc = "Place a raid icon on the player with Cause Insanity.\n\n(Requires assistant or higher)",
 } end)
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsHakkar = BigWigs:NewModule(boss)
-BigWigsHakkar.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsHakkar.enabletrigger = boss
-BigWigsHakkar.bossSync = "Hakkar"
-BigWigsHakkar.toggleoptions = { "mc", "puticon", "siphon", "enrage", -1, "aspectjeklik", "aspectvenoxis", "aspectmarli", "aspectthekal", "aspectarlokk", "bosskill" }
-BigWigsHakkar.revision = tonumber(string.sub("$Revision: 11201 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"mc", "puticon", "siphon", "enrage", -1, "aspectjeklik", "aspectvenoxis", "aspectmarli", "aspectthekal", "aspectarlokk", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	enrage = 600,
+	bloodSiphon = 90,
+	firstMindcontrol = 17,
+}
+local icon = {
+	enrage = "Spell_Shadow_UnholyFrenzy",
+	bloodSiphon = "Spell_Shadow_LifeDrain",
+	serpent = "Ability_Hunter_Pet_WindSerpent",
+	mindcontrol = "Spell_Shadow_ShadowWordDominate",
+	
+	-- aspects
+	jeklik = "Spell_Shadow_Teleport",
+	arlokk = "Ability_Vanish",
+	venoxis = "Spell_Nature_CorrosiveBreath",
+	marli = "Ability_Smash",
+	thekal = "Ability_Druid_ChallangingRoar",
+}
+local syncName = {
+	bloodSiphon = "HakkarBloodSiphon",
+	mindcontrol = "HakkarMC",
+	
+	-- aspects
+	jeklik = "HakkarAspectJeklik",
+	arlokk = "HakkarAspectArlokk",
+	arlokkAvoid = "HakkarAspectArlokkAvoid",
+	venoxis = "HakkarAspectVenoxis",
+	marli = "HakkarAspectMarli",
+	marliAvoid = "HakkarAspectMarliAvoid",
+	thekalStart = "HakkarAspectThekalStart",
+	thekalStop = "HakkarAspectThekalStop",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsHakkar:OnEnable()
-    self.started = nil
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Self")
@@ -220,70 +264,96 @@ function BigWigsHakkar:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "Others")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Others")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE")
-	self:RegisterEvent("BigWigs_RecvSync");
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarBloodSiphon", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectJeklik", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectArlokk", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectArlokkAvoid", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectVenoxis", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectMarli", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectMarliAvoid", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectThekalStart", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarAspectThekalStop", 5);
-	self:TriggerEvent("BigWigs_ThrottleSync", "HakkarMC", 5);
-    self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
+	
+	
+	self:ThrottleSync(5, syncName.bloodSiphon)
+	self:ThrottleSync(5, syncName.mindcontrol)
+	
+	self:ThrottleSync(5, syncName.jeklik)
+	self:ThrottleSync(5, syncName.arlokk)
+	self:ThrottleSync(5, syncName.arlokkAvoid)
+	self:ThrottleSync(5, syncName.venoxis)
+	self:ThrottleSync(5, syncName.marli)
+	self:ThrottleSync(5, syncName.marliAvoid)
+	self:ThrottleSync(5, syncName.thekalStart)
+	self:ThrottleSync(5, syncName.thekalStop)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = false
+	berserkannounced = false
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if self.db.profile.enrage then
+		self:Bar(L["enrage_bar"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.enrage - 5 * 60, L["enrage5minutes_message"], "Urgent")
+		self:DelayedMessage(timer.enrage - 60, L["enrage1minute_message"], "Urgent")
+		self:DelayedMessage(timer.enrage - 30, string.format(L["enrageseconds_message"], 30), "Urgent")
+		self:DelayedMessage(timer.enrage - 10, string.format(L["enrageseconds_message"], 10), "Attention")
+	end
+	if self.db.profile.siphon then
+		self:Bar(L["siphon_bar"], timer.bloodSiphon, icon.bloodSiphon)
+		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
+		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 30)
+		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
+	end
+	if self.db.profile.mc then
+		self:Bar(L["firstmc_bar"], timer.firstMindcontrol, icon.mindcontrol)
+	end
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsHakkar:CHAT_MSG_MONSTER_YELL(msg)
-	if string.find(msg, L["engage_trigger"]) then
-        self:SendEngageSync()
-	--[[elseif msg == L["flee_trigger"] then
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self:TriggerEvent("BigWigs_RebootModule", self)]]
-	end
-end
-
-function BigWigsHakkar:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
 	if msg == L["aspectofthekalend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectThekalStop")
+		self:Sync(syncName.thekalStop)
 	end
 end
 
-function BigWigsHakkar:Self(msg)
+function module:Self(msg)
 	if msg == L["mindcontrolyou_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarMC "..UnitName("player"))
-	elseif msg == L["aspectofjeklikyou_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
-	elseif msg == L["aspectofmarliyou_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarli "..UnitName("player"))
-	elseif msg == L["aspectofarlokkyou_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokk "..UnitName("player"))
-	elseif string.find(msg, L["aspectofvenoxisyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectVenoxis")
-	elseif msg == L["aspectofjeklikyouimmune_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
-	elseif msg == L["aspectofmarliyouimmune_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarliAvoid")
-	elseif msg == L["aspectofarlokkyouimmune_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokkAvoid")
-	elseif msg == L["aspectofvenoxisyouresist_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectVenoxis")
-	elseif string.find(msg, L["aspectofjeklikgeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
-	elseif string.find(msg, L["aspectofmarligeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarliAvoid")
-	elseif string.find(msg, L["aspectofarlokkgeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokkAvoid")
+		self:Sync(syncName.mindcontrol .. " "..UnitName("player"))
     elseif string.find(msg, L["poisonousblood_trigger"]) then
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")
+        self:RemoveWarningSign(icon.serpent)
+		
+	-- aspects
+	elseif msg == L["aspectofjeklikyou_trigger"] then
+		self:Sync(syncName.jeklik)
+	elseif msg == L["aspectofmarliyou_trigger"] then
+		self:Sync(syncName.marli .. " "..UnitName("player"))
+	elseif msg == L["aspectofarlokkyou_trigger"] then
+		self:Sync(syncName.arlokk .. " "..UnitName("player"))
+	elseif string.find(msg, L["aspectofvenoxisyou_trigger"]) then
+		self:Sync(syncName.venoxis)
+	elseif msg == L["aspectofjeklikyouimmune_trigger"] then
+		self:Sync(syncName.jeklik)
+	elseif msg == L["aspectofmarliyouimmune_trigger"] then
+		self:Sync(syncName.marliAvoid)
+	elseif msg == L["aspectofarlokkyouimmune_trigger"] then
+		self:Sync(syncName.arlokkAvoid)
+	elseif msg == L["aspectofvenoxisyouresist_trigger"] then
+		self:Sync(syncName.venoxis)
+	elseif string.find(msg, L["aspectofjeklikgeneralavoid_trigger"]) then
+		self:Sync(syncName.jeklik)
+	elseif string.find(msg, L["aspectofmarligeneralavoid_trigger"]) then
+		self:Sync(syncName.marliAvoid)
+	elseif string.find(msg, L["aspectofarlokkgeneralavoid_trigger"]) then
+		self:Sync(syncName.arlokkAvoid)
 	end
 end
 
-function BigWigsHakkar:Others(msg)
+-- aspects
+function module:Others(msg)
 	local _, _, aspectofmarliother, _ = string.find(msg, L["aspectofmarliother_trigger"])
 	local _, _, aspectofmarliotherimmune, _ = string.find(msg, L["aspectofmarliotherimmune_trigger"])
 	local _, _, aspectofjeklikother, _ = string.find(msg, L["aspectofjeklikother_trigger"])
@@ -291,121 +361,127 @@ function BigWigsHakkar:Others(msg)
 	local _, _, aspectofarlokkother, _ = string.find(msg, L["aspectofarlokkother_trigger"])
 	local _, _, aspectofarlokkotherimmune, _ = string.find(msg, L["aspectofarlokkotherimmune_trigger"])
 	if aspectofmarliother then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarli "..aspectofmarliother)
+		self:Sync(syncName.marli .. " "..aspectofmarliother)
 	elseif aspectofmarliotherimmune then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarliAvoid")
+		self:Sync(syncName.marliAvoid)
 	elseif string.find(msg, L["aspectofmarligeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectMarliAvoid")
+		self:Sync(syncName.marliAvoid)
 	elseif aspectofjeklikother then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
+		self:Sync(syncName.jeklik)
 	elseif aspectofjeklikotherimmune then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
+		self:Sync(syncName.jeklik)
 	elseif string.find(msg, L["aspectofjeklikgeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectJeklik")
+		self:Sync(syncName.jeklik)
 	elseif aspectofarlokkother then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokk "..aspectofarlokkother)
+		self:Sync(syncName.arlokk .. " "..aspectofarlokkother)
 	elseif aspectofarlokkotherimmune then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokkAvoid")
+		self:Sync(syncName.arlokkAvoid)
 	elseif string.find(msg, L["aspectofarlokkgeneralavoid_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectArlokkAvoid")
+		self:Sync(syncName.arlokkAvoid)
 	elseif string.find(msg, L["aspectofvenoxisother_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectVenoxis")
+		self:Sync(syncName.venoxis)
 	elseif string.find(msg, L["aspectofvenoxisotherresist_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectVenoxis")
+		self:Sync(syncName.venoxis)
 	end
 end
 
-function BigWigsHakkar:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	if msg == L["siphon_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarBloodSiphon")
+		self:Sync(syncName.bloodSiphon)
+		
+	-- aspects
 	elseif string.find(msg, L["aspectofthekal_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarAspectThekalStart")
+		self:Sync(syncName.thekalStart)
 	end
 end
 
-function BigWigsHakkar:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(msg)
 	local _, _, mindcontrolother, _ = string.find(msg, L["mindcontrolother_trigger"])
 	if mindcontrolother then
-		self:TriggerEvent("BigWigs_SendSync", "HakkarMC "..mindcontrolother)
+		self:Sync(syncName.mindcontrol .. " "..mindcontrolother)
 	end
 end
 
-function BigWigsHakkar:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        if self.db.profile.enrage then
-			self:TriggerEvent("BigWigs_StartBar", self, L["enrage_bar"], 600, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-			self:ScheduleEvent("BigWigs_Message", 300, L["enrage5minutes_message"], "Urgent")
-			self:ScheduleEvent("BigWigs_Message", 540, L["enrage1minute_message"], "Urgent")
-			self:ScheduleEvent("BigWigs_Message", 570, string.format(L["enrageseconds_message"], 30), "Urgent")
-			self:ScheduleEvent("BigWigs_Message", 590, string.format(L["enrageseconds_message"], 10), "Attention")
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.bloodSiphon then
+        self:BloodSiphon()
+	elseif sync == syncName.mindcontrol then
+		self:MindControl(rest)
+
+	-- aspects
+	elseif sync == syncName.jeklik and self.db.profile.aspectjeklik then
+		self:Bar(L["aspectjeklik_bar"], 10, icon.jeklik, true, "Orange")
+		self:Bar(L["aspectjeklikdebuff_bar"], 5, icon.jeklik, true, "Orange")
+	elseif sync == syncName.arlokk and self.db.profile.aspectarlokk then
+		self:Bar(L["aspectarlokk_bar"], 10, icon.arlokk, true, "Blue")
+		self:Bar(string.format(L["aspectarlokkdebuff_bar"], rest), 2, icon.arlokk, true, "Blue")	
+	elseif sync == syncName.arlokkAvoid and self.db.profile.aspectarlokk then
+		self:Bar(L["aspectarlokk_bar"], 10, icon.arlokk, true, "Blue")
+	elseif sync == syncName.venoxis and self.db.profile.aspectvenoxis then
+		self:Bar(L["aspectvenoxis_bar"], 8, icon.venoxis, true, "Green")
+		self:Bar(L["aspectvenoxisdebuff_bar"], 10, icon.venoxis, true, "Green")
+	elseif sync == syncName.marli and self.db.profile.aspectmarli then
+		self:Bar(L["aspectmarli_bar"], 10, icon.marli, true, "Yellow")
+		self:Bar(string.format(L["aspectmarlidebuff_bar"], rest), 6, icon.marli, true, "Yellow")
+	elseif sync == syncName.marliAvoid and self.db.profile.aspectmarli then
+		self:Bar(L["aspectmarli_bar"], 10, icon.marli, true, "Yellow")
+	elseif sync == syncName.thekalStart and self.db.profile.aspectthekal then
+		self:Bar(L["aspectthekalnext_bar"], 15, icon.thekal, true, "Black")
+		self:Bar(L["aspectthekal_bar"], 8, icon.thekal, true, "Black")
+		self:Message(L["aspectthekal_ann"], "Important", true, "Alarm")
+	elseif sync == syncName.thekalStop and self.db.profile.aspectthekal then
+        self:RemoveBar(L["aspectthekal_bar"])
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:BloodSiphon()
+	self:RemoveWarningSign(icon.serpent)   -- just to be safe, shouldn't be needed
+	if self.db.profile.siphon then
+		self:Bar(L["siphon_bar"], timer.bloodSiphon, icon.bloodSiphon)
+		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
+		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 30)
+		-- before I display that I need to figure out, how to track when the player gained the Poisonous Blood - this should hide the icon again
+		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
+	end
+	
+	-- aspects
+	if self.db.profile.aspectjeklik then
+		self:RemoveBar(L["aspectjeklik_bar"])
+	end
+	if self.db.profile.aspectvenoxis then
+		self:RemoveBar(L["aspectvenoxis_bar"])
+	end
+	if self.db.profile.aspectmarli then
+		self:RemoveBar(L["aspectmarli_bar"])
+	end
+	if self.db.profile.aspectarlokk then
+		self:RemoveBar(L["aspectarlokk_bar"])
+	end
+	if self.db.profile.aspectthekal then
+		self:RemoveBar(L["aspectthekalnext_bar"])
+	end
+end
+
+function module:MindControl(rest)
+	if self.db.profile.mc then
+		self:DelayedBar(10, L["nextmc_bar"], 11, icon.mindcontrol)
+		self:Bar(string.format(L["mindcontrol_bar"], rest), 10, icon.mindcontrol, true, "White")
+		if rest == UnitName("player") then
+			self:Message(L["mindcontrol_message_you"], "Attention", true, "Alarm")
+		else
+			self:Message(string.format(L["mindcontrol_message"], rest), "Attention")
 		end
-		if self.db.profile.siphon then
-			self:TriggerEvent("BigWigs_StartBar", self, L["siphon_bar"], 89, "Interface\\Icons\\Spell_Shadow_LifeDrain")
-			self:ScheduleEvent("BigWigs_Message", 59, string.format(L["siphon_warning"], 30), "Urgent")
-            self:ScheduleEvent("BigWigs_ShowWarningSign", 59, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
-			self:ScheduleEvent("BigWigs_Message", 79, string.format(L["siphon_warning"], 10), "Attention")
-		end
-		if self.db.profile.mc then
-			self:TriggerEvent("BigWigs_StartBar", self, L["firstmc_bar"], 17, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate")
-		end
-	elseif sync == "HakkarBloodSiphon" then
-        self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent")   -- just to be safe, shouldn't be needed
-		if self.db.profile.siphon then
-			self:TriggerEvent("BigWigs_StartBar", self, L["siphon_bar"], 90, "Interface\\Icons\\Spell_Shadow_LifeDrain")
-			self:ScheduleEvent("BigWigs_Message", 60, string.format(L["siphon_warning"], 30), "Urgent")
-            self:ScheduleEvent("BigWigs_ShowWarningSign", 60, "Interface\\Icons\\Ability_Hunter_Pet_WindSerpent", 30)
-            -- before I display that I need to figure out, how to track when the player gained the Poisonous Blood - this should hide the icon again
-			self:ScheduleEvent("BigWigs_Message", 80, string.format(L["siphon_warning"], 10), "Attention")
-		end
-		if self.db.profile.aspectjeklik then
-			self:TriggerEvent("BigWigs_StopBar", self, L["aspectjeklik_bar"])
-		end
-		if self.db.profile.aspectvenoxis then
-			self:TriggerEvent("BigWigs_StopBar", self, L["aspectvenoxis_bar"])
-		end
-		if self.db.profile.aspectmarli then
-			self:TriggerEvent("BigWigs_StopBar", self, L["aspectmarli_bar"])
-		end
-		if self.db.profile.aspectarlokk then
-			self:TriggerEvent("BigWigs_StopBar", self, L["aspectarlokk_bar"])
-		end
-		if self.db.profile.aspectthekal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["aspectthekalnext_bar"])
-		end
-	elseif sync == "HakkarAspectJeklik" and self.db.profile.aspectjeklik then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectjeklik_bar"], 10, "Interface\\Icons\\Spell_Shadow_Teleport", true, "Orange")
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectjeklikdebuff_bar"], 5, "Interface\\Icons\\Spell_Shadow_Teleport", true, "Orange")
-	elseif sync == "HakkarAspectArlokk" and self.db.profile.aspectarlokk then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectarlokk_bar"], 10, "Interface\\Icons\\Ability_Vanish", true, "Blue")
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["aspectarlokkdebuff_bar"], rest), 2, "Interface\\Icons\\Ability_Vanish", true, "Blue")	
-	elseif sync == "HakkarAspectArlokkAvoid" and self.db.profile.aspectarlokk then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectarlokk_bar"], 10, "Interface\\Icons\\Ability_Vanish", true, "Blue")
-	elseif sync == "HakkarAspectVenoxis" and self.db.profile.aspectvenoxis then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectvenoxis_bar"], 8, "Interface\\Icons\\Spell_Nature_CorrosiveBreath", true, "Green")
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectvenoxisdebuff_bar"], 10, "Interface\\Icons\\Spell_Nature_CorrosiveBreath", true, "Green")
-	elseif sync == "HakkarAspectMarli" and self.db.profile.aspectmarli then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectmarli_bar"], 10, "Interface\\Icons\\Ability_Smash", true, "Yellow")
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["aspectmarlidebuff_bar"], rest), 6, "Interface\\Icons\\Ability_Smash", true, "Yellow")
-	elseif sync == "HakkarAspectMarliAvoid" and self.db.profile.aspectmarli then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectmarli_bar"], 10, "Interface\\Icons\\Ability_Smash", true, "Yellow")
-	elseif sync == "HakkarAspectThekalStart" and self.db.profile.aspectthekal then
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectthekalnext_bar"], 15, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
-		self:TriggerEvent("BigWigs_StartBar", self, L["aspectthekal_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
-		self:TriggerEvent("BigWigs_Message", L["aspectthekal_ann"], "Important", true, "Alarm")
-	elseif sync == "HakkarAspectThekalStop" and self.db.profile.aspectthekal then
-        self:TriggerEvent("BigWigs_StopBar", self, L["aspectthekal_bar"])
-	elseif sync == "HakkarMC" then
-		if self.db.profile.mc then
-			self:ScheduleEvent("BigWigs_StartBar", 10, self, L["nextmc_bar"], 11, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate")
-			self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mindcontrol_bar"], rest), 10, "Interface\\Icons\\Spell_Shadow_ShadowWordDominate", true, "White")
-			if rest == UnitName("player") then
-				self:TriggerEvent("BigWigs_Message", L["mindcontrol_message_you"], "Attention", true, "Alarm")
-			else
-				self:TriggerEvent("BigWigs_Message", string.format(L["mindcontrol_message"], rest), "Attention")
-			end
-		end
-		if self.db.profile.puticon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", rest)
-		end
+	end
+	if self.db.profile.puticon then
+		self:Icon(rest)
 	end
 end

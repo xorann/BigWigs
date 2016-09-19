@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Gahz'ranka"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Gahz'ranka", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -27,50 +28,60 @@ L:RegisterTranslations("enUS", function() return {
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-	cmd = "Gahzranka",
+	--cmd = "Gahzranka",
 
 	frostbreath_trigger = "Gahz\'ranka beginnt Frostatem auszuf\195\188hren\.",
 	frostbreath_bar = "Frostatem",
 	massivegeyser_trigger = "Gahz\'ranka beginnt Massiver Geysir zu wirken\.",
 	massivegeyser_bar = "Massiver Geysir",
 
-	frostbreath_cmd = "frostbreath",
+	--frostbreath_cmd = "frostbreath",
 	frostbreath_name = "Alarm f\195\188r Frostatem",
 	frostbreath_desc = "Warnen wenn Gahz'ranka beginnt Frostatem zu wirken.",
 	
-	massivegeyser_cmd = "massivegeyser",
+	--massivegeyser_cmd = "massivegeyser",
 	massivegeyser_name = "Alarm f\195\188r Massiver Geysir",
 	massivegeyser_desc = "Warnen wenn Gahz'ranka beginnt Massiver Geysir zu wirken.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsGahzranka = BigWigs:NewModule(boss)
-BigWigsGahzranka.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsGahzranka.enabletrigger = boss
-BigWigsGahzranka.bossSync = "Gahz'ranka"
-BigWigsGahzranka.toggleoptions = {"frostbreath", "massivegeyser", "bosskill"}
-BigWigsGahzranka.revision = tonumber(string.sub("$Revision: 11204 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.toggleoptions = {"frostbreath", "massivegeyser", "bosskill"}
+
+-- locals
+local timer = {
+	breath = 2,
+	geyser = 1.5,
+}
+local icon = {
+	breath = "Spell_Frost_FrostNova",
+	geyser = "Spell_Frost_SummonWaterElemental",
+}
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGahzranka:OnEnable()	
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 end
 
 ------------------------------
---      Events              --
+--      Event Handlers	    --
 ------------------------------
 
-function BigWigsGahzranka:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["frostbreath_trigger"] and self.db.profile.frostbreath then
-		self:TriggerEvent("BigWigs_StartBar", self, L["frostbreath_bar"], 2, "Interface\\Icons\\Spell_Frost_FrostNova")
+		self:Bar(L["frostbreath_bar"], timer.breath, icon.breath)
 	elseif msg == L["massivegeyser_trigger"] and self.db.profile.massivegeyser then
-		self:TriggerEvent("BigWigs_StartBar", self, L["massivegeyser_bar"], 1.5, "Interface\\Icons\\Spell_Frost_SummonWaterElemental", true, "White")
+		self:Bar(L["massivegeyser_bar"], timer.geyser, icon.geyser, true, "White")
 	end
 end

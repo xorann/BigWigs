@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["High Priestess Jeklik"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("High Priestess Jeklik", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -161,28 +162,64 @@ L:RegisterTranslations("deDE", function() return {
 	announce_desc = "Fl\195\188ster der Person, die im Feuer steht\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)\n\n(Dementi: to avoid spamming whispers, it will only whisper people that take damage from fire that is on the ground - aka not the Bat's throw itself)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsJeklik = BigWigs:NewModule(boss)
-BigWigsJeklik.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsJeklik.enabletrigger = boss
-BigWigsJeklik.bossSync = "High Priestess Jeklik"
-BigWigsJeklik.toggleoptions = {"phase", "heal", "flay", "fear", "swarm", "bomb", "announce", "bosskill"}
-BigWigsJeklik.revision = tonumber(string.sub("$Revision: 11212 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"phase", "heal", "flay", "fear", "swarm", "bomb", "announce", "bosskill"}
+
+-- Proximity Plugin
+-- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+-- module.proximitySilent = false
+
+
+-- locals
+local timer = {
+	firstFear = 13,
+	fear = 18,
+	firstSilence = 12,
+	healCast = 4,
+	nextHeal = 20,
+	fear2 = 39.5,
+	fireBombs = 10,
+	mindflay = 10,
+}
+local icon = {
+	fear = "Spell_Shadow_SummonImp",
+	fear2 = "Spell_Shadow_PsychicScream", 
+	silence = "Spell_Frost_Iceshock",
+	fire = "Spell_Fire_Lavaspawn",
+	bomb = "Spell_Fire_Fire",
+	mindflay = "Spell_Shadow_SiphonMana",
+	heal = "Spell_Holy_Heal",
+}
+local syncName = {
+	fear = "JeklikFearRep",
+	fear2 = "JeklikFearTwoRep",
+	mindflay = "JeklikMindFlay",
+	mindflayOver = "JeklikMindFlayEnd",
+	heal = "JeklikHeal",
+	healOver = "JeklikHealStop",
+	bombBats = "JeklikBombBats",
+	swarmBats = "JeklikSwarmBats",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsJeklik:OnEnable()
-    self.started        = nil
-    self.phase          = 0
-    self.lastHeal       = 0
-    self.castingheal    = 0
-	
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+module:RegisterYellEngage(L["combat_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()
     self:RegisterEvent("UNIT_HEALTH")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_HITS", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_MISSES", "Event")
@@ -207,92 +244,46 @@ function BigWigsJeklik:OnEnable()
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_HITS", "Event")
 	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_HITS", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikFearRep", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikFearTwoRep", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikMindFlay", 1.5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikMindFlayEnd", 1.5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikHeal", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikHealStop", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikBombBats", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JeklikSwarmBats", 5)
+	
+	self:ThrottleSync(10, syncName.fear)
+	self:ThrottleSync(10, syncName.fear2)
+	self:ThrottleSync(1.5, syncName.mindflay)
+	self:ThrottleSync(1.5, syncName.mindflayOver)
+	self:ThrottleSync(4, syncName.heal)
+	self:ThrottleSync(4, syncName.healOver)
+	self:ThrottleSync(5, syncName.bombBats)
+	self:ThrottleSync(5, syncName.swarmBats)
 end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+    self.phase          = 0
+    self.lastHeal       = 0
+    self.castingheal    = 0
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self.phase = 1
+	if self.db.profile.fear then
+		self:Bar(L["fearreptext"], timer.firstFear, icon.fear)
+	end
+	if self.db.profile.phase then
+		self:Message(L["phaseone_message"], "Attention")
+	end
+	self:Bar("First Silence", timer.firstSilence, icon.silence)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Events              -- 
 ------------------------------
 
-function BigWigsJeklik:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "JeklikPhaseOne")) then
-		self.phase = 1
-		if self.db.profile.fear then
-			self:TriggerEvent("BigWigs_StartBar", self, L["fearreptext"], 13, "Interface\\Icons\\Spell_Shadow_SummonImp")
-		end
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phaseone_message"], "Attention")
-		end
-        self:TriggerEvent("BigWigs_StartBar", self, "First Silence", 12, "Interface\\Icons\\Spell_Frost_Iceshock")
-	elseif sync == "JeklikPhaseTwo" and self.phase < 2 then
-        self.phase = 2
-		self:KTM_Reset()
-		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phasetwo_message"], "Attention")
-		end
-		if self.db.profile.fear then
-			self:TriggerEvent("BigWigs_StopBar", self, L["fearreptext"])
-			self:TriggerEvent("BigWigs_StartBar", self, L["fearreptext"], 39.5, "Interface\\Icons\\Spell_Shadow_PsychicScream")
-		end
-        self:TriggerEvent("BigWigs_StartBar", self, "Fire Bombs", 10, "Interface\\Icons\\Spell_Fire_Fire")
-	elseif sync == "JeklikFearRep" and self.db.profile.fear then
-		self:TriggerEvent("BigWigs_StartBar", self, L["fearreptext"], 18, "Interface\\Icons\\Spell_Shadow_SummonImp")
-	elseif sync == "JeklikFearTwoRep" then
-		if self.db.profile.fear then
-			self:TriggerEvent("BigWigs_StartBar", self, L["fearreptext"], 39.5, "Interface\\Icons\\Spell_Shadow_PsychicScream")
-		end
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["greathealbar"])			
-		end
-	elseif sync == "JeklikSwarmBats" and self.db.profile.swarm then
-		self:TriggerEvent("BigWigs_Message", L["swarm_message"], "Urgent")
-	elseif sync == "JeklikBombBats" and self.db.profile.bomb then
-		self:TriggerEvent("BigWigs_Message", L["bomb_message"], "Urgent")
-	elseif sync == "JeklikMindFlay" then
-		if self.db.profile.flay then
-			self:TriggerEvent("BigWigs_StopBar", self, L["mindflaybar"])
-			self:TriggerEvent("BigWigs_StartBar", self, L["mindflaybar"], 10, "Interface\\Icons\\Spell_Shadow_SiphonMana")
-		end
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["greathealbar"])			
-		end
-	elseif sync == "JeklikMindFlayEnd" and self.db.profile.flay then
-		self:TriggerEvent("BigWigs_StopBar", self, L["mindflaybar"])
-	elseif sync == "JeklikHeal" then
-		self.lastHeal = GetTime()
-		self.castingheal = 1
-		if self.db.profile.heal then
-            self:TriggerEvent("BigWigs_StopBar", self, "Next Heal")
-			self:TriggerEvent("BigWigs_Message", L["greathealtext"], "Important", "Alarm")
-			self:TriggerEvent("BigWigs_StartBar", self, L["greathealbar"], 4, "Interface\\Icons\\Spell_Holy_Heal")
-		end
-	elseif sync == "JeklikHealStop" then
-		self.castingheal = 0
-		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", self, L["greathealbar"])
-            if (self.lastHeal + 20) > GetTime() then
-                self:TriggerEvent("BigWigs_StartBar", self, "Next Heal", (self.lastHeal + 20 - GetTime()), "Interface\\Icons\\Spell_Holy_Heal")
-            end
-		end
-	end
-end
-
-function BigWigsJeklik:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg,L["combat_trigger"]) then
-        self:SendEngageSync()
-    end
-end
-
-function BigWigsJeklik:Event(msg)
+function module:Event(msg)
 	local _,_,mindflayother,_ = string.find(msg, L["mindflayother_trigger"])
 	local _,_,mindflayend,_ = string.find(msg, L["mindflayend_trigger"])
 	local _,_,liquidfirehitsother,_ = string.find(msg, L["liquidfirehitsother_trigger"])
@@ -301,44 +292,44 @@ function BigWigsJeklik:Event(msg)
 	local _,_,liquidfireimmune,_ = string.find(msg, L["liquidfireimmune_trigger"])
     if string.find(msg, "Your Flames hits you") then
         -- Your Flames hits you for %d Fire damage.
-        self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
-        self:TriggerEvent("BigWigs_Message", L["firewarnyou"], "Attention", "Alarm")
+        self:WarningSign(icon.fire, 2)
+        self:Message(L["firewarnyou"], "Attention", "Alarm")
 	elseif string.find(msg, L["heal_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikHeal")
+		self:Sync(syncName.heal)
 	elseif string.find(msg, L["phasetwo_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikPhaseTwo")
+		self:Sync("JeklikPhaseTwo")
 	elseif string.find(msg, L["mindflayyou_trigger"]) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikMindFlay")
+		self:Sync(syncName.mindflay)
 	elseif mindflayother and (UnitIsInRaidByName(mindflayother) or UnitIsPetByName(mindflayother)) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikMindFlay")
+		self:Sync(syncName.mindflay)
 	elseif string.find(msg, L["mindflayendyou_trigger"]) then 
-		self:TriggerEvent("BigWigs_SendSync", "JeklikMindFlayEnd")
+		self:Sync(syncName.mindflayOver)
 	elseif mindflayend and (UnitIsInRaidByName(mindflayend) or UnitIsPetByName(mindflayend)) then 
-		self:TriggerEvent("BigWigs_SendSync", "JeklikMindFlayEnd")
+		self:Sync(syncName.mindflayOver)
 	elseif string.find(msg, L["fearrep_trigger1"]) or string.find(msg, L["fearrep_trigger2"]) or string.find(msg, L["fearrep_trigger3"]) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikFearRep")
+		self:Sync(syncName.fear)
 	elseif string.find(msg, L["fearrep_trigger4"]) or string.find(msg, L["fearrep_trigger5"]) or string.find(msg, L["fearrep_trigger6"]) then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikFearTwoRep")
+		self:Sync(syncName.fear2)
 	elseif string.find(msg, L["attack_trigger1"]) or string.find(msg, L["attack_trigger2"]) or string.find(msg, L["attack_trigger3"]) or string.find(msg, L["attack_trigger4"]) then
 		if self.castingheal == 1 then 
-			if (GetTime()-self.lastHeal)<4 then
-				self:TriggerEvent("BigWigs_SendSync", "JeklikHealStop")
-			elseif (GetTime()-self.lastHeal)>=4 then
+			if (GetTime()-self.lastHeal) < timer.healCast then
+				self:Sync(syncName.healOver)
+			elseif (GetTime()-self.lastHeal) >= timer.healCast then
 				self.castingheal = 0
 			end
 		end
 	elseif msg == L["bomb_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikBombBats")
+		self:Sync(syncName.bombBats)
 	elseif msg == L["swarm_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "JeklikSwarmBats")
+		self:Sync(syncName.swarmBats)
 	elseif string.find(msg, L["liquidfire_trigger"]) then
 		if self.db.profile.announce then
 			if string.find(msg, L["liquidfirehitsyou_trigger"]) then
                 -- do I still need this?
-				--self:TriggerEvent("BigWigs_Message", L["firewarnyou"], "Attention", "Alarm")
-                --self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Fire_Lavaspawn", 2)
+				--self:Message(L["firewarnyou"], "Attention", "Alarm")
+                --self:WarningSign(icon.fire, 2)
 			elseif msg == L["liquidfireresistyou_trigger"] or msg == L["liquidfireabsorbyou_trigger"] or msg == L["liquidfireimmuneyou_trigger"] then
-				self:TriggerEvent("BigWigs_Message", L["firewarn"], "Attention", "Alarm")
+				self:Message(L["firewarn"], "Attention", "Alarm")
 			elseif liquidfirehitsother and liquidfirehitsother~=L["you"] then
 				self:TriggerEvent("BigWigs_SendTell", liquidfirehitsother, L["firewarn"])
 			elseif liquidfireresist then
@@ -352,14 +343,71 @@ function BigWigsJeklik:Event(msg)
 	end
 end
 
-function BigWigsJeklik:UNIT_HEALTH(msg)
-    if UnitName(msg) == boss then
+function module:UNIT_HEALTH(msg)
+    if UnitName(msg) == self.translatedName then
         if UnitHealthMax(msg) == 100 then
-            -- in the current state of Nostalrius you can only get the HP percentages, this is just in case it changes in the future
             if self.phase < 2 and UnitHealth(msg) < 50 then
-                self:TriggerEvent("BigWigs_SendSync", "JeklikPhaseTwo")
+                self:Sync("JeklikPhaseTwo")
                 self:UnregisterEvent("UNIT_HEALTH")
             end
         end
     end
+end
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == "JeklikPhaseTwo" and self.phase < 2 then
+        self.phase = 2
+		self:KTM_Reset()
+		if self.db.profile.phase then
+			self:Message(L["phasetwo_message"], "Attention")
+		end
+		if self.db.profile.fear then
+			self:RemoveBar(L["fearreptext"])
+			self:Bar(L["fearreptext"], timer.fear2, icon.fear2)
+		end
+        self:Bar("Fire Bombs", timer.fireBombs, icon.bomb)
+	elseif sync == syncName.fear and self.db.profile.fear then
+		self:Bar(L["fearreptext"], timer.fear, icon.fear)
+	elseif sync == syncName.fear2 then
+		if self.db.profile.fear then
+			self:Bar(L["fearreptext"], timer.fear2, icon.fear2)
+		end
+		if self.db.profile.heal then
+			self:RemoveBar(L["greathealbar"])			
+		end
+	elseif sync == syncName.swarmBats and self.db.profile.swarm then
+		self:Message(L["swarm_message"], "Urgent")
+	elseif sync == syncName.bombBats and self.db.profile.bomb then
+		self:Message(L["bomb_message"], "Urgent")
+	elseif sync == syncName.mindflay then
+		if self.db.profile.flay then
+			self:RemoveBar(L["mindflaybar"])
+			self:Bar(L["mindflaybar"], timer.mindflay, icon.mindflay)
+		end
+		if self.db.profile.heal then
+			self:RemoveBar(L["greathealbar"])			
+		end
+	elseif sync == syncName.mindflayOver and self.db.profile.flay then
+		self:RemoveBar(L["mindflaybar"])
+	elseif sync == syncName.heal then
+		self.lastHeal = GetTime()
+		self.castingheal = 1
+		if self.db.profile.heal then
+            self:RemoveBar("Next Heal")
+			self:Message(L["greathealtext"], "Important", "Alarm")
+			self:Bar(L["greathealbar"], timer.healCast, icon.heal)
+		end
+	elseif sync == syncName.healOver then
+		self.castingheal = 0
+		if self.db.profile.heal then
+			self:RemoveBar(L["greathealbar"])
+            if (self.lastHeal + timer.nextHeal) > GetTime() then
+                self:Bar("Next Heal", (self.lastHeal + timer.nextHeal - GetTime()), icon.heal)
+            end
+		end
+	end
 end

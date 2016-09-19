@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Jin'do the Hexxer"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Jin'do the Hexxer", "Naxxramas")
+
 
 ----------------------------
 --      Localization      --
@@ -99,25 +100,49 @@ L:RegisterTranslations("deDE", function() return {
 	puticon_desc = "Versetzt eine Schlachtzugsymbol auf der Spieler, der verflucht ist.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsJindo = BigWigs:NewModule(boss)
-BigWigsJindo.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsJindo.enabletrigger = boss
-BigWigsJindo.bossSync = "Jin'do"
-BigWigsJindo.toggleoptions = {"curse", "hex", "brainwash", "healingward", "puticon", "bosskill"}
-BigWigsJindo.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"curse", "hex", "brainwash", "healingward", "puticon", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstHex = 8,
+	firstHealing = 12,
+	firstBrainwash = 21,
+	healingUptime = 240,
+	brainwashUptime = 240,
+	hex = 5,
+}
+local icon = {
+	hex = "Spell_Nature_Polymorph",
+	healing = "Spell_Holy_LayOnHands",
+	brainwash = "Spell_Totem_WardOfDraining",
+}
+local syncName = {
+	curse = "JindoCurse",
+	hex = "JindoHexStart",
+	hexOver = "JindoHexStop",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsJindo:OnEnable()
-    self.started = nil
-    
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "FadeFrom")
@@ -126,102 +151,112 @@ function BigWigsJindo:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Event")
-    self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "JindoCurse", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JindoHexStart", 4)
-	self:TriggerEvent("BigWigs_ThrottleSync", "JindoHexStop", 4)
+	
+	self:ThrottleSync(5, syncName.curse)
+	self:ThrottleSync(4, syncName.hex)
+	self:ThrottleSync(4, syncName.hexOver)
 end
 
-function BigWigsJindo:OnSetup()
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+-- called after module is enabled and after each wipe
+function module:OnSetup()	
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH") -- override
 end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Bar("Next Hex", timer.firstHex, icon.hex)
+    self:Bar("Next Healing Ward", timer.firstHealing, icon.healing)
+    self:Bar("Next Brain Wash", timer.firstBrainwash, icon.brainwash)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Events              --
 ------------------------------
 
-function BigWigsJindo:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg, L["engage_trigger"]) then
-        self:SendEngageSync()
-    end
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self) -- don't forget this, we are overriding the default functionality
+	
+	if msg == L["brainwash_death"] then
+		self:RemoveBar(L["brainwash_bar"])
+	elseif msg == L["healing_death"] then
+		self:RemoveBar(L["healing_bar"])
+	--[[elseif msg == L["jindo_death"] then
+		if self.db.profile.bosskill then self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
+		self:TriggerEvent("BigWigs_RemoveRaidIcon")
+		self.core:ToggleModuleActive(self, false)]]
+	end
 end
-    
-function BigWigsJindo:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+ 
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
 	--[[if self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then -------------- seriously WTB fix for combat log events
-		self:TriggerEvent("BigWigs_Message", L["warnbrainwash"], "Urgent")
+		self:Message(L["warnbrainwash"], "Urgent")
 	else]]if self.db.profile.healingward and msg == L["triggerhealing"] then -------------- seriously WTB fix for combat log events. #RIP healing totem trigger
-		self:TriggerEvent("BigWigs_Message", L["warnhealing"], "Attention", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["healing_bar"], 240, "Interface\\Icons\\Spell_Holy_LayOnHands", true, "Yellow")
+		self:Message(L["warnhealing"], "Attention", true, "Alarm")
+		self:Bar(L["healing_bar"], timer.healingUptime, icon.healing, true, "Yellow")
 	end
 end
 
-function BigWigsJindo:BigWigs_RecvSync(sync, rest, nick)
+function module:Event(msg)
+	local _, _, curseother_name = string.find(msg, L["curseother_trigger"])
+	local _, _, hexother_name= string.find(msg, L["hexother_trigger"])
+	if curseother_name then
+		self:Sync(syncName.curse .. " "..curseother_name)
+	elseif hexother_name then
+		self:Sync(syncName.hex .. " "..hexother_name)
+	elseif msg == L["curseself_trigger"] then
+		self:Sync(syncName.curse .. " "..UnitName("player"))
+	elseif msg == L["hexself_trigger"] then
+		self:Sync(syncName.hex .. " "..UnitName("player"))
+	elseif self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
+		self:Message(L["warnbrainwash"], "Attention", true, "Alarm")
+		self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")
+	end
+end
+
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+	if msg == L["hexselfend_trigger"] then
+		self:Sync(syncName.hexOver .. " "..UnitName("player"))
+	end
+end
+
+function module:FadeFrom(msg)
+	local _, _, hexotherend_name = string.find(msg, L["hexotherend_trigger"])
+	if hexotherend_name then
+		self:Sync(syncName.hexOver .. " "..hexotherend_name)
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
     if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Hex", 8, "Interface\\Icons\\Spell_Nature_Polymorph")
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Healing Ward", 12, "Interface\\Icons\\Spell_Holy_LayOnHands")
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Brain Wash", 21, "Interface\\Icons\\Spell_Totem_WardOfDraining")
-	elseif sync == "JindoCurse" then
+        
+	elseif sync == syncName.curse then
 		if self.db.profile.curse then
 			if rest == UnitName("player") then
-				self:TriggerEvent("BigWigs_Message", L["cursewarn_message"], "Attention")
+				self:Message(L["cursewarn_message"], "Attention")
 			else
-				self:TriggerEvent("BigWigs_Message", string.format(L["cursewarn_warning"], rest), "Urgent")
+				self:Message(string.format(L["cursewarn_warning"], rest), "Urgent")
 				self:TriggerEvent("BigWigs_SendTell", rest, L["cursewarn_message"])
 			end
 		end
 		if self.db.profile.puticon then 
-			self:TriggerEvent("BigWigs_SetRaidIcon", rest)
+			self:Icon(rest)
 		end
-	elseif sync == "JindoHexStart" and self.db.profile.hex then
-        self:TriggerEvent("BigWigs_StopBar", self, "Next Hex")
-		self:TriggerEvent("BigWigs_Message", string.format(L["hexwarn_warning"], rest), "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["hex_bar"], rest), 5, "Interface\\Icons\\Spell_Nature_Polymorph", true, "White")
-	elseif sync == "JindoHexStop" and self.db.profile.hex then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["hex_bar"], rest))
-	end
-end
-
-function BigWigsJindo:Event(msg)
-	local _, _, curseother_name = string.find(msg, L["curseother_trigger"])
-	local _, _, hexother_name= string.find(msg, L["hexother_trigger"])
-	if curseother_name then
-		self:TriggerEvent("BigWigs_SendSync", "JindoCurse "..curseother_name)
-	elseif hexother_name then
-		self:TriggerEvent("BigWigs_SendSync", "JindoHexStart "..hexother_name)
-	elseif msg == L["curseself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "JindoCurse "..UnitName("player"))
-	elseif msg == L["hexself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "JindoHexStart "..UnitName("player"))
-	elseif self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
-		self:TriggerEvent("BigWigs_Message", L["warnbrainwash"], "Attention", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["brainwash_bar"], 240, "Interface\\Icons\\Spell_Totem_WardOfDraining", true, "Black")
-	end
-end
-
-function BigWigsJindo:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-	if msg == L["hexselfend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "JindoHexStop "..UnitName("player"))
-	end
-end
-
-function BigWigsJindo:FadeFrom(msg)
-	local _, _, hexotherend_name = string.find(msg, L["hexotherend_trigger"])
-	if hexotherend_name then
-		self:TriggerEvent("BigWigs_SendSync", "JindoHexStop "..hexotherend_name)
-	end
-end
-
-function BigWigsJindo:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	BigWigs:CheckForBossDeath(msg, self)
-	
-	if msg == L["brainwash_death"] then
-		self:TriggerEvent("BigWigs_StopBar", self, L["brainwash_bar"])
-	elseif msg == L["healing_death"] then
-		self:TriggerEvent("BigWigs_StopBar", self, L["healing_bar"])
-	elseif msg == L["jindo_death"] then
-		if self.db.profile.bosskill then self:TriggerEvent("BigWigs_Message", string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
-		self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		self.core:ToggleModuleActive(self, false)
+	elseif sync == syncName.hex and self.db.profile.hex then
+        self:RemoveBar("Next Hex")
+		self:Message(string.format(L["hexwarn_warning"], rest), "Important")
+		self:Bar(string.format(L["hex_bar"], rest), timer.hex, icon.hex, true, "White")
+	elseif sync == syncName.hexOver and self.db.profile.hex then
+		self:RemoveBar(string.format(L["hex_bar"], rest))
 	end
 end

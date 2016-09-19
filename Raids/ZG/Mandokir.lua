@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Bloodlord Mandokir"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Bloodlord Mandokir", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -107,25 +108,49 @@ L:RegisterTranslations("deDE", function() return {
 	enraged_desc = "L\195\164sst dich wissen, wenn Boss h\195\164rter zuschl\195\164gt",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsMandokir = BigWigs:NewModule(boss)
-BigWigsMandokir.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsMandokir.enabletrigger = boss
-BigWigsMandokir.bossSync = "Mandokir"
-BigWigsMandokir.wipemobs = { L["ohgan"] }
-BigWigsMandokir.toggleoptions = {"gaze", "announce", "puticon", "whirlwind", "enraged", "bosskill"}
-BigWigsMandokir.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
-BigWigsMandokir:RegisterYellEngage(L["engage_trigger"])
+
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = { L["ohgan"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"gaze", "announce", "puticon", "whirlwind", "enraged", "bosskill"}
+
+
+-- locals
+local timer = {
+	firstCharge = 15,
+	firstWhirlwind = 20,
+	firstGaze = 33,
+}
+local icon = {
+	charge = "Ability_Warrior_Charge",
+	whirlwind = "Ability_Whirlwind",
+	gaze = "Spell_Shadow_Charm",
+}
+local syncName = {
+	whirlwind = "MandokirWWStart",
+	whirlwindOver = "MandokirWWStop",
+	enrage = "MandokirEnrageStart",
+	enrageOver = "MandokirEnrageEnd",
+	gazeCast = "MandokirGazeCast",
+	gazeAfflicted = "MandokirGazeAfflict",
+	gazeOver = "MandokirGazeEnd",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsMandokir:OnEnable()
-    self.started = nil
+module:RegisterYellEngage(L["engage_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
@@ -135,107 +160,118 @@ function BigWigsMandokir:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "Event")
-	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirWWStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirWWStop", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirEnrageStart", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirEnrageEnd", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirGazeCast", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirGazeAfflict", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "MandokirGazeEnd", 5)
+	
+	self:ThrottleSync(5, syncName.whirlwind)
+	self:ThrottleSync(5, syncName.whirlwindOver)
+	self:ThrottleSync(5, syncName.enrage)
+	self:ThrottleSync(5, syncName.enrageOver)
+	self:ThrottleSync(5, syncName.gazeCast)
+	self:ThrottleSync(5, syncName.gazeAfflicted)
+	self:ThrottleSync(5, syncName.gazeOver)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:Bar("Charge", timer.firstCharge, icon.charge) 
+    -- todo check combat log regarding CHARGE to trigger the ones following the first
+    self:Bar("Next Whirlwind", timer.firstWhirlwind, icon.whirlwind)
+    self:Bar("Next Gaze", timer.firstGaze, icon.gaze)
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
---      Events              --
+--      Event Handlers	    --
 ------------------------------
 
-function BigWigsMandokir:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg, L["engage_trigger"]) then
-        --self:SendEngageSync()
-    else
-        local gazetime
-        local _,_,watchedplayer,_ = string.find(msg, L["watch_trigger"])
-        if watchedplayer then
-            if self.db.profile.announce then
-                if watchedplayer == UnitName("player") then
-                    self:TriggerEvent("BigWigs_Message", L["watched_warning"], "Personal", true, "Alarm")
-                else
-                    self:TriggerEvent("BigWigs_Message", string.format(L["watched_warning_other"], watchedplayer), "Attention")
-                    self:TriggerEvent("BigWigs_SendTell", watchedplayer, L["watched_warning_tell"])
-                end
-            end
-            if self.db.profile.puticon then
-                self:TriggerEvent("BigWigs_SetRaidIcon", watchedplayer)
-            end
-            if watchedplayer == UnitName("player") then
-                self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\Spell_Shadow_Charm", 7)
-            end
-        end
+function module:CHAT_MSG_MONSTER_YELL(msg)
+	local gazetime
+	local _,_,watchedplayer,_ = string.find(msg, L["watch_trigger"])
+	if watchedplayer then
+		if self.db.profile.announce then
+			if watchedplayer == UnitName("player") then
+				self:Message(L["watched_warning"], "Personal", true, "Alarm")
+			else
+				self:Message(string.format(L["watched_warning_other"], watchedplayer), "Attention")
+				self:TriggerEvent("BigWigs_SendTell", watchedplayer, L["watched_warning_tell"])
+			end
+		end
+		if self.db.profile.puticon then
+			self:Icon(watchedplayer)
+		end
+		if watchedplayer == UnitName("player") then
+			self:WarningSign(icon.gaze, 7)
+		end
 	end
 end
 
-function BigWigsMandokir:Event(msg)
+function module:Event(msg)
 	local _,_,gazedplayer,_ = string.find(msg, L["gazeafflictother"])
 	local _,_,gazedplayerend,_ = string.find(msg, L["gazeendother"])
 	--local _,_,gazeddeathend,_ = string.find(msg, L["deathother"])
 	if msg == L["wwgain"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirWWStart")
+		self:Sync(syncName.whirlwind)
 	elseif msg == L["wwloss"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirWWStop")
+		self:Sync(syncName.whirlwindOver)
 	elseif msg == L["enragegain"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirEnrageStart")
+		self:Sync(syncName.enrage)
 	elseif msg == L["enragefade"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirEnrageEnd")
+		self:Sync(syncName.enrageOver)
 	elseif msg == L["gaze_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeCast")
+		self:Sync(syncName.gazeCast)
 	elseif msg == L["gazeafflictyou"] then
 		gazetime = GetTime()
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeAfflict "..UnitName("player"))
+		self:Sync("MandokirGazeAfflict "..UnitName("player"))
 	elseif gazedplayer then
 		gazetime = GetTime()
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeAfflict "..gazedplayer)
+		self:Sync("MandokirGazeAfflict "..gazedplayer)
 	elseif msg == L["gazeendyou"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..UnitName("player"))
+		self:Sync("MandokirGazeEnd "..UnitName("player"))
 	elseif gazedplayerend and gazedplayerend~=L["you"] then
-		self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..gazedplayerend)
+		self:Sync("MandokirGazeEnd "..gazedplayerend)
 	--elseif msg == L["deathyou"] then
-	--	self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..UnitName("player"))
+	--	self:Sync("MandokirGazeEnd "..UnitName("player"))
 	--elseif gazeddeathend then
-	--	self:TriggerEvent("BigWigs_SendSync", "MandokirGazeEnd "..gazeddeathend)
+	--	self:Sync("MandokirGazeEnd "..gazeddeathend)
 	end
 end
 
-function BigWigsMandokir:BigWigs_RecvSync(sync, rest, nick)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-        self:TriggerEvent("BigWigs_StartBar", self, "Charge", 15, "Interface\\Icons\\Ability_Warrior_Charge") 
-        -- todo check combat log regarding CHARGE to trigger the ones following the first
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Whirlwind", 20, "Interface\\Icons\\Ability_Whirlwind")
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Gaze", 33, "Interface\\Icons\\Spell_Shadow_Charm")
-	elseif sync == "MandokirWWStart" and self.db.profile.whirlwind then
-		self:TriggerEvent("BigWigs_StartBar", self, L["ww"], 2, "Interface\\Icons\\Ability_Whirlwind")
-		--self:ScheduleEvent("BigWigs_StartBar", 2, self, "Next Whirlwind", 18, "Interface\\Icons\\Ability_Whirlwind")
-	elseif sync == "MandokirWWStop" and self.db.profile.whirlwind then
-		self:TriggerEvent("BigWigs_StopBar", self, L["ww"])
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Whirlwind", 18, "Interface\\Icons\\Ability_Whirlwind")
-	elseif sync == "MandokirEnrageStart" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enraged_message"], "Urgent")
-		self:TriggerEvent("BigWigs_StartBar", self, L["enragebar"], 90, "Interface\\Icons\\Spell_Shadow_UnholyFrenzy")
-	elseif sync == "MandokirEnrageEnd" and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_StopBar", self, L["enragebar"])
-	elseif sync == "MandokirGazeCast" and self.db.profile.gaze then
-		self:TriggerEvent("BigWigs_StartBar", self, L["gazecast"], 2, "Interface\\Icons\\Spell_Shadow_Charm")
-        self:TriggerEvent("BigWigs_StopBar", self, "Next Gaze")
-	elseif sync == "MandokirGazeAfflict" and self.db.profile.gaze then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["gazewatchedbar"], rest), 5, "Interface\\Icons\\Spell_Shadow_Charm", true, "Black")
-	elseif sync == "MandokirGazeEnd" then
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.whirlwind and self.db.profile.whirlwind then
+		self:Bar(L["ww"], 2, icon.whirlwind)
+		--self:ScheduleEvent("BigWigs_StartBar", 2, self, "Next Whirlwind", 18, icon.whirlwind)
+	elseif sync == syncName.whirlwindOver and self.db.profile.whirlwind then
+		self:RemoveBar(L["ww"])
+        self:Bar("Next Whirlwind", 18, icon.whirlwind)
+	elseif sync == syncName.enrage and self.db.profile.enraged then
+		self:Message(L["enraged_message"], "Urgent")
+		self:Bar(L["enragebar"], 90, "Spell_Shadow_UnholyFrenzy")
+	elseif sync == syncName.enrageOver and self.db.profile.enraged then
+		self:RemoveBar(L["enragebar"])
+	elseif sync == syncName.gazeCast and self.db.profile.gaze then
+		self:Bar(L["gazecast"], 2, icon.gaze)
+        self:RemoveBar("Next Gaze")
+	elseif sync == syncName.gazeAfflicted and self.db.profile.gaze then
+		self:Bar(string.format(L["gazewatchedbar"], rest), 5, icon.gaze, true, "Black")
+	elseif sync == syncName.gazeOver then
 		if self.db.profile.gaze then
-			self:TriggerEvent("BigWigs_StopBar", self, string.format(L["gazewatchedbar"], rest))
+			self:RemoveBar(string.format(L["gazewatchedbar"], rest))
 		end
 		if self.db.profile.puticon then
-			self:TriggerEvent("BigWigs_RemoveRaidIcon", rest)
+			self:RemoveIcon(rest)
 		end
-        self:TriggerEvent("BigWigs_StartBar", self, "Next Gaze", 11, "Interface\\Icons\\Spell_Shadow_Charm")
+        self:Bar("Next Gaze", 11, icon.gaze)
 	end
 end

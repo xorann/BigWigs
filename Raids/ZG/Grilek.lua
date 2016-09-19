@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Gri'lek"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Gri'lek", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -67,51 +68,83 @@ L:RegisterTranslations("deDE", function() return {
 	puticon_desc = "Setzt ein Schlachtzugssymbol auf den verfolgten Spieler.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsGrilek = BigWigs:NewModule(boss)
-BigWigsGrilek.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsGrilek.enabletrigger = boss
-BigWigsGrilek.bossSync = "Gri'lek"
-BigWigsGrilek.toggleoptions = {"avatar", "melee", "announce", "puticon", "bosskill"}
-BigWigsGrilek.revision = tonumber(string.sub("$Revision: 11208 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.toggleoptions = {"avatar", "melee", "announce", "puticon", "bosskill"}
+
+-- locals
+local timer = {
+	melee = 10,
+	avatar = 15,
+}
+local icon = {
+	avatar = "Ability_Creature_Cursed_05",
+}
+local syncName = {
+	meleeIni = "GrilekMeleeIni",
+	melee = "GrilekMelee",
+	avatar = "GrilekAvatar",
+	avatarOver = "GrilekAvatarStop",
+}
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsGrilek:OnEnable()
-    self.started = nil
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Event")
+	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
+	
+	self:ThrottleSync(8, syncName.meleeIni)
+	self:ThrottleSync(8, syncName.melee)
+	self:ThrottleSync(10, syncName.avatar)
+	self:ThrottleSync(10, syncName.avatarOver)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	self.started = nil
 	firstwarn = 0
 	nameoftarget = nil
 	lasttarget = "randomshitthatwonthappen"
-	
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "Event")
-	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrilekMeleeIni", 8)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrilekMelee", 8)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrilekAvatar", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "GrilekAvatarStop", 10)
 end
+
+-- called after boss is engaged
+function module:OnEngage()
+	if firstwarn == 0 then
+		self:Sync(syncName.meleeIni)
+	end	
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
 
 ------------------------------
 --      Events              --
 ------------------------------
 
-function BigWigsGrilek:Event(msg)
+function module:Event(msg)
 	if msg == L["avatar_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "GrilekAvatar")
+		self:Sync(syncName.avatar)
 	elseif msg == L["avatar_end"] then
-		self:TriggerEvent("BigWigs_SendSync", "GrilekAvatarStop")
-		self:TriggerEvent("BigWigs_SendSync", "GrilekMelee")
+		self:Sync(syncName.avatarOver)
+		self:Sync(syncName.melee)
 	end
 end
 
-function BigWigsGrilek:TargetChangedCheck()
+function module:TargetChangedCheck()
 	local num = GetNumRaidMembers()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
@@ -124,13 +157,13 @@ function BigWigsGrilek:TargetChangedCheck()
 	end
 	if nameoftarget ~= lasttarget then
 		if self.db.profile.puticon then
-			self:TriggerEvent("BigWigs_SetRaidIcon", nameoftarget)
+			self:Icon(nameoftarget)
 		end
 		if self.db.profile.announce then
 			if nameoftarget == UnitName("player") then
-				self:TriggerEvent("BigWigs_Message", L["avatar_whisper_you"], "Attention", "Alarm")
+				self:Message(L["avatar_whisper_you"], "Attention", "Alarm")
 			else
-				self:TriggerEvent("BigWigs_Message", string.format(L["avatar_watch"], nameoftarget), "Personal")
+				self:Message(string.format(L["avatar_watch"], nameoftarget), "Personal")
 				self:TriggerEvent("BigWigs_SendTell", nameoftarget, L["avatar_whisper"])
 			end
 		end
@@ -138,38 +171,39 @@ function BigWigsGrilek:TargetChangedCheck()
 	end
 end
 
-function BigWigsGrilek:Avatar()
+function module:Avatar()
 	self:ScheduleRepeatingEvent("grilektargetchangedcheck", self.TargetChangedCheck, 0.5, self)
 end
 
-function BigWigsGrilek:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and sync == "BossEngaged" and rest == self.bossSync then
-		if firstwarn == 0 then
-			self:TriggerEvent("BigWigs_SendSync", "GrilekMeleeIni")
-		end	
-	elseif sync == "GrilekMeleeIni" then
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.meleeIni then
 		firstwarn = 1
 		if self.db.profile.melee then
-			self:ScheduleEvent("BigWigs_Message", 10, L["preavatar_warn"], "Attention", true, "Alarm")
+			self:DelayedMessage(timer.melee, L["preavatar_warn"], "Attention", true, "Alarm")
 		end
-	elseif sync == "GrilekMelee" then
+	elseif sync == syncName.melee then
 		if self.db.profile.melee then
-			self:ScheduleEvent("BigWigs_Message", 10, L["preavatar_warn"], "Attention", true, "Alarm")
+			self:DelayedMessage(timer.melee, L["preavatar_warn"], "Attention", true, "Alarm")
 		end
-	elseif sync == "GrilekAvatar" then
+	elseif sync == syncName.avatar then
 		self:Avatar()
 		if self.db.profile.avatar then
-			self:TriggerEvent("BigWigs_StartBar", self, L["avatar_bar"], 15, "Interface\\Icons\\Ability_Creature_Cursed_05")
-			self:TriggerEvent("BigWigs_Message", L["avatar_message"], "Urgent")
+			self:Bar(L["avatar_bar"], timer.avatar, icon.avatar)
+			self:Message(L["avatar_message"], "Urgent")
 		end
-	elseif sync == "GrilekAvatarStop" then
+	elseif sync == syncName.avatarOver then
 		self:CancelScheduledEvent("grilektargetchangedcheck")
 		nameoftarget = nil
 		if self.db.profile.avatar then
-			self:TriggerEvent("BigWigs_StopBar", self, L["avatar_bar"])
+			self:RemoveBar(L["avatar_bar"])
 		end
 		if self.db.profile.puticon then
-			self:TriggerEvent("BigWigs_RemoveRaidIcon", lasttarget)
+			self:RemoveIcon(lasttarget)
 		end
 		lasttarget = "randomshitthatwonthappen"
 	end

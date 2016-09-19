@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["High Priest Thekal"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("High Priest Thekal", "Zul'Gurub")
+
 
 ----------------------------
 --      Localization      --
@@ -181,29 +182,53 @@ L:RegisterTranslations("deDE", function() return {
 	phase_desc = "Verk\195\188ndet den Phasenwechsel des Bosses.",
 } end )
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
 
-BigWigsThekal = BigWigs:NewModule(boss)
-BigWigsThekal.zonename = AceLibrary("Babble-Zone-2.2")["Zul'Gurub"]
-BigWigsThekal.enabletrigger = boss
-BigWigsThekal.bossSync = "High Priest Thekal"
-BigWigsThekal.wipemobs = { L["roguename"], L["shamanname"] }
-BigWigsThekal.toggleoptions = {"bloodlust", "silence", "cleave", "heal", "disarm", -1, "phase", "punch", "tigers", "frenzy", "enraged", "bosskill"}
-BigWigsThekal.revision = tonumber(string.sub("$Revision: 11206 $", 12, -3))
+---------------------------------
+--      	Variables 		   --
+---------------------------------
+
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+module.wipemobs = {L["roguename"], L["shamanname"]} -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"bloodlust", "silence", "cleave", "heal", "disarm", -1, "phase", "punch", "tigers", "frenzy", "enraged", "bosskill"}
+
+
+-- locals
+local timer = {
+	charge = 10,
+	teleport = 30,
+}
+local icon = {
+	charge = "Spell_Frost_FrostShock",
+	teleport = "Spell_Arcane_Blink",
+}
+local syncName = {
+	phase2 = "ThekalPhaseTwo",
+	heal = "ThekalLorkhanHeal",
+	frenzy = "ThekalFrenzyStart",
+	frenzyOver = "ThekalFrenzyStop",
+	bloodlust = "ThekalBloodlustStart",
+	bloodlustOver = "ThekalBloodlustStop",
+	silence = "ThekalSilenceStart",
+	silenceOver = "ThekalSilenceStop",
+	mortalcleave = "ThekalMortalCleave",
+	disarm = "ThekalDisarm",
+	enrage = "ThekalEnrage",
+}
+
+local berserkannounced = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsThekal:OnEnable()
-    self.started    = nil
-    self.phase      = 0
-	zathdead = nil
-	lorkhandead = nil
-	thekaldead = nil
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()	
+    self:RegisterEvent("CHAT_MSG_MONSTER_YELL") -- phase transition
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Fades")
@@ -214,60 +239,76 @@ function BigWigsThekal:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	--self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
-	--self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalPhaseOne", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalPhaseTwo", 10)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalLorkhanHeal", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalFrenzyStart", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalFrenzyStop", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalBloodlustStart", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalBloodlustStop", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalSilenceStart", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalSilenceStop", 3)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalMortalCleave", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalDisarm", 5)
-	self:TriggerEvent("BigWigs_ThrottleSync", "ThekalEnrage", 5)
+
+	self:ThrottleSync(10, syncName.phase2)
+	self:ThrottleSync(5, syncName.heal)
+	self:ThrottleSync(3, syncName.frenzy)
+	self:ThrottleSync(3, syncName.frenzyOver)
+	self:ThrottleSync(3, syncName.bloodlust)
+	self:ThrottleSync(3, syncName.bloodlustOver)
+	self:ThrottleSync(3, syncName.silence)
+	self:ThrottleSync(3, syncName.silenceOver)
+	self:ThrottleSync(5, syncName.mortalcleave)
+	self:ThrottleSync(5, syncName.disarm)
+	self:ThrottleSync(5, syncName.enrage)
 end
 
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+    self.phase      = 0
+	zathdead = nil
+	lorkhandead = nil
+	thekaldead = nil
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self.phase = 1
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
 ------------------------------
---      Events              --
+--      Event Handlers	    --
 ------------------------------
 
 -- override: only check for boss death in phase 2
-function BigWigsThekal:CheckForBossDeath()
+function module:CheckForBossDeath()
 	if self.phase == 2 then
 		BigWigs:CheckForBossDeath()
 	else
-        self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")
+        self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
     end
 end
-function BigWigsThekal:CHAT_MSG_MONSTER_YELL(msg)
+function module:CHAT_MSG_MONSTER_YELL(msg) -- yell missing on nefarian, workaround in CheckForBossDeath function
     if string.find(msg, L["phase2_trigger"]) then
-        self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")
+        self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
     end
 end
 
-function BigWigsThekal:Event(msg)
+function module:Event(msg)
 	local _,_,silenceother_triggerword = string.find(msg, L["silenceother_trigger"])
 	local _,_,disarmother_triggerword = string.find(msg, L["disarmother_trigger"])
 	local _,_,mortalcleaveother_triggerword = string.find(msg, L["mortalcleaveother_trigger"])
 	if msg == L["tigers_trigger"] then
 		self:TriggerEvent("BigWigs_Message", L["tigers_message"], "Important")
 	elseif msg == L["heal_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalLorkhanHeal")
+		self:TriggerEvent("BigWigs_SendSync", syncName.heal)
 	elseif msg == L["silenceself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalSilenceStart "..UnitName("player"))
+		self:TriggerEvent("BigWigs_SendSync", syncName.silence .. " "..UnitName("player"))
 	elseif silenceother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalSilenceStart "..silenceother_triggerword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.silence .. " "..silenceother_triggerword)
 	elseif msg == L["disarmself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalDisarm "..UnitName("player"))
+		self:TriggerEvent("BigWigs_SendSync", syncName.disarm .. " "..UnitName("player"))
 	elseif disarmother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalDisarm "..disarmother_triggerword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.disarm .. " "..disarmother_triggerword)
 	elseif msg == L["mortalcleaveself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalMortalCleave "..UnitName("player"))
+		self:TriggerEvent("BigWigs_SendSync", syncName.mortalcleave .. " "..UnitName("player"))
 	elseif mortalcleaveother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalMortalCleave "..mortalcleaveother_triggerword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.mortalcleave .. " "..mortalcleaveother_triggerword)
 	elseif msg == L["thekalrescast_trigger"] then
 		if zathdead and lorkhandead then
 			self:ScheduleEvent(self.CheckZealots, 2, self)
@@ -281,15 +322,15 @@ function BigWigsThekal:Event(msg)
 	end
 end
 
-function BigWigsThekal:CheckZealots()
+function module:CheckZealots()
 	if zathdead and lorkhandead then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalPhaseTwo")
+		self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
 	else
 		thekaldead = nil
 	end
 end
 
-function BigWigsThekal:CHAT_MSG_MONSTER_EMOTE(msg)
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
 	if string.find(msg, L["death_trigger"]) then
 		if arg2 == L["zath_trigger"] then
 			zathdead = true
@@ -310,41 +351,44 @@ function BigWigsThekal:CHAT_MSG_MONSTER_EMOTE(msg)
 	end
 end
 
-function BigWigsThekal:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["forcepunch_trigger"] then
 		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["forcepunch_bar"], rest), 1, "Interface\\Icons\\INV_Gauntlets_31")
 	end
 end
 
-function BigWigsThekal:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	local _,_,bloodlustgainword = string.find(msg, L["bloodlustgain"])
 	if msg == L["frenzybegin_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalFrenzyStart")
+		self:TriggerEvent("BigWigs_SendSync", syncName.frenzy)
 	elseif msg == L["enrage_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalEnrage")
+		self:TriggerEvent("BigWigs_SendSync", syncName.enrage)
 	elseif bloodlustgainword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalBloodlustStart "..bloodlustgainword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.bloodlust .. " "..bloodlustgainword)
 	end
 end
 
-function BigWigsThekal:Fades(msg)
+function module:Fades(msg)
 	local _,_,silenceotherend_triggerword = string.find(msg, L["silenceotherend_trigger"])
 	local _,_,bloodlustendword = string.find(msg, L["bloodlustend"])
 	if bloodlustendword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalBloodlustStop "..bloodlustendword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.bloodlustOver .. " "..bloodlustendword)
 	elseif msg == L["silenceselfend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalSilenceStop "..UnitName("player"))
+		self:TriggerEvent("BigWigs_SendSync", syncName.silenceOver .. " "..UnitName("player"))
 	elseif silenceotherend_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalSilenceStop "..silenceotherend_triggerword)
+		self:TriggerEvent("BigWigs_SendSync", syncName.silenceOver .. " "..silenceotherend_triggerword)
 	elseif msg == L["frenzyend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", "ThekalFrenzyStop")
+		self:TriggerEvent("BigWigs_SendSync", syncName.frenzyOver)
 	end
 end
 
-function BigWigsThekal:BigWigs_RecvSync(sync, rest, nick)
-	if not self.started and ((sync == "BossEngaged" and rest == self.bossSync) or (sync == "ThekalPhaseOne")) then
-        self.phase = 1
-	elseif sync == "ThekalPhaseTwo" and self.phase < 2 then
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.phase2 and self.phase < 2 then
         self.phase = 2
 		if self.db.profile.heal then
 			self:TriggerEvent("BigWigs_StopBar", L["heal_bar"])
@@ -357,35 +401,35 @@ function BigWigsThekal:BigWigs_RecvSync(sync, rest, nick)
 		end
         self:TriggerEvent("BigWigs_StartBar", self, "New Adds", 24, "Interface\\Icons\\Ability_Hunter_Pet_Cat")
         self:TriggerEvent("BigWigs_StartBar", self, "Knockback", 5, "Interface\\Icons\\Ability_WarStomp")
-	elseif sync == "ThekalLorkhanHeal" and self.db.profile.heal then
+	elseif sync == syncName.heal and self.db.profile.heal then
 		self:TriggerEvent("BigWigs_Message", L["heal_message"], "Attention", "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["heal_bar"], 4, "Interface\\Icons\\Spell_Holy_Heal", true, "Black")
-	elseif sync == "ThekalFrenzyStart" and self.db.profile.frenzy then
+	elseif sync == syncName.frenzy and self.db.profile.frenzy then
 		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alarm")
 		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
-	elseif sync == "ThekalFrenzyStop" and self.db.profile.frenzy then
+	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
         self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
-	elseif sync == "ThekalBloodlustStart" and self.db.profile.bloodlust then
+	elseif sync == syncName.bloodlust and self.db.profile.bloodlust then
 		self:TriggerEvent("BigWigs_Message", string.format(L["bloodlustannounce"], rest), "Important")
 		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bloodlust_bar"], rest), 30, "Interface\\Icons\\Spell_Nature_BloodLust")
-	elseif sync == "ThekalBloodlustStop" and self.db.profile.bloodlust then
+	elseif sync == syncName.bloodlustOver and self.db.profile.bloodlust then
 		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bloodlust_bar"], rest))
-	elseif sync == "ThekalSilenceStart" and self.db.profile.silence then
+	elseif sync == syncName.silence and self.db.profile.silence then
 		self:TriggerEvent("BigWigs_Message", string.format(L["silence_announce"], rest), "Attention")
 		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["silence_bar"], rest), 6, "Interface\\Icons\\Spell_Holy_Silence", true, "White")
-	elseif sync == "ThekalSilenceStop" and self.db.profile.silence then
+	elseif sync == syncName.silenceOver and self.db.profile.silence then
 		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["silence_bar"], rest))
-	elseif sync == "ThekalMortalCleave" and self.db.profile.cleave then
+	elseif sync == syncName.mortalcleave and self.db.profile.cleave then
 		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mortalcleave_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow")
-	elseif sync == "ThekalDisarm" and self.db.profile.disarm then
+	elseif sync == syncName.disarm and self.db.profile.disarm then
 		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["disarm_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_Disarm", true, "Yellow")
-	elseif sync == "ThekalEnrage" and self.db.profile.enraged then
+	elseif sync == syncName.enrage and self.db.profile.enraged then
 		self:TriggerEvent("BigWigs_Message", L["enrage_message"], "Urgent")
 	end
 end
 
-function BigWigsThekal:PhaseSwitch()
-    BigWigs:ToggleModuleActive(BigWigsThekal, true)
-    BigWigsThekal:TriggerEvent("BigWigs_StartBar", BigWigsThekal, "Next Phase", 9, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
-    BigWigsThekal.phase = 1.5;
+function module:PhaseSwitch()
+    BigWigs:ToggleModuleActive(module, true)
+    module:TriggerEvent("BigWigs_StartBar", module, "Next Phase", 9, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
+    module.phase = 1.5;
 end
