@@ -1,9 +1,10 @@
-------------------------------
---      Are you local?      --
-------------------------------
 
-local boss = AceLibrary("Babble-Boss-2.2")["Ossirian the Unscarred"]
-local L = AceLibrary("AceLocale-2.2"):new("BigWigs"..boss)
+----------------------------------
+--      Module Declaration      --
+----------------------------------
+
+local module, L = BigWigs:ModuleDeclaration("Ossirian the Unscarred", "Ruins of Ahn'Qiraj")
+
 
 ----------------------------
 --      Localization      --
@@ -23,9 +24,10 @@ L:RegisterTranslations("enUS", function() return {
 	supremetrigger = "Ossirian the Unscarred gains Strength of Ossirian.",
 	supremewarn = "Ossirian Supreme Mode!",
 	supremedelaywarn = "Supreme in %d seconds!",
-	debufftrigger = "^Ossirian the Unscarred is afflicted by (.+) Weakness%.$",
+	debufftrigger = "Ossirian the Unscarred is afflicted by (.+) Weakness.",
+	crystaltrigger = "Ossirian Crystal Trigger dies.",
 	debuffwarn = "Ossirian now weak to %s!",
-	bartext = "Supreme",
+	supreme_bar = "Supreme",
 	expose = "Expose",
 
 	["Shadow"] = true,
@@ -33,175 +35,186 @@ L:RegisterTranslations("enUS", function() return {
 	["Frost"] = true,
 	["Nature"] = true,
 	["Arcane"] = true,
-} end )
-
-L:RegisterTranslations("frFR", function() return {
-	supreme_name = "Alerte Mode Supr\195\170me",
-	supreme_desc = "Pr\195\169viens lorsque Ossirian passe en mode supr\195\170me.",
-
-	debuff_name = "Sensibilit\195\169s",
-	debuff_desc = "Pr\195\169viens lorsque Ossirian change de Sensibilit\195\169.",
-
-	supremetrigger = "Ossirian l'Intouch\195\169 gagne Force d'Ossirian.",
-	debufftrigger = "^Ossirian l'Intouch\195\169 subit les effets de (.+)%.$",
-
-	supremewarn = "Ossirian est en mode Supr\195\170me !",
-	debuffwarn = "%s pour 45 secondes !",
-	supremedelaywarn = "Supr\195\170me dans %d secondes !",
-	bartext = "Supr\195\170me",
-
-	["Shadow"] = "Sensibilit\195\169 \195\160 l'Ombre",
-	["Fire"] = "Sensibilit\195\169 au Feu",
-	["Frost"] = "Sensibilit\195\169 au Givre",
-	["Nature"] = "Sensibilit\195\169 \195\160 la Nature",
-	["Arcane"] = "Sensibilit\195\169 aux Arcanes",
+	
+	["ShadowIcon"] = "Spell_Shadow_ChillTouch",
+	["FireIcon"] = "Spell_Fire_Fire",
+	["FrostIcon"] = "Spell_Frost_ChillingBlast",
+	["NatureIcon"] = "Spell_Nature_Acid_01",
+	["ArcaneIcon"] = "Spell_Arcane_PortalOrgrimmar",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-	supreme_name = "St\195\164rke des Ossirian",
-	supreme_desc = "Warnung vor St\195\164rke des Ossirian.",
+	supreme_name = "Stärke des Ossirian",
+	supreme_desc = "Warnung vor Stärke des Ossirian.",
 
 	debuff_name = "Debuff",
 	debuff_desc = "Warnung vor Debuff.",
 
-	supremetrigger = "Ossirian der Narbenlose bekommt 'St\195\164rke des Ossirian'.",
-	supremewarn = "St\195\164rke des Ossirian!",
-	supremedelaywarn = "St\195\164rke des Ossirian in %d Sekunden!",
-	debufftrigger = "Ossirian der Narbenlose ist von (.*)schw\195\164che betroffen%.$",
-	debuffwarn = "Ossirian f\195\188r 45 Sekunden anf\195\164llig gegen: %s",
-	bartext = "St\195\164rke des Ossirian",
-	expose = "Schw\195\164che",
+	supremetrigger = "Ossirian der Narbenlose bekommt 'Stärke des Ossirian'.",
+	supremewarn = "Stärke des Ossirian!",
+	supremedelaywarn = "Stärke des Ossirian in %d Sekunden!",
+	debufftrigger = "Ossirian der Narbenlose ist von (.*)schwäche betroffen.",
+	crystaltrigger = "Ossirian Crystal Trigger dies.", -- translation missing
+	debuffwarn = "Ossirian für 45 Sekunden anfällig gegen: %s",
+	supreme_bar = "Stärke des Ossirian",
+	expose = "Schwäche",
 
 	["Shadow"] = "Schatten",
 	["Fire"] = "Feuer",
 	["Frost"] = "Frost",
 	["Nature"] = "Natur",
 	["Arcane"] = "Arkan",
-} end )
-
-L:RegisterTranslations("zhCN", function() return {
-	supreme_name = "无敌警报",
-	supreme_desc = "奥斯里安进入无敌状态时发出警报",
-
-	debuff_name = "虚弱警报",
-	debuff_desc = "奥斯里安受到虚弱效果影响时发出警报",
-
-	supremetrigger = "无疤者奥斯里安获得了奥斯里安之力的效果。",
-	supremewarn = "无疤者奥斯里安无敌了！速退！",
-	supremedelaywarn = "%d秒后奥斯里安无敌",
-	debufftrigger = "^无疤者奥斯里安受到了(.+)虚弱效果的影响。",
-	debuffwarn = "奥斯里安新法术弱点: %s",
-	bartext = "无敌",
-	expose = "我……败……了。",
-
-	["Shadow"] = "暗影",
-	["Fire"] = "火焰",
-	["Frost"] = "冰霜",
-	["Nature"] = "自然",
-	["Arcane"] = "奥术",
-} end )
-
-L:RegisterTranslations("zhTW", function() return {
-	-- Ossirian the Unscarred 無疤者奧斯里安
-	supreme_name = "無敵警報",
-	supreme_desc = "無疤者奧斯里安進入無敵狀態時發出警報",
-
-	debuff_name = "虛弱警報",
-	debuff_desc = "無疤者奧斯里安受到虛弱效果影響時發出警報",
-
-	supremetrigger = "無疤者奧斯里安獲得了奧斯里安之力的效果。",
-	supremewarn = "已經進入了無敵模式！",
-	supremedelaywarn = "%d 秒後無敵！",
-	debufftrigger = "^無疤者奧斯里安受到(.+)虛弱的傷害",
-	debuffwarn = "抗性虛弱 45 秒 : %s - DPS全開！",
-	bartext = "無敵",
-	expose = "我...已...失敗。",
-
-	["Shadow"] = "暗影",
-	["Fire"] = "火焰",
-	["Frost"] = "冰霜",
-	["Nature"] = "自然",
-	["Arcane"] = "祕法",
-} end )
-
-L:RegisterTranslations("koKR", function() return {
-	supreme_name = "무적 경고",
-	supreme_desc = "무적 모드에 대한 경고",
-
-	debuff_name = "약화마법 경고",
-	debuff_desc = "약화마법에 대한 경고",
-
-	supremetrigger = "무적의 오시리안|1이;가; 오시리안의 힘 효과를 얻었습니다.",
-	supremewarn = "오시리안 무적 상태!",
-	supremedelaywarn = "%d초후 무적 상태 돌입!",
-	debufftrigger = "무적의 오시리안|1이;가; (.+) 약점에 걸렸습니다.",
-	debuffwarn = "오시리안이 %s 계열 마법에 약해졌습니다.",
-	bartext = "무적 상태",
-	expose = "노출",	-- CHECK
-
-	["Shadow"] = "암흑",
-	["Fire"] = "화염",
-	["Frost"] = "냉기",
-	["Nature"] = "자연",
-	["Arcane"] = "비전",
+	
+	["ShadowIcon"] = "Spell_Shadow_ChillTouch",
+	["FireIcon"] = "Spell_Fire_Fire",
+	["FrostIcon"] = "Spell_Frost_ChillingBlast",
+	["NatureIcon"] = "Spell_Nature_Acid_01",
+	["ArcaneIcon"] = "Spell_Arcane_PortalOrgrimmar",
 } end )
 
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+---------------------------------
+--      	Variables 		   --
+---------------------------------
 
-BigWigsOssirian = BigWigs:NewModule(boss)
-BigWigsOssirian.zonename = AceLibrary("Babble-Zone-2.2")["Ruins of Ahn'Qiraj"]
-BigWigsOssirian.enabletrigger = boss
-BigWigsOssirian.bossSync = "Ossirian"
-BigWigsOssirian.toggleoptions = {"supreme", "debuff", "bosskill"}
-BigWigsOssirian.revision = tonumber(string.sub("$Revision: 17973 $", 12, -3))
+-- module variables
+module.revision = 20004 -- To be overridden by the module!
+module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
+--module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.toggleoptions = {"supreme", "debuff", "bosskill"}
+
+-- locals
+local timer = {
+	weakness = 45,
+	supreme = 45,
+}
+local icon = {
+	supreme = "Spell_Shadow_CurseOfTounges",
+}
+local syncName = {
+	weakness = "OssirianWeakness",
+	crystal = "OssirianCrystal",
+	supreme = "OssirianSupreme",
+}
+
+local currentWeakness = nil
+local timeLastWeaken = nil
+
 
 ------------------------------
 --      Initialization      --
 ------------------------------
 
-function BigWigsOssirian:OnEnable()
-    self.started = nil
+--module:RegisterYellEngage(L["start_trigger"])
+
+-- called after module is enabled
+function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE")
-	self:RegisterEvent("BigWigs_RecvSync")
-	self:TriggerEvent("BigWigs_ThrottleSync", "OssirianWeakness", 10)
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+	
+	self:ThrottleSync(3, syncName.weakness)
+	self:ThrottleSync(3, syncName.crystal)
+	self:ThrottleSync(3, syncName.supreme)
 end
 
-function BigWigsOssirian:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
-	if self.db.profile.supreme and arg1 == L["supremetrigger"] then
-		self:TriggerEvent("BigWigs_Message", L["supremewarn"], "Attention")
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+	timeLastWeaken = GetTime()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+end
+
+
+------------------------------
+--      Event Handlers	    --
+------------------------------
+
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	BigWigs:CheckForBossDeath(msg, self)
+	
+	-- if the same weakness triggers back to back, the normal combat log entry is missing for the weakness
+	-- this event is triggered 2s later
+	if string.find(msg, L["crystaltrigger"]) then
+		self:Sync(syncName.crystal)
 	end
 end
 
-function BigWigsOssirian:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE( msg )
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE( msg )
 	local _, _, debuffName = string.find(msg, L["debufftrigger"])
 	if debuffName and debuffName ~= L["expose"] and L:HasReverseTranslation(debuffName) then
-		self:TriggerEvent("BigWigs_SendSync", "OssirianWeakness "..L:GetReverseTranslation(debuffName))
+		self:Sync(syncName.weakness .. " " .. L:GetReverseTranslation(debuffName))
 	end
 end
 
-function BigWigsOssirian:BigWigs_RecvSync(sync, debuffKey)
-    if not self.started and sync == "BossEngaged" and rest == self.bossSync then
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
+	if string.find(msg, L["supremetrigger"]) then
+		self:Sync(syncName.supreme)
+	end
+end
+
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.weakness and rest then
+		self:Weakness(rest)
+	elseif sync == syncName.crystal then
+		self:Crystal()
+	elseif sync == syncName.supreme then
+		self:Supreme()
+	end
+end
+
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:Weakness(weakness, delay)
+	if not weakness then
+        return
     end
-	if sync ~= "OssirianWeakness" or not debuffKey or not L:HasTranslation(debuffKey) then return end
+    if not delay then
+		delay = 0
+	end
+	
+	timeLastWeaken = GetTime()
+	currentWeakness = weakness
 
 	if self.db.profile.debuff then
-		self:TriggerEvent("BigWigs_Message", string.format(L["debuffwarn"], L[debuffKey]), "Important")
+		self:Message(string.format(L["debuffwarn"], L[tostring(weakness)]), "Important")
+		self:Bar(L[weakness], timer.weakness - delay, L[weakness .. "Icon"])
 	end
 
-	self:CancelScheduledEvent("bwossiriansupreme1")
-	self:CancelScheduledEvent("bwossiriansupreme2")
-	self:CancelScheduledEvent("bwossiriansupreme3")
-	self:TriggerEvent("BigWigs_StopBar", self, L["bartext"])
+	self:RemoveBar(L["supreme_bar"])
+	self:CancelDelayedMessage(string.format(L["supremedelaywarn"], 15))
+	self:CancelDelayedMessage(string.format(L["supremedelaywarn"], 10))
+	self:CancelDelayedMessage(string.format(L["supremedelaywarn"], 5))
 
 	if self.db.profile.supreme then
-		self:ScheduleEvent("bwossiriansupreme1", "BigWigs_Message", 30, string.format(L["supremedelaywarn"], 15), "Attention")
-		self:ScheduleEvent("bwossiriansupreme2", "BigWigs_Message", 35, string.format(L["supremedelaywarn"], 10), "Urgent")
-		self:ScheduleEvent("bwossiriansupreme3", "BigWigs_Message", 40, string.format(L["supremedelaywarn"], 5), "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, L["bartext"], 45, "Interface\\Icons\\Spell_Shadow_CurseOfTounges")
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 15), "Attention")
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 10), "Urgent")
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 5), "Important")
+		self:Bar(L["supreme_bar"], timer.supreme - delay, icon.supreme)
 	end
 end
 
+function module:Crystal()
+	if timeLastWeaken + 3 < GetTime() then -- crystal trigger occurs 2s after weaken trigger
+		self:Weakness(currentWeakness, 2)
+	end
+end
+
+function module:Supreme()
+	if self.db.profile.supreme then
+		self:Message(L["supremewarn"], "Attention", nil, "Beware")
+	end
+end
