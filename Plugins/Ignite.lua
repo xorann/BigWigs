@@ -38,6 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Owner"] = true,
 	["Threat"] = true,
 	["n/a"] = true, -- no threat data available
+    ["your"] = true,
 	
 	vulnerability_direct_test = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)", -- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
 	direct_test = "^[%w]+[%s's]* ([%w%s:]+) crits [%w] for ([%d]+) Fire damage.", -- [Skrilla]['s] [Fireball] crits [Battleguard Sartura] for [3423] Fire damage.
@@ -189,10 +190,10 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
 	--local name, s, spell, hitType, victim, dmg = string.find(msg, L["direct_test"]) 
     
     -- check for fire spell crit
-    local fire_test = "^([%w]+)'s ([%w%s:]+) crits ([%w%s:]+) for ([%d]+) ([%w]+) damage."
-    local start, ending, name, spell, victim, dmg, school = string.find(msg, fire_test) 
+    local fire_test = "^([%w]+)([%s's]*) ([%w%s:]+) crits ([%w%s:]+) for ([%d]+) ([%w]+) damage."
+    local start, ending, name, _, spell, victim, dmg, school = string.find(msg, fire_test) 
 	if self:IsMage(name) and self:IsIgniteSpell(spell) and UnitName("target") == victim then
-		self:DebugMessage("mage fire spell crit")
+		self:DebugMessage("mage fire spell crit: " .. name .. " " .. spell .. " " .. victim)
 	end
     
     -- check for ignite stacks
@@ -209,9 +210,12 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
     end
     
     -- check for ignite damage
-    local ignite_test = "^([%w%s:]+) suffers ([%d]+) Fire damage from ([%w]+)'s Ignite."
+    local ignite_test = "^([%w%s:]+) suffers ([%d]+) Fire damage from ([%w]+)([%s's]*) Ignite."
     local start, ending, victim, damage, owner = string.find(msg, ignite_test)
     if victim and damage and owner then
+        if owner == L["your"] then
+            owner = UnitName("player")
+        end
         self:DebugMessage("Ignite damage: owner: " .. owner .. " damage: " .. damage .. " victim: " .. victim)
         self.owner = owner
         self.damage = damage
@@ -232,8 +236,10 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
     end
     
     -- /run BigWigsIgnite:PlayerDamageEvents("Coyra's Fireball crits Ragged Timber Wolf for 3423 Fire damage.")
+    -- /run BigWigs:Print(string.find("Coyra's Fireball crits Ragged Timber Wolf for 3423 Fire damage.", "^([%w]+)([%s's]*) ([%w%s:]+) crits ([%w%s:]+) for ([%d]+) ([%w]+) damage."))
     -- /run BigWigsIgnite:PlayerDamageEvents("Ragged Timber Wolf is afflicted by Ignite.")
     -- /run BigWigsIgnite:PlayerDamageEvents("Ragged Timber Wolf suffers 2812 Fire damage from Coyra's Ignite.")
+    -- /run BigWigs:Print(string.find("Ragged Timber Wolf suffers 2812 Fire damage from your Ignite.", "^([%w%s:]+) suffers ([%d]+) Fire damage from ([%w]+)([%s's]*) Ignite."))
     -- /run BigWigsIgnite:PlayerDamageEvents("Ignite fades from Ragged Timber Wolf.")
 end
 
