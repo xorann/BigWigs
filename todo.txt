@@ -24,3 +24,14 @@ Nice to have:
 - AutoReply Plugin
 - LoathebTactical Plugin
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
+- RaidIcon Plugin: Save and reset old raid icon (if a player already had a raid icon before we set one, reset it to the old one after a certain amount of time) (number GetRaidTargetIndex("unit"))
+- Ignite Plugin: 
+	- Track Ignite Stacks
+	- Who owns the Ignite?
+	- compare tank threat to ignite owner threat
+	- clickable frame to send warning to other players
+	KTM
+	Code
+		GUI
+			KTM_RaidGui.lua
+				data, playerCount, threat100 KLHTM_GetRaidData()

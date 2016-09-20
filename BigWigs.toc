@@ -81,6 +81,7 @@ Plugins\AutoReply.lua
 Plugins\Proximity.lua
 Plugins\DousedRunes.lua
 #Plugins\Enrage.lua
+Plugins\Ignite.lua
 
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua
