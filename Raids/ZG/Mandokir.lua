@@ -16,21 +16,21 @@ L:RegisterTranslations("enUS", function() return {
 
     engage_trigger = "feed your souls to Hakkar himself",
 	watch_trigger = "(.+)! I'm watching you!",
-	gaze_trigger = "Bloodlord Mandokir begins to cast Threatening Gaze\.",
-	gazeafflictyou = "You are afflicted by Threatening Gaze\.",
-	gazeafflictother = "(.+) is afflicted by Threatening Gaze\.",
-	gazeendyou = "Threatening Gaze fades from you\.",
-	gazeendother = "Threatening Gaze fades from (.+)\.",
+	gaze_trigger = "Bloodlord Mandokir begins to cast Threatening Gaze.",
+	gazeafflictyou = "You are afflicted by Threatening Gaze.",
+	gazeafflictother = "(.+) is afflicted by Threatening Gaze.",
+	gazeendyou = "Threatening Gaze fades from you.",
+	gazeendother = "Threatening Gaze fades from (.+).",
     gazecast = "Incoming Threatening Gaze!",
 	gazewatchedbar = "Threatening Gaze: %s",
-	enragegain = "Bloodlord Mandokir gains Enrage\.",
-	enragefade = "Enrage fades from Bloodlord Mandokir\.",
+	enragegain = "Bloodlord Mandokir gains Enrage.",
+	enragefade = "Enrage fades from Bloodlord Mandokir.",
 	enragebar = "Enrage",
-	wwgain = "Bloodlord Mandokir gains Whirlwind\.",
-	wwloss = "Whirlwind fades from Bloodlord Mandokir\.",
+	wwgain = "Bloodlord Mandokir gains Whirlwind.",
+	wwloss = "Whirlwind fades from Bloodlord Mandokir.",
 	ww = "Whirlwind",
-	deathyou = "You die\.",
-	deathother = "(.+) dies\.",
+	deathyou = "You die.",
+	deathother = "(.+) dies.",
 	you = "you",
 
 	watched_warning = "You are being watched! Stop everything!",
@@ -65,49 +65,48 @@ L:RegisterTranslations("deDE", function() return {
 
     engage_trigger = "feed your souls to Hakkar himself",
 	watch_trigger = "(.+)! I'm watching you!",
-	gaze_trigger = "Bloodlord Mandokir beginnt Bedrohlicher Blick zu wirken\.",
-	gazeafflictyou = "Ihr seid von Bedrohlicher Blick betroffen\.",
-	gazeafflictother = "(.+) ist von Bedrohlicher Blick betroffen\.",
-	gazeendyou = "\'Bedrohlicher Blick\' schwindet von Euch\.",
-	gazeendother = "Bedrohlicher Blick schwindet von (.+)\.",
+	gaze_trigger = "Bloodlord Mandokir beginnt Bedrohlicher Blick zu wirken.",
+	gazeafflictyou = "Ihr seid von Bedrohlicher Blick betroffen.",
+	gazeafflictother = "(.+) ist von Bedrohlicher Blick betroffen.",
+	gazeendyou = "'Bedrohlicher Blick' schwindet von Euch.",
+	gazeendother = "Bedrohlicher Blick schwindet von (.+).",
     gazecast = "Bedrohlicher Blick kommt!",
 	gazewatchedbar = "Bedrohlicher Blick: %s",
-	enragegain = "Bloodlord Mandokir bekommt \'Wutanfall\'\.",
-	enragefade = "Wutanfall schwindet von Bloodlord Mandokir\.",
+	enragegain = "Bloodlord Mandokir bekommt 'Wutanfall'.",
+	enragefade = "Wutanfall schwindet von Bloodlord Mandokir.",
 	enragebar = "Wutanfall",
-	wwgain = "Bloodlord Mandokir bekommt \'Wirbelwind\'\.",
+	wwgain = "Bloodlord Mandokir bekommt 'Wirbelwind'.",
 	wwloss = "Wirbelwind schwindet von Bloodlord Mandokir\.",
 	ww = "Wirbelwind",
-	deathyou = "Du stirbst\.",
-	deathother = "(.+) stirbt\.",
+	deathyou = "Du stirbst.",
+	deathother = "(.+) stirbt.",
 	you = "Euch",
 
 	watched_warning = "Du wirst beobachtet! Stoppen Sie alles!",
 	watched_warning_tell = "You are being watched! Stop everything!",
 	watched_warning_other = "%s wird beobachtet!",
-	enraged_message = "Ohgan ist tot! Mandokir w\195\188tend!",	
+	enraged_message = "Ohgan ist tot! Mandokir wütend!",	
 
 	announce_cmd = "whispers",
 	announce_name = "Warnung, wenn Spieler beobachtet werden",
-	announce_desc = "Warnen, wenn Bloodlord Mandokir wirft Bedrohlicher Blick\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
+	announce_desc = "Warnen, wenn Bloodlord Mandokir wirft Bedrohlicher Blick\n\n(Benötigt Schlachtzugleiter oder Assistent)",
 
 	puticon_cmd = "puticon",
 	puticon_name = "Schlachtzugsymbol auf die beobachtet Spieler",
-	puticon_desc = "Versetzt eine Schlachtzugsymbol auf der beobachteten Spieler.\n\n(Ben\195\182tigt Schlachtzugleiter oder Assistent)",
+	puticon_desc = "Versetzt eine Schlachtzugsymbol auf der beobachteten Spieler.\n\n(Benötigt Schlachtzugleiter oder Assistent)",
 	
 	gaze_cmd = "gaze",
-	gaze_name = "Alarm f\195\188r Bedrohlicher Blick",
-	gaze_desc = "Zeigt Balken f\195\188r Bedrohlicher Blick",
+	gaze_name = "Alarm für Bedrohlicher Blick",
+	gaze_desc = "Zeigt Balken für Bedrohlicher Blick",
 
 	whirlwind_cmd = "whirlwind",
-	whirlwind_name = "Alarm f\195\188r Wirbelwind",
-	whirlwind_desc = "Zeigt Balken f\195\188r Wirbelwind",
+	whirlwind_name = "Alarm für Wirbelwind",
+	whirlwind_desc = "Zeigt Balken für Wirbelwind",
 
 	enraged_cmd = "enraged",
-	enraged_name = "Verk\195\188ndet Boss' Raserei",
-	enraged_desc = "L\195\164sst dich wissen, wenn Boss h\195\164rter zuschl\195\164gt",
+	enraged_name = "Verkündet Boss' Raserei",
+	enraged_desc = "Lässt dich wissen, wenn Boss härter zuschlägt",
 } end )
-
 
 
 ---------------------------------
@@ -125,7 +124,9 @@ module.toggleoptions = {"gaze", "announce", "puticon", "whirlwind", "enraged", "
 local timer = {
 	firstCharge = 15,
 	firstWhirlwind = 20,
-	firstGaze = 33,
+	firstGaze = 29.5,
+	
+	gaze = 28.1,
 }
 local icon = {
 	charge = "Ability_Warrior_Charge",
@@ -141,6 +142,20 @@ local syncName = {
 	gazeAfflicted = "MandokirGazeAfflict",
 	gazeOver = "MandokirGazeEnd",
 }
+
+--[[
+				9/16 22:28:16.440  Dorg's Shield Slam hits Bloodlord Mandokir for 264. -- engage
+				
+	Line 19212: 9/16 22:28:32.884  Bloodlord Mandokir gains Whirlwind.	16.4
+	Line 20100: 9/16 22:28:56.912  Bloodlord Mandokir gains Whirlwind.	24.1
+	Line 21416: 9/16 22:29:38.798  Bloodlord Mandokir gains Whirlwind.	41.9
+	Line 22221: 9/16 22:30:02.966  Bloodlord Mandokir gains Whirlwind.	24.1
+	
+	Line 19709: 9/16 22:28:45.869  Bloodlord Mandokir begins to cast Threatening Gaze. 	29.5
+	Line 20694: 9/16 22:29:13.993  Bloodlord Mandokir begins to cast Threatening Gaze.	28.1
+	Line 21512: 9/16 22:29:42.084  Bloodlord Mandokir begins to cast Threatening Gaze.	28.1
+	Line 22455: 9/16 22:30:10.189  Bloodlord Mandokir begins to cast Threatening Gaze.	28.1
+]]
 
 
 ------------------------------
@@ -228,14 +243,14 @@ function module:Event(msg)
 		self:Sync(syncName.gazeCast)
 	elseif msg == L["gazeafflictyou"] then
 		gazetime = GetTime()
-		self:Sync("MandokirGazeAfflict "..UnitName("player"))
+		self:Sync(syncName.gazeAfflicted .. " " .. UnitName("player"))
 	elseif gazedplayer then
 		gazetime = GetTime()
-		self:Sync("MandokirGazeAfflict "..gazedplayer)
+		self:Sync(syncName.gazeAfflicted .. " " .. gazedplayer)
 	elseif msg == L["gazeendyou"] then
-		self:Sync("MandokirGazeEnd "..UnitName("player"))
-	elseif gazedplayerend and gazedplayerend~=L["you"] then
-		self:Sync("MandokirGazeEnd "..gazedplayerend)
+		self:Sync(syncName.gazeOver .. " " .. UnitName("player"))
+	elseif gazedplayerend and gazedplayerend ~= L["you"] then
+		self:Sync(syncName.gazeOver .. " " .. gazedplayerend)
 	--elseif msg == L["deathyou"] then
 	--	self:Sync("MandokirGazeEnd "..UnitName("player"))
 	--elseif gazeddeathend then
@@ -272,6 +287,6 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.puticon then
 			self:RemoveIcon(rest)
 		end
-        self:Bar("Next Gaze", 11, icon.gaze)
+        self:Bar("Next Gaze", timer.gaze, icon.gaze)
 	end
 end
