@@ -308,13 +308,13 @@ function BigWigsMessages:SetupFrames()
 	self.frames.cheader:ClearAllPoints()
 	self.frames.cheader:SetPoint("TOP", self.frames.anchor, "TOP", 0, -10)
 
+    
 	self.frames.leftbutton = CreateFrame("Button", nil, self.frames.anchor)
 	self.frames.leftbutton.owner = self
 	self.frames.leftbutton:SetWidth(40)
 	self.frames.leftbutton:SetHeight(25)
 	self.frames.leftbutton:SetPoint("RIGHT", self.frames.anchor, "CENTER", -10, -15)
 	self.frames.leftbutton:SetScript( "OnClick", function()  self:TriggerEvent("BigWigs_Test") end )
-
 
 	t = self.frames.leftbutton:CreateTexture()
 	t:SetWidth(50)
@@ -341,13 +341,13 @@ function BigWigsMessages:SetupFrames()
 	self.frames.leftbuttontext:SetText(L["Test"])
 	self.frames.leftbuttontext:SetAllPoints(self.frames.leftbutton)
 
+    
 	self.frames.rightbutton = CreateFrame("Button", nil, self.frames.anchor)
 	self.frames.rightbutton.owner = self
 	self.frames.rightbutton:SetWidth(40)
 	self.frames.rightbutton:SetHeight(25)
 	self.frames.rightbutton:SetPoint("LEFT", self.frames.anchor, "CENTER", 10, -15)
 	self.frames.rightbutton:SetScript( "OnClick", function() self:BigWigs_HideAnchors() end )
-
 
 	t = self.frames.rightbutton:CreateTexture()
 	t:SetWidth(50)

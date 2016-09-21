@@ -60,6 +60,7 @@ local timer = {
 }
 local icon = {
 	worm = "Spell_Shadow_UnholyFrenzy",
+	entangle = "Spell_Nature_Web",
 }
 local syncName = {
 	worm = "FankrissWormSpawn",
@@ -115,7 +116,8 @@ end
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.entangle then
-        self:Message(L["entanglewarn"], "Alarm", true, "Alarm")    
+        self:Message(L["entanglewarn"], "Urgent", true, "Alarm")
+		self:WarningSign(icon.entangle, 2)
     elseif sync == syncName.worm then 
 		if not rest then return end
 		rest = tonumber(rest)

@@ -54,8 +54,9 @@ local unsupportedRaids  = {
     "Ahn'Qiraj",
     "Naxxramas"
 }
-local footageRequested  = false
-local prefix            = "|cf75DE52f[BigWigs]|r - ";
+local footageRequested  	= false
+local BigWigsContributeFlag = false
+local prefix            	= "|cf75DE52f[BigWigs]|r - ";
 
 
 ----------------------------
@@ -98,10 +99,11 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
         for i=1, table.getn(listOfRaidZones) do
             local area = AceLibrary("Babble-Zone-2.2")[listOfRaidZones[i]]
             if area and area == GetRealZoneText() then
-                --if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved2") then
+                --if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved") then
                     BigWigs:Print(L["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."])
                 --end
                 BigWigsContributeFlag = true
+				break
             end
         end
     end
@@ -113,6 +115,7 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
             if area and area == GetRealZoneText() then
                 BigWigs:Print(L["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs/releases "])
                 footageRequested = true
+				break
             end
         end
     end
