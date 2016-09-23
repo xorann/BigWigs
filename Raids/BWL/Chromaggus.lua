@@ -276,6 +276,8 @@ function module:OnEngage()
 		self:Bar(L["frenzy_Nextbar"], timer.nextFrenzy, icon.frenzy, true, "white") 
 	end
 	self:Bar(format(L["vuln_bar"], "???"), timer.vulnerability, icon.vulnerability)
+    
+    lastVuln = GetTime()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -406,6 +408,7 @@ function module:PlayerDamageEvents(msg)
 		-- Kan's Life Steal crits Battleguard Sartura for 45 Shadow damage. (15 resisted)
 		-- Kan's Lebensdiebstahl trifft Schlachtwache Sartura kritisch für 45 Schattenschaden. (15 widerstanden)
 		
+        
 		if stype and dmg and school then
 			-- german combat log entries for a crit are a bit special (<name> hits <enemy> critically for <x> damage.)
 			if GetLocale() == "deDE" then

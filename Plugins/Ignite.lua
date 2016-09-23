@@ -30,7 +30,6 @@ L:RegisterTranslations("enUS", function() return {
     ["Enabled"] = true,
     ["Enable this plugin"] = true,
     ["Ignite"] = true,
-	["ignite"] = true,
 	["Disabled"] = true,
     ["Options for the ignite Display."] = true,
     ["Show frame"] = true,
@@ -62,6 +61,9 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
+    ["Enabled"] = "Aktiviert",
+    ["Enable this plugin"] = "Dieses Plugin aktivieren",
+    ["Ignite"] = "Entzünden",
 	["Disabled"] = "Deaktivieren",
 	["Options for the ignite Display."] = "Optionen für die Entzündenanzeige",
     ["Show frame"] = "Fenster anzeigen",
@@ -88,7 +90,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Fire Blast"] = "Feuerschlag",
 	["Blastwave"] = "Druckwelle",
 	["Flamestrike"] = "Flammenstoss",
-	["Pyroblast"] = true,
+	["Pyroblast"] = "Pyroschlag",
 } end)
 
 -----------------------------------------------------------------------
@@ -248,6 +250,7 @@ end
 
 -- reset data if you change your target
 function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
+	self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
 	local target = UnitName("target")
 	if target ~= self.target then		
 		self:DataReset()
@@ -311,13 +314,14 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
                         self.stacks = count
                     else
                         self.stacks = 5
+
                     end
 				end
 			end
 		end
         
         self:Update()
-		--return
+		return
     end
     
     -- check for ignite fade
@@ -444,24 +448,39 @@ function BigWigsIgnite:Update()
 end
 
 function BigWigsIgnite:UpdateThreat(name)
-	if name and IsAddOnLoaded("KLHThreatMeter") then
+	if self.owner and UnitExists("targettarget") and UnitIsPlayer("targettarget") and IsAddOnLoaded("KLHThreatMeter") then
+		local name = self.owner
+		local threat = nil
+		local tankThreat = nil
+		local tankName = UnitName("targettarget") -- get tank name
+
+
+
+
+
+
 		local data, playerCount, threat100 = KLHTM_GetRaidData()
-		local okay = false
 		for i = 1, table.getn(data) do
-			if name == data[i].name then
-				self.threat = data[i].threat / threat100 * 100
-				self.threat = tonumber(string.format("%.0f", self.threat))
-				self.threatString = self.threat .. "%"
-				okay = true
+			if tankName == data[i].name then
+				tankThreat = data[i].threat
+			elseif name == data[i].name then
+				threat = data[i].threat
+			end
+			
+			if threat and tankThreat then
 				break
 			end
 		end
-		
-		if okay then
-			-- calculate how long it would take to draw aggro with the current ignite
-			if self.owner and self.damage and self.threat and threat100 then
-				local difference = threat100 - self.threat
-				self.seconds = difference / (self.damage / 2) -- todo: threat multiplier, calculate for 130% instead of 100%?
+
+		-- calculate how long it would take to draw aggro with the current ignite
+		if threat and tankThreat then
+			self.threat = threat / tankThreat * 100
+			self.threat = tonumber(string.format("%.0f", self.threat))
+			self.threatString = self.threat .. "%"
+			
+			if self.damage then
+				local difference = tankThreat - threat
+				self.seconds = difference / (self.damage / 2 * 0.7)
 				self.seconds = tonumber(string.format("%.0f", self.seconds))
 				self.seconds = "(" .. self.seconds .. "s)"
 			end
