@@ -27,6 +27,8 @@ local syncName = {
 -----------------------------------------------------------------------
 
 L:RegisterTranslations("enUS", function() return {
+    ["Enabled"] = true,
+    ["Enable this plugin"] = true,
     ["Ignite"] = true,
 	["ignite"] = true,
 	["Disabled"] = true,
@@ -100,11 +102,13 @@ BigWigsIgnite.defaultDB = {
     posx = nil,
 	posy = nil,
     isVisible = nil,
+    isEnabled = nil,
 }
 BigWigsIgnite.stacks = 0
 BigWigsIgnite.damage = 0
 BigWigsIgnite.owner = ""
 BigWigsIgnite.threat = 0
+BigWigsIgnite.threatString = ""
 BigWigsIgnite.seconds = nil
 BigWigsIgnite.target = nil
 
@@ -148,8 +152,23 @@ BigWigsIgnite.consoleOptions = {
             type = "execute",
 			name = L["Reset position"],
 			desc = L["Reset the frame position."],
-			order = 103,
+			order = 101,
 			func = function() BigWigsIgnite:ResetPosition() end,
+        },
+        enabled = {
+            type = "toggle",
+            name = L["Enabled"],
+            desc = L["Enable this plugin"],
+            order = 102,
+            get = function() return BigWigsIgnite.db.profile.isEnabled end,
+            set = function(v) 
+                BigWigsIgnite.db.profile.isEnabled = v
+                if v then
+                    BigWigsIgnite:Show()
+                else
+                    BigWigsIgnite:Hide()
+                end
+            end,
         },
 		--[[spacer = {
 			type = "header",
@@ -343,8 +362,10 @@ function BigWigsIgnite:BigWigs_RecvSync(sync, rest, nick)
 end
 
 function BigWigsIgnite:ShowWarning()
-	self:Message("Stop Firespells!", "Urgent", true, "Alarm")
-	frame:SetBackdropColor(200/255, 30/255, 30/255)
+	if self.db.profile.isEnabled then
+        self:Message("Stop Firespells!", "Urgent", true, "Alarm")
+        frame:SetBackdropColor(200/255, 30/255, 30/255)
+    end
 end
 function BigWigsIgnite:HideWarning()
 	frame:SetBackdropColor(24/255, 24/255, 24/255)
@@ -357,7 +378,8 @@ function BigWigsIgnite:DataReset()
 	self.owner = ""
     self.damage = 0
     self.stacks = 0
-	self.threat = L["n/a"]
+    self.threat = 0
+	self.threatString = L["n/a"]
 	self.seconds = nil
 	--self.target = nil
 end
@@ -401,7 +423,7 @@ function BigWigsIgnite:Update()
     text = L["Stacks"] .. ": " .. self.stacks .."\n"
 	text = text .. L["Damage"] .. ": " .. self.damage .."\n"
 	text = text .. L["Owner"] .. ": " .. self.owner .."\n"
-	text = text .. L["Threat"] .. ": " .. self.threat
+	text = text .. L["Threat"] .. ": " .. self.threatString
 	
 	if self.seconds then
 		text = text .. " " .. self.seconds
@@ -429,7 +451,7 @@ function BigWigsIgnite:UpdateThreat(name)
 			if name == data[i].name then
 				self.threat = data[i].threat / threat100 * 100
 				self.threat = tonumber(string.format("%.0f", self.threat))
-				self.threat = self.threat .. "%"
+				self.threatString = self.threat .. "%"
 				okay = true
 				break
 			end
@@ -437,18 +459,20 @@ function BigWigsIgnite:UpdateThreat(name)
 		
 		if okay then
 			-- calculate how long it would take to draw aggro with the current ignite
-			if self.owner and self.damage then
+			if self.owner and self.damage and self.threat and threat100 then
 				local difference = threat100 - self.threat
 				self.seconds = difference / (self.damage / 2) -- todo: threat multiplier, calculate for 130% instead of 100%?
 				self.seconds = tonumber(string.format("%.0f", self.seconds))
 				self.seconds = "(" .. self.seconds .. "s)"
 			end
 		else
-			self.threat = L["n/a"]
+            self.threat = 0
+			self.threatString = L["n/a"]
 			self.seconds = nil
 		end
 	else
-		self.threat = L["n/a"]
+        self.threat = 0
+		self.threatString = L["n/a"]
 		self.seconds = nil
 	end
 end
