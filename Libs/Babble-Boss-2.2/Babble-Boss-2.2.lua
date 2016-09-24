@@ -251,7 +251,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Nefarian"] = "Nefarian",
 		["Vaelastrasz the Corrupt"] = "Vaelastrasz der Verdorbene",
 		["Razorgore the Untamed"] = "Feuerkralle der Ungezähmte",
-		["Broodlord Lashlayer"] = "Brutwächter Lashlayer", -- should be "Brutwächter Dreschbringer" but Nefarian is a strange realm
+		["Broodlord Lashlayer"] = "Brutwächter Dreschbringer", -- should be "Brutwächter Dreschbringer" but Nefarian is a strange realm; 2016-09-23: they finally fixed it
 		["Chromaggus"] = "Chromaggus",
 		["Ebonroc"] = "Schattenschwinge",
 		["Firemaw"] = "Feuerschwinge",

@@ -250,7 +250,7 @@ end
 
 -- reset data if you change your target
 function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
-	self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
+	--self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
 	local target = UnitName("target")
 	if target ~= self.target then		
 		self:DataReset()

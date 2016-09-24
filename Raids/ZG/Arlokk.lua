@@ -116,8 +116,6 @@ local syncName = {
 	pantherPhase = "ArlokkPhasePanther",
 }
 
-local berserkannounced = nil
-
 
 ------------------------------
 --      Initialization      --
@@ -130,9 +128,9 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	
-	self:ThrottleSync(3, syncName.berserk)
-	self:ThrottleSync(3, syncName.berserk)
-	self:ThrottleSync(3, syncName.berserk)
+	self:ThrottleSync(3, syncName.trollPhase)
+	self:ThrottleSync(3, syncName.vanishPhase)
+	self:ThrottleSync(3, syncName.pantherPhase)
 end
 
 -- called after module is enabled and after each wipe
@@ -172,7 +170,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		if self.db.profile.puticon then
 			self:Icon(n)
 		end
-		self:Sync(sycnName.vanishPhase)
+		self:Sync(syncName.vanishPhase)
 	end
 end
 
@@ -188,9 +186,9 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-	if sync == sycnName.pantherPhase then
+	if sync == syncName.pantherPhase then
 		self:PantherPhase()
-	elseif sync == sycnName.vanishPhase then
+	elseif sync == syncName.vanishPhase then
 		self:VanishPhase()
 	end
 end
@@ -232,7 +230,7 @@ end
 
 function module:CheckUnvanish()
 	if UnitExists("target") and UnitName("target") == "High Priestess Arlokk" and UnitExists("targettarget") then
-		self:Sync(sycnName.pantherPhase)
+		self:Sync(syncName.pantherPhase)
 		self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 		return
 	end
@@ -240,7 +238,7 @@ function module:CheckUnvanish()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
 		if UnitExists(raidUnit) and UnitName(raidUnit) == "High Priestess Arlokk" and UnitExists(raidUnit.."target") then
-			self:Sync(sycnName.pantherPhase)
+			self:Sync(syncName.pantherPhase)
 			self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 			return
 		end
@@ -258,5 +256,5 @@ function module:CheckVanish()
 			return
 		end
 	end
-	self:Sync(sycnName.vanishPhase)
+	self:Sync(syncName.vanishPhase)
 end

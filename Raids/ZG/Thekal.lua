@@ -279,13 +279,13 @@ end
 function module:CheckForBossDeath()
 	if self.phase == 2 then
 		BigWigs:CheckForBossDeath()
-	else
-        self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
+    elseif msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
+        self:Sync(syncName.phase2)
     end
 end
 function module:CHAT_MSG_MONSTER_YELL(msg) -- yell missing on nefarian, workaround in CheckForBossDeath function
     if string.find(msg, L["phase2_trigger"]) then
-        self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
+        self:Sync(syncName.phase2)
     end
 end
 
@@ -296,19 +296,19 @@ function module:Event(msg)
 	if msg == L["tigers_trigger"] then
 		self:TriggerEvent("BigWigs_Message", L["tigers_message"], "Important")
 	elseif msg == L["heal_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.heal)
+		self:Sync(syncName.heal)
 	elseif msg == L["silenceself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.silence .. " "..UnitName("player"))
+		self:Sync(syncName.silence .. " "..UnitName("player"))
 	elseif silenceother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.silence .. " "..silenceother_triggerword)
+		self:Sync(syncName.silence .. " "..silenceother_triggerword)
 	elseif msg == L["disarmself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.disarm .. " "..UnitName("player"))
+		self:Sync(syncName.disarm .. " "..UnitName("player"))
 	elseif disarmother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.disarm .. " "..disarmother_triggerword)
+		self:Sync(syncName.disarm .. " "..disarmother_triggerword)
 	elseif msg == L["mortalcleaveself_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.mortalcleave .. " "..UnitName("player"))
+		self:Sync(syncName.mortalcleave .. " "..UnitName("player"))
 	elseif mortalcleaveother_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.mortalcleave .. " "..mortalcleaveother_triggerword)
+		self:Sync(syncName.mortalcleave .. " "..mortalcleaveother_triggerword)
 	elseif msg == L["thekalrescast_trigger"] then
 		if zathdead and lorkhandead then
 			self:ScheduleEvent(self.CheckZealots, 2, self)
@@ -324,7 +324,7 @@ end
 
 function module:CheckZealots()
 	if zathdead and lorkhandead then
-		self:TriggerEvent("BigWigs_SendSync", syncName.phase2)
+		self:Sync(syncName.phase2)
 	else
 		thekaldead = nil
 	end
@@ -360,11 +360,11 @@ end
 function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	local _,_,bloodlustgainword = string.find(msg, L["bloodlustgain"])
 	if msg == L["frenzybegin_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.frenzy)
+		self:Sync(syncName.frenzy)
 	elseif msg == L["enrage_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.enrage)
+		self:Sync(syncName.enrage)
 	elseif bloodlustgainword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.bloodlust .. " "..bloodlustgainword)
+		self:Sync(syncName.bloodlust .. " "..bloodlustgainword)
 	end
 end
 
@@ -372,13 +372,13 @@ function module:Fades(msg)
 	local _,_,silenceotherend_triggerword = string.find(msg, L["silenceotherend_trigger"])
 	local _,_,bloodlustendword = string.find(msg, L["bloodlustend"])
 	if bloodlustendword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.bloodlustOver .. " "..bloodlustendword)
+		self:Sync(syncName.bloodlustOver .. " "..bloodlustendword)
 	elseif msg == L["silenceselfend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.silenceOver .. " "..UnitName("player"))
+		self:Sync(syncName.silenceOver .. " "..UnitName("player"))
 	elseif silenceotherend_triggerword then
-		self:TriggerEvent("BigWigs_SendSync", syncName.silenceOver .. " "..silenceotherend_triggerword)
+		self:Sync(syncName.silenceOver .. " "..silenceotherend_triggerword)
 	elseif msg == L["frenzyend_trigger"] then
-		self:TriggerEvent("BigWigs_SendSync", syncName.frenzyOver)
+		self:Sync(syncName.frenzyOver)
 	end
 end
 

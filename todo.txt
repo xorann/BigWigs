@@ -1,7 +1,7 @@
 Important:
+- Proximity: Color for Druids: |cffFF7CAGleichmut
 - improve configuration for warnicon
 - verify german translations for all MC, BWL and AQ40 boss modules
-- chromaggus vulnerability check for german client
 		
 Nice to have:
 - refactoring of all ZG and AQ20 boss modules
