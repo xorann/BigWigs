@@ -3,7 +3,7 @@
 --      Module Declaration      --
 ----------------------------------
 
-local module, L = BigWigs:ModuleDeclaration("Jin'do the Hexxer", "Naxxramas")
+local module, L = BigWigs:ModuleDeclaration("Jin'do the Hexxer", "Zul'Gurub")
 
 
 ----------------------------
@@ -12,8 +12,8 @@ local module, L = BigWigs:ModuleDeclaration("Jin'do the Hexxer", "Naxxramas")
 
 L:RegisterTranslations("enUS", function() return {
     engage_trigger      = "Welcome to da great show friends",
-	triggerbrainwash = "afflicted by Brain Wash.$", -- Jin'do the Hexxer casts Summon Brain Wash Totem. stupid workaround
-	triggerhealing = "Jin'do the Hexxer casts Powerful Healing Ward.", -- NOTHING to detect this totem spawn in combatlog. Not even mana usage from the boss.
+	triggerbrainwash = "Jin'do the Hexxer casts Summon Brain Wash Totem.",
+	triggerhealing = "Jin'do the Hexxer casts Powerful Healing Ward.",
 	curseself_trigger = "You are afflicted by Delusions of Jin'do.",
 	curseother_trigger = "(.+) is afflicted by Delusions of Jin'do.",
 	hexself_trigger = "You are afflicted by Hex.",
@@ -27,6 +27,8 @@ L:RegisterTranslations("enUS", function() return {
 	healing_death = "Powerful Healing Ward dies.",
 	brainwash_bar = "Brain Wash Totem",
 	healing_bar = "Powerful Healing Ward",
+    brainwash_next_bar = "Next Brain Wash Totem",
+	healing_next_bar = "Next Powerful Healing Ward",
 	hex_bar = "Hex: %s",
 	cursewarn_message = "You are cursed! Kill the Shades!",
 	cursewarn_warning = "%s is cursed!",
@@ -72,6 +74,8 @@ L:RegisterTranslations("deDE", function() return {
 	healing_death = "Powerful Healing Ward stirbt.",
 	brainwash_bar = "Gehirnw\195\164schetotem",
 	healing_bar = "M\195\164chtiger Heilungszauberschutz",
+    brainwash_next_bar = "Nächstes Gehirnw\195\164schetotem",
+	healing_next_bar = "Nächster M\195\164chtiger Heilungszauberschutz",
 	hex_bar = "Verhexung: %s",
 	cursewarn_message = "Du bist verflucht! T\195\182te die Schemengestalten!",
 	cursewarn_warning = "%s ist verflucht!",
@@ -106,7 +110,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"curse", "hex", "brainwash", "healingward", "puticon", "bosskill"}
@@ -117,6 +121,8 @@ local timer = {
 	firstHex = 8,
 	firstHealing = 12,
 	firstBrainwash = 21,
+    healing = 18, -- varies from 16.9 to 18.6
+    brainwash = 25, -- varies from 22.9 to 26.8
 	healingUptime = 240,
 	brainwashUptime = 240,
 	hex = 5,
@@ -194,11 +200,14 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 end
  
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
-	--[[if self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then -------------- seriously WTB fix for combat log events
-		self:Message(L["warnbrainwash"], "Urgent")
-	else]]if self.db.profile.healingward and msg == L["triggerhealing"] then -------------- seriously WTB fix for combat log events. #RIP healing totem trigger
+    if self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
+		self:Message(L["warnbrainwash"], "Attention", true, "Alarm")
+		self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")
+        self:Bar(L["brainwash_next_bar"], timer.brainwash, icon.brainwash)
+	elseif self.db.profile.healingward and msg == L["triggerhealing"] then
 		self:Message(L["warnhealing"], "Attention", true, "Alarm")
 		self:Bar(L["healing_bar"], timer.healingUptime, icon.healing, true, "Yellow")
+        self:Bar(L["healing_next_bar"], timer.healing, icon.healing)
 	end
 end
 
@@ -213,9 +222,9 @@ function module:Event(msg)
 		self:Sync(syncName.curse .. " "..UnitName("player"))
 	elseif msg == L["hexself_trigger"] then
 		self:Sync(syncName.hex .. " "..UnitName("player"))
-	elseif self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
+	--[[elseif self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
 		self:Message(L["warnbrainwash"], "Attention", true, "Alarm")
-		self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")
+		self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")]]
 	end
 end
 

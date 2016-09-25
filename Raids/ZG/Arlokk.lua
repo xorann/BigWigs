@@ -90,7 +90,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"phase", "whirlwind", "vanish", "mark", "puticon", "bosskill"}
@@ -102,8 +102,9 @@ module.toggleoptions = {"phase", "whirlwind", "vanish", "mark", "puticon", "boss
 
 -- locals
 local timer = {
-	firstVanish = 35,
-	vanish = 44.8,
+	firstVanish = 30,
+	vanish = 8,
+    unvanish = 8,
 	whirlwind = 2,
 }
 local icon = {
@@ -142,6 +143,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:CancelScheduledEvent("checkvanish")
+    self:ScheduleEvent("checkvanish", self.CheckVanish, 5, self)
 	if self.db.profile.phase then
 		self:Message(L["trollphase_message"], "Attention")
 	end
@@ -170,7 +172,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		if self.db.profile.puticon then
 			self:Icon(n)
 		end
-		self:Sync(syncName.vanishPhase)
+		--self:Sync(syncName.vanishPhase)
 	end
 end
 
@@ -201,6 +203,7 @@ function module:PantherPhase()
 	self:CancelScheduledEvent("checkunvanish")
 	if self.db.profile.vanish then
 		self:RemoveBar(L["vanish_bar"])
+        self:Bar(L["vanish_Nextbar"], timer.vanish, icon.vanish)
 	end
 	if self.db.profile.phase then
 		self:Message(L["pantherphase_message"], "Attention")
@@ -218,7 +221,7 @@ function module:VanishPhase()
 		self:Message(L["vanishphase_message"], "Attention")
 	end
 	if self.db.profile.vanish then
-		self:Bar(L["vanish_bar"], timer.vanish, icon.vanish, true, "White")
+		self:Bar(L["vanish_bar"], timer.unvanish, icon.vanish, true, "White")
 	end
 	self:ScheduleRepeatingEvent("checkunvanish", self.CheckUnvanish, 0.5, self)
 end

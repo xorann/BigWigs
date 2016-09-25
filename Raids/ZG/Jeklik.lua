@@ -180,9 +180,9 @@ module.toggleoptions = {"phase", "heal", "flay", "fear", "swarm", "bomb", "annou
 
 -- locals
 local timer = {
-	firstFear = 13,
-	fear = 18,
-	firstSilence = 12,
+	firstFear = 23,
+	fear = 22,
+	firstSilence = 31,
 	healCast = 4,
 	nextHeal = 20,
 	fear2 = 39.5,

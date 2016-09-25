@@ -202,7 +202,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"mc", "puticon", "siphon", "enrage", -1, "aspectjeklik", "aspectvenoxis", "aspectmarli", "aspectthekal", "aspectarlokk", "bosskill"}
@@ -410,7 +410,7 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
     if sync == syncName.bloodSiphon then
         self:BloodSiphon()
-	elseif sync == syncName.mindcontrol then
+	elseif sync == syncName.mindcontrol and rest then
 		self:MindControl(rest)
 
 	-- aspects
@@ -472,7 +472,7 @@ function module:BloodSiphon()
 end
 
 function module:MindControl(rest)
-	if self.db.profile.mc then
+	if self.db.profile.mc and rest then
 		self:DelayedBar(10, L["nextmc_bar"], 11, icon.mindcontrol)
 		self:Bar(string.format(L["mindcontrol_bar"], rest), 10, icon.mindcontrol, true, "White")
 		if rest == UnitName("player") then

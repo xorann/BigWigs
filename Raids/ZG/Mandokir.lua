@@ -57,6 +57,8 @@ L:RegisterTranslations("enUS", function() return {
 	enraged_cmd = "enraged",
 	enraged_name = "Enrage alert",
 	enraged_desc = "Announces the boss' Enrage",
+            
+    ["Possible Gaze"] = true,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -106,6 +108,8 @@ L:RegisterTranslations("deDE", function() return {
 	enraged_cmd = "enraged",
 	enraged_name = "Verkündet Boss' Raserei",
 	enraged_desc = "Lässt dich wissen, wenn Boss härter zuschlägt",
+            
+    ["Possible Gaze"] = "Mögliches Starren"
 } end )
 
 
@@ -114,7 +118,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = { L["ohgan"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"gaze", "announce", "puticon", "whirlwind", "enraged", "bosskill"}
@@ -194,7 +198,7 @@ function module:OnEngage()
 	self:Bar("Charge", timer.firstCharge, icon.charge) 
     -- todo check combat log regarding CHARGE to trigger the ones following the first
     self:Bar("Next Whirlwind", timer.firstWhirlwind, icon.whirlwind)
-    self:Bar("Next Gaze", timer.firstGaze, icon.gaze)
+    self:Bar(L["Possible Gaze"], timer.firstGaze, icon.gaze)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -277,7 +281,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:RemoveBar(L["enragebar"])
 	elseif sync == syncName.gazeCast and self.db.profile.gaze then
 		self:Bar(L["gazecast"], 2, icon.gaze)
-        self:RemoveBar("Next Gaze")
+        self:RemoveBar(L["Possible Gaze"])
 	elseif sync == syncName.gazeAfflicted and self.db.profile.gaze then
 		self:Bar(string.format(L["gazewatchedbar"], rest), 5, icon.gaze, true, "Black")
 	elseif sync == syncName.gazeOver then
@@ -287,6 +291,6 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.puticon then
 			self:RemoveIcon(rest)
 		end
-        self:Bar("Next Gaze", timer.gaze, icon.gaze)
+        self:Bar(L["Possible Gaze"], timer.gaze, icon.gaze)
 	end
 end

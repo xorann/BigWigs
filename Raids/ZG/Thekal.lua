@@ -94,6 +94,8 @@ L:RegisterTranslations("enUS", function() return {
 	phase_cmd = "phase",
 	phase_name = "Phase notification",
 	phase_desc = "Announces the boss' phase transitions.",
+            
+    ["You have slain %s!"] = true,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -180,6 +182,7 @@ L:RegisterTranslations("deDE", function() return {
 	phase_cmd = "phase",
 	phase_name = "Phasen-Benachrichtigung",
 	phase_desc = "Verk\195\188ndet den Phasenwechsel des Bosses.",
+    ["You have slain %s!"] = "Ihr habt %s getötet!",
 } end )
 
 
@@ -188,7 +191,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = {L["roguename"], L["shamanname"]} -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"bloodlust", "silence", "cleave", "heal", "disarm", -1, "phase", "punch", "tigers", "frenzy", "enraged", "bosskill"}
@@ -224,7 +227,7 @@ local berserkannounced = nil
 --      Initialization      --
 ------------------------------
 
---module:RegisterYellEngage(L["start_trigger"])
+module:RegisterYellEngage(L["phase2_trigger"]) -- the phase2 trigger is used on engage on nefarian ...
 
 -- called after module is enabled
 function module:OnEnable()	
@@ -283,11 +286,11 @@ function module:CheckForBossDeath()
         self:Sync(syncName.phase2)
     end
 end
-function module:CHAT_MSG_MONSTER_YELL(msg) -- yell missing on nefarian, workaround in CheckForBossDeath function
+--[[function module:CHAT_MSG_MONSTER_YELL(msg) -- yell missing on nefarian, workaround in CheckForBossDeath function; 2016-09-25: phase2 trigger used as engage trigger ..
     if string.find(msg, L["phase2_trigger"]) then
         self:Sync(syncName.phase2)
     end
-end
+end]]
 
 function module:Event(msg)
 	local _,_,silenceother_triggerword = string.find(msg, L["silenceother_trigger"])
