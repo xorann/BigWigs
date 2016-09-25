@@ -78,7 +78,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"supreme", "debuff", "bosskill"}
@@ -111,7 +111,6 @@ local timeLastWeaken = nil
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE")
-	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	
 	self:ThrottleSync(3, syncName.weakness)
 	self:ThrottleSync(3, syncName.crystal)
@@ -121,6 +120,7 @@ end
 -- called after module is enabled and after each wipe
 function module:OnSetup()
 	timeLastWeaken = GetTime()
+    self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 end
 
 -- called after boss is engaged

@@ -25,11 +25,12 @@ L:RegisterTranslations("enUS", function() return {
 	startwarn = "Moam Engaged! 90 Seconds until adds!",
 	addsbar = "Adds",
 	addsincoming = "Mana Fiends incoming in %s seconds!",
-	addstrigger = "%s drains your mana and turns to stone.",
+	addstrigger = "drains your mana and turns to stone.",
 	addswarn = "Mana Fiends spawned! Moam Paralyzed for 90 seconds!",
 	paralyzebar = "Paralyze",
 	returnincoming = "Moam unparalyzed in %s seconds!",
 	returntrigger = "Energize fades from Moam.",
+    returntrigger2 = "Moam bristles with energy",
 	returnwarn = "Moam unparalyzed! 90 seconds until Mana Fiends!",	
 } end )
 
@@ -45,7 +46,7 @@ L:RegisterTranslations("deDE", function() return {
 
 	addsbar = "Elementare",
 	addsincoming = "Elementare in %s Sekunden!",
-	addstrigger = "%s entzieht Euch Euer Mana und versteinert Euch.",
+	addstrigger = "entzieht Euch Euer Mana und versteinert Euch.",
 	addswarn = "Elementare! Moam in Steinform f\195\188r 90 Sekunden.",
 
 	paralyzebar = "Steinform",
@@ -60,7 +61,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20005 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"adds", "paralyze", "bosskill"}
 
@@ -88,6 +89,7 @@ local firstunparalyze = nil
 -- called after module is enabled
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
+    self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	
 	self:ThrottleSync(10, syncName.paralyze)
@@ -116,17 +118,21 @@ end
 --      Event Handlers	    --
 ------------------------------
 
-function module:CHAT_MSG_MONSTER_EMOTE(msg)
-	if string.find(msg, L["starttrigger"]) then
-		--if self.db.profile.adds then 
-		--	self:Message(L["startwarn"], "Important") 
-		--end
-		--self:Unparalyze()
-		self:SendEngageSync()
-		self:DebugMessage("Moam start emote") -- not sure if this emote even exists on nefarian
-	elseif string.find(msg, L["addstrigger"]) then -- alternative trigger: Moam gains Energize.
+function module:CHAT_MSG_RAID_BOSS_EMOTE(msg)
+    self:DebugMessage("moam raid boss emote: " .. msg)
+    if string.find(msg, L["addstrigger"]) then -- alternative trigger: Moam gains Energize.
 		self:Sync(syncName.paralyze)
+	elseif string.find(msg, L["returntrigger2"]) then
+        self:Sync(syncName.unparalyze)
 	end
+end
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
+    self:DebugMessage("moam monster emote: " .. msg)
+	if string.find(msg, L["addstrigger"]) then -- alternative trigger: Moam gains Energize.
+		self:Sync(syncName.paralyze)
+	elseif string.find(msg, L["returntrigger2"]) then
+        self:Sync(syncName.unparalyze)
+    end
 end
 
 function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
