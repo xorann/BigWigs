@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 --
 -- BigWigs Strategy Module - Common Auras
 --
@@ -17,7 +17,6 @@ local BS = AceLibrary("Babble-Spell-2.2")
 
 local spellStatus = nil
 local lastTank = nil
-local shieldWallDuration = nil
 
 -- Use for detecting instant cast target (Fear Ward)
 local spellTarget = nil
@@ -201,16 +200,6 @@ function BigWigsCommonAuras:OnEnable()
 	if class == "WARRIOR" or class == "DRUID" then
 		self:RegisterEvent("SpellStatus_SpellCastInstant")
 		self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS")
-		if class == "WARRIOR" then
-			local _, _, _, _, currentRank ,_ , _, _ = GetTalentInfo( 3 , 13 )
-			if currentRank == 0 then
-				shieldWallDuration = 10
-			elseif currentRank == 1 then
-				shieldWallDuration = 13
-			else
-				shieldWallDuration = 15
-			end
-		end
 	elseif class == "PRIEST" and race == "Dwarf" then
 		self:RegisterEvent("SpellStatus_SpellCastInstant")
 		--[[self:Hook("CastSpell")
@@ -304,6 +293,15 @@ function BigWigsCommonAuras:SpellStatus_SpellCastInstant(sId, sName, sRank, sFul
 		end
 		self:TriggerEvent("BigWigs_SendSync", "BWCAFW "..targetName)
 	elseif sName == BS["Shield Wall"] then
+        local shieldWallDuration
+        local talentName, _, _, _, currentRank, _, _, _ = GetTalentInfo(3, 13)
+        if currentRank == 0 then
+            shieldWallDuration = 10
+        elseif currentRank == 1 then
+            shieldWallDuration = 13
+        else
+            shieldWallDuration = 15
+        end
 		self:TriggerEvent("BigWigs_SendSync", "BWCASW "..tostring(shieldWallDuration))
 	elseif sName == BS["Last Stand"] then
 		self:TriggerEvent("BigWigs_SendSync", "BWCALS")
