@@ -36,6 +36,8 @@ L:RegisterTranslations("enUS", function() return {
     ["Show the ignite frame."] = true,
     ["Reset position"] = true,
 	["Reset the frame position."] = true,
+    ["Send Stop"] = true,
+    ["Send Stop messages to all raid members"] = true,
     ["font"] = "Fonts\\FRIZQT__.TTF",
 	
 	["Stacks"] = true,
@@ -70,6 +72,8 @@ L:RegisterTranslations("deDE", function() return {
 	["Show the ignite frame."] = "Das Entzündenfenster anzeigen",
     ["Reset position"] = "Position zurücksetzen",
 	["Reset the frame position."] = "Die Fensterposition zurücksetzen (bewegt das Fenster zur Ursprungsposition).",
+    ["Send Stop"] = "Sende Stop",
+    ["Send Stop messages to all raid members"] = "Sende Stop Nachricht an alle Schlachtzugsteilnehmer.",
 	["font"] = "Fonts\\FRIZQT__.TTF",
 	
 	["Stacks"] = "Stapel",
@@ -140,8 +144,16 @@ BigWigsIgnite.consoleOptions = {
             name = L["Show frame"],
             desc = L["Show the ignite frame."],
             order = 100,
-            get = function() return BigWigsIgnite.db.profile.isVisible end,
+            get = function() 
+                if BigWigsIgnite.db.profile.isVisible then
+                    BigWigs:DebugMessage("test true")
+                else
+                    BigWigs:DebugMessage("test false")
+                end
+                return BigWigsIgnite.db.profile.isVisible 
+            end,
             set = function(v) 
+                BigWigs:DebugMessage("hallo")
                 BigWigsIgnite.db.profile.isVisible = v
                 if v then
                     BigWigsIgnite:Show()
@@ -172,6 +184,16 @@ BigWigsIgnite.consoleOptions = {
                 end
             end,
         },
+        stop = {
+            type = "execute",
+            name = L["Send Stop"],
+            desc = L["Send Stop messages to all raid members"],
+            order = 103,
+            func = function() 
+                BigWigs:DebugMessage("going to send stop")
+                BigWigsIgnite:SendStop() 
+            end,
+        }
 		--[[spacer = {
 			type = "header",
 			name = " ",
@@ -222,6 +244,7 @@ end
 -----------------------------------------------------------------------
 
 function BigWigsIgnite:Show()
+    self:DebugMessage("show")
     if not frame then
         self:SetupFrames()
     end
@@ -250,12 +273,12 @@ end
 
 -- reset data if you change your target
 function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
-	--self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
+	self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
 	local target = UnitName("target")
-	if target ~= self.target then		
+	--if target ~= self.target then		
 		self:DataReset()
 		self.target = target
-	end
+	--end
 end
 
 function BigWigsIgnite:PlayerDamageEvents(msg)
@@ -386,6 +409,9 @@ function BigWigsIgnite:DataReset()
 	self.threatString = L["n/a"]
 	self.seconds = nil
 	--self.target = nil
+    
+    self:HideWarning()
+    self:Update()
 end
 
 function BigWigsIgnite:IsMage(aName) 
@@ -496,6 +522,10 @@ function BigWigsIgnite:UpdateThreat(name)
 	end
 end
 
+function BigWigsIgnite:SendStop()
+    self:DebugMessage("send stop")
+    self:Sync(syncName.stop) 
+end
 
 ------------------------------
 --    Create the Frame     --
@@ -565,7 +595,7 @@ function BigWigsIgnite:SetupFrames()
 	stopbutton:SetWidth(40)
 	stopbutton:SetHeight(25)
 	stopbutton:SetPoint("CENTER", frame, "CENTER", 0, -35)
-	stopbutton:SetScript("OnClick", function() self:Sync(syncName.stop) end)
+	stopbutton:SetScript("OnClick", function() self:SendStop() end)
     
     local texture = stopbutton:CreateTexture()
 	texture:SetWidth(50)
