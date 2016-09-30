@@ -5,8 +5,6 @@
 	This is a small plugin to help mages track their ignite stack and hopefully prevents them from drawing aggro.
 --]]
 
--- todo: sulfuron kill doesn't open the window
-
 assert( BigWigs, "BigWigs not found!")
 
 -----------------------------------------------------------------------
@@ -27,8 +25,8 @@ local syncName = {
 -----------------------------------------------------------------------
 
 L:RegisterTranslations("enUS", function() return {
-    ["Enabled"] = true,
-    ["Enable this plugin"] = true,
+    ["Show Warnings"] = true,
+    ["Show Warnings from other players even if the frame is hidden."] = true,
     ["Ignite"] = true,
 	["Disabled"] = true,
     ["Options for the ignite Display."] = true,
@@ -63,8 +61,8 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-    ["Enabled"] = "Aktiviert",
-    ["Enable this plugin"] = "Dieses Plugin aktivieren",
+    ["Show Warnings"] = "Warnungen anzeigen",
+    ["Show Warnings from other players even if the frame is hidden."] = "Warnungen von anderen Spielern anzeigen selbst wenn das Fenster versteckt ist.",
     ["Ignite"] = "Entzünden",
 	["Disabled"] = "Deaktivieren",
 	["Options for the ignite Display."] = "Optionen für die Entzündenanzeige",
@@ -108,7 +106,7 @@ BigWigsIgnite.defaultDB = {
     posx = nil,
 	posy = nil,
     isVisible = nil,
-    isEnabled = nil,
+    showWarnings = nil,
 }
 BigWigsIgnite.stacks = 0
 BigWigsIgnite.damage = 0
@@ -169,14 +167,14 @@ BigWigsIgnite.consoleOptions = {
 			order = 101,
 			func = function() BigWigsIgnite:ResetPosition() end,
         },
-        enabled = {
+        showWarnings = {
             type = "toggle",
-            name = L["Enabled"],
-            desc = L["Enable this plugin"],
+            name = L["Show Warnings"],
+            desc = L["Show Warnings from other players even if the frame is hidden."],
             order = 102,
-            get = function() return BigWigsIgnite.db.profile.isEnabled end,
+            get = function() return BigWigsIgnite.db.profile.showWarnings end,
             set = function(v) 
-                BigWigsIgnite.db.profile.isEnabled = v
+                BigWigsIgnite.db.profile.showWarnings = v
                 if v then
                     BigWigsIgnite:Show()
                 else
@@ -223,7 +221,6 @@ function BigWigsIgnite:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
-    self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	
 	self:SetupFrames()
 
@@ -272,29 +269,14 @@ function BigWigsIgnite:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     end
 end
 
-function BigWigsIgnite:PLAYER_REGEN_ENABLED()
-    self.target = nil
-    self:DataReset()
-end
-
-function BigWigsIgnite:RecheckTargetChange()
-    local target = UnitName("target")
-	if target ~= self.target then
-		self:DataReset()
-		self.target = target
-	end
-end
 -- reset data if you change your target
 function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
-    if not self:IsEventScheduled("IgniteReckeckTargetChange") then
-        self:ScheduleEvent("IgniteReckeckTargetChange", self.RecheckTargetChange, 0.1, self) 
-    end
-	--self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED: " .. msg)
-	--local target = UnitName("target")
+	self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
+	local target = UnitName("target")
 	--if target ~= self.target then		
-	--	self:DataReset()
-	--	self.target = target
-	--end]]
+		self:DataReset()
+		self.target = target
+	--end
 end
 
 function BigWigsIgnite:PlayerDamageEvents(msg)
@@ -381,6 +363,32 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
     -- /run BigWigsIgnite:PlayerDamageEvents("Ragged Timber Wolf suffers 2812 Fire damage from Coyra's Ignite.")
     -- /run BigWigs:Print(string.find("Ragged Timber Wolf suffers 2812 Fire damage from your Ignite.", "^([%w%s:]+) suffers ([%d]+) Fire damage from ([%w]+)([%s's]*) Ignite."))
     -- /run BigWigsIgnite:PlayerDamageEvents("Ignite fades from Ragged Timber Wolf.")
+	
+	-- /run BigWigsIgnite:PlayerDamageEvents("Coyra's Fireball crits Ragged Timber Wolf for 3423 Fire damage.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Ragged Timber Wolf is afflicted by Ignite.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Ragged Timber Wolf suffers 2812 Fire damage from Coyra's Ignite.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Ignite fades from Ragged Timber Wolf.")
+	
+	
+	-- ??: Feuerball trifft Wächter des Anubisath kritisch: 2368 Feuerschaden.
+	-- Coyra's Feuerball trifft Wächter des Anubisath kritisch für 2148 Feuerschaden.
+	-- Wächter des Anubisath ist von Entzünden betroffen.
+	-- Wächter des Anubisath ist von Entzünden (2) betroffen.
+	-- Wächter des Anubisath erleidet 576 Feuerschaden von Coyra (durch Entzünden).
+	-- Entzünden schwindet von Wächter des Anubisath.
+	
+	-- /run BigWigsIgnite:PlayerDamageEvents("Coyra's Feuerball trifft Struppiger Waldwolf kritisch für 2148 Feuerschaden.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Struppiger Waldwolf ist von Entzünden betroffen.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Struppiger Waldwolf ist von Entzünden (2) betroffen.")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Struppiger Waldwolf erleidet 576 Feuerschaden von Coyra (durch Entzünden).")
+	-- /run BigWigsIgnite:PlayerDamageEvents("Entzünden schwindet von Struppiger Waldwolf.")
+	
+	--[[
+	fire_test = "^([%w]+)([%s's]*) ([%w%s:]+) trifft ([%w%s:]+) kritisch für ([%d]+) ([%w]+)schaden.", -- Saandro's Feuerball trifft Wächter des Anubisath kritisch für 2779 Feuerschaden.
+	ignite_stack_test = "^([%w%s:]+) ist von Entzünden [%s%(]*([%d]*) betroffen.",
+	ignite_damage_test = "^([%w%s:]+) erleidet ([%d]+) Feuerschaden von ([%w]+)([%s's]*) (durch Entzünden).",
+	ignite_fade_test = "^Entzünden schwindet von ([%w%s:]+).",
+	]]
 end
 
 --[[
@@ -405,8 +413,8 @@ function BigWigsIgnite:BigWigs_RecvSync(sync, rest, nick)
 end
 
 function BigWigsIgnite:ShowWarning()
-	if self.db.profile.isEnabled then
-        self:Message("Stop Firespells!", "Urgent", true, "Pain")
+	if self.db.profile.isVisible or self.db.profile.showWarnings then
+        self:Message("Stop Firespells!", "Urgent", true, "Alarm")
         frame:SetBackdropColor(200/255, 30/255, 30/255)
     end
 end
@@ -495,11 +503,6 @@ function BigWigsIgnite:UpdateThreat(name)
 		local threat = nil
 		local tankThreat = nil
 		local tankName = UnitName("targettarget") -- get tank name
-
-
-
-
-
 
 		local data, playerCount, threat100 = KLHTM_GetRaidData()
 		for i = 1, table.getn(data) do
@@ -610,7 +613,7 @@ function BigWigsIgnite:SetupFrames()
 	stopbutton.owner = self
 	stopbutton:SetWidth(40)
 	stopbutton:SetHeight(25)
-	stopbutton:SetPoint("CENTER", frame, "CENTER", 0, -40)
+	stopbutton:SetPoint("CENTER", frame, "CENTER", 0, -35)
 	stopbutton:SetScript("OnClick", function() self:SendStop() end)
     
     local texture = stopbutton:CreateTexture()
