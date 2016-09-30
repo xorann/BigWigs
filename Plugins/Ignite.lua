@@ -223,6 +223,7 @@ function BigWigsIgnite:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "PlayerDamageEvents")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	
 	self:SetupFrames()
 
@@ -271,14 +272,29 @@ function BigWigsIgnite:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     end
 end
 
--- reset data if you change your target
-function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
-	self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED")
-	local target = UnitName("target")
-	--if target ~= self.target then		
+function BigWigsIgnite:PLAYER_REGEN_ENABLED()
+    self.target = nil
+    self:DataReset()
+end
+
+function BigWigsIgnite:RecheckTargetChange()
+    local target = UnitName("target")
+	if target ~= self.target then
 		self:DataReset()
 		self.target = target
-	--end
+	end
+end
+-- reset data if you change your target
+function BigWigsIgnite:PLAYER_TARGET_CHANGED(msg)
+    if not self:IsEventScheduled("IgniteReckeckTargetChange") then
+        self:ScheduleEvent("IgniteReckeckTargetChange", self.RecheckTargetChange, 0.1, self) 
+    end
+	--self:DebugMessage("BigWigsIgnite: PLAYER_TARGET_CHANGED: " .. msg)
+	--local target = UnitName("target")
+	--if target ~= self.target then		
+	--	self:DataReset()
+	--	self.target = target
+	--end]]
 end
 
 function BigWigsIgnite:PlayerDamageEvents(msg)
@@ -390,7 +406,7 @@ end
 
 function BigWigsIgnite:ShowWarning()
 	if self.db.profile.isEnabled then
-        self:Message("Stop Firespells!", "Urgent", true, "Alarm")
+        self:Message("Stop Firespells!", "Urgent", true, "Pain")
         frame:SetBackdropColor(200/255, 30/255, 30/255)
     end
 end
@@ -594,7 +610,7 @@ function BigWigsIgnite:SetupFrames()
 	stopbutton.owner = self
 	stopbutton:SetWidth(40)
 	stopbutton:SetHeight(25)
-	stopbutton:SetPoint("CENTER", frame, "CENTER", 0, -35)
+	stopbutton:SetPoint("CENTER", frame, "CENTER", 0, -40)
 	stopbutton:SetScript("OnClick", function() self:SendStop() end)
     
     local texture = stopbutton:CreateTexture()

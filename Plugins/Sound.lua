@@ -30,6 +30,7 @@ local sounds = {
     Ten = "Interface\\AddOns\\BigWigs\\Sounds\\10.ogg",
     
     Murloc = "Sound\\Creature\\Murloc\\mMurlocAggroOld.wav",
+    Pain = "Sound\\Creature\\Thaddius\\THAD_NAXX_ELECT.wav",
 }
 
 
