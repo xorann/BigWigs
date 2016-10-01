@@ -1,4 +1,4 @@
-﻿
+
 assert(BigWigs, "BigWigs not found!")
 
 ------------------------------
@@ -219,8 +219,8 @@ BigWigsRange.consoleOptions = {
 --~~ 				SetCVar("CombatLogRangePartyPet", 50)
 --~~ 				SetCVar("CombatLogRangeFriendlyPlayers", 50)
 --~~ 				SetCVar("CombatLogRangeFriendlyPlayersPets", 50)
-				SetCVar("CombatLogRangeCreature", 30)
-				SetCVar("CombatDeathLogRange", 60)
+				SetCVar("CombatLogRangeCreature", 200)
+				SetCVar("CombatDeathLogRange", 200)
 			end,
 		},
 	},
