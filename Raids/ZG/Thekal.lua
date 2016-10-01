@@ -207,7 +207,7 @@ local icon = {
 	teleport = "Spell_Arcane_Blink",
 }
 local syncName = {
-	phase2 = "ThekalPhaseTwo",
+	phase2 = "ThekalPhaseTwo1",
 	heal = "ThekalLorkhanHeal",
 	frenzy = "ThekalFrenzyStart",
 	frenzyOver = "ThekalFrenzyStop",
@@ -231,7 +231,7 @@ module:RegisterYellEngage(L["phase2_trigger"]) -- the phase2 trigger is used on 
 
 -- called after module is enabled
 function module:OnEnable()	
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL") -- phase transition
+    --self:RegisterEvent("CHAT_MSG_MONSTER_YELL") -- phase transition
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Fades")
