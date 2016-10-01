@@ -30,7 +30,7 @@ L:RegisterTranslations("enUS", function() return {
 	paralyzebar = "Paralyze",
 	returnincoming = "Moam unparalyzed in %s seconds!",
 	returntrigger = "Energize fades from Moam.",
-    returntrigger2 = "Moam bristles with energy",
+    returntrigger2 = "bristles with energy",
 	returnwarn = "Moam unparalyzed! 90 seconds until Mana Fiends!",	
 } end )
 
@@ -90,7 +90,7 @@ local firstunparalyze = nil
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
     self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
+	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 	
 	self:ThrottleSync(10, syncName.paralyze)
 	self:ThrottleSync(10, syncName.unparalyze)
@@ -135,7 +135,7 @@ function module:CHAT_MSG_MONSTER_EMOTE(msg)
     end
 end
 
-function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS( msg )
+function module:CHAT_MSG_SPELL_AURA_GONE_OTHER(msg)
 	if string.find( msg, L["returntrigger"]) then
 		self:Sync(syncName.unparalyze)
 	end
