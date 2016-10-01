@@ -232,6 +232,8 @@ function BigWigsIgnite:OnEnable()
 	if self.db.profile.isVisible then
 		self:Show()
 	end
+    
+    self:ThrottleSync(5, syncName.stop)
 end
 
 function BigWigsIgnite:OnDisable()
