@@ -102,7 +102,7 @@ module.toggleoptions = {"phase", "whirlwind", "vanish", "mark", "puticon", "boss
 
 -- locals
 local timer = {
-	firstVanish = 30,
+	firstVanish = 29,
 	vanish = 8,
     unvanish = 8,
 	whirlwind = 2,
@@ -143,7 +143,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:CancelScheduledEvent("checkvanish")
-    self:ScheduleEvent("checkvanish", self.CheckVanish, 5, self)
+    self:ScheduleEvent("checkvanish", self.CheckVanish, 1, self)
 	if self.db.profile.phase then
 		self:Message(L["trollphase_message"], "Attention")
 	end
@@ -221,6 +221,7 @@ function module:VanishPhase()
 		self:Message(L["vanishphase_message"], "Attention")
 	end
 	if self.db.profile.vanish then
+        self:RemoveBar(L["vanish_Nextbar"])
 		self:Bar(L["vanish_bar"], timer.unvanish, icon.vanish, true, "White")
 	end
 	self:ScheduleRepeatingEvent("checkunvanish", self.CheckUnvanish, 0.5, self)
