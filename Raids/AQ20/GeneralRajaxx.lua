@@ -151,7 +151,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
         end
 	end
     
-    if self.db.profile.wave and msg and string.find(msg, L["trigger2_2"]) and wave ~= 2 then
+    if self.db.profile.wave and msg and string.find(msg, L["trigger2_2"]) and wave == 1 then -- but not "Kill first ..."
         wave = 2
         self:RemoveBar(L["warn2"])
         self:Bar(L["warn3"], timer.wave - 5, icon.wave) -- kill yell around 5s later
