@@ -94,7 +94,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"}
@@ -106,6 +106,7 @@ local timer = {
 }
 local icon = {
 	volley = "Spell_Nature_CorrosiveBreath",
+	toxin = "Spell_Nature_AbolishMagic",
 }
 local syncName = {}
 
@@ -185,8 +186,9 @@ function module:CheckVis(arg1)
 		local _,_, pl, ty = string.find(arg1, L["toxin_trigger"])
 		if (pl and ty) then
 			if self.db.profile.toxinyou and pl == L["you"] and ty == L["are"] then
-				self:Message(L["toxin_self_warn"], "Personal", true)
+				self:Message(L["toxin_self_warn"], "Personal", true, "RunAway")
 				self:Message(UnitName("player") .. L["toxin_warn"], "Important", nil, nil, true)
+				self:WarningSign("Spell_Nature_AbolishMagic", 5)
 			elseif self.db.profile.toxinother then
 				self:Message(pl .. L["toxin_warn"], "Important")
 				--self:TriggerEvent("BigWigs_SendTell", pl, L["toxin_self_warn"]) -- can cause whisper bug on nefarian
