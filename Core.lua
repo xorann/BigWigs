@@ -455,6 +455,22 @@ end
 
 function BigWigs:CheckForWipe(module)    
     if module and module:IsBossModule() then
+		-- prevent reset from someone outside the instance
+		local isInZone = false
+		if type(module.zonename) == "string" and module.zonename == GetRealZoneText() then
+			isInZone = true
+		elseif type(module.zonename) == "table" then
+			for _, v in pairs(module.zonename) do
+				if v == GetRealZoneText() then
+					isInZone = true
+					break
+				end
+			end
+		end
+		if not isInZone then 
+			return
+		end
+		
         --module:DebugMessage("BigWigs." .. module:ToString() .. ":CheckForWipe()")
 
         -- start wipe check in regular intervals
