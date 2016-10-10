@@ -5,10 +5,13 @@
 
 local module, L = BigWigs:ModuleDeclaration("Gehennas", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"adds", "curse", "bosskill"}
 
+module.defaultDB = {
+	adds = false,
+}
 
 ---------------------------------
 --      Module specific Locals --
@@ -128,7 +131,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.curse then
-		self:DelayedMessage(timer.firstCurse - 5, L["curse_warn_soon"], "Urgent")
+		self:DelayedMessage(timer.firstCurse - 5, L["curse_warn_soon"], "Urgent", nil, nil, true)
 		self:Bar(L["curse_bar"], timer.firstCurse, icon.curse)
 	end
 	--self:Bar(L["barNextRain"], timer.firstRain, icon.rain)
@@ -180,13 +183,15 @@ end
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.curse and self.db.profile.curse then
-		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Urgent")
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Urgent", nil, nil, true)
 		self:Bar(L["curse_bar"], timer.curse, icon.curse)
 	elseif sync == syncName.add and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 2 and flamewaker < rest then
             flamewaker = rest
-            self:Message(string.format(L["addmsg"], flamewaker), "Positive")
+			if self.db.profile.adds then
+				self:Message(string.format(L["addmsg"], flamewaker), "Positive")
+			end
         end
 	end
 end

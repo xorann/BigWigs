@@ -5,10 +5,13 @@
 
 local module, L = BigWigs:ModuleDeclaration("Majordomo Executus", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"magic", "dmg", "adds", "bosskill"}
 
+module.defaultDB = {
+	adds = false,
+}
 
 ---------------------------------
 --      Module specific Locals --
@@ -147,7 +150,7 @@ end
 function module:OnEngage()
 	if self.db.profile.magic or self.db.profile.dmg then
 		self:Bar(L["shield_bar"], timer.firstShield, icon.shield)
-		self:DelayedMessage(timer.firstShield - 5, L["shield_warn_soon"], "Urgent")
+		self:DelayedMessage(timer.firstShield - 5, L["shield_warn_soon"], "Urgent", nil, nil, true)
 	end
 	--self:TriggerEvent("BigWigs_StartCounterBar", self, "Priests dead", 4, "Interface\\Icons\\Spell_Holy_BlessedRecovery")
 	--self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - 0.1))
@@ -194,19 +197,23 @@ end
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)    
-    if sync == "DomoHealerDead" and self.db.profile.adds and rest and rest ~= "" then
+    if sync == "DomoHealerDead" and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.hdead < rest then
             self.hdead = rest
-            self:TriggerEvent("BigWigs_Message", string.format(L["hdeadmsg"], self.hdead), "Positive")
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - self.hdead))
+            if self.db.profile.adds then
+				self:TriggerEvent("BigWigs_Message", string.format(L["hdeadmsg"], self.hdead), "Positive")
+				--self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - self.hdead))
+			end
         end
-	elseif sync == "DomoEliteDead" and self.db.profile.adds and rest and rest ~= "" then
+	elseif sync == "DomoEliteDead" and rest and rest ~= "" then
         rest = tonumber(rest)
         if rest <= 4 and self.edead < rest then
             self.edead = rest
-            self:TriggerEvent("BigWigs_Message", string.format(L["edeadmsg"], self.edead), "Positive")
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - self.edead))
+            if self.db.profile.adds then
+				self:TriggerEvent("BigWigs_Message", string.format(L["edeadmsg"], self.edead), "Positive")
+				--self:TriggerEvent("BigWigs_SetCounterBar", self, "Elites dead", (4 - self.edead))
+			end
         end
 	elseif sync == syncName.magic then
 		self:MagicShield()
@@ -227,7 +234,7 @@ function module:MagicShield()
 	end
 	if self.db.profile.magic or self.db.profile.dmg then
 		self:DelayedBar(timer.shieldDuration, L["shield_bar"], timer.shieldInterval - timer.shieldDuration, icon.shield)
-		self:DelayedMessage(timer.shieldInterval - 5, L["shield_warn_soon"], "Urgent")
+		self:DelayedMessage(timer.shieldInterval - 5, L["shield_warn_soon"], "Urgent", nil, nil, true)
 	end
 end
 
@@ -239,6 +246,6 @@ function module:DamageShield()
 	end
 	if self.db.profile.magic or self.db.profile.dmg then
 		self:DelayedBar(timer.shieldDuration, L["shield_bar"], timer.shieldInterval - timer.shieldDuration, icon.shield)
-		self:DelayedMessage(timer.shieldInterval - 5, L["shield_warn_soon"], "Urgent")
+		self:DelayedMessage(timer.shieldInterval - 5, L["shield_warn_soon"], "Urgent", nil, nil, true)
 	end
 end

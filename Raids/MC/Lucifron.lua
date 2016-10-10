@@ -5,11 +5,14 @@
 
 local module, L = BigWigs:ModuleDeclaration("Lucifron", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 
 module.toggleoptions = {"adds", "curse", "doom", "shock", "mc", "bosskill"}
 
+module.defaultDB = {
+	adds = false,
+}
 
 ---------------------------------
 --      Module specific Locals --
@@ -184,11 +187,11 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.curse then
-		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention")
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention", nil, nil, true)
 		self:Bar(L["curse_bar"], timer.curse, icon.curse)
 	end
 	if self.db.profile.doom then
-		self:DelayedMessage(timer.firstDoom - 5, L["doom_warn_soon"], "Attention")
+		self:DelayedMessage(timer.firstDoom - 5, L["doom_warn_soon"], "Attention", nil, nil, true)
 		self:Bar(L["doom_bar"], timer.firstDoom, icon.doom)
 	end
 	self:Sync("LucifronShock")
@@ -242,10 +245,10 @@ end
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.curse and self.db.profile.curse then
-		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention")
+		self:DelayedMessage(timer.curse - 5, L["curse_warn_soon"], "Attention", nil, nil, true)
 		self:Bar(L["curse_bar"], timer.curse, icon.curse)
 	elseif sync == syncName.doom and self.db.profile.doom then
-		self:DelayedMessage(timer.doom - 5, L["doom_warn_soon"], "Attention")
+		self:DelayedMessage(timer.doom - 5, L["doom_warn_soon"], "Attention", nil, nil, true)
 		self:Bar(L["doom_bar"], timer.doom, icon.doom)
 	elseif sync == syncName.shock and self.db.profile.shock then
 		--self:Bar(L["shock_bar"], 6, "Spell_Shadow_Shadowbolt")

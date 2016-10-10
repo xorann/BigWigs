@@ -171,7 +171,7 @@ function module:Panic(delay)
 			self:Message(L["feartime"], "Important")
 		end
 	
-		self:DelayedMessage(timer.panic - 5 + delay, L["fearsoon"], "Urgent")		
+		self:DelayedMessage(timer.panic - 5 + delay, L["fearsoon"], "Urgent", nil, nil, true)		
 		self:Bar(L["fearbar"], timer.panic + delay, icon.panic)
 		
 		if playerClass == "WARRIOR" then

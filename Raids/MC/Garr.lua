@@ -5,11 +5,14 @@
 
 local module, L = BigWigs:ModuleDeclaration("Garr", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = nil
 module.toggleoptions = {"adds", "bosskill"}
 
+module.defaultDB = {
+	adds = false,
+}
 
 ---------------------------------
 --      Module specific Locals --
@@ -146,8 +149,10 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         
         if self.adds < newCount then
             self.adds = newCount
-            self:Message(L["addmsg"..newCount], "Positive")
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - newCount))
+            if self.db.profile.adds then
+				self:Message(L["addmsg" .. newCount], "Positive")
+				--self:TriggerEvent("BigWigs_SetCounterBar", self, L["counterbarMsg"], (8 - newCount))
+			end
         end
     end
 end

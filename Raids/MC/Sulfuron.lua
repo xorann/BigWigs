@@ -5,10 +5,13 @@
 
 local module, L = BigWigs:ModuleDeclaration("Sulfuron Harbinger", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"heal", "adds", "knockback", "bosskill"}
 
+module.defaultDB = {
+	adds = false,
+}
 
 ---------------------------------
 --      Module specific Locals --
@@ -180,8 +183,10 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         rest = tonumber(rest)
         if rest <= 4 and deadpriests < rest then
             deadpriests = rest
-            self:Message(string.format(L["addmsg"], deadpriests), "Positive")
-            --self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - deadpriests))
+            if self.db.profile.adds then
+				self:Message(string.format(L["addmsg"], deadpriests), "Positive")
+				--self:TriggerEvent("BigWigs_SetCounterBar", self, "Priests dead", (4 - deadpriests))
+			end
         end
 	elseif sync == syncName.heal and self.db.profile.heal then		
 		self:Message(L["healwarn"], "Attention", true, "Alarm")

@@ -220,7 +220,7 @@ function module:Event(msg)
 		self:Sync(syncName.bomb)
 		if self.db.profile.bomb then
 			self:Bar(string.format(L["bomb_bar1"], UnitName("player")), timer.bomb, icon.bomb)
-			self:Message(L["bomb_message_youscreen"], "Attention", "Alarm")
+			self:Message(L["bomb_message_youscreen"], "Attention", "RunAway")
 		end
 		if self.db.profile.icon then
 			self:Icon(UnitName("player"))
@@ -302,7 +302,7 @@ function module:Inferno()
 			self:DelayedBar(timer.inferno, L["inferno_bar"], timer.nextInferno - timer.inferno, icon.inferno)
 		end
 	
-		self:DelayedMessage(timer.nextInferno - 5, L["nextinferno_message"], "Urgent")
+		self:DelayedMessage(timer.nextInferno - 5, L["nextinferno_message"], "Urgent", nil, nil, true)
 	end
 	
 	firstinferno = false

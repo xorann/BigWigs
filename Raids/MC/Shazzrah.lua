@@ -267,7 +267,7 @@ function module:Blink()
         self:Message(L["blink_warn"], "Important")
         self:Bar(L["blink_bar"], timer.blink, icon.blink)
         
-        self:DelayedMessage(timer.blink - 5, L["blink_soon_warn"], "Attention", "Alarm")
+        self:DelayedMessage(timer.blink - 5, L["blink_soon_warn"], "Attention", "Alarm", nil, nil, true)
     end
     
     self:DelayedSync(timer.blink, syncName.blink)
