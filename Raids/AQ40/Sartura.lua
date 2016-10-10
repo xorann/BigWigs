@@ -34,7 +34,7 @@ L:RegisterTranslations("enUS", function() return {
 	whirlwindonwarn = "Whirlwind!",
 	whirlwindoffwarn = "Whirlwind ended!",
 	whirlwindbartext = "Whirlwind",
-	whirlwindnextbartext = "Next Whirlwind",
+	whirlwindnextbartext = "Possible Whirlwind",
 	whirlwindfirstbartext = "First Whirlwind",
 	whirlwindinctext = "Whirlwind incoming!",
 	deadaddtrigger = "Sartura's Royal Guard dies.",
@@ -82,7 +82,7 @@ L:RegisterTranslations("deDE", function() return {
 	whirlwindonwarn = "Wirbelwind!",
 	whirlwindoffwarn = "Wirbelwind ist zu Ende!",
 	whirlwindbartext = "Wirbelwind",
-	whirlwindnextbartext = "N\195\164chster Wirbelwind",
+	whirlwindnextbartext = "Möglicher Wirbelwind",
 	whirlwindfirstbartext = "Erster Wirbelwind",
 	whirlwindinctext = "Wirbelwind bald!",
 	deadaddtrigger = "Sarturas Königswache stirbt.",
@@ -111,7 +111,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"whirlwind", "adds", "enrage", "berserk", "bosskill"}
