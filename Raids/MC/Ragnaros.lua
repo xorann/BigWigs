@@ -5,9 +5,13 @@
 
 local module, L = BigWigs:ModuleDeclaration("Ragnaros", "Molten Core")
 
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.toggleoptions = {"aoeknock", "submerge", "emerge", "adds", "bosskill"}
+
+module.defaultDB = {
+	adds = false,
+}
 
 -- Proximity Plugin
 -- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
@@ -41,6 +45,7 @@ local syncName = {
 
 local firstKnockback = true
 local sonsdead = 0
+local phase = nil
 
 ----------------------------
 --      Localization      --
@@ -225,6 +230,7 @@ end
 ------------------------------
 
 function module:Submerge()
+    phase = "submerged"
 	self:CancelScheduledEvent("bwragnarosaekbwarn")
 	self:RemoveBar(L["knockback_bar"])
 	
@@ -233,7 +239,7 @@ function module:Submerge()
 	end
 	if self.db.profile.emerge then
 		self:Bar(L["emerge_bar"], timer.emerge, icon.emerge)
-		self:DelayedMessage(timer.emerge - 15, L["emerge_soon_message"], "Urgent")
+		self:DelayedMessage(timer.emerge - 15, L["emerge_soon_message"], "Urgent", nil, nil, true)
 	end
 	self:ScheduleRepeatingEvent("bwragnarosemergecheck", self.EmergeCheck, 1, self)
 	self:DelayedSync(timer.emerge, syncName.emerge)
@@ -242,6 +248,7 @@ function module:Submerge()
 end
 
 function module:Emerge()
+    phase = "emerged"
 	firstKnockback = true
 	sonsdead = 0 -- reset counter
 
@@ -259,10 +266,10 @@ function module:Emerge()
 	if self.db.profile.submerge then
 		self:Bar(L["submerge_bar"], timer.submerge, icon.submerge)
 		
-		self:DelayedMessage(timer.submerge - 60, L["submerge_60sec_message"], "Attention")
-		self:DelayedMessage(timer.submerge - 30, L["submerge_30sec_message"], "Attention")
-		self:DelayedMessage(timer.submerge - 10, L["submerge_10sec_message"], "Attention")
-		self:DelayedMessage(timer.submerge - 5, L["submerge_5sec_message"], "Attention")
+		self:DelayedMessage(timer.submerge - 60, L["submerge_60sec_message"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.submerge - 30, L["submerge_30sec_message"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.submerge - 10, L["submerge_10sec_message"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.submerge - 5, L["submerge_5sec_message"], "Attention", nil, nil, true)
 		
 		self:DelayedSync(timer.submerge, syncName.submerge)
 	end
@@ -270,6 +277,9 @@ function module:Emerge()
 end
 
 function module:Knockback()
+    if phase == "submerged" then
+        self:Emerge()
+    end
 	if self.db.profile.aoeknock then
 		if not firstKnockback then
 			self:Message(L["knockback_message"], "Important")
@@ -277,7 +287,7 @@ function module:Knockback()
 		firstKnockback = false
 		
 		self:Bar(L["knockback_bar"], timer.knockback, icon.knockback)
-		self:DelayedMessage(timer.knockback - 5, L["knockback_soon_message"], "Urgent", true, "Alarm")
+		self:DelayedMessage(timer.knockback - 5, L["knockback_soon_message"], "Urgent", true, "Alarm", nil, nil, true)
 		self:DelayedWarningSign(timer.knockback - 5, icon.knockbackWarn, 5)
 	end
 end
