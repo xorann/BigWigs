@@ -110,6 +110,9 @@ module.enabletrigger = module.translatedName -- string or table {boss, add1, add
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"plagueyou", "plagueother", "icon", -1, "thunderclap", "explode", "enrage", "bosskill"}
 
+module.defaultDB = {
+	bosskill = false,
+}
 
 -- locals
 local timer = {
@@ -117,6 +120,7 @@ local timer = {
 }
 local icon = {
 	explode = "",
+	plague = "Spell_Shadow_CurseOfTounges",
 }
 local syncName = {
 	enrage = "DefenderEnrage",
@@ -164,7 +168,7 @@ end
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.explode and self.db.profile.explode then
-		self:Message(L["explodewarn"], "Important")
+		self:Message(L["explodewarn"], "Important", nil, "Beware")
 		self:Bar(L["explodewarn"], timer.explode, icon.explode)
 	elseif sync == syncName.enrage and self.db.profile.enrage then
 		self:Message(L["enragewarn"], "Important")
@@ -194,8 +198,9 @@ function module:CheckPlague(msg)
 	local _,_, pplayer, ptype = string.find(msg, L["plaguetrigger"])
 	if pplayer then
 		if self.db.profile.plagueyou and pplayer == L["plagueyou"] then
-			self:Message(L["plagueyouwarn"], "Personal", true)
+			self:Message(L["plagueyouwarn"], "Personal", true, "RunAway")
 			self:Message(UnitName("player") .. L["plaguewarn"], "Attention", nil, nil, true)
+			self:WarningSign(icon.plague, 5)
 		elseif self.db.profile.plagueother then
 			self:Message(pplayer .. L["plaguewarn"], "Attention")
 			--self:TriggerEvent("BigWigs_SendTell", pplayer, L["plagueyouwarn"]) -- can cause whisper bug on nefarian
