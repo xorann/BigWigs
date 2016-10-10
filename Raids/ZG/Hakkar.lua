@@ -202,7 +202,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20005 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"mc", "puticon", "siphon", "enrage", -1, "aspectjeklik", "aspectvenoxis", "aspectmarli", "aspectthekal", "aspectarlokk", "bosskill"}
@@ -297,7 +297,7 @@ function module:OnEngage()
 	if self.db.profile.siphon then
 		self:Bar(L["siphon_bar"], timer.bloodSiphon, icon.bloodSiphon)
 		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
-		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 30)
+		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 3)
 		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
 	end
 	if self.db.profile.mc then
@@ -448,7 +448,7 @@ function module:BloodSiphon()
 	if self.db.profile.siphon then
 		self:Bar(L["siphon_bar"], timer.bloodSiphon, icon.bloodSiphon)
 		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
-		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 30)
+		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 3)
 		-- before I display that I need to figure out, how to track when the player gained the Poisonous Blood - this should hide the icon again
 		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
 	end
