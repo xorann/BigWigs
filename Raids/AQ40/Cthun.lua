@@ -165,7 +165,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20004 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 local eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 local cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]
 module.enabletrigger = {eyeofcthun, cthun} -- string or table {boss, add1, add2}
@@ -466,13 +466,13 @@ function module:CThunP2Start()
         -- start P2 events
 		if self.db.profile.tentacle then
             -- first eye tentacles
-			self:DelayedMessage(timer.p2FirstEyeTentacles - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, "Alert")
+			self:DelayedMessage(timer.p2FirstEyeTentacles - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, nil, true)
 			self:Bar(self.db.profile.rape and L["barTentacle"] or L["barNoRape"], timer.p2FirstEyeTentacles, icon.eyeTentacles)
 		end
 
 		if self.db.profile.giant then
 			self:Bar(L["barGiant"], timer.p2FirstGiantEye, icon.giantEye)
-            self:DelayedMessage(timer.p2FirstGiantEye - 5, L["GiantEye"], "Urgent", false, "Alarm")
+            self:DelayedMessage(timer.p2FirstGiantEye - 5, L["GiantEye"], "Urgent", false, nil, true)
             
 			self:Bar(L["barGiantC"], timer.p2FirstGiantClaw, icon.giantClaw)
 		end
@@ -519,7 +519,7 @@ function module:CThunWeakened()
     self:DebugMessage("nextEyeTentacles(".. nextEyeTentacles ..") = timer.p2Tentacle(".. timer.p2Tentacle ..") - (GetTime() - timer.lastEyeTentaclesSpawn)(".. (GetTime() - timer.lastEyeTentaclesSpawn) ..") + time.weakened(".. timer.weakened ..")")
     self:Bar(self.db.profile.rape and L["barTentacle"] or L["barNoRape"], nextEyeTentacles, icon.eyeTentacles)    
     self:ScheduleEvent("bwcthunstarttentacles", self.TentacleRape, nextEyeTentacles, self )
-    self:DelayedMessage(nextEyeTentacles - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, "Alert")
+    self:DelayedMessage(nextEyeTentacles - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, nil, true)
     
     self:ScheduleEvent("bwcthunweakenedover", self.CThunWeakenedOver, timer.weakened, self )
     timer.lastGiantEyeSpawn = 0 -- reset timer to force a refresh on the timer
@@ -550,7 +550,7 @@ function module:CThunWeakenedOver()
     -- next giant eye 40s after weaken
     self:Bar(L["barGiant"], timer.p2FirstGiantEyeAfterWeaken, icon.giantEye)
 	self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEyeAfterWeaken, self )
-    self:DelayedMessage(timer.p2FirstGiantEyeAfterWeaken - 5, L["GiantEye"], "Urgent", false, "Alarm")
+    self:DelayedMessage(timer.p2FirstGiantEyeAfterWeaken - 5, L["GiantEye"], "Urgent", false, nil, true)
 end
 
 function module:GiantEyeEyeBeam()
@@ -624,7 +624,7 @@ function module:DarkGlare()
 			self:Bar(L["barGlareCasting"], timer.p1GlareCasting, icon.darkGlare)
 		        
 			self:DelayedBar(timer.p1GlareCasting, L["barGlareEnds"], timer.p1GlareDuration, icon.darkGlare)
-            self:DelayedMessage(timer.p1GlareCasting + timer.p1GlareDuration - 5, L["msgGlareEnds"], "Urgent", false, "Alarm")
+            self:DelayedMessage(timer.p1GlareCasting + timer.p1GlareDuration - 5, L["msgGlareEnds"], "Urgent", false, nil, true)
 			self:DelayedBar(timer.p1GlareCasting + timer.p1GlareDuration, L["barGlare"], timer.p1Glare - timer.p1GlareCasting - timer.p1GlareDuration, icon.darkGlare)
         end
     end
@@ -691,7 +691,7 @@ function module:GTentacleRape()
 	if phase2started then
         if self.db.profile.giant then
             self:Bar(L["barGiant"], timer.p2ETentacle, icon.giantEye)
-            self:DelayedMessage(timer.p2ETentacle - 5, L["GiantEye"], "Urgent", false, "Alarm")
+            self:DelayedMessage(timer.p2ETentacle - 5, L["GiantEye"], "Urgent", false, nil, true)
             
             if timer.lastGiantEyeSpawn > 0 then
                 self:WarningSign(icon.giantEye, 5)
@@ -716,6 +716,6 @@ function module:TentacleRape()
 	self:ScheduleEvent("bwcthuntentacles", self.TentacleRape, tentacletime, self )
 	if self.db.profile.tentacle then
 		self:Bar(self.db.profile.rape and L["barTentacle"] or L["barNoRape"], tentacletime, icon.eyeTentacles)
-		self:DelayedMessage(tentacletime - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, "Alert")
+		self:DelayedMessage(tentacletime - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, nil, true)
 	end
 end

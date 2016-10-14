@@ -111,7 +111,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"start", "flamebreath", "adrenaline", "whisper", "tankburn", "icon", "bosskill"}
@@ -321,7 +321,7 @@ end
 function module:Tankburn()
 	if self.db.profile.tankburn then
 		self:Bar(L["tankburn_bar"], timer.tankburn, icon.tankburn, true, "Black")
-		self:DelayedMessage(timer.tankburn - 5, L["tankburnsoon"], "Urgent")
+		self:DelayedMessage(timer.tankburn - 5, L["tankburnsoon"], "Urgent", nil, nil, true)
 	end
 end
 

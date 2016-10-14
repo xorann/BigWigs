@@ -151,7 +151,8 @@ cloud: every 30s and 24s delay on explosion
 -- called after module is enabled
 function module:OnEnable()	
 	self:RegisterEvent("BigWigs_Message")
-	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE")
+	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Emote")
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Emote")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckVis")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckVis")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckVis")
@@ -179,7 +180,7 @@ end
 function module:CheckVis(arg1)
 	if not prior and self.db.profile.volley and string.find(arg1, L["volley_trigger"]) then
 		self:Message(L["volley_warn"], "Urgent")
-		self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent")
+		self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent", nil, nil, true)
 		self:Bar(L["volley_bar"], timer.volley, icon.volley)
 		prior = true
 	elseif string.find(arg1, L["toxin_trigger"]) then
@@ -197,7 +198,7 @@ function module:CheckVis(arg1)
 	end
 end
 
-function module:CHAT_MSG_RAID_BOSS_EMOTE(arg1)
+function module:Emote(arg1)
 	if not self.db.profile.freeze then return end
 	if arg1 == L["slow_trigger"] then
 		self:Message(L["freeze1_warn"], "Atention")

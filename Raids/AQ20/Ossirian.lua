@@ -200,9 +200,9 @@ function module:Weakness(weakness, delay)
 	self:CancelDelayedMessage(string.format(L["supremedelaywarn"], 5))
 
 	if self.db.profile.supreme then
-		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 15), "Attention")
-		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 10), "Urgent")
-		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 5), "Important")
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 15), "Attention", nil, nil, true)
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 10), "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.supreme - delay, string.format(L["supremedelaywarn"], 5), "Important", nil, nil, true)
 		self:Bar(L["supreme_bar"], timer.supreme - delay, icon.supreme)
 	end
 end

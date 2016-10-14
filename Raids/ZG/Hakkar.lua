@@ -289,16 +289,16 @@ end
 function module:OnEngage()
 	if self.db.profile.enrage then
 		self:Bar(L["enrage_bar"], timer.enrage, icon.enrage)
-		self:DelayedMessage(timer.enrage - 5 * 60, L["enrage5minutes_message"], "Urgent")
-		self:DelayedMessage(timer.enrage - 60, L["enrage1minute_message"], "Urgent")
-		self:DelayedMessage(timer.enrage - 30, string.format(L["enrageseconds_message"], 30), "Urgent")
-		self:DelayedMessage(timer.enrage - 10, string.format(L["enrageseconds_message"], 10), "Attention")
+		self:DelayedMessage(timer.enrage - 5 * 60, L["enrage5minutes_message"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 60, L["enrage1minute_message"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 30, string.format(L["enrageseconds_message"], 30), "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 10, string.format(L["enrageseconds_message"], 10), "Attention", nil, nil, true)
 	end
 	if self.db.profile.siphon then
 		self:Bar(L["siphon_bar"], timer.bloodSiphon, icon.bloodSiphon)
 		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
 		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 3)
-		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
+		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention", nil, nil, true)
 	end
 	if self.db.profile.mc then
 		self:Bar(L["firstmc_bar"], timer.firstMindcontrol, icon.mindcontrol)
@@ -450,7 +450,7 @@ function module:BloodSiphon()
 		self:DelayedMessage(timer.bloodSiphon - 30, string.format(L["siphon_warning"], 30), "Urgent")
 		self:DelayedWarningSign(timer.bloodSiphon - 30, icon.serpent, 3)
 		-- before I display that I need to figure out, how to track when the player gained the Poisonous Blood - this should hide the icon again
-		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention")
+		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["siphon_warning"], 10), "Attention", nil, nil, true)
 	end
 	
 	-- aspects

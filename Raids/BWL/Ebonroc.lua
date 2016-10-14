@@ -83,7 +83,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"curse", "wingbuffet", "shadowflame", "bosskill"}
@@ -136,7 +136,7 @@ end
 function module:OnEngage()
 	if self.db.profile.wingbuffet then
 		self:Bar(L["wingbuffet1_bar"], timer.wingbuffet, icon.wingbuffet)
-		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 	end
 	if self.db.profile.curse then
 		self:Bar(L["shadowcurse_Firstbar"], timer.curse, icon.curse, true, "white")
@@ -203,7 +203,7 @@ function module:WingBuffet()
 		self:Message(L["wingbuffet_message"], "Important")
 		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
 		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
-		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 	end
 end
 

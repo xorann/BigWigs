@@ -172,12 +172,12 @@ function module:OnEngage()
 	if self.db.profile.berserk then
 		self:Message(L["startwarn"], "Important")
 		self:Bar(L["berserktext"], timer.berserk, icon.berserk)
-		self:DelayedMessage(timer.berserk - 5 * 60, L["warn1"], "Attention")
-		self:DelayedMessage(timer.berserk - 3 * 60, L["warn2"], "Attention")
-		self:DelayedMessage(timer.berserk - 90, L["warn3"], "Urgent")
-		self:DelayedMessage(timer.berserk - 60, L["warn4"], "Urgent")
-		self:DelayedMessage(timer.berserk - 30, L["warn5"], "Important")
-		self:DelayedMessage(timer.berserk - 10, L["warn6"], "Important")
+		self:DelayedMessage(timer.berserk - 5 * 60, L["warn1"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 3 * 60, L["warn2"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 90, L["warn3"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 60, L["warn4"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 30, L["warn5"], "Important", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 10, L["warn6"], "Important", nil, nil, true)
 	end
 	if self.db.profile.whirlwind then
 		self:Bar(L["whirlwindfirstbartext"], timer.firstWhirlwind, icon.whirlwind)

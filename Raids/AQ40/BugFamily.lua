@@ -153,7 +153,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = {kri, yauj, vem} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"panic", "toxicvolley", "heal", "announce", "deathspecials", "enrage", "bosskill"}
@@ -254,12 +254,12 @@ function module:OnEngage()
 	end
 	if self.db.profile.enrage then
 		self:Bar(L["enrage_bar"], timer.enrage, icon.enrage, true, "red")
-		self:DelayedMessage(timer.enrage - 5 * 60, L["warn5minutes"], "Attention")
-		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3minutes"], "Attention")
-		self:DelayedMessage(timer.enrage - 90, L["warn90seconds"], "Attention")
-		self:DelayedMessage(timer.enrage - 60, L["warn60seconds"], "Attention")
-		self:DelayedMessage(timer.enrage - 30, L["warn30seconds"], "Attention")
-		self:DelayedMessage(timer.enrage - 10, L["warn10seconds"], "Attention")
+		self:DelayedMessage(timer.enrage - 5 * 60, L["warn5minutes"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3minutes"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 90, L["warn90seconds"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 60, L["warn60seconds"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 30, L["warn30seconds"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 10, L["warn10seconds"], "Attention", nil, nil, true)
 	end
 end
 
@@ -355,7 +355,7 @@ end
 function module:Volley()
 	if self.db.profile.toxicvolley then
 		self:Bar(L["toxicvolley_bar"], timer.volley, icon.volley, true, "green")
-		self:DelayedMessage(timer.firstVolley - 3, L["toxicvolley_message"], "Urgent")
+		--self:DelayedMessage(timer.firstVolley - 3, L["toxicvolley_message"], "Urgent")
 	end
 end
 
@@ -378,7 +378,7 @@ end
 function module:Panic()
 	if self.db.profile.panic then
 		self:Bar(L["panic_bar"], timer.panic, icon.panic, true, "white")
-		self:DelayedMessage(timer.panic, L["panic_message"], "Urgent", true, "Alarm")
+		self:Message(L["panic_message"], "Urgent", true, "Alarm")
 	end
 end
 

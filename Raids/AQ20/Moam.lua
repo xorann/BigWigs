@@ -163,10 +163,10 @@ function module:Paralyze()
 		self:Message(L["addswarn"], "Important")
 	end
 	if self.db.profile.paralyze then
-		self:DelayedMessage(timer.paralyze - 60, format(L["returnincoming"], 60), "Attention")
-		self:DelayedMessage(timer.paralyze - 30, format(L["returnincoming"], 30), "Attention")
-		self:DelayedMessage(timer.paralyze - 15, format(L["returnincoming"], 15), "Urgent")
-		self:DelayedMessage(timer.paralyze - 5, format(L["returnincoming"], 5), "Important")
+		self:DelayedMessage(timer.paralyze - 60, format(L["returnincoming"], 60), "Attention", nil, nil, true)
+		self:DelayedMessage(timer.paralyze - 30, format(L["returnincoming"], 30), "Attention", nil, nil, true)
+		self:DelayedMessage(timer.paralyze - 15, format(L["returnincoming"], 15), "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.paralyze - 5, format(L["returnincoming"], 5), "Important", nil, nil, true)
 		self:Bar(L["paralyzebar"], timer.paralyze, icon.paralyze)
 	end
 end
@@ -179,10 +179,10 @@ function module:Unparalyze()
 	end
 	
 	if self.db.profile.adds then
-		self:DelayedMessage(timer.unparalyze - 60, format(L["addsincoming"], 60), "Attention")
-		self:DelayedMessage(timer.unparalyze - 30, format(L["addsincoming"], 30), "Attention")
-		self:DelayedMessage(timer.unparalyze - 15, format(L["addsincoming"], 15), "Urgent")
-		self:DelayedMessage(timer.unparalyze - 5, format(L["addsincoming"], 5), "Important")
+		self:DelayedMessage(timer.unparalyze - 60, format(L["addsincoming"], 60), "Attention", nil, nil, true)
+		self:DelayedMessage(timer.unparalyze - 30, format(L["addsincoming"], 30), "Attention", nil, nil, true)
+		self:DelayedMessage(timer.unparalyze - 15, format(L["addsincoming"], 15), "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.unparalyze - 5, format(L["addsincoming"], 5), "Important", nil, nil, true)
 		self:Bar(L["addsbar"], timer.unparalyze, icon.unparalyze) 
 	end
 end

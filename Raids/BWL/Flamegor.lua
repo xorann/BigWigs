@@ -143,7 +143,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.wingbuffet then
-		self:DelayedMessage(timer.firstWingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+		self:DelayedMessage(timer.firstWingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 		self:Bar(L["wingbuffet1_bar"], timer.firstWingbuffet, icon.wingbuffet)
 	end
 	if self.db.profile.shadowflame then
@@ -187,7 +187,7 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.wingbuffet and self.db.profile.wingbuffet then
         self:Message(L["wingbuffet_message"], "Important")
-        self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", true, "Alert")
+        self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
 		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
 	elseif sync == syncName.shadowflame and self.db.profile.shadowflame then

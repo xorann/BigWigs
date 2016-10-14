@@ -163,7 +163,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"enrage", "frenzy", "breath", "breathcd", "vulnerability", "bosskill"}
@@ -256,9 +256,9 @@ function module:OnEngage()
 			firstBarName  = string.format(L["castingbar"], breathCache[1])
 			firstBarMSG   = string.format(L["breath_message"], breathCache[1])
 		end
-		self:DelayedMessage(timer.firstBreath - 5, firstBarMSG, "Attention")
+		self:DelayedMessage(timer.firstBreath - 5, firstBarMSG, "Attention", nil, nil, true)
 		self:Bar(firstBarName, timer.firstBreath, icon.unknown, true, "cyan")
-		self:DelayedMessage(timer.secondBreath - 5, secondBarMSG, "Attention")
+		self:DelayedMessage(timer.secondBreath - 5, secondBarMSG, "Attention", nil, nil, true)
 		self:Bar(secondBarName, timer.secondBreath, icon.unknown, true, "cyan")
 	end
 	if self.db.profile.breathcd then
@@ -514,7 +514,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, L["icon"..rest])
 		self:Message(string.format(L["breath_message"], spellName), "Important")
 		
-		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important")
+		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important", nil, nil, true)
 		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval - timer.breathCast, L["icon"..rest], true, L["breathcolor"..rest])
 		--self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
 		--self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])

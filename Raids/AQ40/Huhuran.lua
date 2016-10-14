@@ -131,9 +131,9 @@ function module:OnEngage()
 	if self.db.profile.berserk then
 		self:Message(L["startwarn"], "Important")
 		self:Bar(L["berserkbar"], timer.berserk, icon.berserk)
-		self:DelayedMessage(timer.berserk - 60, L["berserkwarn1"], "Attention")
-		self:DelayedMessage(timer.berserk - 30, L["berserkwarn2"], "Urgent")
-		self:DelayedMessage(timer.berserk - 5, L["berserkwarn3"], "Important")
+		self:DelayedMessage(timer.berserk - 60, L["berserkwarn1"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 30, L["berserkwarn2"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.berserk - 5, L["berserkwarn3"], "Important", nil, nil, true)
 	end
 end
 
@@ -191,7 +191,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.sting then
         self:Message(L["stingwarn"], "Urgent")
         self:Bar(L["bartext"], timer.sting, icon.sting)
-        self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent")
+        self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent", nil, nil, true)
     end
 end
 

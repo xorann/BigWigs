@@ -143,7 +143,7 @@ L:RegisterTranslations("deDE", function() return {
 
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20006 -- To be overridden by the module!
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
 module.enabletrigger = {veklor, veknilash} -- string or table {boss, add1, add2}
@@ -210,13 +210,13 @@ function module:OnEngage()
 		self:Message(L["startwarn"], "Important")
 		self:Bar(L["enragebartext"], timer.enrage, icon.enrage)
 		
-		self:DelayedMessage(timer.enrage - 10 * 60, L["warn1"], "Attention")
-		self:DelayedMessage(timer.enrage - 5 * 60, L["warn2"], "Attention")
-		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3"], "Attention")
-		self:DelayedMessage(timer.enrage - 90, L["warn4"], "Urgent")
-		self:DelayedMessage(timer.enrage - 60, L["warn5"], "Urgent")
-		self:DelayedMessage(timer.enrage - 30, L["warn6"], "Important")
-		self:DelayedMessage(timer.enrage - 10, L["warn7"], "Important")
+		self:DelayedMessage(timer.enrage - 10 * 60, L["warn1"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 5 * 60, L["warn2"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 90, L["warn4"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 60, L["warn5"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 30, L["warn6"], "Important", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 10, L["warn7"], "Important", nil, nil, true)
 	end
 end
 
