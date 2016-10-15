@@ -279,7 +279,7 @@ end
 ------------------------------
 
 -- override: only check for boss death in phase 2
-function module:CheckForBossDeath()
+function module:CheckForBossDeath(msg)
 	if self.phase == 2 then
 		BigWigs:CheckForBossDeath()
     elseif msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
@@ -435,4 +435,30 @@ function module:PhaseSwitch()
     BigWigs:ToggleModuleActive(module, true)
     module:TriggerEvent("BigWigs_StartBar", module, "Next Phase", 9, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
     module.phase = 1.5;
+end
+
+function module:Test()
+    -- /run local m=BigWigs:GetModule("High Priest Thekal");m:Test()
+    
+	local function testPhaseSwitch()
+		module:CheckForBossDeath(string.format(UNITDIESOTHER, self:ToString()))
+    end
+	local function testDisable()
+		module:SendWipeSync()
+		BigWigs:DisableModule(module:ToString())
+	end
+    
+    -- short test
+    local testTimer = 0
+    self:SendEngageSync()
+
+    -- phase switch
+    testTimer = testTimer + 3
+    self:ScheduleEvent(self:ToString() .. "testPhaseSwitch", testPhaseSwitch, testTimer, self)
+    BigWigs:Print("testPhaseSwitch in " .. testTimer)
+
+    -- disable
+    testTimer = testTimer + 10
+    self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
+    BigWigs:Print("testDisable in " .. testTimer)
 end

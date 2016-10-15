@@ -143,7 +143,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:CancelScheduledEvent("checkvanish")
-    self:ScheduleEvent("checkvanish", self.CheckVanish, 1, self)
+    self:ScheduleRepeatingEvent("checkvanish", self.CheckVanish, 1, self)
 	if self.db.profile.phase then
 		self:Message(L["trollphase_message"], "Attention")
 	end
@@ -233,23 +233,25 @@ end
 ------------------------------
 
 function module:CheckUnvanish()
-	if UnitExists("target") and UnitName("target") == "High Priestess Arlokk" and UnitExists("targettarget") then
+    self:DebugMessage("CheckUnvanish")
+	if UnitExists("target") and UnitName("target") == self.translatedName and UnitExists("targettarget") then
 		self:Sync(syncName.pantherPhase)
-		self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
+		--self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 		return
 	end
 	local num = GetNumRaidMembers()
 	for i = 1, num do
 		local raidUnit = string.format("raid%starget", i)
-		if UnitExists(raidUnit) and UnitName(raidUnit) == "High Priestess Arlokk" and UnitExists(raidUnit.."target") then
+		if UnitExists(raidUnit) and UnitName(raidUnit) == self.translatedName and UnitExists(raidUnit.."target") then
 			self:Sync(syncName.pantherPhase)
-			self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
+			--self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
 			return
 		end
 	end
 end
 
 function module:CheckVanish()
+    self:DebugMessage("CheckVanish")
 	if UnitExists("target") and UnitName("target") == self.translatedName and UnitExists("targettarget") then
 		return
 	end
@@ -261,4 +263,47 @@ function module:CheckVanish()
 		end
 	end
 	self:Sync(syncName.vanishPhase)
+end
+
+function module:Test()
+    -- /run local m=BigWigs:GetModule("High Priestess Arlokk");m:Test()
+    local translatedName = self.translatedName
+    
+	local function testCheckVanish()
+        ClearTarget()
+        BigWigs:Print("testCheckVanish")
+    end
+    local function testCheckUnvanish()
+        TargetUnit("player")
+        BigWigs:Print("testCheckUnvanish")
+    end
+	local function testDisable()
+		module:SendWipeSync()
+		BigWigs:DisableModule(module:ToString())
+        BigWigs:Print("Test finished")
+        self.translatedName = translatedName
+	end
+    
+    -- short test
+    local testTimer = 0
+    self:SendEngageSync()
+    
+    BigWigs:Print("Target/Untarget yourself to test CheckVanish/CheckUnvanish")
+    testCheckUnvanish()
+    self.translatedName = UnitName("player") -- override name to test CheckVanish/CheckUnvanish
+
+    -- vanish
+    testTimer = testTimer + 5
+    self:ScheduleEvent(self:ToString() .. "testCheckVanish", testCheckVanish, testTimer, self)
+    BigWigs:Print("testCheckVanish in " .. testTimer)
+
+    -- unvanish
+    testTimer = testTimer + 5
+    self:ScheduleEvent(self:ToString() .. "testCheckUnvanish", testCheckUnvanish, testTimer, self)
+    BigWigs:Print("testCheckUnvanish in " .. testTimer)
+    
+    -- disable
+    testTimer = testTimer + 10
+    self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
+    BigWigs:Print("testDisable in " .. testTimer)
 end
