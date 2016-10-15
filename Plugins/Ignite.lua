@@ -144,14 +144,14 @@ BigWigsIgnite.consoleOptions = {
             order = 100,
             get = function() 
                 if BigWigsIgnite.db.profile.isVisible then
-                    BigWigs:DebugMessage("test true")
+                    --BigWigs:DebugMessage("test true")
                 else
-                    BigWigs:DebugMessage("test false")
+                    --BigWigs:DebugMessage("test false")
                 end
                 return BigWigsIgnite.db.profile.isVisible 
             end,
             set = function(v) 
-                BigWigs:DebugMessage("hallo")
+                --BigWigs:DebugMessage("hallo")
                 BigWigsIgnite.db.profile.isVisible = v
                 if v then
                     BigWigsIgnite:Show()
@@ -188,7 +188,7 @@ BigWigsIgnite.consoleOptions = {
             desc = L["Send Stop messages to all raid members"],
             order = 103,
             func = function() 
-                BigWigs:DebugMessage("going to send stop")
+                --BigWigs:DebugMessage("going to send stop")
                 BigWigsIgnite:SendStop() 
             end,
         }
@@ -245,7 +245,7 @@ end
 -----------------------------------------------------------------------
 
 function BigWigsIgnite:Show()
-    self:DebugMessage("show")
+    --self:DebugMessage("show")
     if not frame then
         self:SetupFrames()
     end
@@ -257,7 +257,7 @@ end
 function BigWigsIgnite:Hide()
     if frame then 
         frame:Hide() 
-        self:DebugMessage("BigWigsIgnite:Hide()")
+        --self:DebugMessage("BigWigsIgnite:Hide()")
         BigWigsIgnite.db.profile.isVisible = false
     end
 end
@@ -309,7 +309,7 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
     --local fire_test = "^([%w]+)([%s's]*) ([%w%s:]+) crits ([%w%s:]+) for ([%d]+) ([%w]+) damage."
     local start, ending, name, _, spell, victim, dmg, school = string.find(msg, L["fire_test"])
 	if name and spell and victim and self:IsMage(name) and self:IsIgniteSpell(spell) and self.target == victim then
-		self:DebugMessage("mage fire spell crit: " .. name .. " " .. spell .. " " .. victim)
+		--self:DebugMessage("mage fire spell crit: " .. name .. " " .. spell .. " " .. victim)
 		if self.stacks == 0 and not self.owner then
 			self.owner = name
 		end
@@ -323,7 +323,7 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
         if not stacks or stacks == "" then
             stacks = 1
         end
-        self:DebugMessage(stacks .. " ignite stacks")
+        --self:DebugMessage(stacks .. " ignite stacks")
         self.stacks = stacks
         
         self:Update()
@@ -337,7 +337,7 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
         if owner == L["your"] then
             owner = UnitName("player")
         end
-        self:DebugMessage("Ignite damage: owner: " .. owner .. " damage: " .. damage .. " victim: " .. victim)
+        --self:DebugMessage("Ignite damage: owner: " .. owner .. " damage: " .. damage .. " victim: " .. victim)
         self.owner = owner
         self.damage = damage
 		
@@ -349,7 +349,7 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
 				if debuff and debuff == "Interface\\Icons\\Spell_Fire_Incinerate" then
                     -- how do I find out how many stacks there are?
                     if count then
-                        self:DebugMessage("stacks: " .. count)
+                        --self:DebugMessage("stacks: " .. count)
                         self.stacks = count
                     else
                         self.stacks = 5
@@ -367,7 +367,7 @@ function BigWigsIgnite:PlayerDamageEvents(msg)
     --local ignite_fade_test = "^Ignite fades from ([%w%s:]+)."
     local start, ending, victim = string.find(msg, L["ignite_fade_test"])
     if victim and victim == self.target then
-        self:DebugMessage("Ignite fades: victim: " .. victim)
+        --self:DebugMessage("Ignite fades: victim: " .. victim)
         self:DataReset()
         self:HideWarning()
 		
@@ -560,7 +560,7 @@ function BigWigsIgnite:UpdateThreat(name)
 end
 
 function BigWigsIgnite:SendStop()
-    self:DebugMessage("send stop")
+    --self:DebugMessage("send stop")
     self:Sync(syncName.stop) 
 end
 
