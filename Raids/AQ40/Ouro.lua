@@ -139,7 +139,7 @@ local syncName = {
 	sweep = "OuroSweep",
 	sandblast = "OuroSandblast",
 	emerge = "OuroEmerge2",
-	submerge = "OuroSubmerge",
+	submerge = "OuroSubmerge2",
 	berserk = "OuroBerserk",
 }
 		
@@ -284,9 +284,15 @@ function module:Sandblast()
 	end
 end
 
+function module:DoSubmergeCheck()
+    self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
+end
 function module:Emerge()
     self.phase = "emerged"
     
+    self:CancelScheduledEvent("bwourosubmergecheck")
+    self:ScheduleEvent("bwourosubmergecheck", self.DoSubmergeCheck, 10, self)
+    --self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
     self:CancelScheduledEvent("bwsubmergewarn")
     self:RemoveBar(L["submergebartext"])
     
@@ -377,6 +383,7 @@ end
 ----------------------------------
 
 function module:Test()
+    -- /run local m=BigWigs:GetModule("Ouro");m:Test()
     local function sweep()
         if self.phase == "emerged" then
             module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["sweeptrigger"])
@@ -395,7 +402,7 @@ function module:Test()
     local function emerge()
         if self.phase == "submerged" then
             TargetUnit("player")
-            module:EmergeCheck(L["emergetrigger"])
+            module:CHAT_MSG_COMBAT_HOSTILE_DEATH(L["emergetrigger"])
         end
     end
     local function deactivate()

@@ -225,7 +225,11 @@ function module:PLAYER_AURAS_CHANGED(msg)
 
 	self:UnregisterEvent("PLAYER_AURAS_CHANGED")
 
-	if self.db.profile.charge then
+	self:NewPolarity(chargetype)
+end
+
+function module:NewPolarity(chargetype)
+    if self.db.profile.charge then
 		if self.previousCharge and self.previousCharge == chargetype then
 			self:Message(L["nochange"], "Urgent", true, "Long")
 		elseif chargetype == L["positivetype"] then
@@ -239,7 +243,6 @@ function module:PLAYER_AURAS_CHANGED(msg)
 	end
 	self.previousCharge = chargetype
 end
-
 
 ------------------------------
 --      Synchronization	    --
@@ -282,6 +285,10 @@ function module:AddDied()
 end
 
 function module:Phase2()
+    self:RemoveBar(L["throwbar"])
+    self:CancelDelayedMessage(L["throwwarn"])
+    self:CancelScheduledEvent("bwthaddiusthrow")
+    
 	if self.db.profile.phase then 
 		self:Message(L["startwarn2"], "Important") 
 	end
@@ -292,8 +299,6 @@ function module:Phase2()
 		self:DelayedMessage(timer.enrage - 60, L["warn_enrage_60"], "Urgent")
 		self:DelayedMessage(timer.enrage - 30, L["warn_enrage_30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["warn_enrage_10"], "Important")
-		self:CancelScheduledEvent("bwthaddiusthrow") -- added
-		self:CancelDelayedMessage(L["throwwarn"])
 	end
 end
 
@@ -328,4 +333,87 @@ function module:Throw()
 		self:Bar(L["throwbar"], timer.throw, icon.throw)
 		self:DelayedMessage(timer.throw - 5, L["throwwarn"], "Urgent")
 	end
+end
+
+
+------------------------------
+--      Test                --
+------------------------------
+
+function module:Test(long)
+    -- /run local m=BigWigs:GetModule("Thaddius");m:Test()
+    
+	local function testPhase2()
+		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
+        BigWigs:Print("  testPhase2")
+    end
+	local function testPolarityShiftPositive()
+		module:NewPolarity(L["positivetype"])
+	end
+    local function testPolarityShiftNegative()
+		module:NewPolarity(L["negativetype"])
+	end
+	local function testDisable()
+		module:SendWipeSync()
+		BigWigs:DisableModule(module:ToString())
+        BigWigs:Print("  testDisable")
+	end
+    
+    if long then
+        local testTimer = 0
+        self:SendEngageSync()
+
+        -- phase2
+        testTimer = testTimer + 10
+        self:ScheduleEvent(self:ToString() .. "testPhase2", testPhase2, testTimer, self)
+        BigWigs:Print(" testPhase2 in " .. testTimer)
+
+        -- polarity shift 1
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftPositive", testPolarityShiftPositive, testTimer, self)
+        BigWigs:Print(" testPolarityShiftPositive1 in " .. testTimer)
+
+        -- polarity shift 2
+        testTimer = testTimer + 30
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftPositive2", testPolarityShiftPositive, testTimer, self)
+        BigWigs:Print(" testPolarityShiftPositive2 in " .. testTimer)
+
+        -- polarity shift 3
+        testTimer = testTimer + 30
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftNegative", testPolarityShiftNegative, testTimer, self)
+        BigWigs:Print(" testPolarityShiftNegative in " .. testTimer)
+
+        -- disable
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
+        BigWigs:Print(" testDisable in " .. testTimer)
+    else
+        local testTimer = 0
+        self:SendEngageSync()
+
+        -- phase2
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testPhase2", testPhase2, testTimer, self)
+        BigWigs:Print(" testPhase2 in " .. testTimer)
+
+        -- polarity shift 1
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftPositive", testPolarityShiftPositive, testTimer, self)
+        BigWigs:Print(" testPolarityShiftPositive1 in " .. testTimer)
+
+        -- polarity shift 2
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftPositive2", testPolarityShiftPositive, testTimer, self)
+        BigWigs:Print(" testPolarityShiftPositive2 in " .. testTimer)
+
+        -- polarity shift 3
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testPolarityShiftNegative", testPolarityShiftNegative, testTimer, self)
+        BigWigs:Print(" testPolarityShiftNegative in " .. testTimer)
+
+        -- disable
+        testTimer = testTimer + 5
+        self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
+        BigWigs:Print(" testDisable in " .. testTimer)
+    end
 end

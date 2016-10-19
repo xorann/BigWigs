@@ -68,6 +68,8 @@ L:RegisterTranslations("enUS", function() return {
 	curse_cmd = "curse",
 	curse_name = "Gehennas' Curse alert",
 	curse_desc = "Warn for Gehennas' Curse",
+            
+    ["Rain of Fire"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -98,6 +100,8 @@ L:RegisterTranslations("deDE", function() return {
 	curse_cmd = "curse",
 	curse_name = "Alarm f\195\188r Gehennas' Fluch",
 	curse_desc = "Warnen vor Gehennas' Fluch",
+        
+    ["Rain of Fire"] = "Feuerregen",
 } end)
 
 
@@ -161,7 +165,7 @@ function module:Event(msg)
 end
 
 function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-    if string.find(msg, "Rain of Fire") then
+    if string.find(msg, L["Rain of Fire"]) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
         self:RemoveWarningSign(icon.rain)
     end
