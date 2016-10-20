@@ -41,7 +41,7 @@ L:RegisterTranslations("enUS", function() return {
 	sandblasttrigger = "Ouro begins to perform Sand Blast",
 	sandblastannounce = "Incoming Sand Blast!",
 	sandblastwarn = "5 seconds until Sand Blast!",
-	sandblastbartext = "Sand Blast",
+	sandblastbartext = "Possible Sand Blast",
 
 	engage_message = "Ouro engaged! Possible Submerge in 90sec!",
 	possible_submerge_bar = "Possible submerge",
@@ -57,7 +57,7 @@ L:RegisterTranslations("enUS", function() return {
 	submergewarn = "5 seconds until Ouro Emerges!",
 	submergebartext = "Ouro Emerge",
 
-	berserktrigger = "%s goes into a berserker rage!",
+	berserktrigger = "Ouro gains Berserk.",
 	berserkannounce = "Berserk - Berserk!",
 	berserksoonwarn = "Berserk Soon - Get Ready!",
             
@@ -78,25 +78,25 @@ L:RegisterTranslations("deDE", function() return {
 	submerge_desc = "Warnung, wenn Ouro untertaucht.",
 
 	berserk_name = "Berserk",
-	berserk_desc = "Warn for when Ouro goes berserk",
+	berserk_desc = "Warnung, wenn Ouro Berserkerwut bekommt.",
 
-	sweeptrigger = "Ouro begins to cast Sweep", -- ?
+	sweeptrigger = "Ouro beginnt Feger zu wirken.", -- ?
 	sweepannounce = "Feger!",
 	sweepwarn = "5 Sekunden bis Feger!",
 	sweepbartext = "Feger",
 
-	sandblasttrigger = "Ouro begins to perform Sand Blast", -- ?
+	sandblasttrigger = "Ouro beginnt Sandstoß auszuführen.", -- ?
 	sandblastannounce = "Sandsto\195\159 in K\195\188rze!",
 	sandblastwarn = "5 Sekunden bis Sandsto\195\159!",
-	sandblastbartext = "Sandsto\195\159",
+	sandblastbartext = "Möglicher Sandsto\195\159",
 
-	engage_message = "Ouro engaged! Possible Submerge in 90sec!",
-	possible_submerge_bar = "Possible submerge",
+	engage_message = "Ouro angegriffen! Mögliches Untertauchen in 90sek!",
+	possible_submerge_bar = "Mögliches Untertauchen",
 
 	--emergetrigger = "Dirt Mound casts Summon Ouro Scarabs.",
-    emergetrigger = "Dirt Mound dies", -- ?
+    emergetrigger = "Erdhaufen stirbt.", -- ?
 	emergeannounce = "Ouro ist aufgetaucht!",
-	emergewarn = "15 sec to possible submerge!",
+	emergewarn = "15 sek bis mögliches Untertauchen!",
 	emergebartext = "Untertauchen",
 
 	submergetrigger = "Ouro casts Summon Ouro Mounds.", -- ?
@@ -104,7 +104,7 @@ L:RegisterTranslations("deDE", function() return {
 	submergewarn = "5 Sekunden bis Ouro auftaucht!",
 	submergebartext = "Auftauchen",
 
-	berserktrigger = "%s goes into a berserker rage!",
+	berserktrigger = "Ouro bekommt 'Berserker'.",
 	berserkannounce = "Berserk - Berserk!",
 	berserksoonwarn = "Berserkerwut in K\195\188rze - Bereit machen!",
 } end )
@@ -115,7 +115,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20006 -- To be overridden by the module!
+module.revision = 20007 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"sweep", "sandblast", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
@@ -127,7 +127,7 @@ local timer = {
 	sweep = 1.5,
 	sweepInterval = 20,
 	sandblast = 2,
-	sandblastInterval = 22,
+	sandblastInterval = 20,
 	nextEmerge = 30,
 }
 local icon = {
@@ -139,7 +139,7 @@ local syncName = {
 	sweep = "OuroSweep",
 	sandblast = "OuroSandblast",
 	emerge = "OuroEmerge2",
-	submerge = "OuroSubmerge2",
+	submerge = "OuroSubmerge3",
 	berserk = "OuroBerserk",
 }
 		
@@ -154,6 +154,7 @@ local berserkannounced = nil
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
+    self:RegisterEveng("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
     
 	self:RegisterEvent("UNIT_HEALTH")
 	
@@ -209,6 +210,12 @@ function module:UNIT_HEALTH( msg )
 	end
 end
 
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+    if msg == L["berserktrigger"] then
+		self:Sync(syncName.berserk)
+	end
+end
+
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
 	if string.find(msg, L["emergetrigger"]) then
 		self:Sync(syncName.emerge)
@@ -235,6 +242,7 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE( msg )
 	end
 end
 
+-- there is no emote ...
 function module:CHAT_MSG_MONSTER_EMOTE( msg )
 	if msg == L["berserktrigger"] then
 		self:Sync(syncName.berserk)
@@ -355,8 +363,9 @@ function module:PossibleSubmerge()
 end
 
 function module:SubmergeCheck()
+    -- if the player is dead he can't see ouro: omit this check
     if self.phase == "emerged" then
-        if not self:IsOuroVisible() then
+        if not UnitIsDeadOrGhost("player") and not self:IsOuroVisible() then
             self:DebugMessage("OuroSubmerge")
             self:Sync(syncName.submerge)
         end
