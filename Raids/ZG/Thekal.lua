@@ -15,41 +15,41 @@ L:RegisterTranslations("enUS", function() return {
 
     phase2_trigger = "fill me with your RAGE!",
 	roguename = "Zealot Zath",
-	shamanname = "Zealot Lor\'Khan",
+	shamanname = "Zealot Lor'Khan",
 	phaseone_message = "Troll Phase",
 	phasetwo_message = "Tiger Phase",
-	tigers_trigger = "High Priest Thekal performs Summon Zulian Guardians\.",
-	forcepunch_trigger = "High Priest Thekal begins to perform Force Punch\.",
+	tigers_trigger = "High Priest Thekal performs Summon Zulian Guardians.",
+	forcepunch_trigger = "High Priest Thekal begins to perform Force Punch.",
 	forcepunch_bar = "Force Punch",
-	heal_trigger = "Zealot Lor\'Khan begins to cast Great Heal\.",
+	heal_trigger = "Zealot Lor'Khan begins to cast Great Heal.",
 	enrage_trigger = "High Priest Thekal gains Enrage\.",
 	enrage_message = "Boss is enraged! Spam heals!",
 	tigers_message = "Incoming Tigers!",
 	heal_message = "Zealot Lor'Khan is Healing! Interrupt it!",
 	heal_bar = "Great Heal",
-	disarmself_trigger = "You are afflicted by Disarm\.",
-	disarmother_trigger = "(.+) is afflicted by Disarm\.",
-	mortalcleaveself_trigger = "You are afflicted by Mortal Cleave\.",
-	mortalcleaveother_trigger = "(.+) is afflicted by Mortal Cleave\.",
-	silenceself_trigger = "You are afflicted by Silence\.",
-	silenceother_trigger = "(.+) is afflicted by Silence\.",
-	silenceselfend_trigger = "Silence fades from you\.",
-	silenceotherend_trigger = "Silence fades from (.+)\.",
+	disarmself_trigger = "You are afflicted by Disarm.",
+	disarmother_trigger = "(.+) is afflicted by Disarm.",
+	mortalcleaveself_trigger = "You are afflicted by Mortal Cleave.",
+	mortalcleaveother_trigger = "(.+) is afflicted by Mortal Cleave.",
+	silenceself_trigger = "You are afflicted by Silence.",
+	silenceother_trigger = "(.+) is afflicted by Silence.",
+	silenceselfend_trigger = "Silence fades from you.",
+	silenceotherend_trigger = "Silence fades from (.+).",
 	silence_announce = "Silence on %s! Dispel it!",
 	mortalcleave_bar = "Mortal Cleave: %s",
 	silence_bar = "Silence: %s",
 	disarm_bar = "Disarm: %s",
-	bloodlustgain = "(.+) gains Bloodlust\.",
-	bloodlustend = "Bloodlust fades from (.+)\.",
+	bloodlustgain = "(.+) gains Bloodlust.",
+	bloodlustend = "Bloodlust fades from (.+).",
 	bloodlust_bar = "Bloodlust: %s",
-	bloodlustannounce = "Dispel Bloodlust from %s\!",
-	frenzybegin_trigger = "High Priest Thekal gains Frenzy\.",
-	frenzyend_trigger = "Frenzy fades from High Priest Thekal\.",
+	bloodlustannounce = "Dispel Bloodlust from %s!",
+	frenzybegin_trigger = "High Priest Thekal gains Frenzy.",
+	frenzyend_trigger = "Frenzy fades from High Priest Thekal.",
 	frenzyann = "Frenzy! Tranq now!",
 	frenzy_bar = "Frenzy",
-	death_trigger = "dies\.",
+	death_trigger = "dies.",
 	zath_trigger = "Zealot Zath",
-	lorkhan_trigger = "Zealot Lor\'Khan",
+	lorkhan_trigger = "Zealot Lor'Khan",
 	thekal_trigger = "High Priest Thekal",
 	thekalrescast_trigger = "High Priest Thekal begins to cast Resurrection.",
 	zathrescast_trigger = "Zealot Zath begins to cast Resurrection.",
@@ -96,6 +96,9 @@ L:RegisterTranslations("enUS", function() return {
 	phase_desc = "Announces the boss' phase transitions.",
             
     ["You have slain %s!"] = true,
+    ["Knockback"] = true,
+    ["New Adds"] = true,
+    ["Next Bloodlust"] = true,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -183,6 +186,9 @@ L:RegisterTranslations("deDE", function() return {
 	phase_name = "Phasen-Benachrichtigung",
 	phase_desc = "Verk\195\188ndet den Phasenwechsel des Bosses.",
     ["You have slain %s!"] = "Ihr habt %s getötet!",
+    ["Knockback"] = "Rückschlag",
+    ["New Adds"] = "Neue Tiger",
+    ["Next Bloodlust"] = "Nächster Blutrausch",
 } end )
 
 
@@ -199,12 +205,16 @@ module.toggleoptions = {"bloodlust", "silence", "cleave", "heal", "disarm", -1, 
 
 -- locals
 local timer = {
-	charge = 10,
-	teleport = 30,
+    forcePunch = 1,
+    knockback = 7,
+    adds = 28,
+    bloodlust = 33,
 }
 local icon = {
-	charge = "Spell_Frost_FrostShock",
-	teleport = "Spell_Arcane_Blink",
+    forcePunch = "Interface\\Icons\\INV_Gauntlets_31",
+    knockback = "Interface\\Icons\\Ability_WarStomp",
+    adds = "Interface\\Icons\\Ability_Hunter_Pet_Cat",
+    bloodlust = "Interface\\Icons\\Spell_Nature_BloodLust",
 }
 local syncName = {
 	phase2 = "ThekalPhaseTwo1",
@@ -258,7 +268,6 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-    self.phase      = 0
 	zathdead = nil
 	lorkhandead = nil
 	thekaldead = nil
@@ -280,6 +289,7 @@ end
 
 -- override: only check for boss death in phase 2
 function module:CheckForBossDeath(msg)
+    self:DebugMessage("thekal death; phase: " .. self.phase .. " msg: " .. msg)
 	if self.phase == 2 then
 		BigWigs:CheckForBossDeath()
     elseif msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
@@ -297,7 +307,7 @@ function module:Event(msg)
 	local _,_,disarmother_triggerword = string.find(msg, L["disarmother_trigger"])
 	local _,_,mortalcleaveother_triggerword = string.find(msg, L["mortalcleaveother_trigger"])
 	if msg == L["tigers_trigger"] then
-		self:TriggerEvent("BigWigs_Message", L["tigers_message"], "Important")
+		self:Message(L["tigers_message"], "Important")
 	elseif msg == L["heal_trigger"] then
 		self:Sync(syncName.heal)
 	elseif msg == L["silenceself_trigger"] then
@@ -338,15 +348,15 @@ function module:CHAT_MSG_MONSTER_EMOTE(msg)
 		if arg2 == L["zath_trigger"] then
 			zathdead = true
 			if self.db.profile.bloodlust then
-				self:TriggerEvent("BigWigs_StopBar", string.format(L["bloodlust_bar"], L["zath_trigger"]))
+				self:RemoveBar(string.format(L["bloodlust_bar"], L["zath_trigger"]))
 			end
 		elseif arg2 == L["lorkhan_trigger"] then
 			lorkhandead = true
 			if self.db.profile.heal then
-				self:TriggerEvent("BigWigs_StopBar", L["heal_bar"])
+				self:RemoveBar(L["heal_bar"])
 			end
 			if self.db.profile.bloodlust then
-				self:TriggerEvent("BigWigs_StopBar", string.format(L["bloodlust_bar"], L["lorkhan_trigger"]))
+				self:RemoveBar(string.format(L["bloodlust_bar"], L["lorkhan_trigger"]))
 			end
 		elseif arg2 == L["thekal_trigger"] then
 			thekaldead = true
@@ -356,7 +366,7 @@ end
 
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	if msg == L["forcepunch_trigger"] then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["forcepunch_bar"], rest), 1, "Interface\\Icons\\INV_Gauntlets_31")
+		self:Bar(L["forcepunch_bar"], timer.forcePunch, icon.forcePunch)
 	end
 end
 
@@ -367,7 +377,7 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 	elseif msg == L["enrage_trigger"] then
 		self:Sync(syncName.enrage)
 	elseif bloodlustgainword then
-		self:Sync(syncName.bloodlust .. " "..bloodlustgainword)
+		self:Sync(syncName.bloodlust .. " " .. bloodlustgainword)
 	end
 end
 
@@ -394,40 +404,40 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.phase2 and self.phase < 2 then
         self.phase = 2
 		if self.db.profile.heal then
-			self:TriggerEvent("BigWigs_StopBar", L["heal_bar"])
+			self:RemoveBar(L["heal_bar"])
 		end
 		if self.db.profile.bloodlust then
-			self:TriggerEvent("BigWigs_StartBar", self, "Next Bloodlust", 29, "Interface\\Icons\\Spell_Nature_BloodLust")
+			self:Bar(L["Next Bloodlust"], timer.bloodlust, icon.bloodlust)
 		end
 		if self.db.profile.phase then
-			self:TriggerEvent("BigWigs_Message", L["phasetwo_message"], "Attention")
+			self:Message(L["phasetwo_message"], "Attention")
 		end
-        self:TriggerEvent("BigWigs_StartBar", self, "New Adds", 24, "Interface\\Icons\\Ability_Hunter_Pet_Cat")
-        self:TriggerEvent("BigWigs_StartBar", self, "Knockback", 5, "Interface\\Icons\\Ability_WarStomp")
+        self:Bar(L["New Adds"], timer.adds, icon.adds)
+        self:Bar(L["Knockback"], timer.knockback, icon.knockback)
 	elseif sync == syncName.heal and self.db.profile.heal then
-		self:TriggerEvent("BigWigs_Message", L["heal_message"], "Attention", "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["heal_bar"], 4, "Interface\\Icons\\Spell_Holy_Heal", true, "Black")
+		self:Message(L["heal_message"], "Attention", "Alarm")
+		self:Bar(L["heal_bar"], 4, "Interface\\Icons\\Spell_Holy_Heal", true, "Black")
 	elseif sync == syncName.frenzy and self.db.profile.frenzy then
-		self:TriggerEvent("BigWigs_Message", L["frenzyann"], "Important", true, "Alarm")
-		self:TriggerEvent("BigWigs_StartBar", self, L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
+		self:Message(L["frenzyann"], "Important", true, "Alarm")
+		self:Bar(L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
 	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
-        self:TriggerEvent("BigWigs_StopBar", self, L["frenzy_bar"])
+        self:RemoveBar(self, L["frenzy_bar"])
 	elseif sync == syncName.bloodlust and self.db.profile.bloodlust then
-		self:TriggerEvent("BigWigs_Message", string.format(L["bloodlustannounce"], rest), "Important")
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["bloodlust_bar"], rest), 30, "Interface\\Icons\\Spell_Nature_BloodLust")
+		self:Message(string.format(L["bloodlustannounce"], rest), "Important")
+		self:Bar(string.format(L["bloodlust_bar"], rest), 30, "Interface\\Icons\\Spell_Nature_BloodLust")
 	elseif sync == syncName.bloodlustOver and self.db.profile.bloodlust then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["bloodlust_bar"], rest))
+		self:RemoveBar(self, string.format(L["bloodlust_bar"], rest))
 	elseif sync == syncName.silence and self.db.profile.silence then
-		self:TriggerEvent("BigWigs_Message", string.format(L["silence_announce"], rest), "Attention")
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["silence_bar"], rest), 6, "Interface\\Icons\\Spell_Holy_Silence", true, "White")
+		self:Message(string.format(L["silence_announce"], rest), "Attention")
+		self:Bar(string.format(L["silence_bar"], rest), 6, "Interface\\Icons\\Spell_Holy_Silence", true, "White")
 	elseif sync == syncName.silenceOver and self.db.profile.silence then
-		self:TriggerEvent("BigWigs_StopBar", self, string.format(L["silence_bar"], rest))
+		self:RemoveBar(self, string.format(L["silence_bar"], rest))
 	elseif sync == syncName.mortalcleave and self.db.profile.cleave then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["mortalcleave_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow")
+		self:Bar(string.format(L["mortalcleave_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow")
 	elseif sync == syncName.disarm and self.db.profile.disarm then
-		self:TriggerEvent("BigWigs_StartBar", self, string.format(L["disarm_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_Disarm", true, "Yellow")
+		self:Bar(string.format(L["disarm_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_Disarm", true, "Yellow")
 	elseif sync == syncName.enrage and self.db.profile.enraged then
-		self:TriggerEvent("BigWigs_Message", L["enrage_message"], "Urgent")
+		self:Message(L["enrage_message"], "Urgent")
 	end
 end
 
