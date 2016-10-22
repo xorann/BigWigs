@@ -291,7 +291,7 @@ end
 function module:CheckForBossDeath(msg)
     self:DebugMessage("thekal death; phase: " .. self.phase .. " msg: " .. msg)
 	if self.phase == 2 then
-		BigWigs:CheckForBossDeath()
+		BigWigs:CheckForBossDeath(msg, self)
     elseif msg == string.format(UNITDIESOTHER, self:ToString()) or msg == string.format(L["You have slain %s!"], self.translatedName) then
         self:Sync(syncName.phase2)
     end
