@@ -171,8 +171,8 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:Bar("Next Hex", timer.firstHex, icon.hex)
-    self:Bar("Next Healing Ward", timer.firstHealing, icon.healing)
-    self:Bar("Next Brain Wash", timer.firstBrainwash, icon.brainwash)
+    --self:Bar("Next Healing Ward", timer.firstHealing, icon.healing)
+    --self:Bar("Next Brain Wash", timer.firstBrainwash, icon.brainwash)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -202,12 +202,12 @@ end
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
     if self.db.profile.brainwash and string.find(msg, L["triggerbrainwash"]) then
 		self:Message(L["warnbrainwash"], "Attention", true, "Alarm")
-		self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")
-        self:Bar(L["brainwash_next_bar"], timer.brainwash, icon.brainwash)
+		--self:Bar(L["brainwash_bar"], timer.brainwashUptime, icon.brainwash, true, "Black")
+        --self:Bar(L["brainwash_next_bar"], timer.brainwash, icon.brainwash)
 	elseif self.db.profile.healingward and msg == L["triggerhealing"] then
 		self:Message(L["warnhealing"], "Attention", true, "Alarm")
-		self:Bar(L["healing_bar"], timer.healingUptime, icon.healing, true, "Yellow")
-        self:Bar(L["healing_next_bar"], timer.healing, icon.healing)
+		--self:Bar(L["healing_bar"], timer.healingUptime, icon.healing, true, "Yellow")
+        --self:Bar(L["healing_next_bar"], timer.healing, icon.healing)
 	end
 end
 
