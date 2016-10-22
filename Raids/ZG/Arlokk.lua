@@ -200,6 +200,7 @@ end
 ------------------------------
 
 function module:PantherPhase()
+    vanished = false
 	self:CancelScheduledEvent("checkunvanish")
 	if self.db.profile.vanish then
 		self:RemoveBar(L["vanish_bar"])
@@ -208,6 +209,7 @@ function module:PantherPhase()
 	if self.db.profile.phase then
 		self:Message(L["pantherphase_message"], "Attention")
 	end
+    
 	if not vanished then
 		self:ScheduleRepeatingEvent("checkvanish", self.CheckVanish, 0.5, self)
 	end
@@ -234,36 +236,31 @@ end
 
 function module:CheckUnvanish()
     self:DebugMessage("CheckUnvanish")
-	if UnitExists("target") and UnitName("target") == self.translatedName and UnitExists("targettarget") then
-		self:Sync(syncName.pantherPhase)
-		--self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
-		return
-	end
-	local num = GetNumRaidMembers()
-	for i = 1, num do
-		local raidUnit = string.format("raid%starget", i)
-		if UnitExists(raidUnit) and UnitName(raidUnit) == self.translatedName and UnitExists(raidUnit.."target") then
-			self:Sync(syncName.pantherPhase)
-			--self:ScheduleEvent("trollphaseinc", "BigWigs_SendSync", timer.vanish, syncName.trollPhase)
-			return
-		end
-	end
+    if IsArlokkVisible() then
+        self:Sync(syncName.pantherPhase)
+    end
 end
-
 function module:CheckVanish()
     self:DebugMessage("CheckVanish")
-	if UnitExists("target") and UnitName("target") == self.translatedName and UnitExists("targettarget") then
-		return
-	end
-	local num = GetNumRaidMembers()
-	for i = 1, num do
-		local raidUnit = string.format("raid%starget", i)
-		if UnitExists(raidUnit) and UnitName(raidUnit) == self.translatedName and UnitExists(raidUnit.."target") then
-			return
+    if not IsArlokkVisible() then
+        self:Sync(syncName.vanishPhase)
+    end	
+end
+function module:IsArlokkVisible()
+	if UnitName("playertarget") == self.translatedName then
+		return true
+	else
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid"..i.."target") == self.translatedName then
+				return true
+			end
 		end
 	end
-	self:Sync(syncName.vanishPhase)
+    
+    return false
 end
+
+
 
 function module:Test()
     -- /run local m=BigWigs:GetModule("High Priestess Arlokk");m:Test()
