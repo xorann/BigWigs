@@ -364,12 +364,12 @@ end
 function BigWigs.modulePrototype:GetWipeSync()
 	return "BossWipe"
 end
-function BigWigs.modulePrototype:SendWipeSync()
+--[[function BigWigs.modulePrototype:SendWipeSync()
     if self.bossSync then
         --self:TriggerEvent("BigWigs_SendSync", "BossEngaged "..self:ToString())
 		self:Sync(self:GetWipeSync() .. " " .. self.bossSync)
     end
-end
+end]]
 
 function BigWigs.modulePrototype:GetBossDeathSync()
 	return "BossDeath"
@@ -501,7 +501,8 @@ function BigWigs:CheckForWipe(module)
         if not inCombat then
             module:DebugMessage("Wipe detected for module ["..module:ToString().."].")
             module:CancelScheduledEvent(module:ToString().."_CheckWipe")
-            module:SendWipeSync()
+            self:TriggerEvent("BigWigs_RebootModule", module:ToString())
+			--module:SendWipeSync()
         end
     end
 end
@@ -1061,10 +1062,10 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
 		if module:IsBossModule() then
 			module:Engage() 
 		end
-	elseif module and sync == module:GetWipeSync() then
+	--[[elseif module and sync == module:GetWipeSync() then
 		if module:IsBossModule() and BigWigs:IsModuleActive(module) then
 			self:TriggerEvent("BigWigs_RebootModule", moduleName)
-		end
+		end]]
     elseif module and sync == module:GetBossDeathSync() then
 		if module:IsBossModule() and BigWigs:IsModuleActive(module) then
             module:Victory()

@@ -179,7 +179,8 @@ function module:Test(long)
 		module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["etrigger"])
 	end
 	local function testDisable()
-		module:SendWipeSync()
+		--module:SendWipeSync()
+		BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
 		BigWigs:DisableModule(module:ToString())
 	end
 	

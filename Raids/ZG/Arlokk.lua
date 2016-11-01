@@ -275,7 +275,8 @@ function module:Test()
         BigWigs:Print("testCheckUnvanish")
     end
 	local function testDisable()
-		module:SendWipeSync()
+		--module:SendWipeSync()
+		BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
 		BigWigs:DisableModule(module:ToString())
         BigWigs:Print("Test finished")
         self.translatedName = translatedName
