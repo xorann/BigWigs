@@ -102,12 +102,12 @@ module:RegisterYellEngage(L["trigger1"])
 function module:OnEnable()	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	
-	self.warnsets = {}
-	for i=0,8 do 
-		self.warnsets[L["trigger"..i]] = L["warn"..i] 
-	end
-    
-    wave = 0
+	--self.warnsets = {}
+	--for i=0,8 do 
+	--	self.warnsets[L["trigger"..i]] = L["warn"..i] 
+	--end
+    --
+    --wave = 0
 end
 
 -- called after module is enabled and after each wipe
@@ -116,7 +116,7 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
-    wave = 1
+    --wave = 1
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -136,7 +136,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
     --if string.find(msg, L["trigger1"]) then
         
     
-	if self.db.profile.wave and msg and self.warnsets[msg] then
+	--[[if self.db.profile.wave and msg and self.warnsets[msg] then
 		self:Message(self.warnsets[msg], "Urgent")
         
         local i = tonumber(string.sub(L:GetReverseTranslation(self.warnsets[msg]), 5))
@@ -155,5 +155,5 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
         wave = 2
         self:RemoveBar(L["warn2"])
         self:Bar(L["warn3"], timer.wave - 5, icon.wave) -- kill yell around 5s later
-    end
+    end]]
 end
