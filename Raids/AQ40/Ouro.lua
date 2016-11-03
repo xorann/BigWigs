@@ -154,7 +154,7 @@ local berserkannounced = nil
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:RegisterEveng("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
+    self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
     
 	self:RegisterEvent("UNIT_HEALTH")
 	
@@ -217,7 +217,7 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
-	if string.find(msg, L["emergetrigger"]) then
+	if string.find(msg, L["emergetrigger"]) and self.phase != "berserk" then
 		self:Sync(syncName.emerge)
 	elseif string.find(msg, L["submergetrigger"]) then
 		self:Sync(syncName.submerge)
@@ -227,7 +227,7 @@ end
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     BigWigs:CheckForBossDeath(msg, self)
 	
-    if string.find(msg, L["emergetrigger"]) then
+    if string.find(msg, L["emergetrigger"]) and self.phase ~= "berserk" then
         self:Sync(syncName.emerge)
     end
 end
@@ -340,6 +340,8 @@ function module:Submerge()
 end
 
 function module:Berserk()
+    self.phase = "berserk"
+    
 	self:CancelDelayedMessage(L["emergewarn"])
 	self:RemoveBar(L["emergebartext"])
 	self:RemoveBar(L["possible_submerge_bar"])
