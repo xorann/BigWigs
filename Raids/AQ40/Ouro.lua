@@ -217,7 +217,7 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
 end
 
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF( msg )
-	if string.find(msg, L["emergetrigger"]) and self.phase != "berserk" then
+	if string.find(msg, L["emergetrigger"]) and self.phase ~= "berserk" then
 		self:Sync(syncName.emerge)
 	elseif string.find(msg, L["submergetrigger"]) then
 		self:Sync(syncName.submerge)
