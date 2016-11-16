@@ -189,15 +189,15 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:Message(L["wingbuffet_message"], "Important")
         self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
-		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet, icon.wingbuffet)
 	elseif sync == syncName.shadowflame and self.db.profile.shadowflame then
         self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
 		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame, true, "red")
-        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
+        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame, icon.shadowflame)
 	elseif sync == syncName.frenzy and self.db.profile.frenzy then
 		self:Message(L["frenzy_message"], "Important", nil, true, "Alert")
 		self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
-        if playerClass == "HUNTER" then
+        if playerClass == "HUNTER" or true then
             self:WarningSign(icon.tranquil, timer.frenzy, true)
         end
         lastFrenzy = GetTime()

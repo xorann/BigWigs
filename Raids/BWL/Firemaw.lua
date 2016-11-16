@@ -170,11 +170,11 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.wingbuffet and self.db.profile.wingbuffet then
         self:Message(L["wingbuffet_message"], "Important")
 		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "Black")
-		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet - timer.wingbuffetCast, icon.wingbuffet)
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet, icon.wingbuffet)
         self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 	elseif sync == syncName.shadowflame and self.db.profile.shadowflame then
         self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
 		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame)
-        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
+        self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame, icon.shadowflame)
 	end
 end

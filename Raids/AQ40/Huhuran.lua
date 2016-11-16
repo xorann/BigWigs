@@ -25,9 +25,13 @@ L:RegisterTranslations("enUS", function() return {
 	berserk_name = "Berserk Alert",
 	berserk_desc = "Warn for Berserk",
 
-	frenzytrigger = "%s gains Frenzy.",
+	frenzygain_trigger = "Princess Huhuran gains Frenzy.",
+    frenzyend_trigger = "Frenzy fades from Princess Huhuran.",
+    frenzy_bar = "Frenzy",
+    frenzy_Nextbar = "Next Frenzy",
+	frenzy_message = "Frenzy - Tranq Shot!",
+            
 	berserktrigger = "%s gains Berserk!",
-	frenzywarn = "Frenzy - Tranq Shot!",
 	berserkwarn = "Berserk! Berserk! Berserk!",
 	berserksoonwarn = "Berserk Soon!",
 	stingtrigger = "afflicted by Wyvern Sting",
@@ -53,9 +57,15 @@ L:RegisterTranslations("deDE", function() return {
 	berserk_name = "Berserkerwut",
 	berserk_desc = "Warnung, wenn Huhuran in Berserkerwut verf\195\164llt.",
 
-	frenzytrigger = "%s ger\195\164t in Raserei!", -- translation missing
+    --frenzygain_trigger = "Princess Huhuran gains Frenzy.",
+    --frenzyend_trigger = "Frenzy fades from Princess Huhuran.",
+    frenzygain_trigger = "Prinzessin Huhuran ger\195\164t in Raserei!", -- translation missing
+    frenzyend_trigger = "Wutanfall schwindet von Prinzessin Huhuran.",
+    frenzy_bar = "Frenzy",
+    frenzy_Nextbar = "Next Frenzy",
+	frenzy_message = "Frenzy - Tranq Shot!",
+            
 	berserktrigger = "%s verf\195\164llt in Berserkerwut!", -- translation missing
-	frenzywarn = "Raserei - Einlullender Schuss!",
 	berserkwarn = "Berserkerwut!",
 	berserksoonwarn = "Berserkerwut in K\195\188rze!",
 	stingtrigger = "von Stich des Flügeldrachen betroffen",
@@ -86,16 +96,23 @@ module.toggleoptions = {"wyvern", "frenzy", "berserk", "bosskill"}
 local timer = {
 	berserk = 300,
 	sting = 20,
+    frenzy = 10,
 }
 local icon = {
 	berserk = "INV_Shield_01",
 	sting = "INV_Spear_02",
+	frenzy = "Ability_Druid_ChallangingRoar",
+	tranquil = "Spell_Nature_Drowsy",
 }
 local syncName = {
     sting = "HuhuranWyvernSting",
+    frenzy = "HuhuranFrenzyGain",
+    frenzyOver = "HuhuranFrenzyFade",
 }
 
 local berserkannounced = false
+--local lastFrenzy = 0
+local _, playerClass = UnitClass("player")
 
 --[[
 38:47 pull
@@ -116,6 +133,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "checkSting")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "checkSting")
+    self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "FrenzyCheck")
+	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "FrenzyCheck")
     
     self:ThrottleSync(5, syncName.sting)
 end
@@ -146,10 +165,18 @@ end
 --      Event Handlers      --
 ------------------------------
 
+function module:FrenzyCheck(msg)
+    if msg == L["frenzygain_trigger"] then
+		self:Sync(syncName.frenzy)
+	elseif msg == L["frenzyend_trigger"] then
+		self:Sync(syncName.frenzyOver)
+	end
+end
+
 function module:CHAT_MSG_MONSTER_EMOTE(arg1)
-	if self.db.profile.frenzy and arg1 == L["frenzytrigger"] then
+	--[[if self.db.profile.frenzy and arg1 == L["frenzytrigger"] then
 		self:Message(L["frenzywarn"], "Urgent")
-	elseif self.db.profile.berserk and arg1 == L["berserktrigger"] then
+	else]]if self.db.profile.berserk and arg1 == L["berserktrigger"] then
 		self:CancelDelayedMessage(L["berserkwarn1"])
 		self:CancelDelayedMessage(L["berserkwarn2"])
 		self:CancelDelayedMessage(L["berserkwarn3"])
@@ -192,6 +219,35 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:Message(L["stingwarn"], "Urgent")
         self:Bar(L["bartext"], timer.sting, icon.sting)
         self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent", nil, nil, true)
+    elseif sync == syncName.frenzyGain then
+        self:FrenzyGain()
+    elseif sync == syncName.frenzyOver then
+        self:FrenzyFade()
     end
 end
 
+------------------------------
+--      Sync Handlers	    --
+------------------------------
+
+function module:FrenzyGain()
+    if self.db.profile.frenzy then
+		self:Message(L["frenzy_message"], "Important", nil, true, "Alert")
+		self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
+        if playerClass == "HUNTER" or true then
+            self:WarningSign(icon.tranquil, timer.frenzy, true)
+        end
+        --lastFrenzy = GetTime()
+    end
+end
+
+function module:FrenzyFade()
+    if self.db.profile.frenzy then
+        self:RemoveBar(L["frenzy_bar"])
+        self:RemoveWarningSign(icon.tranquil)
+        --[[if lastFrenzy ~= 0 then
+            local NextTime = (lastFrenzy + timer.frenzy) - GetTime()
+            self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")
+        end]]
+    end
+end

@@ -200,11 +200,11 @@ local timer = {
 	mc = 15,
 	shadowflame = 19,
 	shadowflameCast = 2,
-	fear = 28.5,
+	fear = 27,
 	fearCast = 1.5,
 	landing = 15,
-	firstClasscall = 37,
-	firstFear = 30,
+	firstClasscall = 24,
+	firstFear = 25,
 }
 local icon = {
 	mobspawn = "Spell_Holy_PrayerOfHealing",
@@ -391,7 +391,7 @@ function module:Shadowflame()
 	if self.db.profile.shadowflame then
 		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame)
 		self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:DelayedBar(timer.shadowflameCast, L["shadowflame_bar"], timer.shadowflame - timer.shadowflameCast, icon.shadowflame)
+		self:DelayedBar(timer.shadowflameCast, L["shadowflame_bar"], timer.shadowflame, icon.shadowflame)
 	end
 end
 
@@ -400,7 +400,7 @@ function module:Fear()
         self:RemoveBar(L["fear_bar"])
 		self:Message(L["fear_warning"], "Important", true, "Alert")
 		self:Bar(L["fear_warn"], timer.fearCast, icon.fear)
-		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear - timer.fearCast, icon.fear)
+		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear, icon.fear)
         --self:WarningSign(icon.fear, 5)
 	end
 end

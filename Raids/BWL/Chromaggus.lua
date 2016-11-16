@@ -515,7 +515,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Message(string.format(L["breath_message"], spellName), "Important")
 		
 		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important", nil, nil, true)
-		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval - timer.breathCast, L["icon"..rest], true, L["breathcolor"..rest])
+		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval, L["icon"..rest], true, L["breathcolor"..rest])
 		--self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
 		--self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
         
