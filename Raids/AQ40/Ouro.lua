@@ -296,28 +296,30 @@ function module:DoSubmergeCheck()
     self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
 end
 function module:Emerge()
-    self.phase = "emerged"
-    
-    self:CancelScheduledEvent("bwourosubmergecheck")
-    self:ScheduleEvent("bwourosubmergecheck", self.DoSubmergeCheck, 10, self)
-    --self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
-    self:CancelScheduledEvent("bwsubmergewarn")
-    self:RemoveBar(L["submergebartext"])
-    
-	if self.db.profile.emerge then
-		self:Message(L["emergeannounce"], "Important", false, "Beware")
-		self:PossibleSubmerge()
-	end
+    if self.phase ~= "berserk" then
+        self.phase = "emerged"
 
-	if self.db.profile.sweep then
-		self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important", nil, nil, true)
-		self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
-	end	
+        self:CancelScheduledEvent("bwourosubmergecheck")
+        self:ScheduleEvent("bwourosubmergecheck", self.DoSubmergeCheck, 10, self)
+        --self:ScheduleRepeatingEvent("bwourosubmergecheck", self.SubmergeCheck, 1, self)
+        self:CancelScheduledEvent("bwsubmergewarn")
+        self:RemoveBar(L["submergebartext"])
 
-	if self.db.profile.sandblast then
-		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
-		self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
-	end
+        if self.db.profile.emerge then
+            self:Message(L["emergeannounce"], "Important", false, "Beware")
+            self:PossibleSubmerge()
+        end
+
+        if self.db.profile.sweep then
+            self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important", nil, nil, true)
+            self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
+        end	
+
+        if self.db.profile.sandblast then
+            self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
+            self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
+        end
+    end
 end
 
 function module:Submerge()
