@@ -244,7 +244,7 @@ end
 function module:FrenzyFade()
     if self.db.profile.frenzy then
         self:RemoveBar(L["frenzy_bar"])
-        self:RemoveWarningSign(icon.tranquil)
+        self:RemoveWarningSign(icon.tranquil, true)
         --[[if lastFrenzy ~= 0 then
             local NextTime = (lastFrenzy + timer.frenzy) - GetTime()
             self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")

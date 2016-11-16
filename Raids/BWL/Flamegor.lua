@@ -84,7 +84,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20007 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"wingbuffet", "shadowflame", "frenzy", "bosskill"}
@@ -203,10 +203,53 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         lastFrenzy = GetTime()
 	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
         self:RemoveBar(L["frenzy_bar"])
-        self:RemoveWarningSign(icon.tranquil)
+        self:RemoveWarningSign(icon.tranquil, true)
         if lastFrenzy ~= 0 then
             local NextTime = (lastFrenzy + timer.frenzy) - GetTime()
             self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")
         end
 	end
+end
+
+
+----------------------------------
+--      Module Test Function    --
+----------------------------------
+
+function module:Test()
+    -- /run local m=BigWigs:GetModule("Ouro");m:Test()
+    local function frenzy()
+        self:Event(L["frenzygain_trigger"])
+    end
+    local function frenzyEnd()
+        self:Event(L["frenzyend_trigger"])
+    end
+    local function deactivate()
+        self:DebugMessage("deactivate")
+        self:Disable()
+        --[[self:DebugMessage("deactivate ")
+        if self.phase then
+            self:DebugMessage("deactivate module "..self:ToString())
+            --BigWigs:ToggleModuleActive(self, false) 
+            self.core:ToggleModuleActive(self, false)
+            self.phase = nil
+        end]]
+    end
+    
+    BigWigs:Print("module Test started")
+    BigWigs:Print("  frenzy after 5s")
+    
+    
+    -- immitate CheckForEngage
+    self:SendEngageSync()    
+    
+    -- sweep after 5s
+    self:ScheduleEvent(self:ToString().."Test_frenzy", frenzy, 5, self)
+    
+    -- sweep after 5s
+    self:ScheduleEvent(self:ToString().."Test_frenzyEnd", frenzyEnd, 10, self)
+    
+    -- reset after 60s
+    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 15, self)
+    
 end

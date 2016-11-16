@@ -194,5 +194,5 @@ function module:Frenzy()
 end
 function module:FrenzyOver()
 	self:RemoveBar(L["frenzy_bar"])
-    self:RemoveWarningSign(icon.tranquil)
+    self:RemoveWarningSign(icon.tranquil, true)
 end
