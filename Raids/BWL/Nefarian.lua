@@ -259,6 +259,7 @@ function module:OnEnable()
 	
 	self:ThrottleSync(10, syncName.shadowflame)
 	self:ThrottleSync(15, syncName.fear)
+	self:ThrottleSync(0, syncName.addDead)
 end
 
 -- called after module is enabled and after each wipe
@@ -389,18 +390,19 @@ end
 
 function module:Shadowflame()
 	if self.db.profile.shadowflame then
-		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame)
+		self:RemoveBar(L["shadowflame_bar"]) -- remove timer bar
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame) -- show cast bar
 		self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:DelayedBar(timer.shadowflameCast, L["shadowflame_bar"], timer.shadowflame, icon.shadowflame)
+		self:DelayedBar(timer.shadowflameCast, L["shadowflame_bar"], timer.shadowflame, icon.shadowflame) -- delayed timer bar
 	end
 end
 
 function module:Fear()
 	if self.db.profile.fear then
-        self:RemoveBar(L["fear_bar"])
+        self:RemoveBar(L["fear_bar"]) -- remove timer bar
 		self:Message(L["fear_warning"], "Important", true, "Alert")
-		self:Bar(L["fear_warn"], timer.fearCast, icon.fear)
-		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear, icon.fear)
+		self:Bar(L["fear_warn"], timer.fearCast, icon.fear) -- show cast bar
+		self:DelayedBar(timer.fearCast, L["fear_bar"], timer.fear, icon.fear) -- delayed timer bar
         --self:WarningSign(icon.fear, 5)
 	end
 end

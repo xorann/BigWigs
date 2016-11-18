@@ -276,19 +276,21 @@ end
 
 function module:Sweep()
 	if self.db.profile.sweep then
-        self:Bar(L["sweepannounce"], timer.sweep, icon.sweep)
+		self:RemoveBar(L["sweepbartext"]) -- remove timer bar
+        self:Bar(L["sweepannounce"], timer.sweep, icon.sweep) -- show cast bar
 		self:Message(L["sweepannounce"], "Important", true, "Alarm")
         self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important", nil, nil, true)
-		self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
+		self:DelayedBar(timer.sweep, L["sweepbartext"], timer.sweepInterval, icon.sweep) -- delayed timer bar
 	end
 end
 
 function module:Sandblast()
 	if self.db.profile.sandblast then
-        self:Bar(L["sandblastannounce"], timer.sandblast, icon.sandblast)
+		self:RemoveBar(L["sandblastbartext"]) -- remove timer bar
+        self:Bar(L["sandblastannounce"], timer.sandblast, icon.sandblast) -- show cast bar
 		self:Message(L["sandblastannounce"], "Important", true, "Alert")
 		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
-		self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
+		self:DelayedBar(timer.sandblast, L["sandblastbartext"], timer.sandblastInterval, icon.sandblast) -- delayed timer bar
 	end
 end
 

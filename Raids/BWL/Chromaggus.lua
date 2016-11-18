@@ -511,13 +511,12 @@ function module:BigWigs_RecvSync(sync, rest, nick)
             breathCache[table.getn(breathCache)+1] = spellName
         end
         local b = "breath"..rest
-		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, L["icon"..rest])
+		self:RemoveBar(L["icon"..rest]) -- remove timer bar
+		self:Bar(string.format( L["castingbar"], spellName), timer.breathCast, L["icon"..rest]) -- show cast bar
 		self:Message(string.format(L["breath_message"], spellName), "Important")
 		
 		self:DelayedMessage(timer.breathInterval - 5, string.format(L["breath_warning"], spellName), "Important", nil, nil, true)
-		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval, L["icon"..rest], true, L["breathcolor"..rest])
-		--self:ScheduleEvent("bwchromaggusbreath"..spellName, "BigWigs_Message", 55, string.format(L["breath_warning"], spellName), "Important")
-		--self:ScheduleEvent("BigWigs_StartBar", 2, self, spellName, 58, L["icon"..rest], true, L["breathcolor"..rest])
+		self:DelayedBar(timer.breathCast, spellName, timer.breathInterval, L["icon"..rest], true, L["breathcolor"..rest]) -- delayed timer bar
         
         if self.db.profile.breathcd then
             self:DelayedSound(timer.breathInterval - 10, "Ten")
@@ -544,7 +543,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
                 self:Bar(L["frenzy_Nextbar"], NextTime, icon.frenzy, true, "white")
             end
 		end
-        self:RemoveWarningSign(icon.tranquil)
+        self:RemoveWarningSign(icon.tranquil, true)
 		frenzied = nil
 	end
 end

@@ -407,6 +407,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 				self:Message(string.format(L["egg_message"], self.eggs), "Positive")
 			end
             self:TriggerEvent("BigWigs_SetCounterBar", self, "Eggs destroyed", (30 - self.eggs))
+		elseif rest == (self.eggs + 1) and rest == 30 and self.phase ~= 2 then
+			self:Sync(syncName.phase2)
 		end
 	elseif sync == syncName.eggStart then
 		--self:CancelScheduledEvent("destroyegg_check")

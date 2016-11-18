@@ -317,11 +317,11 @@ end
 
 function module:Fear()
 	if self.db.profile.onyfear then
-		self:RemoveBar(L["fear_next"]) -- has 1.5s left
+		self:RemoveBar(L["fear_next"]) -- remove timer bar
 		
 		self:Message(L["feartext"], "Important", true, "Alarm")
-		self:Bar(L["fear_cast"], timer.fearCast, icon.fear, true, "white")
-		self:DelayedBar(timer.fearCast, L["fear_next"], timer.fear, icon.fear)
+		self:Bar(L["fear_cast"], timer.fearCast, icon.fear, true, "white") -- add cast bar
+		self:DelayedBar(timer.fearCast, L["fear_next"], timer.fear, icon.fear) -- delayed timer bar
         self:WarningSign(icon.fear, 5)
 	end
 end

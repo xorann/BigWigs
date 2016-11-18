@@ -201,8 +201,9 @@ end
 function module:WingBuffet()
 	if self.db.profile.wingbuffet then
 		self:Message(L["wingbuffet_message"], "Important")
-		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black")
-		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet, icon.wingbuffet)
+		self:RemoveBar(L["wingbuffet_bar"]) -- remove timer bar
+		self:Bar(L["wingbuffetcast_bar"], timer.wingbuffetCast, icon.wingbuffet, true, "black") -- show cast bar
+		self:DelayedBar(timer.wingbuffetCast, L["wingbuffet_bar"], timer.wingbuffet, icon.wingbuffet) -- delayed timer bar
 		self:DelayedMessage(timer.wingbuffet - 5, L["wingbuffet_warning"], "Attention", nil, nil, true)
 	end
 end
@@ -210,7 +211,8 @@ end
 function module:ShadowFlame()
 	if self.db.profile.shadowflame then
 		self:Message(L["shadowflame_warning"], "Important", true, "Alarm")
-		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame, true, "red")
-		self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame, icon.shadowflame)
+		self:RemoveBar(L["shadowflame_Nextbar"]) -- remove timer bar
+		self:Bar(L["shadowflame_bar"], timer.shadowflameCast, icon.shadowflame, true, "red") -- show cast bar
+		self:DelayedBar(timer.shadowflameCast, L["shadowflame_Nextbar"], timer.shadowflame, icon.shadowflame) -- delayed timer bar
 	end
 end
