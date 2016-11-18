@@ -1,10 +1,7 @@
 Important:
-- Proximity: Color for Druids: |cffFF7CAGleichmut
 - improve configuration for warnicon
-- verify german translations for all MC, BWL and AQ40 boss modules
 		
 Nice to have:
-- refactoring of all ZG and AQ20 boss modules
 - enrage plugin: 
 	- show 2 bars on top of each other. one for the enrage timer and one with the boss hp.
 	- hp bar color coded (green: over 3% ahead, orange: within 3% of enrage, red: over 3% behind)
@@ -13,10 +10,10 @@ Nice to have:
 	- list of names with a bar right of the name. the bar shows the cooldown of the interrupt skill or if it's available.
 	- configuration which classes should be shown
 	- text color coded (green: ready, orange: cooldown, red: dead)
-- NefCount Plugin
 - AFKick Plugin
 - AutoReply Plugin
 - LoathebTactical Plugin
+- LoathebHealer Plugin
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
 - RaidIcon Plugin: Save and reset old raid icon (if a player already had a raid icon before we set one, reset it to the old one after a certain amount of time) (number GetRaidTargetIndex("unit"))
 - Ignite Plugin: 
