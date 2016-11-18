@@ -563,17 +563,20 @@ function module:GiantEyeEyeBeam()
     self:EyeBeam()
 end
 
-function module:EyeBeam()
-    local name = L["Unknown"]
+function module:DelayedEyeBeamCheck()
+	local name = L["Unknown"]
     self:CheckTarget()
     if eyeTarget then
         name = eyeTarget
         self:Icon(name)
         if name == UnitName("player") then
-            self:WarningSign(icon.eyeBeamSelf, 2)
+            self:WarningSign(icon.eyeBeamSelf, 2 - 0.1)
         end
     end
-    self:Bar(string.format(L["eyebeam"], name), timer.eyeBeam, icon.giantEye, true, "green")
+    self:Bar(string.format(L["eyebeam"], name), timer.eyeBeam - 0.1, icon.giantEye, true, "green")
+end
+function module:EyeBeam()
+	self:ScheduleEvent("CThunDelayedEyeBeamCheck", self.DelayedEyeBeamCheck, 0.1, self) -- has to be done delayed since the target change is delayed
 end
 
 function module:DigestiveAcid()
