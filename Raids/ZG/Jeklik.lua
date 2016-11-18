@@ -80,6 +80,7 @@ L:RegisterTranslations("enUS", function() return {
 	swarm_cmd = "swarm",
 	swarm_name = "Bat Swarm Alert",
 	swarm_desc = "Warn for Bat swarms",
+    swarm_bartext = "Bat Swarm",
 
 	announce_cmd = "whispers",
 	announce_name = "Whisper to burning people",
@@ -156,6 +157,7 @@ L:RegisterTranslations("deDE", function() return {
 	swarm_cmd = "swarm",
 	swarm_name = "Alarm f\195\188r Fledermausschw\195\164rme",
 	swarm_desc = "Warnen vor Fledermausschw\195\164rme.",
+    swarm_bartext = "Fledermausschwarm",
 
 	announce_cmd = "whispers",
 	announce_name = "Brennenden Personen fl\195\188stern",
@@ -168,7 +170,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20005 -- To be overridden by the module!
+module.revision = 20007 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"phase", "heal", "flay", "fear", "swarm", "bomb", "announce", "bosskill"}
@@ -188,6 +190,7 @@ local timer = {
 	fear2 = 39.5,
 	fireBombs = 10,
 	mindflay = 10,
+	bats = 68,
 }
 local icon = {
 	fear = "Spell_Shadow_SummonImp",
@@ -197,6 +200,7 @@ local icon = {
 	bomb = "Spell_Fire_Fire",
 	mindflay = "Spell_Shadow_SiphonMana",
 	heal = "Spell_Holy_Heal",
+	bats = "Spell_Fire_SelfDestruct",
 }
 local syncName = {
 	fear = "JeklikFearRep",
@@ -272,6 +276,11 @@ function module:OnEngage()
 		self:Message(L["phaseone_message"], "Attention")
 	end
 	self:Bar("First Silence", timer.firstSilence, icon.silence)
+	
+	-- bats
+    if self.db.profile.swarm then
+		self:Bar(L["swarm_bartext"], timer.bats, icon.bats);
+	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
