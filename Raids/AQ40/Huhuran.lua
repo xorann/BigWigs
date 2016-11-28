@@ -31,7 +31,7 @@ L:RegisterTranslations("enUS", function() return {
     frenzy_Nextbar = "Next Frenzy",
 	frenzy_message = "Frenzy - Tranq Shot!",
             
-	berserktrigger = "%s gains Berserk!",
+	berserktrigger = "Princess Huhuran goes into a berserk rage!",
 	berserkwarn = "Berserk! Berserk! Berserk!",
 	berserksoonwarn = "Berserk Soon!",
 	stingtrigger = "afflicted by Wyvern Sting",
@@ -65,7 +65,7 @@ L:RegisterTranslations("deDE", function() return {
     frenzy_Nextbar = "Next Frenzy",
 	frenzy_message = "Frenzy - Tranq Shot!",
             
-	berserktrigger = "%s verf\195\164llt in Berserkerwut!", -- translation missing
+	berserktrigger = "Prinzession Huhuran verfällt in Berserkerwut!", -- translation missing
 	berserkwarn = "Berserkerwut!",
 	berserksoonwarn = "Berserkerwut in K\195\188rze!",
 	stingtrigger = "von Stich des Flügeldrachen betroffen",
