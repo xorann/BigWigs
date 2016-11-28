@@ -19,7 +19,7 @@ module.toggleoptions = {"curse", "deaden", "blink", "counterspell", "bosskill"}
 
 local timer = {
 	cs = 19,
-    firstCS = 28,
+    firstCS = 10,
     curse =  22, 
     firstCurse = 10,
     blink = 45,
