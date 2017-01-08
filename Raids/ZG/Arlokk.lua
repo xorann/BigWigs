@@ -249,13 +249,13 @@ function module:IsArlokkVisible()
 end
 function module:CheckUnvanish()
     self:DebugMessage("CheckUnvanish")
-    if IsArlokkVisible() then
+    if module:IsArlokkVisible() then
         self:Sync(syncName.pantherPhase)
     end
 end
 function module:CheckVanish()
     self:DebugMessage("CheckVanish")
-    if not IsArlokkVisible() then
+    if not module:IsArlokkVisible() then
         self:Sync(syncName.vanishPhase)
     end	
 end
