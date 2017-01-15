@@ -546,7 +546,7 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
 end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
-    if not text then return end
+    if not text and type(text) ~= "string" then return end    
 	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.moduleBars[module] then
 		local id = "BigWigsBar "..text
 

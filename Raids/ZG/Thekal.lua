@@ -211,10 +211,16 @@ local timer = {
     bloodlust = 33,
 }
 local icon = {
-    forcePunch = "Interface\\Icons\\INV_Gauntlets_31",
-    knockback = "Interface\\Icons\\Ability_WarStomp",
-    adds = "Interface\\Icons\\Ability_Hunter_Pet_Cat",
-    bloodlust = "Interface\\Icons\\Spell_Nature_BloodLust",
+    forcePunch = "INV_Gauntlets_31",
+    knockback = "Ability_WarStomp",
+    adds = "Ability_Hunter_Pet_Cat",
+    bloodlust = "Spell_Nature_BloodLust",
+    heal = "Spell_Holy_Heal",
+    frenzy = "Ability_Druid_ChallangingRoar",
+    silence = "Spell_Holy_Silence",
+    mortalCleave = "Ability_Warrior_SavageBlow",
+    disarm = "Ability_Warrior_Disarm",
+    phase2 = "Spell_Holy_PrayerOfHealing"
 }
 local syncName = {
 	phase2 = "ThekalPhaseTwo1",
@@ -416,26 +422,26 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:Bar(L["Knockback"], timer.knockback, icon.knockback)
 	elseif sync == syncName.heal and self.db.profile.heal then
 		self:Message(L["heal_message"], "Attention", "Alarm")
-		self:Bar(L["heal_bar"], 4, "Interface\\Icons\\Spell_Holy_Heal", true, "Black")
+		self:Bar(L["heal_bar"], 4, icon.heal, true, "Black")
 	elseif sync == syncName.frenzy and self.db.profile.frenzy then
 		self:Message(L["frenzyann"], "Important", true, "Alarm")
-		self:Bar(L["frenzy_bar"], 8, "Interface\\Icons\\Ability_Druid_ChallangingRoar", true, "Black")
+		self:Bar(L["frenzy_bar"], 8, icon.frenzy, true, "Black")
 	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
-        self:RemoveBar(self, L["frenzy_bar"])
+        self:RemoveBar(L["frenzy_bar"])
 	elseif sync == syncName.bloodlust and self.db.profile.bloodlust then
 		self:Message(string.format(L["bloodlustannounce"], rest), "Important")
-		self:Bar(string.format(L["bloodlust_bar"], rest), 30, "Interface\\Icons\\Spell_Nature_BloodLust")
+		self:Bar(string.format(L["bloodlust_bar"], rest), 30, icon.bloodlust)
 	elseif sync == syncName.bloodlustOver and self.db.profile.bloodlust then
-		self:RemoveBar(self, string.format(L["bloodlust_bar"], rest))
+		self:RemoveBar(string.format(L["bloodlust_bar"], rest))
 	elseif sync == syncName.silence and self.db.profile.silence then
 		self:Message(string.format(L["silence_announce"], rest), "Attention")
-		self:Bar(string.format(L["silence_bar"], rest), 6, "Interface\\Icons\\Spell_Holy_Silence", true, "White")
+		self:Bar(string.format(L["silence_bar"], rest), 6, timer.silence, true, "White")
 	elseif sync == syncName.silenceOver and self.db.profile.silence then
-		self:RemoveBar(self, string.format(L["silence_bar"], rest))
+		self:RemoveBar(string.format(L["silence_bar"], rest))
 	elseif sync == syncName.mortalcleave and self.db.profile.cleave then
-		self:Bar(string.format(L["mortalcleave_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_SavageBlow")
+		self:Bar(string.format(L["mortalcleave_bar"], rest), 5, timer.mortalCleave)
 	elseif sync == syncName.disarm and self.db.profile.disarm then
-		self:Bar(string.format(L["disarm_bar"], rest), 5, "Interface\\Icons\\Ability_Warrior_Disarm", true, "Yellow")
+		self:Bar(string.format(L["disarm_bar"], rest), 5, timer.disarm, true, "Yellow")
 	elseif sync == syncName.enrage and self.db.profile.enraged then
 		self:Message(L["enrage_message"], "Urgent")
 	end
@@ -443,7 +449,7 @@ end
 
 function module:PhaseSwitch()
     BigWigs:ToggleModuleActive(module, true)
-    module:TriggerEvent("BigWigs_StartBar", module, "Next Phase", 9, "Interface\\Icons\\Spell_Holy_PrayerOfHealing")
+    module:TriggerEvent("BigWigs_StartBar", module, "Next Phase", 9, timer.phase2)
     module.phase = 1.5;
 end
 
