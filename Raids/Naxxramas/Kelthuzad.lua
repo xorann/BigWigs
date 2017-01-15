@@ -282,7 +282,10 @@ end
 ------------------------------
 
 function module:MINIMAP_ZONE_CHANGED(msg)
-	if GetMinimapZoneText() ~= L["KELTHUZADCHAMBERLOCALIZEDLOLHAX"] or self.core:IsModuleActive(module.translatedName) then return end
+	if GetMinimapZoneText() ~= L["KELTHUZADCHAMBERLOCALIZEDLOLHAX"] or self.core:IsModuleActive(module.translatedName) then 
+        return 
+    end
+    
 	-- Activate the Kel'Thuzad mod!
 	self.core:EnableModule(module.translatedName)
 end

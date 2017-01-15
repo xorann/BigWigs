@@ -13,6 +13,8 @@ local module, L = BigWigs:ModuleDeclaration("Ouro", "Ahn'Qiraj")
 L:RegisterTranslations("enUS", function() return {
 	cmd = "Ouro",
 
+    OUROCHAMBERLOCALIZEDLOLHAX = "Kel'Thuzad Chamber",
+            
 	sweep_cmd = "sweep",
 	sweep_name = "Sweep Alert",
 	sweep_desc = "Warn for Sweeps",
@@ -150,6 +152,11 @@ local berserkannounced = nil
 --      Initialization      --
 ------------------------------
 
+-- Big evul hack to enable the module when entering Ouros chamber.
+function module:OnRegister()
+	self:RegisterEvent("MINIMAP_ZONE_CHANGED")
+end
+
 -- called after module is enabled
 function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
@@ -163,6 +170,8 @@ function module:OnEnable()
 	self:ThrottleSync(10, syncName.emerge)
 	self:ThrottleSync(10, syncName.submerge)
 	self:ThrottleSync(10, syncName.berserk)
+    
+    self:ScheduleRepeatingEvent("bwouroengagecheck", self.EngageCheck, 1, self)
 end
 
 -- called after module is enabled and after each wipe
@@ -195,6 +204,15 @@ end
 ------------------------------
 --      Event Handlers	    --
 ------------------------------
+
+function module:MINIMAP_ZONE_CHANGED(msg)
+	if GetMinimapZoneText() ~= L["OUROCHAMBERLOCALIZEDLOLHAX"] or self.core:IsModuleActive(module.translatedName) then 
+        return 
+    end
+    
+	-- Activate the module!
+	self.core:EnableModule(module.translatedName)
+end
 
 function module:UNIT_HEALTH( msg )
 	if UnitName(msg) == boss then
@@ -375,6 +393,19 @@ function module:SubmergeCheck()
             self:DebugMessage("OuroSubmerge")
             self:Sync(syncName.submerge)
         end
+    end
+end
+
+function module:EngageCheck()
+    if not self.engaged then
+        --self:ScheduleRepeatingEvent("bwouroengagecheck", self.EngageCheck, 1, self)
+        if self:IsOuroVisible() then
+            module:CancelScheduledEvent("bwouroengagecheck")
+
+            module:SendEngageSync()
+        end
+    else
+        module:CancelScheduledEvent("bwouroengagecheck")
     end
 end
 
