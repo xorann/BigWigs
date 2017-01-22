@@ -18,6 +18,7 @@ L:RegisterTranslations("enUS", function() return {
 	shamanname = "Zealot Lor'Khan",
 	phaseone_message = "Troll Phase",
 	phasetwo_message = "Tiger Phase",
+    phasetwo_bar = "Tiger Phase",
 	tigers_trigger = "High Priest Thekal performs Summon Zulian Guardians.",
 	forcepunch_trigger = "High Priest Thekal begins to perform Force Punch.",
 	forcepunch_bar = "Force Punch",
@@ -109,6 +110,7 @@ L:RegisterTranslations("deDE", function() return {
 	shamanname = "Zealot Lor\'Khan",
 	phaseone_message = "Troll Phase",
 	phasetwo_message = "Tiger Phase",
+    phasetwo_bar = "Tiger Phase",
 	tigers_trigger = "High Priest Thekal f\195\188hrt Zulianische W\195\164chter beschw\195\182ren aus\.",
 	forcepunch_trigger = "High Priest Thekal beginnt Machthieb auszuf\195\188hren\.",
 	forcepunch_bar = "Machthieb",
@@ -435,13 +437,13 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:RemoveBar(string.format(L["bloodlust_bar"], rest))
 	elseif sync == syncName.silence and self.db.profile.silence then
 		self:Message(string.format(L["silence_announce"], rest), "Attention")
-		self:Bar(string.format(L["silence_bar"], rest), 6, timer.silence, true, "White")
+		self:Bar(string.format(L["silence_bar"], rest), 6, icon.silence, true, "White")
 	elseif sync == syncName.silenceOver and self.db.profile.silence then
 		self:RemoveBar(string.format(L["silence_bar"], rest))
 	elseif sync == syncName.mortalcleave and self.db.profile.cleave then
-		self:Bar(string.format(L["mortalcleave_bar"], rest), 5, timer.mortalCleave)
+		self:Bar(string.format(L["mortalcleave_bar"], rest), 5, icon.mortalCleave)
 	elseif sync == syncName.disarm and self.db.profile.disarm then
-		self:Bar(string.format(L["disarm_bar"], rest), 5, timer.disarm, true, "Yellow")
+		self:Bar(string.format(L["disarm_bar"], rest), 5, icon.disarm, true, "Yellow")
 	elseif sync == syncName.enrage and self.db.profile.enraged then
 		self:Message(L["enrage_message"], "Urgent")
 	end
@@ -449,7 +451,7 @@ end
 
 function module:PhaseSwitch()
     BigWigs:ToggleModuleActive(module, true)
-    module:TriggerEvent("BigWigs_StartBar", module, "Next Phase", 9, timer.phase2)
+    module:Bar(L["phasetwo_bar"], 9, icon.phase2)
     module.phase = 1.5;
 end
 
@@ -458,6 +460,12 @@ function module:Test()
     
 	local function testPhaseSwitch()
 		module:CheckForBossDeath(string.format(UNITDIESOTHER, self:ToString()))
+    end
+    local function testRemoveBars()
+        BigWigs:Print("testRemoveBars")
+        self:Sync(syncName.frenzyOver) 
+        self:Sync(syncName.bloodlustOver) 
+        self:Sync(syncName.silenceOver) 
     end
 	local function testDisable()
 		--module:SendWipeSync()
@@ -473,7 +481,20 @@ function module:Test()
     testTimer = testTimer + 3
     self:ScheduleEvent(self:ToString() .. "testPhaseSwitch", testPhaseSwitch, testTimer, self)
     BigWigs:Print("testPhaseSwitch in " .. testTimer)
+    
+    self:Sync(syncName.heal)
+    self:Sync(syncName.frenzy)
+    self:Sync(syncName.bloodlust)
+    self:Sync(syncName.silence)
+    self:Sync(syncName.mortalcleave)
+    self:Sync(syncName.disarm)
+    self:Sync(syncName.enrage)
+    self:PhaseSwitch()
 
+    testTimer = testTimer + 3
+    self:ScheduleEvent(self:ToString() .. "testRemoveBars", testRemoveBars, testTimer, self)
+    BigWigs:Print("testRemoveBars in " .. testTimer)
+    
     -- disable
     testTimer = testTimer + 10
     self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
