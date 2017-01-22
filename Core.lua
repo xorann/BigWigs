@@ -168,7 +168,7 @@ BigWigs.cmdtable = {type = "group", handler = BigWigs, args = {
 }}
 BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, BigWigs.cmdtable)
 BigWigs.debugFrame = ChatFrame1
-BigWigs.revision = 20007
+BigWigs.revision = 20008
 
 
 function BigWigs:DebugMessage(msg, module)
