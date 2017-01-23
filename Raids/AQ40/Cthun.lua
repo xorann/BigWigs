@@ -53,6 +53,7 @@ L:RegisterTranslations("enUS", function() return {
 	giant_name = "Giant Eye Alert",
 	giant_desc = "Warn for Giant Eyes",
 	giant_claw_spawn_trigger = "Giant Claw Tentacle 's Ground Rupture",
+    giant_eye_spawn_trigger = "Giant Eye Tentacle 's Ground Rupture",
 	barGiant	= "Giant Eye!",
 	barGiantC	= "Giant Claw!",
 	GiantEye = "Giant Eye Tentacle in 5 sec!",
@@ -128,6 +129,7 @@ L:RegisterTranslations("deDE", function() return {
 	giant_name = "Riesiges Augententakel Alarm", --Giant Eye Alert",
 	giant_desc = "Warnung vor Riesigem Augententakel", -- "Warn for Giant Eyes",
 	giant_claw_spawn_trigger = "Riesiges Klauententakel(.+) Erdriss", -- "Giant Claw Tentacle 's Ground Rupture",
+    giant_eye_spawn_trigger =  "Riesiges Augententakel(.+) Erdriss", -- "Giant Eye Tentacle 's Ground Rupture",
 	barGiant	= "Riesiges Augententakel!",
 	barGiantC	= "Riesiges Klauententakel!",
 	GiantEye = "Riesiges Augententakel Tentacle in 5 sec!",
@@ -165,7 +167,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20006 -- To be overridden by the module!
+module.revision = 20008 -- To be overridden by the module!
 local eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 local cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]
 module.enabletrigger = {eyeofcthun, cthun} -- string or table {boss, add1, add2}
@@ -220,6 +222,7 @@ local syncName = {
 	weakenOver = "CThunWeakenedOver1",
 	giantEyeDown = "CThunGEdown1",
 	giantClawSpawn = "GiantClawSpawn1",
+    giantEyeSpawn = "GiantEyeSpawn",
 	giantEyeEyeBeam = "GiantEyeEyeBeam1",
 	cthunEyeBeam = "CThunEyeBeam1",
 }
@@ -258,8 +261,8 @@ function module:OnEnable()
      
     
     self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "CheckEyeBeam")
-    self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckGiantClawSpawn")
-    self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckGiantClawSpawn")
+    self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckTentacleSpawn")
+    self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckTentacleSpawn")
 
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckDigestiveAcid")
 	
@@ -358,10 +361,13 @@ function module:CheckEyeBeam(msg)
     end
 end
 
-function module:CheckGiantClawSpawn(msg)
+function module:CheckTentacleSpawn(msg)
     self:DebugMessage("GiantClawSpawn: " .. msg)
     if string.find(msg, L["giant_claw_spawn_trigger"]) then
         self:Sync(syncName.giantClawSpawn)
+    elseif string.find(msg, L["giant_eye_spawn_trigger"]) then
+        timer.lastGiantEyeSpawn = GetTime()
+        self:Sync(syncName.giantEyeSpawn)
     end
 end
 
@@ -396,6 +402,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:EyeBeam()
     elseif sync == syncName.giantClawSpawn then
         self:GCTentacleRape()
+    elseif sync == syncName.giantEyeSpawn then
+        self:GTentacleRape()
     end
 end
 
