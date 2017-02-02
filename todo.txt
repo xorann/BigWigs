@@ -14,6 +14,17 @@ Nice to have:
 - AutoReply Plugin
 - LoathebTactical Plugin
 - LoathebHealer Plugin
+    - frame with a sortable list of all possible healers
+    - show healing spells being cast
+    - show length of debuff
+    - announce successful heals
+    - announce next healer
+- Razuvious Plugin
+    - announce successful and failed mind controls
+    - show duration of mind control
+    - show duration and cooldown of shield wall
+- Thaddius Plugin
+    - Check if debuff changed
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
 - RaidIcon Plugin: Save and reset old raid icon (if a player already had a raid icon before we set one, reset it to the old one after a certain amount of time) (number GetRaidTargetIndex("unit"))
 - Ignite Plugin: 

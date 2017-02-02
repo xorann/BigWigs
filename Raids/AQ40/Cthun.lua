@@ -644,6 +644,7 @@ end
 function module:GroupWarning()
     self:CheckTarget()
 	if eyeTarget then
+        BigWigs:DebugMessage("GroupWarning; target: " .. eyeTarget)
 		local i, name, group, glareTarget, glareGroup, playerGroup
         local playerName = GetUnitName("player")
 		for i = 1, GetNumRaidMembers(), 1 do
