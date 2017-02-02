@@ -2,9 +2,12 @@
 <i>Diese Beschreibung auf <a href="README.de.md">Deutsch</a> lesen.</i>
 
 BigWigs is a World of Warcraft AddOn to predict certain AI behaviour to improve the players performance.<br \>
-This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW</b> private Server.
+This Modification is build for Patch 1.12.1 and its content for use on the <b>Classic-WoW/Nefarian</b> private Server.
 
-The adjustments were originally made by <b>LYQ</b>.<br \>
+## License
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">BigWigs Classic-WoW</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/xorann/BigWigs" property="cc:attributionName" rel="cc:attributionURL">Dorann</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+
+The adjustments were originally made by <a href="https://github.com/MOUZU"><b>LYQ</b></a>.<br \>
 Adjustments for Classic-WoW made by <b>Dorann</b>.<br \>
 <b><a href="https://github.com/xorann/BigWigs">Please refer to this repository for more information.</a></b>
 
@@ -28,7 +31,7 @@ The following Plugins are used for the boss modules.
 	<li><b>Sound</b> <i>modified by Dorann</i> <br> Plays a sound on important events.</li>
 	<li><b>Test</b> <br> Allows you to Test BigWigs and move the Plugins (Bars, Messages) around.</li>
 	<li><b>Tranq</b> <br> Support for Tranquilizing Shot to see which Hunter used it.</li>
-	<li><b>WarningSign</b> <i>made by LYQ</i> <br> Displays important SpellIcons in the center of your screen. Eg. if you're standing in Rain of Fire at Gehennas or if you're a Hunter and Magmadar/Flamegor/Chromaggus is Frenzied and you need to Tranq.</li>
+	<li><b>WarningSign</b> <i>made by LYQ, modified by Dorann</i> <br> Displays important SpellIcons in the center of your screen. Eg. if you're standing in Rain of Fire at Gehennas or if you're a Hunter and Magmadar/Flamegor/Chromaggus is Frenzied and you need to Tranq.</li>
 </ul>
 
 Several other BigWigs Plugins are included in this repository, so you only need to download and use the 'BigWigs' folder from this repository. If you happen to have any of the listed AddOns seperately I suggest removing or disabling them - in case I adjusted some of those in this repository as well.
