@@ -66,11 +66,13 @@ local prefix            	= "|cf75DE52f[BigWigs]|r - ";
 L:RegisterTranslations("enUS", function() return {
     ["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."] = true,
 	["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs/releases "] = true,
+    ["This version of BigWigs is |cffff0000not intended for your realm|r. Please be aware that |cffff0000timers might be wrong or not working at all|r."] = true
 } end)
 
 L:RegisterTranslations("deDE", function() return {
     ["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."] = "Diese |cf75DE52fClassic-WoW|r Version wurde von |cff7f7fffDorann|r erstellt.",
 	["This addon is still work in progress and content is adjusted by |cff7f7fffDorann|r. Check for Updates or help by providing twitch/youtube footage on https://github.com/xorann/BigWigs/releases "] = "Dieses Addon befindet sich noch in Arbeit und der Inhalt wird von |cff7f7fffDorann|r angepasst. Besucht https://github.com/xorann/BigWigs/releases für Updates oder um die Entwicklung mit twitch/youtube Aufnahmen zu unterstützen.",
+    ["This version of BigWigs is |cffff0000not intended for your realm|r. Please be aware that |cffff0000timers might be wrong or not working at all|r."] = "Diese Version von BigWigs ist |cffff0000nicht für Deinen Realm vorgesehen|r. Sei Dir bitte bewusst, dass |cffff0000Timer falsch sein können oder gar nicht funktionieren|r."
 } end)
 
 ----------------------------------
@@ -102,6 +104,10 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
                 --if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved") then
                     BigWigs:Print(L["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."])
                 --end
+                if "Nefarian" ~= GetRealmName() then
+                    BigWigs:Print(L["This version of BigWigs is |cffff0000not intended for your realm|r. Please be aware that |cffff0000timers might be wrong or not working at all|r."])    
+                end
+                
                 BigWigsContributeFlag = true
 				break
             end
