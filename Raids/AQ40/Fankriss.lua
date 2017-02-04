@@ -116,8 +116,10 @@ end
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.entangle then
-        self:Message(L["entanglewarn"], "Urgent", true, "Alarm")
-		self:WarningSign(icon.entangle, 2)
+        if self.db.profile.entangle then
+            self:Message(L["entanglewarn"], "Urgent", true, "Alarm")
+                self:WarningSign(icon.entangle, 2)
+        end
     elseif sync == syncName.worm then 
 		if not rest then return end
 		rest = tonumber(rest)

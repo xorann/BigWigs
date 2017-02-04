@@ -529,10 +529,11 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.frenzy and not frenzied then
 			self:Message(L["frenzy_message"], "Attention")
 			self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
+            
+            if playerClass == "HUNTER" then
+                self:WarningSign(icon.tranquil, timer.frenzy, true)
+            end
 		end
-        if playerClass == "HUNTER" then
-            self:WarningSign(icon.tranquil, timer.frenzy, true)
-        end
 		frenzied = true
         lastFrenzy = GetTime()
 	elseif sync == syncName.frenzyOver then

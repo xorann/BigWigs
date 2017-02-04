@@ -165,7 +165,9 @@ end]]
 
 function module:PLAYER_TARGET_CHANGED()
     if (lastMS + 5) > GetTime() and UnitName("target") == MS then
-        self:WarningSign(icon.mortalStrike, (lastMS + 5) - GetTime())
+        if self.db.profile.ms then
+            self:WarningSign(icon.mortalStrike, (lastMS + 5) - GetTime())
+        end
     else
         self:RemoveWarningSign(icon.mortalStrike)
     end

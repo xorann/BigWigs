@@ -148,13 +148,17 @@ end
 -- untested
 function module:CheckRain(msg)
     if string.find(msg, L["rain_run_trigger"]) then
-        -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
-        self:WarningSign(icon.rain, timer.rainTick)
+        if self.db.profile.rain then
+            -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
+            self:WarningSign(icon.rain, timer.rainTick)
+        end
 	elseif (string.find(msg, L["rain_trigger"])) then
-        -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-		self:Message(L["rain_warn"], "Attention", true, "Alarm")
-        self:WarningSign(icon.rain, timer.rainDuration)
-        --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
+        if self.db.profile.rain then
+            -- this will not trigger, but I will leave it in case they fix this combatlog event/message
+            self:Message(L["rain_warn"], "Attention", true, "Alarm")
+            self:WarningSign(icon.rain, timer.rainDuration)
+            --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
+        end
 	end
 end
 function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)

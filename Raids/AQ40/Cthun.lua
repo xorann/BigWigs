@@ -70,6 +70,9 @@ L:RegisterTranslations("enUS", function() return {
 	invulnerable1	= "Party over - C'Thun invulnerable",
 	barWeakened	= "C'Thun is weakened!",
 	
+    acid_cmd = "acid",
+    acid_name = "Digestive Acid alert",
+    acid_desc = "Shows a warning sign when you have 5 stacks of digestive acid",
     digestiveAcidTrigger = "You are afflicted by Digestive Acid [%s%(]*([%d]*).",        
     msgDigestiveAcid = "5 Acid Stacks",
 
@@ -146,6 +149,9 @@ L:RegisterTranslations("deDE", function() return {
 	invulnerable1	= "Party vorbei - C'Thun unverwundbar", -- "Party over - C'Thun invulnerable",
 	barWeakened	= "C'Thun ist geschwächt", --"C'Thun is weakened!",
 	
+    acid_cmd = "acid",
+    acid_name = "Magensäure Alarm",
+    acid_desc = "Zeigt ein Warnzeichen wenn du mehr als 5 Stapel der Magensäure hast.",
     digestiveAcidTrigger = "Ihr seid von Magensäure [%s%(]*([%d]*)", -- "You are afflicted by Digestive Acid (5).",  
     msgDigestiveAcid = "5 Säure Stacks",
             
@@ -172,7 +178,7 @@ local eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 local cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]
 module.enabletrigger = {eyeofcthun, cthun} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"rape", -1, "tentacle", "glare", "group", -1, "giant", "weakened", "proximity", "bosskill"}
+module.toggleoptions = {"rape", -1, "tentacle", "glare", "group", -1, "giant", "acid", "weakened", "proximity", "bosskill"}
 
 -- Proximity Plugin
 module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
@@ -588,8 +594,10 @@ function module:EyeBeam()
 end
 
 function module:DigestiveAcid()
-    self:Message(L["msgDigestiveAcid"], "Red", true, "RunAway")
-    self:WarningSign(icon.digestiveAcid, 5) --ability_creature_disease_02
+    if self.db.profile.acid then
+        self:Message(L["msgDigestiveAcid"], "Red", true, "RunAway")
+        self:WarningSign(icon.digestiveAcid, 5) --ability_creature_disease_02
+    end
 end
 
 -----------------------

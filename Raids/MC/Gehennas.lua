@@ -7,7 +7,7 @@ local module, L = BigWigs:ModuleDeclaration("Gehennas", "Molten Core")
 
 module.revision = 20006 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
-module.toggleoptions = {"adds", "curse", "bosskill"}
+module.toggleoptions = {"adds", "curse", "rain", "bosskill"}
 
 module.defaultDB = {
 	adds = false,
@@ -69,6 +69,10 @@ L:RegisterTranslations("enUS", function() return {
 	curse_name = "Gehennas' Curse alert",
 	curse_desc = "Warn for Gehennas' Curse",
             
+    rain_cmd = "rain",
+    rain_name = "Rain of Fire alert",
+    rain_desc = "Shows a warning sign for Rain of Fire",
+            
     ["Rain of Fire"] = true,
 } end)
 
@@ -100,6 +104,10 @@ L:RegisterTranslations("deDE", function() return {
 	curse_cmd = "curse",
 	curse_name = "Alarm f\195\188r Gehennas' Fluch",
 	curse_desc = "Warnen vor Gehennas' Fluch",
+            
+    rain_cmd = "rain",
+    rain_name = "Feuerregen",
+    rain_desc = "Zeigt ein Warnzeichen bei Feuerregen",
         
     ["Rain of Fire"] = "Feuerregen",
 } end)
@@ -152,15 +160,19 @@ end
 
 function module:Event(msg)
     if string.find(msg, L["rain_run_trigger"]) then
-        -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
-        self:WarningSign(icon.rain, timer.rainTick)
+        if self.db.profile.rain then
+            -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
+            self:WarningSign(icon.rain, timer.rainTick)
+        end
     elseif ((string.find(msg, L["curse_trigger"])) or (string.find(msg, L["curse_trigger2"]))) then
 		self:Sync(syncName.curse)
 	elseif (string.find(msg, L["rain_trigger"])) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
-		self:Message(L["firewarn"], "Attention", true, "Alarm")
-        self:WarningSign(icon.rain, timer.rainDuration)
-        --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
+        if self.db.profile.rain then
+            self:Message(L["firewarn"], "Attention", true, "Alarm")
+            self:WarningSign(icon.rain, timer.rainDuration)
+            --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
+        end
 	end
 end
 

@@ -222,11 +222,11 @@ function module:Event(msg)
 		if self.db.profile.bomb then
 			self:Bar(string.format(L["bomb_bar1"], UnitName("player")), timer.bomb, icon.bomb)
 			self:Message(L["bomb_message_youscreen"], "Attention", "RunAway")
+            self:WarningSign("Spell_Shadow_MindBomb", timer.bomb)
 		end
 		if self.db.profile.icon then
 			self:Icon(UnitName("player"))
 		end
-        self:WarningSign("Spell_Shadow_MindBomb", timer.bomb)
 	elseif string.find(msg, L["bombyouend_trigger"]) then
 		self:RemoveBar(string.format(L["bomb_bar1"], UnitName("player")))
 		self:Sync(syncName.bombStop)

@@ -33,10 +33,17 @@ L:RegisterTranslations("enUS", function() return {
 	["Options for the Warning Sign."] = true, 
 	["Show anchor"] = true,
 	["Show the anchor frame."] = true,
-	["Reset position"] = true,
-	["Reset the frame position."] = true,
+	["Reset"] = true,
+	["Reset the frame."] = true,
     ["Test"] = true,
     ["Close"] = true,
+            
+	["Disabled"] = true,
+	["Disable the warning signs for all modules that use it."] = true,
+    ["Scale"] = true,
+    ["Set the warning sign scale."] = true,
+    ["Transparency"] = true,
+    ["Set the warning sign alpha value (0.1 to 1.0: transparent to opaque)."] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -45,10 +52,17 @@ L:RegisterTranslations("deDE", function() return {
 	["Options for the Warning Sign."] = "Optionen für das Warnzeichen.", 
 	["Show anchor"] = "Verankerung anzeigen",
 	["Show the anchor frame."] = "Zeige das Verankerungsfenster des Warnzeichens um dessen Position zu verändern.",
-	["Reset position"] = "Position zurücksetzen",
-	["Reset the frame position."] = "Die Position des Warnzeichens zurücksetzen.",
+	["Reset"] = "Zurücksetzen",
+	["Reset the frame."] = "Die Einstellungen des Warnzeichens zurücksetzen.",
     ["Test"] = "Test",
     ["Close"] = "Schlie\195\159en",
+            
+	["Disabled"] = "Deaktivieren",
+	["Disable the warning signs for all modules that use it."] = "Deaktiviert die Anzeige der Warnzeichen für alle Module die sie benutzen.",
+    ["Scale"] = "Skalierung",
+    ["Set the warning sign scale."] = "Skalierung des Warnzeichen",
+    ["Transparency"] = "Transparenz",
+    ["Set the warning sign alpha value (0.1 to 1.0: transparent to opaque)."] = "Den Alphawert des Warnzeichen definieren (0.1 bis 1.0: transparent bis deckend).",
 } end)
 
 ----------------------------------
@@ -60,6 +74,9 @@ BigWigsWarningSign.defaultDB = {
     posx = nil,
 	posy = nil,
     isVisible = nil,
+    disabled = false,
+    scale = 1.0,
+    alpha = 0.8,
 }
 BigWigsWarningSign.consoleCmd = L["WarningSign"]
 BigWigsWarningSign.consoleOptions = {
@@ -85,12 +102,68 @@ BigWigsWarningSign.consoleOptions = {
                 BigWigsWarningSign:ShowAnchor()
             end,
         },
+        scale = {
+            type = "range",
+			name = L["Scale"],
+			desc = L["Set the warning sign scale."],
+            order = 101,
+			min = 0.2,
+			max = 2.0,
+			step = 0.1,
+			get = function() return BigWigsWarningSign.db.profile.scale end,
+			set = function(v) 
+                BigWigsWarningSign.db.profile.scale = v
+                if BigWigsWarningSign.frames then
+                    BigWigsWarningSign.frames.sign:SetScale(v)
+                end
+            end,
+        },
+        alpha = {
+            type = "range",
+			name = L["Transparency"],
+			desc = L["Set the warning sign alpha value (0.1 to 1.0: transparent to opaque)."],
+            order = 102,
+			min = 0.1,
+			max = 1.0,
+			step = 0.05,
+			get = function() return BigWigsWarningSign.db.profile.alpha end,
+			set = function(v) 
+                BigWigsWarningSign.db.profile.alpha = v
+                if BigWigsWarningSign.frames then
+                    BigWigsWarningSign.frames.sign:SetAlpha(v)
+                end
+            end,
+        },
         reset = {
             type = "execute",
-			name = L["Reset position"],
-			desc = L["Reset the frame position."],
-			order = 102,
-			func = function() BigWigsWarningSign:ResetPosition() end,
+			name = L["Reset"],
+			desc = L["Reset the frame."],
+			order = 103,
+			func = function() 
+                BigWigsWarningSign:ResetPosition() 
+                BigWigsWarningSign.db.profile.scale = 1.0
+                if BigWigsWarningSign.frames then
+                    BigWigsWarningSign.frames.sign:SetScale(1.0)
+                end
+                BigWigsWarningSign.db.profile.alpha = 0.8
+                if BigWigsWarningSign.frames then
+                    BigWigsWarningSign.frames.sign:SetAlpha(0.8)
+                end
+            end,
+        },
+        disabled = {
+            type = "toggle",
+            name = L["Disabled"],
+            desc = L["Disable the warning signs for all modules that use it."],
+            order = 104,
+            get = function() return BigWigsWarningSign.db.profile.disabled end,
+            set = function(v) 
+                BigWigsWarningSign.db.profile.disabled = v
+                if v then
+                    BigWigsWarningSign:BigWigs_HideWarningSign("", true)
+                    BigWigsWarningSign:HideAnchor()
+                end
+            end,
         },
 		--[[spacer = {
 			type = "header",
@@ -119,7 +192,10 @@ end
 ------------------------------
 
 function BigWigsWarningSign:BigWigs_ShowWarningSign(texturePath, duration, force)
-	if not self.frames or not self.frames.anchor then
+	if self.db.profile.disabled then
+        return
+    end
+    if not self.frames or not self.frames.anchor then
         self:SetupFrames()
     end
 
@@ -209,7 +285,7 @@ function BigWigsWarningSign:CreateAnchor()
 		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", tile = true, tileSize = 16,
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
 		insets = {left = 4, right = 4, top = 4, bottom = 4},
-		})
+        })
 	self.frames.anchor:SetBackdropBorderColor(.5, .5, .5)
 	self.frames.anchor:SetBackdropColor(0,0,0)
 	self.frames.anchor:ClearAllPoints()

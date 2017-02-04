@@ -138,7 +138,7 @@ end
 --      Sync Handlers	    --
 ------------------------------
 
--- called when anub'rekhan cast locust swarm
+-- called when anub'rekhan casts locust swarm
 function module:LocustCast()
 	--self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, timer.locustSwarmCastTime, self, "BigWigs_SendSync", syncName.locustGain)
 	if self.db.profile.locust then
@@ -152,7 +152,7 @@ end
 function module:LocustGain()
 	--self:CancelScheduledEvent("bwanublocustinc")
 	if self.db.profile.locust then
-		self:WarningSign(icon.locust, 5)
+		--self:WarningSign(icon.locust, 5)
 		--self:DelayedMessage(timer.locustSwarmDuration, L["gainendwarn"], "Important")
 		self:Bar(L["gainbar"], timer.locustSwarmDuration, icon.locust)
 		self:Message(L["gainnextwarn"], "Urgent")

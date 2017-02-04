@@ -167,9 +167,9 @@ function module:Event(msg)
 	local _,_,shadowcurseother,_ = string.find(msg, L["shadowcurseother_trigger"])
 	if string.find(msg, L["shadowcurseyou_trigger"]) then
 		self:Sync(syncName.curse .. " " .. UnitName("player"))
-        self:WarningSign(icon.curse, timer.curse)
 		if self.db.profile.curse then
 			self:Message(L["shadowfcurse_message_you"], "Attention")
+            self:WarningSign(icon.curse, timer.curse)
 		end
 	elseif shadowcurseother then
 		self:Sync(syncName.curse .. " " .. shadowcurseother)

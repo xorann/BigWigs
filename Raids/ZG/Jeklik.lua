@@ -300,9 +300,11 @@ function module:Event(msg)
 	local _,_,liquidfireabsorb,_ = string.find(msg, L["liquidfireabsorb_trigger"])
 	local _,_,liquidfireimmune,_ = string.find(msg, L["liquidfireimmune_trigger"])
     if string.find(msg, "Your Flames hits you") then
-        -- Your Flames hits you for %d Fire damage.
-        self:WarningSign(icon.fire, 2)
-        self:Message(L["firewarnyou"], "Attention", "Alarm")
+        if self.db.profile.bomb then
+            -- Your Flames hits you for %d Fire damage.
+            self:WarningSign(icon.fire, 2)
+            self:Message(L["firewarnyou"], "Attention", "Alarm")
+        end
 	elseif string.find(msg, L["heal_trigger"]) then
 		self:Sync(syncName.heal)
 	elseif string.find(msg, L["phasetwo_trigger"]) then
