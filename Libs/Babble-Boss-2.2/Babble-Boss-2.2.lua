@@ -1,6 +1,6 @@
---[[
+﻿--[[
 Name: Babble-Boss-2.2
-Revision: 20003
+Revision: 20004
 Author(s): ckknight (ckknight@gmail.com)
 Website: http://ckknight.wowinterface.com/
 Documentation: http://wiki.wowace.com/index.php/Babble-Boss-2.2
@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Boss-2.2"
-local MINOR_VERSION = 20003
+local MINOR_VERSION = 20004
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -28,7 +28,6 @@ local BabbleBoss = AceLibrary("AceLocale-2.2"):new(MAJOR_VERSION)
 
 BabbleBoss:RegisterTranslations("enUS", function()
 	return {
-		["Stoneskin Gargoyle"] = true,
 		["Avalanchion"] = true,
 		["The Windreaver"] = true,
 		["Baron Charr"] = true,
@@ -153,6 +152,7 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Hate'rel"] = true,
 		["Hazzas"] = true,
 		["Hearthsinger Forresten"] = true,
+		["The Unforgiven"] = true;
 		["High Interrogator Gerstahn"] = true,
 		["Highlord Omokk"] = true,
 		["Hukku"] = true,
@@ -239,9 +239,477 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Rend Blackhand"] = true,
 		["Kurinnaxx"] = true,
             
-        ["Elder Mottled Boar"] = true,
+		["Maur Grimtotem"] = true,
+		["Oggleflint"] = true,
+		["Taragaman the Hungerer"] = true,
+		["Jergosh the Invoker"] = true,
+		["Bazzalan"] = true,
+		["Disciple of Naralex"] = true,
+		["Lord Cobrahn"] = true,
+		["Lady Anacondra"] = true,
+		["Kresh"] = true,
+		["Lord Pythas"] = true,
+		["Skum"] = true,
+		["Lord Serpentis"] = true,
+		["Verdan the Everliving"] = true,
+		["Verdan the Everliving"] = true,
+		["Mutanus the Devourer"] = true,
+		["Naralex"] = true,
+		["Deviate Faerie Dragon"] = true,
+		["Ghamoo-ra"] = true,
+		["Lady Sarevess"] = true,
+		["Gelihast"] = true,
+		["Lorgus Jett"] = true,
+		["Baron Aquanis"] = true,
+		["Twilight Lord Kelris"] = true,
+		["Old Serra'kis"] = true,
+		["Aku'mai"] = true,
+		["Roogug"] = true,
+		["Aggem Thorncurse"] = true,
+		["Death Speaker Jargba"] = true,
+		["Overlord Ramtusk"] = true,
+		["Agathelos the Raging"] = true,
+		["Blind Hunter"] = true,
+		["Charlga Razorflank"] = true,
+		["Earthcaller Halmgar"] = true,
+		["Tuten'kash"] = true,
+		["Lady Falther'ess"] = true,
+		["Mordresh Fire Eye"] = true,
+		["Glutton"] = true,
+		["Ragglesnout"] = true,
+		["Amnennar the Coldbringer"] = true,
+		["Plaguemaw the Rotting"] = true,
+		["Antu'sul"] = true,
+		["Witch Doctor Zum'rah"] = true,
+		["Shadowpriest Sezz'ziz"] = true,
+		["Gahz'rilla"] = true,
+		["Chief Ukorz Sandscalp"] = true,
+		["Ruuzlu"] = true,
+		["Isalien"] = true,
+		["Revanchion"] = true,
+		["Lord Roccor"] = true,
+		["Anub'shiah"] = true,
+		["Eviscerator"] = true,
+		["Gorosh the Dervish"] = true,
+		["Grizzle"] = true,
+		["Hedrum the Creeper"] = true,
+		["Ok'thor the Breaker"] = true,
+		["Houndmaster Grebmar"] = true,
+		["Pyromancer Loregrain"] = true,
+		["Warder Stilgiss"] = true,
+		["Verek"] = true,
+		["Watchman Doomgrip"] = true,
+		["Panzor the Invincible"] = true,
+		["Mor Grayhoof"] = true,
+		["Bannok Grimaxe"] = true,
+		["Urok Doomhowl"] = true,
+		["Quartermaster Zigris"] = true,
+		["Gizrul the Slavener"] = true,
+		["Ghok Bashguud"] = true,
+		["Jed Runewatcher"] = true;
+		["Lord Valthalak"] = true;
+		["Grubbis"] = true;
+		["Chomper"] = true;
+		["Viscous Fallout"] = true;
+		["Electrocutioner 6000"] = true;
+		["Crowd Pummeler 9-60"] = true;
+		["Dark Iron Ambassador"] = true;
+		["Mekgineer Thermaplugg"] = true;
+		["Houndmaster Loksey"] = true;
+		["Arcanist Doan"] = true;
+		["Herod"] = true;
+		["High Inquisitor Fairbanks"] = true;
+		["Scarlet Commander Mograine"] = true;
+		["High Inquisitor Whitemane"] = true;
+		["Interrogator Vishas"] = true;
+		["Bloodmage Thalnos"] = true;
+		["Ironspine"] = true;
+		["Azshir the Sleepless"] = true;
+		["Fallen Champion"] = true;
+		["Lord Blackwood"] = true;
+		["Death Knight Darkreaver"] = true;
+		["Kormok"] = true;
+		["Skul"] = true;
+		["Balzaphon"] = true;
+		["Malor the Zealous"] = true;
+		["Sothos"] = true;
+		["Jarien"] = true;
+		["Stonespine"] = true;
+		["Rhahk'Zor"] = true;
+		["Miner Johnson"] = true;
+		["Sneed"] = true;
+		["Gilnid"] = true;
+		["Captain Greenskin"] = true;
+		["Edwin VanCleef"] = true;
+		["Mr. Smite"] = true;
+		["Cookie"] = true;
+		["Targorr the Dread"] = true;
+		["Kam Deepfury"] = true;
+		["Hamhock"] = true;
+		["Bazil Thredd"] = true;
+		["Dextren Ward"] = true;
+		["Bruegal Ironknuckle"] = true;
+		["Baelog"] = true;
+		["Eric \"The Swift\""] = true;
+		["Olaf"] = true;
+		["Revelosh"] = true;
+		["Ironaya"] = true;
+		["Obsidian Sentinel"] = true;
+		["Ancient Stone Keeper"] = true;
+		["Galgann Firehammer"] = true;
+		["Grimlok"] = true;
+		["Archaedas"] = true;
+		["Sever"] = true;
+		["Scorn"] = true;
+		["Rethilgore"] = true;
+		["Atiesh"] = true;
+		["Stratholme Courier"] = true;
+                ["Elder Mottled Boar"] = true,
+                ["Stoneskin Gargoyle"] = true,
 	}
 end)
+
+BabbleBoss:RegisterTranslations("ruRU", function()
+	return {
+		["Avalanchion"] = "Лавинион",
+		["The Windreaver"] = "Ветробой",
+		["Baron Charr"] = "Барон Огнерр",
+		["Princess Tempestria"] = "Принцесса Бурилла",
+		["Grethok the Controller"] = "Греток Регулятор",
+		["Patchwerk"] = "Лоскутик",
+		["Grobbulus"] = "Гроббулус",
+		["Gluth"] = "Глут",
+		["Feugen"] = "Фойген",
+		["Stalagg"] = "Сталагг",
+		["Thaddius"] = "Таддиус",
+		["Anub'Rekhan"] = "Ануб'Рекан",
+		["Grand Widow Faerlina"] = "Великая вдова Фарлина",
+		["Maexxna"] = "Мексна",
+		["Instructor Razuvious"] = "Инструктор Разувий",
+		["Deathknight Understudy"] = "Ученик рыцаря смерти",
+		["Gothik the Harvester"] = "Готик Жнец",
+		["Highlord Mograine"] = "Верховный лорд Могрейн",
+		["Thane Korth'azz"] = "Тан Кортазз",
+		["Lady Blaumeux"] = "Леди Бломе",
+		["Sir Zeliek"] = "Сэр Зелиек",
+		["The Four Horsemen"] = "Четыре Всадника",
+		["Noth the Plaguebringer"] = "Нот Чумной",
+		["Heigan the Unclean"] = "Хейган Нечестивый",
+		["Loatheb"] = "Лотхиб",
+		["Sapphiron"] = "Сапфирон",
+		["Kel'Thuzad"] = "Кел'Тузад",
+		["Lord Victor Nefarius"] = "Лорд Виктор Нефариус",
+		["Nefarian"] = "Нефариан",
+		["Vaelastrasz the Corrupt"] = "Валестраз Порочный",
+		["Razorgore the Untamed"] = "Бритвосмерт Неукротимый",
+		["Broodlord Lashlayer"] = "Предводитель драконов Разящий Бич",
+		["Chromaggus"] = "Хромаггус",
+		["Ebonroc"] = "Черноскал",
+		["Firemaw"] = "Огнечрев",
+		["Flamegor"] = "Пламегор",
+		["Majordomo Executus"] = "Мажордом Экзекутус",
+		["Ragnaros"] = "Рагнарос",
+		["Baron Geddon"] = "Барон Геддон",
+		["Golemagg the Incinerator"] = "Големагг Испепелитель",
+		["Garr"] = "Гарр",
+		["Sulfuron Harbinger"] = "Предвестник Сульфурон",
+		["Shazzrah"] = "Шаззрах",
+		["Lucifron"] = "Люцифрон",
+		["Gehennas"] = "Гееннас",
+		["Magmadar"] = "Магмадар",
+		["Onyxia"] = "Ониксия",
+		["Azuregos"] = "Азурегос",
+		["Lord Kazzak"] = "Лорд Каззак",
+		["Ysondre"] = "Исондра",
+		["Emeriss"] = "Эмерисс",
+		["Taerar"] = "Таэрар",
+		["Lethon"] = "Летон",
+		["High Priestess Jeklik"] = "Верховная жрица Джеклик",
+		["High Priest Venoxis"] = "Верховный жрец Веноксис",
+		["High Priest Thekal"] = "Верховный жрец Текал",
+		["High Priestess Arlokk"] = "Верховная жрица Арлокк",
+		["High Priestess Mar'li"] = "Верховная жрица Мар'ли",
+		["Jin'do the Hexxer"] = "Мастер проклятий Джин'до",
+		["Bloodlord Mandokir"] = "Мандокир Повелитель Крови",
+		["Gahz'ranka"] = "Газ'ранка",
+		["Gri'lek"] = "Гри'лек",
+		["Hazza'rah"] = "Хазза'рах",
+		["Renataki"] = "Ренатаки",
+		["Wushoolay"] = "Вушулай",
+		["Hakkar"] = "Хаккар",
+		["Ayamiss the Hunter"] = "Айамисса Охотница",
+		["Buru the Gorger"] = "Буру Ненасытный",
+		["General Rajaxx"] = "Генерал Раджакс",
+		["Lieutenant General Andorov"] = "Генерал-лейтенант Андоров",
+		["Moam"] = "Моам",
+		["Anubisath Guardian"] = "Анубисат-страж",
+		["Ossirian the Unscarred"] = "Оссириан Неуязвимый",
+		["Lord Kri"] = "Лорд Кри",
+		["Princess Yauj"] = "Принцесса Яудж",
+		["Vem"] = "Вем",
+		["The Bug Family"] = "Семейство насекомых",
+		["Eye of C'Thun"] = "Око К'Туна",
+		["C'Thun"] = "К'Тун",
+		["Anubisath Defender"] = "Анубисат-защитник",
+		["Fankriss the Unyielding"] = "Фанкрисс Неприклонный",
+		["Princess Huhuran"] = "Принцесса Хухуран",
+		["Ouro"] = "Оуро",
+		["Battleguard Sartura"] = "Боевой страж Сартура",
+		["The Prophet Skeram"] = "Пророк Скерам",
+		["Emperor Vek'lor"] = "Император Век'лор",
+		["Emperor Vek'nilash"] = "Император Век'нилаш",
+		["The Twin Emperors"] = "Близнецы Императора",
+		["Viscidus"] = "Нечистотон",
+		["Alzzin the Wildshaper"] = "Алззин Перевертень",
+		["Ambassador Flamelash"] = "Посол Огнехлыст",
+		["Anger'rel"] = "Гнев'рел",
+		["Archivist Galford"] = "Архивариус Галфорд",
+		["Atal'alarion"] = "Атал'аларион",
+		["Avatar of Hakkar"] = "Аватара Хаккара",
+		["Bael'Gar"] = "Бейл'Гор",
+		["Balnazzar"] = "Балназзар",
+		["Baroness Anastari"] = "Баронесса Анастари",
+		["Baron Rivendare"] = "Барон Ривендер",
+		["Cannon Master Willey"] = "Мастер-канонир Вилли",
+		["Captain Kromcrush"] = "Капитан Давигром",
+		["Celebras the Cursed"] = "Келебрас Проклятый",
+		["Crystal Fang"] = "Хрустальный Клык",
+                ["Darkmaster Gandling"] = "Темный магистр Гандлинг",
+		["Doctor Theolen Krastinov"] = "Доктор Теолен Крастинов",
+		["Doom'rel"] = "Рок'рел",
+		["Dope'rel"] = "Праздн'рел",
+		["Dreamscythe"] = "Жнец Снов",
+		["Emperor Dagran Thaurissan"] = "Император Дагран Тауриссан",
+		["Fineous Darkvire"] = "Финий Темнострой",
+		["Gasher"] = "Ранокол",
+		["General Angerforge"] = "Генерал Кузня Гнева",
+		["General Drakkisath"] = "Генерал Драккисат",
+		["Gloom'rel"] = "Мрак'нел",
+		["Golem Lord Argelmach"] = "Повелитель големов Аргелмах",
+		["Goraluk Anvilcrack"] = "Горалук Треснувшая Наковальня",
+		["Guard Fengus"] = "Стражник Фенгус",
+		["Guard Mol'dar"] = "Стражник Мол'дар",
+		["Guard Slip'kik"] = "Стражник Слип'кик",
+		["Gyth"] = "Гит",
+		["Halycon"] = "Халикон",
+		["Hate'rel"] = "Злоб'рел",
+		["Hazzas"] = "Хаззас",
+		["Hearthsinger Forresten"] = "Певчий Форрестен",
+		["The Unforgiven"] = "Непрощенный";
+		["High Interrogator Gerstahn"] = "Верховный дознаватель Герштан",
+		["Highlord Omokk"] = "Вождь Омокк",
+		["Hukku"] = "Хукку",
+		["Hurley Blackbreath"] = "Харли Чернопых",
+		["Hydrospawn"] = "Гидротварь",
+		["Illyanna Ravenoak"] = "Иллиана Воронья Ольха",
+		["Immol'thar"] = "Бессмер'тер",
+		["Instructor Malicia"] = "Инструктор Коварница",
+		["Jammal'an the Prophet"] = "Джаммал'ан Пророк",
+		["Jandice Barov"] = "Джандис Барова",
+		["King Gordok"] = "Король Гордок",
+		["Kirtonos the Herald"] = "Киртонос Глашатай",
+		["Lady Illucia Barov"] = "Леди Иллюсия Барова",
+		["Landslide"] = "Сель",
+		["Lethtendris"] = "Лефтендрис",
+		["Lord Alexei Barov"] = "Лорд Алексей Баров",
+		["Lord Incendius"] = "Лорд Опалитель",
+		["Lord Vyletongue"] = "Лорд Злоязыкий",
+		["Lorekeeper Polkelt"] = "Сказитель Полкелт",
+		["Loro"] = "Лоро",
+		["Magister Kalendris"] = "Магистр Календрис",
+		["Magistrate Barthilas"] = "Мировой судья Бартилас",
+		["Magmus"] = "Магмус",
+		["Maleki the Pallid"] = "Малекай Бледный",
+		["Marduk Blackpool"] = "Мардук Блэкпул",
+		["Meshlok the Harvester"] = "Мешлок Жнец",
+		["Mijan"] = "Миджан",
+		["Morphaz"] = "Морфаз",
+		["Mother Smolderweb"] = "Мать Дымная Паутина",
+		["Nerub'enkan"] = "Неруб'энкан",
+		["Noxxion"] = "Ноксион",
+		["Ogom the Wretched"] = "Огом Презренный",
+		["Overlord Wyrmthalak"] = "Властитель Змейталак",
+		["Phalanx"] = "Фаланкс",
+		["Plugger Spazzring"] = "Штоппор Наливалс",
+		["Postmaster Malown"] = "Почтальон Мэлоун",
+		["Princess Moira Bronzebeard"] = "Принцесса Мойра Бронзобород",
+		["Princess Theradras"] = "Принцесса Терадрас",
+		["Prince Tortheldrin"] = "Принц Тортелдрин",
+		["Pusillin"] = "Пузиллин",
+		["Pyroguard Emberseer"] = "Пиростраж Углевзор",
+		["Ramstein the Gorger"] = "Рамштайн Ненасытный",
+		["Ras Frostwhisper"] = "Рас Ледяной Шепот",
+		["Rattlegore"] = "Громоклин",
+		["Razorlash"] = "Бритвохлест",
+		["Warchief Rend Blackhand"] = "Вождь Ренд Чернорук",
+		["Ribbly Screwspigot"] = "Риббли Крутипроб",
+		["Rotgrip"] = "Гнилопасть",
+		["Seeth'rel"] = "Беше'рел",
+		["Shade of Eranikus"] = "Тень Эраникуса",
+		["Shadow Hunter Vosh'gajin"] = "Темная охотница Вос'гаджин",
+		["Solakar Flamewreath"] = "Солакарский огнечервь",
+		["Stomper Kreeg"] = "Топотун Криг",
+		["Tendris Warpwood"] = "Тендрис Криводрев",
+		["The Beast"] = "Зверь",
+		["The Ravenian"] = "Равениан",
+		["Timmy the Cruel"] = "Тимми Беспощадный",
+		["Tinkerer Gizlock"] = "Ремонтник Гизлок",
+		["Tsu'zee"] = "Цу'зи",
+		["Vectus"] = "Вектус",
+		["Vile'rel"] = "Гнус'рел",
+		["War Master Voone"] = "Воевода Вун",
+		["Weaver"] = "Ткачик",
+		["Zevrim Thornhoof"] = "Зеврим Терновое Копыто",
+		["Zolo"] = "Золо",
+		["Zul'Lor"] = "Зул'Лор",
+		
+		-- From Mendeleev
+		["Cho'Rush the Observer"] = "Чо'Раш Наблюдатель",
+		["Lord Hel'nurath"] = "Лорд Хел'нурат",
+		["Pimgib"] = "Пимгиб",
+		["Knot Thimblejack's Cache"] = "Тайник Уззла Наперстяка",
+		["Cannonmaster Willey"] = "Мастер-канонир Вилли",
+		["Emperor Dagran Thaurissian"] = "Император Дагран Тауриссан",
+		["Archmage Arugal"] = "Верховный маг Аругал",
+		["Archmage Arugal's Voidwalker"] = "Демон Бездны Аругала",
+		["Baron Silverlaine"] = "Барон Сильверлейн",
+		["Commander Springvale"] = "Командир Ручьедол",
+		["Deathsworn Captain"] = "Капитан служителей Смерти",
+		["Fenrus the Devourer"] = "Фенрус Пожиратель",
+		["Odo the Blindwatcher"] = "Одо Слепой Страж",
+		["Razorclaw the Butcher"] = "Остроклык Мясник",
+		["Wolf Master Nandos"] = "Командир воргенов Нандос",
+		["Rend Blackhand"] = "Ренд Чернорук",
+		["Kurinnaxx"] = "Куриннакс",
+            
+		["Maur Grimtotem"] = "Маур Зловещий Тотем",
+		["Taragaman the Hungerer"] = "Тарагаман Ненасытный",
+		["Jergosh the Invoker"] = "Жергош Призыватель Духов",
+		["Bazzalan"] = "Баззалан",
+		["Disciple of Naralex"] = "Послушник Наралекса",
+		["Lord Cobrahn"] = "Лорд Кобран",
+		["Lady Anacondra"] = "Повелительница Анакондра",
+		["Kresh"] = "Криг",
+		["Lord Pythas"] = "Лорд Питонас",
+		["Skum"] = "Шкам",
+		["Lord Serpentis"] = "Лорд Серпентис",
+		["Verdan the Everliving"] = "Вердан Бессмертный",
+		["Mutanus the Devourer"] = "Мутанус Пожиратель",
+		["Naralex"] = "Наралекс",
+		["Deviate Faerie Dragon"] = "Загадочный волшебный дракон",
+		["Ghamoo-ra"] = "Гхаму-ра",
+		["Lady Sarevess"] = "Леди Саревесс",
+		["Gelihast"] = "Гелихаст",
+		["Lorgus Jett"] = "Лоргус Джетт",
+		["Baron Aquanis"] = "Барон Акванис",
+		["Twilight Lord Kelris"] = "Повелитель сумрака Келрис",
+		["Old Serra'kis"] = "Старина Серракис",
+		["Aku'mai"] = "Аку'май",
+		["Roogug"] = "Ругуг",
+		["Aggem Thorncurse"] = "Аггем Терновое Проклятие",
+		["Death Speaker Jargba"] = "Вестник смерти Джаргба",
+		["Overlord Ramtusk"] = "Властитель Таранный Клык",
+		["Agathelos the Raging"] = "Агателос Свирепый",
+		["Blind Hunter"] = "Слепой охотник",
+		["Charlga Razorflank"] = "Чарлга Остробок",
+		["Earthcaller Halmgar"] = "Заклинательница земли Халмгар",
+		["Tuten'kash"] = "Тутен'каш",
+		["Lady Falther'ess"] = "Леди Фалтер'есс",
+		["Mordresh Fire Eye"] = "Мордреш Огненный Глаз",
+		["Glutton"] = "Обжора",
+		["Ragglesnout"] = "Круглорыл",
+		["Amnennar the Coldbringer"] = "Амненнар Хладовей",
+		["Plaguemaw the Rotting"] = "Чумобрюх Гнилой",
+		["Antu'sul"] = "Анту'сул",
+		["Witch Doctor Zum'rah"] = "Знахарь Зум'рах",
+		["Shadowpriest Sezz'ziz"] = "Темный жрец Шезз'зиз",
+		["Gahz'rilla"] = "Газ'рилла",
+		["Chief Ukorz Sandscalp"] = "Вождь Укорз Песчаная Плешь",
+		["Ruuzlu"] = "Руузлу",	
+		["Isalien"] = "Изалиен",
+		["Revanchion"] = "Реваншион",
+		["Lord Roccor"] = "Лорд Роккор";
+		["Anub'shiah"] = "Ануб'шиа";
+		["Eviscerator"] = "Потрошитель";
+		["Gorosh the Dervish"] = "Горош Дервиш";
+		["Grizzle"] = "Гриззл";
+		["Hedrum the Creeper"] = "Хедрум Ползун";
+		["Ok'thor the Breaker"] = "Ок'тор Разрушитель";
+		["Houndmaster Grebmar"] = "Псарь Гребмар";
+		["Pyromancer Loregrain"] = "Пироман Зерно Мудрости";
+		["Warder Stilgiss"] = "Тюремщик Стилгисс";
+		["Verek"] = "Верек";
+		["Watchman Doomgrip"] = "Сторож Хватка Смерти";
+		["Panzor the Invincible"] = "Панцер Непобедимый";
+		["Mor Grayhoof"] = "Мор Серое Копыто",
+		["Bannok Grimaxe"] = "Баннок Люторез",
+		["Urok Doomhowl"] = "Аррок Смертный Вопль",
+		["Quartermaster Zigris"] = "Интендант Зигрис",
+		["Gizrul the Slavener"] = "Гизрул Поработитель",
+		["Ghok Bashguud"] = "Гок Крепкобив",	
+		["Jed Runewatcher"] = "Джед Руновед";
+		["Lord Valthalak"] = "Лорд Вальтхалак";
+		["Grubbis"] = "Грязнюк";
+		["Chomper"] = "Чавккер";
+		["Viscous Fallout"] = "Липкая муть";
+		["Electrocutioner 6000"] = "Электрошокер 6000";
+		["Crowd Pummeler 9-60"] = "Толпогон 9-60";
+		["Dark Iron Ambassador"] = "Посол из клана Черного Железа";
+		["Mekgineer Thermaplugg"] = "Анжинер Термоштепсель";
+		["Houndmaster Loksey"] = "Псарь Локси";
+		["Arcanist Doan"] = "Чародей Доан";
+		["Herod"] = "Ирод";
+		["High Inquisitor Fairbanks"] = "Верховный инквизитор Фэйрбанкс";
+		["Scarlet Commander Mograine"] = "Командир Могрейн из Алого ордена";
+		["High Inquisitor Whitemane"] = "Верховный инквизитор Вайтмейн";
+		["Interrogator Vishas"] = "Дознаватель Вишас";
+		["Bloodmage Thalnos"] = "Волшебник крови Талнос";
+		["Ironspine"] = "Железноспин";
+		["Azshir the Sleepless"] = "Азшир Неспящий";
+		["Fallen Champion"] = "Павший воитель";
+		["Lord Blackwood"] = "Лорд Блэквуд";
+		["Death Knight Darkreaver"] = "Рыцарь смерти Темный Терзатель";
+		["Kormok"] = "Кормок";
+		["Skul"] = "Череп";
+		["Balzaphon"] = "Балзафон";
+		["Malor the Zealous"] = "Малор Ревностный";
+		["Sothos"] = "Сотос";
+		["Jarien"] = "Джариен";
+		["Stonespine"] = "Каменный Гребень";
+		["Rhahk'Zor"] = "Рак'Зор";
+		["Miner Johnson"] = "Шахтер Джонсон";
+		["Sneed"] = "Снид";
+		["Gilnid"] = "Гилнид";
+		["Captain Greenskin"] = "Капитан Зеленямс";
+		["Edwin VanCleef"] = "Эдвин ван Клиф";
+		["Mr. Smite"] = "Мистер Каюк";
+		["Cookie"] = "Пирожок";
+		["Targorr the Dread"] = "Таргорр Ужасный";
+		["Kam Deepfury"] = "Кам Гневливый";
+		["Hamhock"] = "Хрупконог";
+		["Bazil Thredd"] = "Базиль Тредд";
+		["Dextren Ward"] = "Декстрен Вард";
+		["Bruegal Ironknuckle"] = "Бругал Железный Кулак";
+		["Baelog"] = "Бейлог";
+		["Eric \"The Swift\""] = "Эрик \"Быстрый\"";
+		["Olaf"] = "Олаф";
+		["Revelosh"] = "Ревелош";
+		["Ironaya"] = "Иронайа";
+		["Obsidian Sentinel"] = "Обсидиановый часовой";
+		["Ancient Stone Keeper"] = "Древний Хранитель Камня";
+		["Galgann Firehammer"] = "Галганн Огнемолот";
+		["Grimlok"] = "Гримлок";
+		["Archaedas"] = "Аркедас";
+		["Sever"] = "Калечер";
+		["Scorn"] = "Насмешник";
+		["Rethilgore"] = "Ретилгор";
+		["Atiesh"] = "Атиеш";
+		["Stratholme Courier"] = "Стратхольмский курьер";
+                ["Elder Mottled Boar"] = true,
+                ["Stoneskin Gargoyle"] = true,
+	}
+end)
+
 
 BabbleBoss:RegisterTranslations("deDE", function()
 	return {
@@ -256,7 +724,6 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Ebonroc"] = "Schattenschwinge",
 		["Firemaw"] = "Feuerschwinge",
 		["Flamegor"] = "Flammenmaul",
-		
 		-- MC
 		["Majordomo Executus"] = "Majordomus Exekutus",
 		["Ragnaros"] = "Ragnaros",
@@ -268,7 +735,6 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Lucifron"] = "Lucifron",
 		["Gehennas"] = "Gehennas",
 		["Magmadar"] = "Magmadar",
-		
 		-- Naxxramas
 		["Patchwerk"] = "Flickwerk",
 		["Grobbulus"] = "Grobbulus",
@@ -292,8 +758,14 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Loatheb"] = "Loatheb",
 		["Sapphiron"] = "Sapphiron",
 		["Kel'Thuzad"] = "Kel'Thuzad",
-		["Stoneskin Gargoyle"] = "Steinhautgargoyle",
-		
+		-- Worldboss
+		["Onyxia"] = "Onyxia",
+		["Azuregos"] = "Azuregos",
+		["Emeriss"] = "Smariss",
+		["Taerar"] = "Taerar",
+		["Lethon"] = "Lethon",
+		["Lord Kazzak"] = "Lord Kazzak",
+		["Ysondre"] = "Ysondre",
 		-- Zul'Gurub
 		["Jin'do the Hexxer"] = "Jin'do der Verhexer",
 		["Bloodlord Mandokir"] = "Blutfürst Mandokir",
@@ -308,7 +780,14 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Hazza'rah"] = "Hazza'rah",
 		["Renataki"] = "Renataki",
 		["Wushoolay"] = "Wushoolay",
-		
+		["Ayamiss the Hunter"] = "Ayamiss der Jäger",
+		["Buru the Gorger"] = "Buru der Verschlinger",
+		["General Rajaxx"] = "General Rajaxx",
+		["Lieutenant General Andorov"] = "Generallieutenant Andorov",
+		["Moam"] = "Moam",
+		["Anubisath Guardian"] = "Beschützer des Anubisath",
+		["Ossirian the Unscarred"] = "Ossirian der Narbenlose",
+		["Kurinnaxx"] = "Kurinnaxx",
 		-- AQ40
 		["Lord Kri"] = "Lord Kri",
 		["Princess Yauj"] = "Prinzessin Yauj",
@@ -326,33 +805,12 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Emperor Vek'nilash"] = "Imperator Vek'nilash",
 		["The Twin Emperors"] = "Die Zwillingsimperatoren",
 		["Viscidus"] = "Viscidus",
-		
-		-- AQ20
-		["Ayamiss the Hunter"] = "Ayamiss the Hunter",
-		["Buru the Gorger"] = "Buru the Gorger",
-		["General Rajaxx"] = "General Rajaxx",
-		["Lieutenant General Andorov"] = "Lieutenant General Andorov",
-		["Moam"] = "Moam",
-		["Anubisath Guardian"] = "Beschützer der Anubisath",
-		["Ossirian the Unscarred"] = "Ossirian der Narbenlose",
-		["Kurinnaxx"] = "Kurinnaxx",
-		
-		-- Worldboss
-		["Onyxia"] = "Onyxia",
-		["Azuregos"] = "Azuregos",
-		["Emeriss"] = "Smariss",
-		["Taerar"] = "Taerar",
-		["Lethon"] = "Lethon",
-		["Lord Kazzak"] = "Lord Kazzak",
-		["Ysondre"] = "Ysondre",
-		["Elder Mottled Boar"] = "Alter scheckiger Eber",
-		
 		-- Other
 		["Avalanchion"] = "Avalanchion",
-		["The Windreaver"] = "The Windreaver",
+		["The Windreaver"] = "Der Windpl\195\188nderer",
 		["Baron Charr"] = "Baron Charr",
-		["Princess Tempestria"] = "Princess Tempestria",
-		["Alzzin the Wildshaper"] = "Alzzin the Wildshaper",
+		["Princess Tempestria"] = "Prinzessin Tempestria",
+                ["Alzzin the Wildshaper"] = "Alzzin der Wildformer",
 		["Ambassador Flamelash"] = "Botschafter Flamelash",
 		["Anger'rel"] = "Anger'rel",
 		["Archivist Galford"] = "Archivar Galford",
@@ -472,128 +930,13 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Wolf Master Nandos"] = "Wolfmeister Nados",
 		["Rend Blackhand"] = "Rend Blackhand",
 
-        
-            
-		-- OUTLANDS
-		-- XXX: These are subject to change and may not be correct.
---		["Doom Lord Kazzak"] = true,
-		-- Karazhan
---		["Prince Malchazzar"] = true,
---		["Attumen the Huntsman"] = true,
---		["Midnight"] = true,
---		["Hyakiss the Lurker"] = true,
---		["Rokad the Ravager"] = true,
---		["Shadikith the Glider"] = true,
---		["Moroes"] = true,
---		["Maiden of Virtue"] = true,
---		["Dorothee"] = true,
---		["Tito"] = true,
---		["Tinhead"] = true,
---		["Strawman"] = true,
---		["Roar"] = true,
---		["The Crone"] = true,
---		["Romulo"] = true,
---		["Julianne"] = true,
---		["The Big Bad Wolf"] = true,
---		["The Curator"] = true,
---		["Shade of Aran"] = true,
---		["Terestian Illhoof"] = true,
---		["Netherspite"] = true,
---		["Nightbane"] = true,
---		["King Llane Piece"] = true,
---		["Warchief Blackhand Piece"] = true,
-		-- Caverns of Time
-		--   Durnholde Keep
---		["Lieutenant Drake"] = true,
---		["Captain Skarloc"] = true,
---		["Epoch Hunter"] = true,
-		--   The Black Morass
---		["Medivh"] = true,
---		["Chrono Lord Deja"] = true,
---		["Temporus"] = true,
---		["Aeonus"] = true,
-		--   XX
---		["Archimonde"] = true,
-		-- Hellfire Ramparts
---		["Watchkeeper Gargolmar"] = true,
---		["Vazruden the Herald"] = true,
---		["Vazruden"] = true,
---		["Nazan"] = true,
---		["Omor the Unscarred"] = true,
-		-- The Blood Furnace
---		["The Maker"] = true,
---		["Broggok"] = true,
---		["Keli'dan the Breaker"] = true,
-		-- The Shattered Halls
---		["Kargath Bladefist"] = true,
---		["Grand Warlock Nethekurse"] = true,
---		["Warbringer O'mrogg"] = true,
-		-- Magtheridon's Lair
---		["Magtheridon"] = true,
-		-- The Slave Pens
---		["Mennu the Betrayer"] = true,
---		["Rokmar the Crackler"] = true,
---		["Quagmirran"] = true,
-		-- The Underbog
---		["Hungarfen"] = true,
---		["Ghaz'an"] = true,
---		["Overseer Tidewrath"] = true,
---		["Claw"] = true,
---		["Swamplord Musel'ek"] = true,
---		["The Black Stalker"] = true,
-		-- The Steamvault
---		["Hydromancer Thespia"] = true,
---		["Mekgineer Steamrigger"] = true,
---		["Warlord Kalithresh"] = true,
-		-- Serpentshrine Cavern
---		["Lady Vashj"] = true,
-		-- Mana Tombs
---		["Pandemonius"] = true,
---		["Tavarok"] = true,
---		["Nexus-Prince Shaffar"] = true,
-		-- Auchenai Crypts
---		["Shirrak the Dead Watcher"] = true,
---		["Exarch Maladaar"] = true,
-		-- Sethekk Halls
---		["Talon King Ikiss"] = true,
---		["Darkweaver Syth"] = true,
-		-- Shadow Labyrinth
---		["Ambassador Hellmaw"] = true,
---		["Blackheart the Inciter"] = true,
-		-- The Mechanar
---		["Gatekeeper Gyro-Kill"] = true,
---		["Nethermancer Sepethrea"] = true,
---		["Gatewatcher Iron-Hand"] = true,
---		["Mechano-Lord Capacitus"] = true,
---		["Pathaleon the Calculator"] = true,
-		-- The Botanica
---		["Commander Sarannis"] = true,
---		["High Botanist Freywinn"] = true,
---		["Thorngrin the Tender"] = true,
---		["Laj"] = true,
---		["Warp Splinter"] = true,
-		-- The Arcatraz
-		-- The Eye
---		["Prince Kael'thas Sunstrider"] = true,
-		-- Gruul's Lair
---		["Gruul"] = true,
-		-- Black Temple
---		["Illidan Stormrage"] = true,
-		-- Ring of Blood
---		["Brokentoe"] = true,
---		["Murkblood Twin"] = true,
---		["Murkblood Twins"] = true,
---		["The Blue Brothers"] = true,
---		["Rokdar the Sundered Lord"] = true,
---		["Skra'gath"] = true,
---		["Warmaul Champion"] = true,
---		["Mogor"] = true,
+                ["Stoneskin Gargoyle"] = "Steinhautgargoyle",
+                ["Elder Mottled Boar"] = "Alter scheckiger Eber",
 	}
 end)
 
 BabbleBoss:RegisterTranslations("frFR", function()
 	return {
-		["Stoneskin Gargoyle"] = true,
 		["Avalanchion"] = "Avalanchion",
 		["The Windreaver"] = "Ouraganien",
 		["Baron Charr"] = "Baron Charr",
@@ -800,128 +1143,12 @@ BabbleBoss:RegisterTranslations("frFR", function()
 		["Razorclaw the Butcher"] = "Tranchegriffe le Boucher",
 		["Wolf Master Nandos"] = "Ma\195\174tre-loup Nandos",
 		["Kurinnaxx"] = "Kurinnaxx",
-
-		-- OUTLANDS
-		-- XXX: These are subject to change and may not be correct.
---		["Doom Lord Kazzak"] = true,
-		-- Karazhan
---		["Prince Malchazzar"] = true,
---		["Attumen the Huntsman"] = true,
---		["Midnight"] = true,
---		["Hyakiss the Lurker"] = true,
---		["Rokad the Ravager"] = true,
---		["Shadikith the Glider"] = true,
---		["Moroes"] = true,
---		["Maiden of Virtue"] = true,
---		["Dorothee"] = true,
---		["Tito"] = true,
---		["Tinhead"] = true,
---		["Strawman"] = true,
---		["Roar"] = true,
---		["The Crone"] = true,
---		["Romulo"] = true,
---		["Julianne"] = true,
---		["The Big Bad Wolf"] = true,
---		["The Curator"] = true,
---		["Shade of Aran"] = true,
---		["Terestian Illhoof"] = true,
---		["Netherspite"] = true,
---		["Nightbane"] = true,
---		["King Llane Piece"] = true,
---		["Warchief Blackhand Piece"] = true,
-		-- Caverns of Time
-		--   Durnholde Keep
---		["Lieutenant Drake"] = true,
---		["Captain Skarloc"] = true,
---		["Epoch Hunter"] = true,
-		--   The Black Morass
---		["Medivh"] = true,
---		["Chrono Lord Deja"] = true,
---		["Temporus"] = true,
---		["Aeonus"] = true,
-		--   XX
---		["Archimonde"] = true,
-		-- Hellfire Ramparts
---		["Watchkeeper Gargolmar"] = true,
---		["Vazruden the Herald"] = true,
---		["Vazruden"] = true,
---		["Nazan"] = true,
---		["Omor the Unscarred"] = true,
-		-- The Blood Furnace
---		["The Maker"] = true,
---		["Broggok"] = true,
---		["Keli'dan the Breaker"] = true,
-		-- The Shattered Halls
---		["Kargath Bladefist"] = true,
---		["Grand Warlock Nethekurse"] = true,
---		["Warbringer O'mrogg"] = true,
-		-- Magtheridon's Lair
---		["Magtheridon"] = true,
-		-- The Slave Pens
---		["Mennu the Betrayer"] = true,
---		["Rokmar the Crackler"] = true,
---		["Quagmirran"] = true,
-		-- The Underbog
---		["Hungarfen"] = true,
---		["Ghaz'an"] = true,
---		["Overseer Tidewrath"] = true,
---		["Claw"] = true,
---		["Swamplord Musel'ek"] = true,
---		["The Black Stalker"] = true,
-		-- The Steamvault
---		["Hydromancer Thespia"] = true,
---		["Mekgineer Steamrigger"] = true,
---		["Warlord Kalithresh"] = true,
-		-- Serpentshrine Cavern
---		["Lady Vashj"] = true,
-		-- Mana Tombs
---		["Pandemonius"] = true,
---		["Tavarok"] = true,
---		["Nexus-Prince Shaffar"] = true,
-		-- Auchenai Crypts
---		["Shirrak the Dead Watcher"] = true,
---		["Exarch Maladaar"] = true,
-		-- Sethekk Halls
---		["Talon King Ikiss"] = true,
---		["Darkweaver Syth"] = true,
-		-- Shadow Labyrinth
---		["Ambassador Hellmaw"] = true,
---		["Blackheart the Inciter"] = true,
-		-- The Mechanar
---		["Gatekeeper Gyro-Kill"] = true,
---		["Nethermancer Sepethrea"] = true,
---		["Gatewatcher Iron-Hand"] = true,
---		["Mechano-Lord Capacitus"] = true,
---		["Pathaleon the Calculator"] = true,
-		-- The Botanica
---		["Commander Sarannis"] = true,
---		["High Botanist Freywinn"] = true,
---		["Thorngrin the Tender"] = true,
---		["Laj"] = true,
---		["Warp Splinter"] = true,
-		-- The Arcatraz
-		-- The Eye
---		["Prince Kael'thas Sunstrider"] = true,
-		-- Gruul's Lair
---		["Gruul"] = true,
-		-- Black Temple
---		["Illidan Stormrage"] = true,
-		-- Ring of Blood
---		["Brokentoe"] = true,
---		["Murkblood Twin"] = true,
---		["Murkblood Twins"] = true,
---		["The Blue Brothers"] = true,
---		["Rokdar the Sundered Lord"] = true,
---		["Skra'gath"] = true,
---		["Warmaul Champion"] = true,
---		["Mogor"] = true,
+		["Stoneskin Gargoyle"] = true,
 	}
 end)
 
-
 BabbleBoss:RegisterTranslations("zhCN", function()
 	return {
-		["Stoneskin Gargoyle"] = true,
 		["Avalanchion"] = "阿瓦兰奇奥",
 		["The Windreaver"] = "烈风掠夺者",
 		["Baron Charr"] = "火焰男爵查尔",
@@ -1131,127 +1358,12 @@ BabbleBoss:RegisterTranslations("zhCN", function()
 		["Wolf Master Nandos"] = "狼王南杜斯", 
 		["Rend Blackhand"] = "雷德·黑手", 
 		["Kurinnaxx"] = "库林纳克斯",
-
-		-- OUTLANDS
-		-- XXX: These are subject to change and may not be correct.
---		["Doom Lord Kazzak"] = true,
-		-- Karazhan
---		["Prince Malchazzar"] = true,
---		["Attumen the Huntsman"] = true,
---		["Midnight"] = true,
---		["Hyakiss the Lurker"] = true,
---		["Rokad the Ravager"] = true,
---		["Shadikith the Glider"] = true,
---		["Moroes"] = true,
---		["Maiden of Virtue"] = true,
---		["Dorothee"] = true,
---		["Tito"] = true,
---		["Tinhead"] = true,
---		["Strawman"] = true,
---		["Roar"] = true,
---		["The Crone"] = true,
---		["Romulo"] = true,
---		["Julianne"] = true,
---		["The Big Bad Wolf"] = true,
---		["The Curator"] = true,
---		["Shade of Aran"] = true,
---		["Terestian Illhoof"] = true,
---		["Netherspite"] = true,
---		["Nightbane"] = true,
---		["King Llane Piece"] = true,
---		["Warchief Blackhand Piece"] = true,
-		-- Caverns of Time
-		--   Durnholde Keep
---		["Lieutenant Drake"] = true,
---		["Captain Skarloc"] = true,
---		["Epoch Hunter"] = true,
-		--   The Black Morass
---		["Medivh"] = true,
---		["Chrono Lord Deja"] = true,
---		["Temporus"] = true,
---		["Aeonus"] = true,
-		--   XX
---		["Archimonde"] = true,
-		-- Hellfire Ramparts
---		["Watchkeeper Gargolmar"] = true,
---		["Vazruden the Herald"] = true,
---		["Vazruden"] = true,
---		["Nazan"] = true,
---		["Omor the Unscarred"] = true,
-		-- The Blood Furnace
---		["The Maker"] = true,
---		["Broggok"] = true,
---		["Keli'dan the Breaker"] = true,
-		-- The Shattered Halls
---		["Kargath Bladefist"] = true,
---		["Grand Warlock Nethekurse"] = true,
---		["Warbringer O'mrogg"] = true,
-		-- Magtheridon's Lair
---		["Magtheridon"] = true,
-		-- The Slave Pens
---		["Mennu the Betrayer"] = true,
---		["Rokmar the Crackler"] = true,
---		["Quagmirran"] = true,
-		-- The Underbog
---		["Hungarfen"] = true,
---		["Ghaz'an"] = true,
---		["Overseer Tidewrath"] = true,
---		["Claw"] = true,
---		["Swamplord Musel'ek"] = true,
---		["The Black Stalker"] = true,
-		-- The Steamvault
---		["Hydromancer Thespia"] = true,
---		["Mekgineer Steamrigger"] = true,
---		["Warlord Kalithresh"] = true,
-		-- Serpentshrine Cavern
---		["Lady Vashj"] = true,
-		-- Mana Tombs
---		["Pandemonius"] = true,
---		["Tavarok"] = true,
---		["Nexus-Prince Shaffar"] = true,
-		-- Auchenai Crypts
---		["Shirrak the Dead Watcher"] = true,
---		["Exarch Maladaar"] = true,
-		-- Sethekk Halls
---		["Talon King Ikiss"] = true,
---		["Darkweaver Syth"] = true,
-		-- Shadow Labyrinth
---		["Ambassador Hellmaw"] = true,
---		["Blackheart the Inciter"] = true,
-		-- The Mechanar
---		["Gatekeeper Gyro-Kill"] = true,
---		["Nethermancer Sepethrea"] = true,
---		["Gatewatcher Iron-Hand"] = true,
---		["Mechano-Lord Capacitus"] = true,
---		["Pathaleon the Calculator"] = true,
-		-- The Botanica
---		["Commander Sarannis"] = true,
---		["High Botanist Freywinn"] = true,
---		["Thorngrin the Tender"] = true,
---		["Laj"] = true,
---		["Warp Splinter"] = true,
-		-- The Arcatraz
-		-- The Eye
---		["Prince Kael'thas Sunstrider"] = true,
-		-- Gruul's Lair
---		["Gruul"] = true,
-		-- Black Temple
---		["Illidan Stormrage"] = true,
-		-- Ring of Blood
---		["Brokentoe"] = true,
---		["Murkblood Twin"] = true,
---		["Murkblood Twins"] = true,
---		["The Blue Brothers"] = true,
---		["Rokdar the Sundered Lord"] = true,
---		["Skra'gath"] = true,
---		["Warmaul Champion"] = true,
---		["Mogor"] = true,
+                ["Stoneskin Gargoyle"] = true,
 	}
 end)
 
 BabbleBoss:RegisterTranslations("zhTW", function()
 	return {
-		["Stoneskin Gargoyle"] = true,
 		["Avalanchion"] = "阿瓦蘭奇奧",
 		["The Windreaver"] = "烈風掠奪者",
 		["Baron Charr"] = "火焰男爵查爾",
@@ -1460,121 +1572,8 @@ BabbleBoss:RegisterTranslations("zhTW", function()
 		["Wolf Master Nandos"] = "狼王南杜斯",
 		["Rend Blackhand"] = "大酋長雷德‧黑手",
 		["Kurinnaxx"] = "庫林納克斯",
-
-		-- OUTLANDS
-		-- XXX: These are subject to change and may not be correct.
---		["Doom Lord Kazzak"] = true,
-		-- Karazhan
---		["Prince Malchazzar"] = true,
---		["Attumen the Huntsman"] = true,
---		["Midnight"] = true,
---		["Hyakiss the Lurker"] = true,
---		["Rokad the Ravager"] = true,
---		["Shadikith the Glider"] = true,
---		["Moroes"] = true,
---		["Maiden of Virtue"] = true,
---		["Dorothee"] = true,
---		["Tito"] = true,
---		["Tinhead"] = true,
---		["Strawman"] = true,
---		["Roar"] = true,
---		["The Crone"] = true,
---		["Romulo"] = true,
---		["Julianne"] = true,
---		["The Big Bad Wolf"] = true,
---		["The Curator"] = true,
---		["Shade of Aran"] = true,
---		["Terestian Illhoof"] = true,
---		["Netherspite"] = true,
---		["Nightbane"] = true,
---		["King Llane Piece"] = true,
---		["Warchief Blackhand Piece"] = true,
-		-- Caverns of Time
-		--   Durnholde Keep
---		["Lieutenant Drake"] = true,
---		["Captain Skarloc"] = true,
---		["Epoch Hunter"] = true,
-		--   The Black Morass
---		["Medivh"] = true,
---		["Chrono Lord Deja"] = true,
---		["Temporus"] = true,
---		["Aeonus"] = true,
-		--   XX
---		["Archimonde"] = true,
-		-- Hellfire Ramparts
---		["Watchkeeper Gargolmar"] = true,
---		["Vazruden the Herald"] = true,
---		["Vazruden"] = true,
---		["Nazan"] = true,
---		["Omor the Unscarred"] = true,
-		-- The Blood Furnace
---		["The Maker"] = true,
---		["Broggok"] = true,
---		["Keli'dan the Breaker"] = true,
-		-- The Shattered Halls
---		["Kargath Bladefist"] = true,
---		["Grand Warlock Nethekurse"] = true,
---		["Warbringer O'mrogg"] = true,
-		-- Magtheridon's Lair
---		["Magtheridon"] = true,
-		-- The Slave Pens
---		["Mennu the Betrayer"] = true,
---		["Rokmar the Crackler"] = true,
---		["Quagmirran"] = true,
-		-- The Underbog
---		["Hungarfen"] = true,
---		["Ghaz'an"] = true,
---		["Overseer Tidewrath"] = true,
---		["Claw"] = true,
---		["Swamplord Musel'ek"] = true,
---		["The Black Stalker"] = true,
-		-- The Steamvault
---		["Hydromancer Thespia"] = true,
---		["Mekgineer Steamrigger"] = true,
---		["Warlord Kalithresh"] = true,
-		-- Serpentshrine Cavern
---		["Lady Vashj"] = true,
-		-- Mana Tombs
---		["Pandemonius"] = true,
---		["Tavarok"] = true,
---		["Nexus-Prince Shaffar"] = true,
-		-- Auchenai Crypts
---		["Shirrak the Dead Watcher"] = true,
---		["Exarch Maladaar"] = true,
-		-- Sethekk Halls
---		["Talon King Ikiss"] = true,
---		["Darkweaver Syth"] = true,
-		-- Shadow Labyrinth
---		["Ambassador Hellmaw"] = true,
---		["Blackheart the Inciter"] = true,
-		-- The Mechanar
---		["Gatekeeper Gyro-Kill"] = true,
---		["Nethermancer Sepethrea"] = true,
---		["Gatewatcher Iron-Hand"] = true,
---		["Mechano-Lord Capacitus"] = true,
---		["Pathaleon the Calculator"] = true,
-		-- The Botanica
---		["Commander Sarannis"] = true,
---		["High Botanist Freywinn"] = true,
---		["Thorngrin the Tender"] = true,
---		["Laj"] = true,
---		["Warp Splinter"] = true,
-		-- The Arcatraz
-		-- The Eye
---		["Prince Kael'thas Sunstrider"] = true,
-		-- Gruul's Lair
---		["Gruul"] = true,
-		-- Black Temple
---		["Illidan Stormrage"] = true,
-		-- Ring of Blood
---		["Brokentoe"] = true,
---		["Murkblood Twin"] = true,
---		["Murkblood Twins"] = true,
---		["The Blue Brothers"] = true,
---		["Rokdar the Sundered Lord"] = true,
---		["Skra'gath"] = true,
---		["Warmaul Champion"] = true,
---		["Mogor"] = true,
+                
+                ["Stoneskin Gargoyle"] = true,
 	}
 end)
 
@@ -1790,120 +1789,6 @@ BabbleBoss:RegisterTranslations("koKR", function()
 		["Wolf Master Nandos"] = "늑대왕 난도스",
 		["Rend Blackhand"] = "대족장 렌드 블랙핸드",
 		["Kurinnaxx"] = "쿠린낙스",
-
-		-- OUTLANDS
-		-- XXX: These are subject to change and may not be correct.
---		["Doom Lord Kazzak"] = true,
-		-- Karazhan
---		["Prince Malchazzar"] = true,
---		["Attumen the Huntsman"] = true,
---		["Midnight"] = true,
---		["Hyakiss the Lurker"] = true,
---		["Rokad the Ravager"] = true,
---		["Shadikith the Glider"] = true,
---		["Moroes"] = true,
---		["Maiden of Virtue"] = true,
---		["Dorothee"] = true,
---		["Tito"] = true,
---		["Tinhead"] = true,
---		["Strawman"] = true,
---		["Roar"] = true,
---		["The Crone"] = true,
---		["Romulo"] = true,
---		["Julianne"] = true,
---		["The Big Bad Wolf"] = true,
---		["The Curator"] = true,
---		["Shade of Aran"] = true,
---		["Terestian Illhoof"] = true,
---		["Netherspite"] = true,
---		["Nightbane"] = true,
---		["King Llane Piece"] = true,
---		["Warchief Blackhand Piece"] = true,
-		-- Caverns of Time
-		["Lieutenant Drake"] = "부관 드레이크",
-		["Captain Skarloc"] = "경비대장 스칼록",
-		["Epoch Hunter"] = "시대의 사냥꾼",
-		--   The Black Morass
---		["Medivh"] = true,
---		["Chrono Lord Deja"] = true,
---		["Temporus"] = true,
---		["Aeonus"] = true,
-		--   XX
-		["Archimonde"] = "아키몬드",
-		-- Hellfire Ramparts
-		["Watchkeeper Gargolmar"] = "감시자 가르골마르",
---		["Vazruden the Herald"] = true,
-		["Vazruden"] = "바즈루덴",
---		["Nazan"] = true,
-		["Omor the Unscarred"] = "무적의 오모르",
-		-- The Blood Furnace
-		["The Maker"] = "재앙의 창조자",
-		["Broggok"] = "브로고크",
-		["Keli'dan the Breaker"] = "파괴자 켈리단",
-		-- The Shattered Halls
---		["Kargath Bladefist"] = true,
---		["Grand Warlock Nethekurse"] = true,
---		["Warbringer O'mrogg"] = true,
-		-- Magtheridon's Lair
-		["Magtheridon"] = "마그테리돈",
-		-- The Slave Pens
-		["Mennu the Betrayer"] = "배반자 멘누",
-		["Rokmar the Crackler"] = "딱딱이 로크마르",
-		["Quagmirran"] = "쿠아그미란",
-		-- The Underbog
-		["Hungarfen"] = "헝가르펜",
-		["Ghaz'an"] = "가즈안",
-		["Overseer Tidewrath"] = "우두머리 성난파도",
-		["Claw"] = "클로",
-		["Swamplord Musel'ek"] = "늪군주 뮤즐레크",
-		["The Black Stalker"] = "검은 추적자",
-		-- The Steamvault
---		["Hydromancer Thespia"] = true,
---		["Mekgineer Steamrigger"] = true,
---		["Warlord Kalithresh"] = true,
-		-- Serpentshrine Cavern
-		["Lady Vashj"] = "여군주 바쉬",
-		-- Mana Tombs
-		["Pandemonius"] = "팬더모니우스",
-		["Tavarok"] = "타바로크",
---		["Nexus-Prince Shaffar"] = true,
-		-- Auchenai Crypts
---		["Shirrak the Dead Watcher"] = true,
-		["Exarch Maladaar"] = "총독 말라다르",
-		-- Sethekk Halls
-		["Talon King Ikiss"] = "갈퀴대왕 이키스",
-		["Darkweaver Syth"] = "흑마술사 시스",
-		-- Shadow Labyrinth
---		["Ambassador Hellmaw"] = true,
---		["Blackheart the Inciter"] = true,
-		-- The Mechanar
---		["Gatekeeper Gyro-Kill"] = true,
---		["Nethermancer Sepethrea"] = true,
---		["Gatewatcher Iron-Hand"] = true,
---		["Mechano-Lord Capacitus"] = true,
---		["Pathaleon the Calculator"] = true,
-		-- The Botanica
---		["Commander Sarannis"] = true,
---		["High Botanist Freywinn"] = true,
---		["Thorngrin the Tender"] = true,
---		["Laj"] = true,
---		["Warp Splinter"] = true,
-		-- The Arcatraz
-		-- The Eye
---		["Prince Kael'thas Sunstrider"] = true,
-		-- Gruul's Lair
-		["Gruul"] = "그룰",
-		-- Black Temple
-		["Illidan Stormrage"] = "일리단 스톰레이지",
-		-- Ring of Blood
---		["Brokentoe"] = true,
-		["Murkblood Twin"] = "수렁피일족 쌍둥이",
-		["Murkblood Twins"] = "수렁피일족 쌍둥이",
---		["The Blue Brothers"] = true,
-		["Rokdar the Sundered Lord"] = "파괴의 군주 로크다르",
-		["Skra'gath"] = "스크라가스",
-		["Warmaul Champion"] = "전쟁망치일족 용사",
-		["Mogor"] = "모고르",
 	}
 end)
 

@@ -132,6 +132,27 @@ elseif GetLocale() == "zhCN" then
 	CHARACTER = "\229\173\151\231\172\166: "
 	REALM = "\229\159\159: "
 	CLASS = "\233\128\137\228\187\182\231\177\187: "
+elseif GetLocale() == "ruRU" then
+	ACTIVE = "Активный"
+	ENABLED = "Включён"
+	STATE = "Состояние"
+	TOGGLE_ACTIVE = "Отключить/Запустить аддон."
+	MAP_ACTIVESUSPENDED = { [true] = "|cff00ff00Активный|r", [false] = "|cffff0000Приостановленный|r" }
+	SET_PROFILE = "Установить профиль для этого аддона."
+	SET_PROFILE_USAGE = "{чар || класс || сервер || <название профиля>}"
+	PROFILE = "Профиль"
+	PLAYER_OF_REALM = "%s из %s"
+	CHOOSE_PROFILE_DESC = "Выберите профиль."
+	CHOOSE_PROFILE_GUI = "Выбор"
+	COPY_PROFILE_DESC = "Cкопировать настройки из другого профиля."
+	COPY_PROFILE_GUI = "Скопировать из"
+	OTHER_PROFILE_DESC = "Выбрать другой профиль."
+	OTHER_PROFILE_GUI = "Другое"
+	OTHER_PROFILE_USAGE = "<название профиля>"
+
+	CHARACTER = "Персонаж: "
+	REALM = "Сервер: "
+	CLASS = "Класс: "
 else -- enUS
 	ACTIVE = "Active"
 	ENABLED = "Enabled"
