@@ -145,17 +145,15 @@ function BigWigsEnrage:Start(enrageTimer, bossName)
 		self:TimerBar(enrageTimer)
 		self:HPBar(bossName)
         self:SetHPBar(100)
-		
-		self:RegisterEvent("UNIT_HEALTH")
+        
+        self:ScheduleRepeatingEvent("BigWigsEnrageUpdateHealth", self.UpdateHealth, 1, self)
 	end
 end
 
 function BigWigsEnrage:Stop()
 	self:UnregisterCandyBar("BigWigsEnrage " .. L["Enrage"])
 	self:UnregisterCandyBar("BigWigsEnrage " .. L["Health"])
-	if self:IsEventRegistered("UNIT_HEALTH") then
-        self:UnregisterEvent("UNIT_HEALTH")
-    end
+    self:CancelScheduledEvent("BigWigsEnrageUpdateHealth")
 end
 
 
@@ -193,10 +191,10 @@ function BigWigsEnrage:SetHPBar(value)
 	if not bar then return end
 	bar.elapsed = 100 - value
 	candybar:Update(id)
-	if bar.time <= value then
+	--[[if bar.time <= value then
 		--BigWigsEnrage:BigWigs_StopBar(module, text)
-		BigWigs:Print("BigWigsEnrage: time lesser than equal value")
-	end
+		BigWigs:Print("BigWigsEnrage: time lesser than equal value: " .. value .. " " .. bar.time)
+	end]]
 end
 
 function BigWigsEnrage:CreateBar(text, time, icon, color)
@@ -234,25 +232,37 @@ function BigWigsEnrage:CreateBar(text, time, icon, color)
 end
 
 
-function BigWigsEnrage:UNIT_HEALTH(msg)
-	if UnitName(msg) == self.bossName then
-		local health = UnitHealth(msg) -- / UnitMaxHealth(msg) * 100
-		self:SetHPBar(health)
-	end
-end
-
-
 function BigWigsEnrage:BigWigs_ShowAnchors()
 	self.frames.anchor:Show()
 end
-
 
 function BigWigsEnrage:BigWigs_HideAnchors()
 	self.frames.anchor:Hide()
 end
 
 
-
+function BigWigsEnrage:UpdateHealth()
+	local i
+    local health
+    local newtarget = nil
+    local token = ""
+    
+	if UnitName("playertarget") == self.bossName then
+        token = "playertarget"
+	elseif UnitName("playertargettarget") == self.bossName then
+         token = "playertargettarget"
+    else
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid"..i.."target") == self.bossName then
+				token = "Raid"..i.."target"
+				break
+			end
+		end
+	end
+    
+    health = UnitHealth(token) / UnitHealthMax(token) * 100
+    self:SetHPBar(health)
+end
 
 ------------------------------
 --      Slash Handlers      --
