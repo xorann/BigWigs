@@ -91,6 +91,7 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
+    
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)

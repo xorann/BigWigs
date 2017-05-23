@@ -54,7 +54,7 @@ L:RegisterTranslations("enUS", function() return {
 	giant_desc = "Warn for Giant Eyes",
 	giant_claw_spawn_trigger = "Giant Claw Tentacle 's Ground Rupture",
     giant_eye_spawn_trigger = "Giant Eye Tentacle 's Ground Rupture",
-	barGiant	= "Giant Eye!",
+	barGiant	= "Possible Giant Eye!",
 	barGiantC	= "Giant Claw!",
 	GiantEye = "Giant Eye Tentacle in 5 sec!",
 	gedownwarn	= "Giant Eye down!",
@@ -133,7 +133,7 @@ L:RegisterTranslations("deDE", function() return {
 	giant_desc = "Warnung vor Riesigem Augententakel", -- "Warn for Giant Eyes",
 	giant_claw_spawn_trigger = "Riesiges Klauententakel(.+) Erdriss", -- "Giant Claw Tentacle 's Ground Rupture",
     giant_eye_spawn_trigger =  "Riesiges Augententakel(.+) Erdriss", -- "Giant Eye Tentacle 's Ground Rupture",
-	barGiant	= "Riesiges Augententakel!",
+	barGiant	= "Mögliches Riesiges Augententakel!",
 	barGiantC	= "Riesiges Klauententakel!",
 	GiantEye = "Riesiges Augententakel Tentacle in 5 sec!",
 	gedownwarn	= "Riesiges Augententakel tot!",
@@ -187,7 +187,7 @@ module.proximitySilent = false
 
 -- locals
 local timer = {
-	p1RandomEyeBeams = 15, -- how long does eye of c'thun target the same player at the beginning
+	p1RandomEyeBeams = 12.5, -- how long does eye of c'thun target the same player at the beginning
 	p1Tentacle = 45,      -- tentacle timers for phase 1
 	p1TentacleStart = 45, -- delay for first tentacles from engage onwards
 	p1GlareStart = 50,    -- delay for first dark glare from engage onwards
@@ -197,7 +197,7 @@ local timer = {
 	
 	p2Offset = 10,        -- delay for all timers to restart after the Eye dies
 	p2Tentacle = 30,      -- tentacle timers for phase 2
-	p2ETentacle = 40,     -- Eye tentacle timers for phase 2
+	p2ETentacle = 35,     -- Eye tentacle timers for phase 2 (35-40s)
 	p2GiantClaw = 40,     -- Giant Claw timer for phase 2
 	p2FirstGiantClaw = 25, -- first giant claw after eye of c'thun dies
 	p2FirstGiantEye = 56, -- first giant eye after eye of c'thun dies
@@ -304,6 +304,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+    --BigWigsEnrage:Stop()
 end
 
 
@@ -437,7 +438,7 @@ function module:CThunStart()
 		firstWarning = true
 
 		self:ScheduleEvent("bwcthuntentaclesstart", self.TentacleRape, timer.p1TentacleStart, self)
-		self:ScheduleEvent("bwcthungroupwarningstart", self.GroupWarning, timer.p1GlareStart - 1, self)
+		self:ScheduleEvent("bwcthungroupwarningstart", self.GroupWarning, timer.p1GlareStart, self)
 		self:ScheduleRepeatingEvent("bwcthuntarget", self.CheckTarget, timer.target, self)
         
         self:Proximity()
@@ -537,6 +538,8 @@ function module:CThunWeakened()
     
     self:ScheduleEvent("bwcthunweakenedover", self.CThunWeakenedOver, timer.weakened, self )
     timer.lastGiantEyeSpawn = 0 -- reset timer to force a refresh on the timer
+        
+    --BigWigsEnrage:Start(timer.weakened, self.translatedName)
 end
 
 function module:CThunWeakenedOver()
@@ -565,6 +568,8 @@ function module:CThunWeakenedOver()
     self:Bar(L["barGiant"], timer.p2FirstGiantEyeAfterWeaken, icon.giantEye)
 	self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEyeAfterWeaken, self )
     self:DelayedMessage(timer.p2FirstGiantEyeAfterWeaken - 5, L["GiantEye"], "Urgent", false, nil, true)
+    
+    --BigWigsEnrage:Stop()
 end
 
 function module:GiantEyeEyeBeam()
@@ -650,7 +655,7 @@ function module:DarkGlare()
 end
 
 function module:GroupWarning()
-    self:CheckTarget()
+    --self:CheckTarget()
 	if eyeTarget then
         BigWigs:DebugMessage("GroupWarning; target: " .. eyeTarget)
 		local i, name, group, glareTarget, glareGroup, playerGroup
@@ -707,7 +712,7 @@ end
 
 -- P2
 function module:GTentacleRape()
-    self:ScheduleEvent("bwcthungtentacles", self.GTentacleRape, timer.p2ETentacle, self )
+    --self:ScheduleEvent("bwcthungtentacles", self.GTentacleRape, timer.p2ETentacle, self )
 	if phase2started then
         if self.db.profile.giant then
             self:Bar(L["barGiant"], timer.p2ETentacle, icon.giantEye)

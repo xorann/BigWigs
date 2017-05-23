@@ -163,6 +163,7 @@ function module:Event(msg)
         if self.db.profile.rain then
             -- I found no better way to trigger this, it will autohide after 2s which is the time between Rain of Fire ticks
             self:WarningSign(icon.rain, timer.rainTick)
+            self:DebugMessage("warning sign tick")
         end
     elseif ((string.find(msg, L["curse_trigger"])) or (string.find(msg, L["curse_trigger2"]))) then
 		self:Sync(syncName.curse)
@@ -171,6 +172,7 @@ function module:Event(msg)
         if self.db.profile.rain then
             self:Message(L["firewarn"], "Attention", true, "Alarm")
             self:WarningSign(icon.rain, timer.rainDuration)
+            self:DebugMessage("warning sign normal")
             --self:DelayedBar(timer.rainDuration, L["barNextRain"], timer.nextRain - timer.rainDuration, icon.rain) -- variance too high
         end
 	end
@@ -180,6 +182,7 @@ function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
     if string.find(msg, L["Rain of Fire"]) then
         -- this will not trigger, but I will leave it in case they fix this combatlog event/message
         self:RemoveWarningSign(icon.rain)
+        self:DebugMessage("remove warning sign")
     end
 end
 

@@ -80,8 +80,9 @@ Plugins\RaidOfficer.lua
 Plugins\AutoReply.lua
 Plugins\Proximity.lua
 Plugins\DousedRunes.lua
-#Plugins\Enrage.lua
+Plugins\Enrage.lua
 Plugins\Ignite.lua
+Plugins\Combat.lua
 
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua

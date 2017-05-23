@@ -124,12 +124,14 @@ function module:OnEngage()
     self:TriggerEvent("BigWigs_Enrage", 30, self.translatedName)
 		
 	self:Proximity()
+    
+    BigWigsEnrage:Start(20, self.translatedName)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
     self:RemoveProximity()
-    self:TriggerEvent("BigWigs_EnrageStop")
+    BigWigsEnrage:Stop()
 end
 
 
