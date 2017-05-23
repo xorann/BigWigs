@@ -2,6 +2,8 @@
     by LYQ(Virose / MOUZU)
     https://github.com/MOUZU/BigWigs
     
+    modified by Dorann
+
     This is a small plugin which is inspried by ThaddiusArrows and how Sulfuras of Mesmerize (Warsong/Feenix) used it.
     I wanted to convert his idea in a more dynamic, flexible and easy to use plugin.
 
@@ -405,7 +407,7 @@ function BigWigsWarningSign:CreateWarningSignFrame()
 	
 	self.frames.sign:SetWidth(100) 
 	self.frames.sign:SetHeight(100)
-	self.frames.sign:SetAlpha(0.8)
+	self.frames.sign:SetAlpha(self.db.profile.alpha)
 	
 	self.frames.sign:SetPoint("BOTTOM", self.frames.anchor, "TOP", 0, 0)
 	self.frames.sign:SetScale(self.db.profile.scale or 1)
