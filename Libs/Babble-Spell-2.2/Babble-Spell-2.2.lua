@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 Name: Babble-Spell-2.2
 Revision: $Rev: 25188 $
 Author(s): ckknight (ckknight@gmail.com)
@@ -3158,7 +3158,7 @@ BabbleSpell:RegisterTranslations("deDE", function()
 		["Death Wish"]="Todeswunsch",
 		["Deep Sleep"]="Tiefer Schlaf",
 		["Deep Slumber"]="Tiefer Schlummer",
-		["Deep Wound"]="Tiefe Wunden",
+		["Deep Wounds"]="Tiefe Wunden",
 		["Defense"]="Verteidigung",
 		["Defensive Stance Passive"]="Verteidigungshaltung - Passiv",
 		["Defensive Stance"]="Verteidigungshaltung",
