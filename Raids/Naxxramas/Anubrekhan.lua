@@ -55,10 +55,10 @@ module.toggleoptions = {"locust", "enrage", "bosskill"}
 
 -- locals
 local timer = {
-	firstLocustSwarm = 85, -- 85 - 95s
+	firstLocustSwarm = 89.7,
     locustSwarmInterval = 85, -- 85 - 95s
     locustSwarmDuration = 20,
-    locustSwarmCastTime = 3.25,
+    locustSwarmCastTime = 3, -- should be 3.25s
 }
 local icon = {
 	locust = "Spell_Nature_InsectSwarm",
