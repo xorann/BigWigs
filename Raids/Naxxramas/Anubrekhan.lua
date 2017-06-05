@@ -24,16 +24,16 @@ L:RegisterTranslations("enUS", function() return {
 	starttrigger1 = "Just a little taste...",
 	starttrigger2 = "Yes, run! It makes the blood pump faster!",
 	starttrigger3 = "There is no way out.",
-	engagewarn = "Anub'Rekhan engaged. First Locust Swarm in ~60 sec",
+	engagewarn = "Anub'Rekhan engaged. First Locust Swarm in ~90 sec",
 	
 	etrigger = "gains Enrage.",
 	enragewarn = "Crypt Guard Enrage - Stun + Traps!",
 	
 	gaintrigger = "Anub'Rekhan gains Locust Swarm.",
 	gainendwarn = "Locust Swarm ended!",
-	gainnextwarn = "Next Locust Swarm in ~60 sec",
+	gainnextwarn = "Next Locust Swarm in ~90 sec",
 	gainwarn10sec = "~10 Seconds until Locust Swarm",
-	gainincbar = "Next Locust Swarm",
+	gainincbar = "Possible Locust Swarm",
 	gainbar = "Locust Swarm",
 
 	casttrigger = "Anub'Rekhan begins to cast Locust Swarm.",
@@ -47,7 +47,7 @@ L:RegisterTranslations("enUS", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20009 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"locust", "enrage", "bosskill"}
@@ -55,8 +55,8 @@ module.toggleoptions = {"locust", "enrage", "bosskill"}
 
 -- locals
 local timer = {
-	firstLocustSwarm = 75,
-    locustSwarmInterval = 60,
+	firstLocustSwarm = 85, -- 85 - 95s
+    locustSwarmInterval = 85, -- 85 - 95s
     locustSwarmDuration = 20,
     locustSwarmCastTime = 3.25,
 }
@@ -94,7 +94,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	self:Message(L["engagewarn"], "Urgent")
-	self:DelayedMessage(timer.firstLocustSwarm - 10, L["gainwarn10sec"], "Important")
+	--self:DelayedMessage(timer.firstLocustSwarm - 10, L["gainwarn10sec"], "Important")
 	self:Bar(L["gainincbar"], timer.firstLocustSwarm, icon.locust)
 end
 
@@ -142,6 +142,10 @@ end
 function module:LocustCast()
 	--self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, timer.locustSwarmCastTime, self, "BigWigs_SendSync", syncName.locustGain)
 	if self.db.profile.locust then
+        -- remove old bar
+        self:RemoveBar(L["gainincbar"])
+        
+        -- add cast bar
 		self:Message(L["castwarn"], "Orange", nil, "Beware")
 		self:WarningSign(icon.locust, timer.locustSwarmCastTime)
 		self:Bar(L["castwarn"], timer.locustSwarmCastTime, icon.locust )
@@ -156,7 +160,7 @@ function module:LocustGain()
 		--self:DelayedMessage(timer.locustSwarmDuration, L["gainendwarn"], "Important")
 		self:Bar(L["gainbar"], timer.locustSwarmDuration, icon.locust)
 		self:Message(L["gainnextwarn"], "Urgent")
-		self:DelayedMessage(timer.locustSwarmInterval - 10, L["gainwarn10sec"], "Important")
+		--self:DelayedMessage(timer.locustSwarmInterval - 10, L["gainwarn10sec"], "Important")
 		self:Bar(L["gainincbar"], timer.locustSwarmInterval, icon.locust)
 	end
 end
