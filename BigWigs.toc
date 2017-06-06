@@ -48,6 +48,7 @@ Libs\Gratuity-2.0\Gratuity-2.0.lua
 Libs\SpellCache-1.0\SpellCache-1.0.lua
 Libs\SpellStatus-1.0\SpellStatus-1.0.lua
 Libs\SpecialEvents-Aura-2.0\SpecialEvents-Aura-2.0.lua
+Libs\Waterfall-1.0\Waterfall-1.0.lua
 
 LoadOnDemand.lua
 Core.lua
@@ -83,6 +84,7 @@ Plugins\DousedRunes.lua
 Plugins\Enrage.lua
 Plugins\Ignite.lua
 Plugins\Combat.lua
+Plugins\Farclip.lua
 
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua

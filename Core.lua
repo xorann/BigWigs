@@ -7,6 +7,8 @@ local BZ = AceLibrary("Babble-Zone-2.2")
 local BB = AceLibrary("Babble-Boss-2.2")
 local L = AceLibrary("AceLocale-2.2"):new("BigWigs")
 
+local waterfall = AceLibrary("Waterfall-1.0")
+
 local surface = AceLibrary("Surface-1.0")
 
 surface:Register("Armory", "Interface\\AddOns\\BigWigs\\Textures\\Armory")
@@ -166,7 +168,11 @@ BigWigs.cmdtable = {type = "group", handler = BigWigs, args = {
 		disabled = function() return not BigWigs:IsActive() end,
 	},
 }}
-BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, BigWigs.cmdtable)
+
+BigWigs:RegisterChatCommand({"/bwcl", "/BigWigscl"}, BigWigs.cmdtable)
+BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, function() waterfall:Open("BigWigs") end)
+waterfall:Register('BigWigs', 'aceOptions',BigWigs.cmdtable, 'title','BigWigs', 'colorR', 0.2, 'colorG', 0.6, 'colorB', 0.2) 
+
 BigWigs.debugFrame = ChatFrame1
 BigWigs.revision = 20010
 
