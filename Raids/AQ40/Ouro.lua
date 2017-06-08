@@ -39,6 +39,7 @@ L:RegisterTranslations("enUS", function() return {
 	sweepannounce = "Sweep!",
 	sweepwarn = "5 seconds until Sweep!",
 	sweepbartext = "Sweep",
+    firstSweep = "Possible Sweep",
 
 	sandblasttrigger = "Ouro begins to perform Sand Blast",
 	sandblastannounce = "Incoming Sand Blast!",
@@ -85,7 +86,8 @@ L:RegisterTranslations("deDE", function() return {
 	sweeptrigger = "Ouro beginnt Feger zu wirken.", -- ?
 	sweepannounce = "Feger!",
 	sweepwarn = "5 Sekunden bis Feger!",
-	sweepbartext = "Feger",
+	sweepbartext = "Feger",    
+    firstSweep = "Möglicher Feger",
 
 	sandblasttrigger = "Ouro beginnt Sandstoß auszuführen.", -- ?
 	sandblastannounce = "Sandsto\195\159 in K\195\188rze!",
@@ -125,6 +127,7 @@ module.toggleoptions = {"sweep", "sandblast", -1, "emerge", "submerge", -1, "ber
 
 -- locals
 local timer = {
+    firstSweep = 35,
 	nextSubmerge = 90,
 	sweep = 1.5,
 	sweepInterval = 20,
@@ -194,6 +197,10 @@ function module:OnEngage()
 		self:Message(L["engage_message"], "Attention")
 		self:PossibleSubmerge()
 	end
+    
+    if self.db.profile.sweep then
+        self:Bar(L["firstSweep"], timer.firstSweep, icon.sweep)
+    end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
