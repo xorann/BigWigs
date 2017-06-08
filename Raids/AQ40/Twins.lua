@@ -152,7 +152,7 @@ module.toggleoptions = {"bug", "teleport", "enrage", "heal", "blizzard", "bosski
 
 -- locals
 local timer = {
-	teleport = 30,
+	teleport = 29.8,
 	enrage = 900,
 	blizzard = 10,
 }
