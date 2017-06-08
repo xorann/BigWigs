@@ -187,7 +187,7 @@ module.proximitySilent = false
 
 -- locals
 local timer = {
-	p1RandomEyeBeams = 14, -- how long does eye of c'thun target the same player at the beginning
+	p1RandomEyeBeams = 12, -- how long does eye of c'thun target the same player at the beginning
 	p1Tentacle = 45,      -- tentacle timers for phase 1
 	p1TentacleStart = 45, -- delay for first tentacles from engage onwards
 	p1GlareStart = 50,    -- delay for first dark glare from engage onwards
@@ -197,7 +197,7 @@ local timer = {
 	
 	p2Offset = 10,        -- delay for all timers to restart after the Eye dies
 	p2Tentacle = 30,      -- tentacle timers for phase 2
-	p2ETentacle = 35,     -- Eye tentacle timers for phase 2 (35-40s)
+	p2ETentacle = 30,     -- Eye tentacle timers for phase 2 (30-40s)
 	p2GiantClaw = 40,     -- Giant Claw timer for phase 2
 	p2FirstGiantClaw = 25, -- first giant claw after eye of c'thun dies
 	p2FirstGiantEye = 56, -- first giant eye after eye of c'thun dies
@@ -656,6 +656,8 @@ end
 
 function module:GroupWarning()
     --self:CheckTarget()
+    
+    --[[ group warning is not working properly anymore
 	if eyeTarget then
         BigWigs:DebugMessage("GroupWarning; target: " .. eyeTarget)
 		local i, name, group, glareTarget, glareGroup, playerGroup
@@ -670,7 +672,7 @@ function module:GroupWarning()
                 playerGroup = group
             end
 		end
-		if self.db.profile.group then
+        if self.db.profile.group then
 			self:Message(string.format( L["groupwarning"], glareGroup, eyeTarget), "Important")
             
             -- dark glare near you?
@@ -702,7 +704,9 @@ function module:GroupWarning()
 		end
 	else
         self:Sound("Beware")
-    end
+    end]]
+    self:Sound("Beware")
+    
 	if firstWarning then
 		self:CancelScheduledEvent("bwcthungroupwarning") -- ok
 		self:ScheduleRepeatingEvent("bwcthungroupwarning", self.GroupWarning, timer.p1Glare, self )
