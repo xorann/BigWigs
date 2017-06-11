@@ -575,6 +575,12 @@ function BigWigsBars:BigWigs_StopBar(module, text)
 	module:UnregisterCandyBar("BigWigsBar "..text)
 end
 
+function BigWigsBars:GetBarStatus(module, text)
+    local id = "BigWigsBar " .. text
+    local registered, time, elapsed, running = self:CandyBarStatus(id)
+    return registered, time, elapsed, running
+end
+
 local counterBarCache = {
     -- [i] = {text, module}
 }

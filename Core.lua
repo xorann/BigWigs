@@ -577,6 +577,10 @@ end
 function BigWigs.modulePrototype:CancelDelayedBar(text)
     self:CancelScheduledEvent(delayPrefix .. "Bar" .. self:ToString() .. text)
 end
+function BigWigs.modulePrototype:BarStatus(text)
+    local registered, time, elapsed, running = BigWigsBars:GetBarStatus(self, text)
+    return registered, time, elapsed, running
+end
 
 function BigWigs.modulePrototype:Sound(sound)
 	self:TriggerEvent("BigWigs_Sound", sound)
@@ -596,6 +600,10 @@ end
 function BigWigs.modulePrototype:RemoveIcon()
 	self:TriggerEvent("BigWigs_RemoveRaidIcon")
 end
+function BigWigs.modulePrototype:DelayedRemoveIcon(delay)
+    self:ScheduleEvent(delayPrefix .. "Icon" .. self:ToString(), "BigWigs_RemoveRaidIcon", delay)
+end
+
 
 function BigWigs.modulePrototype:WarningSign(icon, duration, force)
 	self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\" .. icon, duration, force)
