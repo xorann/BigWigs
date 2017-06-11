@@ -63,7 +63,7 @@ module.toggleoptions = {"silence", "enrage", "rain", "bosskill"}
 -- locals
 local timer = {
 	enrage = 60,
-	silence = 20,
+	silence = 30,
 	rainTick = 2,
 	rainDuration = 10,
 }
