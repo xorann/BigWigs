@@ -302,10 +302,11 @@ end
 function module:Sweep()
 	if self.db.profile.sweep then
 		self:RemoveBar(L["sweepbartext"]) -- remove timer bar
+        self:RemoveBar(L["firstSweep"])
         self:Bar(L["sweepannounce"], timer.sweep, icon.sweep) -- show cast bar
 		self:Message(L["sweepannounce"], "Important", true, "Alarm")
         self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important", nil, nil, true)
-		self:DelayedBar(timer.sweep, L["sweepbartext"], timer.sweepInterval, icon.sweep) -- delayed timer bar
+		self:Bar(L["sweepbartext"], timer.sweepInterval + timer.sweep, icon.sweep)
 	end
 end
 
@@ -315,7 +316,7 @@ function module:Sandblast()
         self:Bar(L["sandblastannounce"], timer.sandblast, icon.sandblast) -- show cast bar
 		self:Message(L["sandblastannounce"], "Important", true, "Alert")
 		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
-		self:DelayedBar(timer.sandblast, L["sandblastbartext"], timer.sandblastInterval, icon.sandblast) -- delayed timer bar
+		self:Bar(L["sandblastbartext"], timer.sandblastInterval + timer.sandblast, icon.sandblast)
 	end
 end
 
@@ -337,15 +338,15 @@ function module:Emerge()
             self:PossibleSubmerge()
         end
 
-        if self.db.profile.sweep then
+        --[[if self.db.profile.sweep then
             self:DelayedMessage(timer.sweepInterval - 5, L["sweepwarn"], "Important", nil, nil, true)
             self:Bar(L["sweepbartext"], timer.sweepInterval, icon.sweep)
-        end	
+        end]]
 
-        if self.db.profile.sandblast then
+        --[[if self.db.profile.sandblast then
             self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
             self:Bar(L["sandblastbartext"], timer.sandblastInterval, icon.sandblast)
-        end
+        end]]
     end
 end
 
@@ -354,11 +355,28 @@ function module:Submerge()
 	self:CancelDelayedMessage(L["sandblastwarn"])
 	self:CancelDelayedMessage(L["emergewarn"])
 
+    local sweepRegistered, sweepTime, sweepElapsed = self:BarStatus(L["sweepbartext"])
+    local sandblastRegistered, sandblastTime, sandblastElapsed = self:BarStatus(L["sandblastbartext"])
+    
 	self:RemoveBar(L["sweepbartext"])
+    self:RemoveBar(L["firstSweep"])
 	self:RemoveBar(L["sandblastbartext"])
 	self:RemoveBar(L["emergebartext"])
 	self:RemoveBar(L["possible_submerge_bar"])
 
+    -- show next sweep after emerge
+    if sweepRegistered and self.db.profile.sweep then
+        local remaining = sweepTime - sweepElapsed
+        local nextSweep = timer.nextEmerge + remaining
+        self:Bar(L["sweepbartext"], nextSweep, icon.sweep)
+    end
+    -- show next sand blast after emerge
+    if sandblastRegistered and self.db.profile.sandblast then
+        local remaining = sandblastTime - sandblastElapsed
+        local nextSandblast = timer.nextEmerge + remaining
+        self:Bar(L["sandblastbartext"], nextSandblast, icon.sandblast)
+    end
+    
     self.phase = "submerged"
     
 	if self.db.profile.submerge then
@@ -492,13 +510,13 @@ function module:Test()
     -- sand blast after 10s
     self:ScheduleEvent(self:ToString().."Test_sandblast", sandblast, 10, self)
     
-    -- submerge after 32s
-    self:ScheduleEvent(self:ToString().."Test_submerge", submerge, 32, self)
+    -- submerge after 22s
+    self:ScheduleEvent(self:ToString().."Test_submerge", submerge, 22, self)
     
-    -- emerge after 42s
-    self:ScheduleEvent(self:ToString().."Test_emerge", emerge, 42, self)
+    -- emerge after 32s
+    self:ScheduleEvent(self:ToString().."Test_emerge", emerge, 32, self)
     
-    -- reset after 60s
-    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 60, self)
+    -- reset after 50s
+    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 50, self)
     
 end
