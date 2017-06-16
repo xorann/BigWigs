@@ -18,7 +18,7 @@ local minFarclip = 177
 L:RegisterTranslations("enUS", function() return {
     ["Farclip"] = true,
     ["farclip"] = true,
-    ["Options for the farclip plugin."] = true,
+    ["Reduces the terrain distance to the minimum in Naxxramas to avoid screen freezes."] = true,
     ["Active"] = true,
     ["Activate the plugin."] = true,
 } end)
@@ -32,7 +32,7 @@ L:RegisterTranslations("enUS", function() return {
 ----------------------------------
 
 BigWigsFarclip = BigWigs:NewModule(L["Farclip"])
-BigWigsFarclip.revision = 20010
+BigWigsFarclip.revision = 20011
 BigWigsFarclip.defaultDB = {
     active = true,
 	defaultFarclip = 777,
@@ -42,7 +42,7 @@ BigWigsFarclip.consoleCmd = L["farclip"]
 BigWigsFarclip.consoleOptions = {
 	type = "group",
 	name = L["Farclip"],
-	desc = L["Options for the farclip plugin."],
+	desc = L["Reduces the terrain distance to the minimum in Naxxramas to avoid screen freezes."],
 	args   = {
         active = {
 			type = "toggle",

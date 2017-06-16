@@ -1,6 +1,7 @@
 
 assert( BigWigs, "BigWigs not found!")
 
+-- /run BigWigsCombat:Start()
 
 ------------------------------
 --      Are you local?      --
@@ -119,6 +120,9 @@ local Events = {
 	--"UNIT_AURA",
 	"UNIT_AURASTATE",
 	"UNIT_SPELLMISS",
+    
+    "CHAT_MSG_RAID_BOSS_EMOTE",
+    "CHAT_MSG_MONSTER_EMOTE",
 }
 
 local startTime = GetTime()

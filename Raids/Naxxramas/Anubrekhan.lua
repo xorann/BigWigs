@@ -24,7 +24,6 @@ L:RegisterTranslations("enUS", function() return {
 	starttrigger1 = "Just a little taste...",
 	starttrigger2 = "Yes, run! It makes the blood pump faster!",
 	starttrigger3 = "There is no way out.",
-	engagewarn = "Anub'Rekhan engaged. First Locust Swarm in ~90 sec",
 	
 	etrigger = "gains Enrage.",
 	enragewarn = "Crypt Guard Enrage - Stun + Traps!",
@@ -38,6 +37,13 @@ L:RegisterTranslations("enUS", function() return {
 
 	casttrigger = "Anub'Rekhan begins to cast Locust Swarm.",
 	castwarn = "Incoming Locust Swarm!",
+            
+    impale_cmd = "impale",
+    impale_name = "Impale Alert",
+    impale_desc = "Warns for Impale",
+    impaletrigger = "Anub'Rekhan begins to cast Impale", -- todo
+    impalebar = "Next Impale",
+    impalesay = "Impale on me",
 
 } end )
 
@@ -50,7 +56,7 @@ L:RegisterTranslations("enUS", function() return {
 module.revision = 20010 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"locust", "enrage", "bosskill"}
+module.toggleoptions = {"locust", "impale", "enrage", "bosskill"}
 
 
 -- locals
@@ -59,13 +65,16 @@ local timer = {
     locustSwarmInterval = 85, -- 85 - 95s
     locustSwarmDuration = 20,
     locustSwarmCastTime = 3, -- should be 3.25s
+    impale = 12, -- maybe 13s, should be 15s
 }
 local icon = {
 	locust = "Spell_Nature_InsectSwarm",
+    impale = "ability_backstab",
 }
 local syncName = {
 	locustCast = "AnubLocustInc",
 	locustGain = "AnubLocustSwarm",
+    impale = "AnubImpale",
 }
 
 ------------------------------
@@ -93,7 +102,6 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
-	self:Message(L["engagewarn"], "Urgent")
 	--self:DelayedMessage(timer.firstLocustSwarm - 10, L["gainwarn10sec"], "Important")
 	self:Bar(L["gainincbar"], timer.firstLocustSwarm, icon.locust)
 end
@@ -121,6 +129,13 @@ function module:CheckForLocustCast(msg)
 	end
 end
 
+function module:CheckForImpale(msg)
+    if string.find(msg, L["impaletrigger"]) then
+		name = "Test" -- todo
+        self:Sync(syncName.impale .. " " .. name)
+	end
+end
+
 
 ------------------------------
 --      Synchronization	    --
@@ -131,6 +146,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:LocustCast()
 	elseif sync == syncName.locustGain then
 		self:LocustGain()
+    elseif sync == syncName.impale and rest then
+        self:Impale(rest)
 	end
 end
 
@@ -140,7 +157,9 @@ end
 
 -- called when anub'rekhan casts locust swarm
 function module:LocustCast()
-	--self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, timer.locustSwarmCastTime, self, "BigWigs_SendSync", syncName.locustGain)
+	self:RemoveBar(L["impalebar"])
+    
+    --self:ScheduleEvent("bwanublocustinc", self.TriggerEvent, timer.locustSwarmCastTime, self, "BigWigs_SendSync", syncName.locustGain)
 	if self.db.profile.locust then
         -- remove old bar
         self:RemoveBar(L["gainincbar"])
@@ -154,7 +173,7 @@ end
 
 -- called when casting locust swarm is over and anub'rekhan gained the buff/aura
 function module:LocustGain()
-	--self:CancelScheduledEvent("bwanublocustinc")
+	--self:CancelScheduledEvent("bwanublocustinc")    
 	if self.db.profile.locust then
 		--self:WarningSign(icon.locust, 5)
 		--self:DelayedMessage(timer.locustSwarmDuration, L["gainendwarn"], "Important")
@@ -163,6 +182,21 @@ function module:LocustGain()
 		--self:DelayedMessage(timer.locustSwarmInterval - 10, L["gainwarn10sec"], "Important")
 		self:Bar(L["gainincbar"], timer.locustSwarmInterval, icon.locust)
 	end
+end
+
+function module:Impale(name)
+    if self.db.profile.impale then
+        self:Bar(L["impalebar"], timer.impale, icon.impale) 
+        
+        -- set raid icon on impale target
+        self:Icon(name)
+        self:DelayedRemoveIcon(2)
+        
+        -- say warning for impale target
+        if name == UnitName("player") then
+            self:Say(L["impalesay"])
+        end
+    end
 end
 
 

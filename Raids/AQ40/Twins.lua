@@ -143,7 +143,7 @@ L:RegisterTranslations("deDE", function() return {
 
 
 -- module variables
-module.revision = 20006 -- To be overridden by the module!
+module.revision = 20011 -- To be overridden by the module!
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
 module.enabletrigger = {veklor, veknilash} -- string or table {boss, add1, add2}
