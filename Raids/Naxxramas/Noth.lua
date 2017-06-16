@@ -219,7 +219,7 @@ end
 function module:Teleport(msg)
     if msg == L["teleportToBalconyTrigger"] then
         self:Sync(syncName.teleportToBalcony)
-    else if msg == L["teleportToRoomTrigger"] then
+    elseif msg == L["teleportToRoomTrigger"] then
         self:Sync(syncName.teleportToRoom)
     end
 end
