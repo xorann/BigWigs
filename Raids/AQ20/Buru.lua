@@ -102,7 +102,7 @@ function module:CHAT_MSG_MONSTER_EMOTE( msg )
 		end
 
 		if self.db.profile.icon then
-			self:Icon(player)
+			self:Icon(player, -1, -1)
 		end
 	end
 end

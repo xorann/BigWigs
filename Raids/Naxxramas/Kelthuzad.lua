@@ -491,7 +491,7 @@ function module:Detonate(name)
 	if name and self.db.profile.detonate then
 		self:Message(string.format(L["detonate_warning"], name), "Attention")
 		if self.db.profile.detonateicon then 
-			self:Icon(name) 
+			self:Icon(name, -1, timer.detonate) 
 		end
 		self:Bar(string.format(L["detonate_bar"], name), timer.detonate, icon.detonate)
 		self:Bar(L["detonate_possible_bar"], timer.nextDetonate, icon.detonate)

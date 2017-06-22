@@ -217,6 +217,7 @@ local timer = {
 	enrage = 600,
 	bloodSiphon = 90,
 	firstMindcontrol = 17,
+    mindcontrol = 10,
 }
 local icon = {
 	enrage = "Spell_Shadow_UnholyFrenzy",
@@ -473,8 +474,8 @@ end
 
 function module:MindControl(rest)
 	if self.db.profile.mc and rest then
-		self:DelayedBar(10, L["nextmc_bar"], 11, icon.mindcontrol)
-		self:Bar(string.format(L["mindcontrol_bar"], rest), 10, icon.mindcontrol, true, "White")
+		self:DelayedBar(timer.mindcontrol, L["nextmc_bar"], 11, icon.mindcontrol)
+		self:Bar(string.format(L["mindcontrol_bar"], rest), timer.mindcontrol, icon.mindcontrol, true, "White")
 		if rest == UnitName("player") then
 			self:Message(L["mindcontrol_message_you"], "Attention", true, "Alarm")
 		else
@@ -482,6 +483,6 @@ function module:MindControl(rest)
 		end
 	end
 	if self.db.profile.puticon then
-		self:Icon(rest)
+		self:Icon(rest, -1, timer.mindcontrol)
 	end
 end

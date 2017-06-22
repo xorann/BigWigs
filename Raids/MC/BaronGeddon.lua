@@ -225,7 +225,7 @@ function module:Event(msg)
             self:WarningSign("Spell_Shadow_MindBomb", timer.bomb)
 		end
 		if self.db.profile.icon then
-			self:Icon(UnitName("player"))
+			self:Icon(UnitName("player"), -1, timer.bomb)
 		end
 	elseif string.find(msg, L["bombyouend_trigger"]) then
 		self:RemoveBar(string.format(L["bomb_bar1"], UnitName("player")))
@@ -240,7 +240,7 @@ function module:Event(msg)
 			self:Message(string.format(L["bomb_message_other"], bombother), "Attention")
 		end
 		if self.db.profile.icon then
-			self:Icon(bombother)
+			self:Icon(bombother, -1, timer.bomb)
 		end
 		if self.db.profile.announce then
 			self:TriggerEvent("BigWigs_SendTell", bombother, L["bomb_message_you"])

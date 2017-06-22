@@ -157,7 +157,7 @@ function module:TargetChangedCheck()
 	end
 	if nameoftarget ~= lasttarget then
 		if self.db.profile.puticon then
-			self:Icon(nameoftarget)
+			self:Icon(nameoftarget, -1, -1)
 		end
 		if self.db.profile.announce then
 			if nameoftarget == UnitName("player") then

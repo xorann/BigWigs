@@ -170,7 +170,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 			end
 		end
 		if self.db.profile.puticon then
-			self:Icon(n)
+			self:Icon(n, -1, -1)
 		end
 		--self:Sync(syncName.vanishPhase)
 	end

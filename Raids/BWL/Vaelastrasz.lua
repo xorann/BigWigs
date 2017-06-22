@@ -353,7 +353,7 @@ function module:Adrenaline(name)
 		
 		-- set icon
 		if self.db.profile.icon then
-			self:Icon(name)
+			self:Icon(name, -1, timer.adrenaline)
 		end
 		
 		-- tank burn

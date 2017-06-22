@@ -223,7 +223,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 			end
 		end
 		if self.db.profile.puticon then
-			self:Icon(watchedplayer)
+			self:Icon(watchedplayer, -1, 7)
 		end
 		if watchedplayer == UnitName("player") and self.db.profile.gaze then
 			self:WarningSign(icon.gaze, 7)
