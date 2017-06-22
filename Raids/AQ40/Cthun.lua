@@ -87,6 +87,15 @@ L:RegisterTranslations("enUS", function() return {
     proximity_cmd = "proximity",
     proximity_name = "Proximity Warning",
     proximity_desc = "Show Proximity Warning Frame",
+            
+    gianteye = "Giant Eye Tentacle",
+	
+	fleshtentacle_cmd = "fleshtentacle",
+    fleshtentacle_name = "Flesh Tentacle",
+	fleshtentacle_desc = "Healthbars of both Flesh tentacles",
+    fleshtentacle = "Flesh Tentacle",
+    fleshtentacle1 = "first Flesh Tentacle",
+    fleshtentacle2 = "second Flesh Tentacle",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -165,6 +174,15 @@ L:RegisterTranslations("deDE", function() return {
     proximity_cmd = "proximity",
     proximity_name = "Nähe Warnungsfenster",
     proximity_desc = "Zeit das Nähe Warnungsfenster",
+            
+    gianteye = "Riesiges Augententakel",
+            
+    fleshtentacle_cmd = "fleshtentacle",
+    fleshtentacle_name = "Fleischtentakel",
+	fleshtentacle_desc = "Lebensbalken der beiden Fleischtentakel",
+    fleshtentacle = "Fleischtentakel",
+    fleshtentacle1 = "1. Fleischtentakel",
+    fleshtentacle2 = "2. Fleischtentakel",
 } end )
 
 
@@ -178,7 +196,7 @@ local eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 local cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]
 module.enabletrigger = {eyeofcthun, cthun} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"rape", -1, "tentacle", "glare", "group", -1, "giant", "acid", "weakened", "proximity", "bosskill"}
+module.toggleoptions = {"rape", -1, "tentacle", "glare", "group", -1, "giant", "acid", "weakened", "proximity", "fleshtentacle", "bosskill"}
 
 -- Proximity Plugin
 module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
@@ -197,7 +215,7 @@ local timer = {
 	
 	p2Offset = 10,        -- delay for all timers to restart after the Eye dies
 	p2Tentacle = 30,      -- tentacle timers for phase 2
-	p2ETentacle = 30,     -- Eye tentacle timers for phase 2 (30-40s)
+	p2ETentacle = 40,     -- Eye tentacle timers for phase 2 40s
 	p2GiantClaw = 40,     -- Giant Claw timer for phase 2
 	p2FirstGiantClaw = 25, -- first giant claw after eye of c'thun dies
 	p2FirstGiantEye = 56, -- first giant eye after eye of c'thun dies
@@ -231,11 +249,8 @@ local syncName = {
     giantEyeSpawn = "GiantEyeSpawn",
 	giantEyeEyeBeam = "GiantEyeEyeBeam1",
 	cthunEyeBeam = "CThunEyeBeam1",
+    fleshTentacleDeath = "CThunFleshTentacle",
 }
-
-local gianteye = "Giant Eye Tentacle"
-
-local health = 100
 
 local cthunstarted = nil
 local phase2started = nil
@@ -248,6 +263,9 @@ local isWeakened = nil
 local doCheckForWipe = false
 
 local eyeTarget = nil
+
+local fleshTentacle1Health = 100
+local fleshTentacle2Health = 100
 
 
 ------------------------------
@@ -305,6 +323,7 @@ end
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
     --BigWigsEnrage:Stop()
+    self:RemoveFleshTentacle()
 end
 
 
@@ -317,11 +336,10 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     
 	if (msg == string.format(UNITDIESOTHER, eyeofcthun)) then
 		self:Sync(syncName.p2Start)
-	elseif (msg == string.format(UNITDIESOTHER, gianteye)) then
+	elseif (msg == string.format(UNITDIESOTHER, L["gianteye"])) then
 		self:Sync(syncName.giantEyeDown)
-	--[[elseif (msg == string.format(UNITDIESOTHER, cthun)) then
-		if self.db.profile.bosskill then self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], cthun), "Bosskill", nil, "Victory") end
-		self.core:ToggleModuleActive(self, false)]]
+    elseif msg == string.format(UNITDIESOTHER, L["fleshtentacle"]) then
+        self:Sync(syncName.fleshTentacleDeath)
 	end
 end
 
@@ -373,7 +391,6 @@ function module:CheckTentacleSpawn(msg)
     if string.find(msg, L["giant_claw_spawn_trigger"]) then
         self:Sync(syncName.giantClawSpawn)
     elseif string.find(msg, L["giant_eye_spawn_trigger"]) then
-        timer.lastGiantEyeSpawn = GetTime()
         self:Sync(syncName.giantEyeSpawn)
     end
 end
@@ -411,6 +428,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:GCTentacleRape()
     elseif sync == syncName.giantEyeSpawn then
         self:GTentacleRape()
+    elseif sync == syncName.fleshTentacleDeath then
+        self:FleshTentacleDeath()
     end
 end
 
@@ -491,10 +510,14 @@ function module:CThunP2Start()
             
 			self:Bar(L["barGiantC"], timer.p2FirstGiantClaw, icon.giantClaw)
 		end
+		
+		if self.db.profile.fleshtentacle then
+			self:SetupFleshTentacle()
+		end
 
 		self:ScheduleEvent("bwcthunstarttentacles", self.TentacleRape, timer.p2FirstEyeTentacles, self )
-	    self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEye, self )
-	    self:ScheduleEvent("bwcthunstartgiantc", self.GCTentacleRape, timer.p2FirstGiantClaw, self )
+	    --self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEye, self )
+	    --self:ScheduleEvent("bwcthunstartgiantc", self.GCTentacleRape, timer.p2FirstGiantClaw, self )
 		self:ScheduleRepeatingEvent("bwcthuntargetp2", self.CheckTarget, timer.target, self )
         
         timer.lastEyeTentaclesSpawn = GetTime() + 10
@@ -540,6 +563,8 @@ function module:CThunWeakened()
     timer.lastGiantEyeSpawn = 0 -- reset timer to force a refresh on the timer
         
     --BigWigsEnrage:Start(timer.weakened, self.translatedName)
+	
+	self:RemoveFleshTentacle()
 end
 
 function module:CThunWeakenedOver()
@@ -556,20 +581,24 @@ function module:CThunWeakenedOver()
 	end
     
     -- cancel tentacle timers
-	self:CancelScheduledEvent("bwcthunstartgiantc") -- ok
-	self:CancelScheduledEvent("bwcthunstartgiant") -- ok
-	self:CancelDelayedMessage(L["GiantEye"]) 
+	--self:CancelScheduledEvent("bwcthunstartgiantc") -- ok
+	--self:CancelScheduledEvent("bwcthunstartgiant") -- ok
+	--self:CancelDelayedMessage(L["GiantEye"]) 
 	
     -- next giant claw 10s after weaken
     self:Bar(L["barGiantC"], timer.p2FirstGiantClawAfterWeaken, icon.giantClaw)
-    self:ScheduleEvent("bwcthunstartgiantc", self.GCTentacleRape, timer.p2FirstGiantClawAfterWeaken, self )
+    --self:ScheduleEvent("bwcthunstartgiantc", self.GCTentacleRape, timer.p2FirstGiantClawAfterWeaken, self )
     
     -- next giant eye 40s after weaken
     self:Bar(L["barGiant"], timer.p2FirstGiantEyeAfterWeaken, icon.giantEye)
-	self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEyeAfterWeaken, self )
-    self:DelayedMessage(timer.p2FirstGiantEyeAfterWeaken - 5, L["GiantEye"], "Urgent", false, nil, true)
+	--self:ScheduleEvent("bwcthunstartgiant", self.GTentacleRape, timer.p2FirstGiantEyeAfterWeaken, self )
+    --self:DelayedMessage(timer.p2FirstGiantEyeAfterWeaken - 5, L["GiantEye"], "Urgent", false, nil, true)
     
     --BigWigsEnrage:Stop()
+    
+    if self.db.profile.fleshtentacle then
+	   self:SetupFleshTentacle()
+    end
 end
 
 function module:GiantEyeEyeBeam()
@@ -587,7 +616,7 @@ function module:DelayedEyeBeamCheck()
     self:CheckTarget()
     if eyeTarget then
         name = eyeTarget
-        self:Icon(name)
+        self:Icon(name, -1, 2.5)
         if name == UnitName("player") then
             self:WarningSign(icon.eyeBeamSelf, 2 - 0.1)
         end
@@ -615,7 +644,7 @@ function module:CheckTarget()
 	local enemy = eyeofcthun
 	
 	if phase2started then
-		enemy = gianteye
+		enemy = L["gianteye"]
 	end
 	if UnitName("playertarget") == enemy then
 		newtarget = UnitName("playertargettarget")
@@ -631,6 +660,7 @@ function module:CheckTarget()
 		eyeTarget = newtarget
 	end
 end
+
 
 -- P1
 function module:DarkGlare()
@@ -716,23 +746,22 @@ end
 
 -- P2
 function module:GTentacleRape()
-    --self:ScheduleEvent("bwcthungtentacles", self.GTentacleRape, timer.p2ETentacle, self )
 	if phase2started then
         if self.db.profile.giant then
-            self:Bar(L["barGiant"], timer.p2ETentacle, icon.giantEye)
-            self:DelayedMessage(timer.p2ETentacle - 5, L["GiantEye"], "Urgent", false, nil, true)
+            timer.lastGiantEyeSpawn = GetTime()
             
-            if timer.lastGiantEyeSpawn > 0 then
-                self:WarningSign(icon.giantEye, 5)
-            end
+            self:Bar(L["barGiant"], timer.p2ETentacle, icon.giantEye)
+            --self:DelayedMessage(timer.p2ETentacle - 5, L["GiantEye"], "Urgent", false, nil, true)
+            
+            self:WarningSign(icon.giantEye, 5)
         end
     end
 end
 
 function module:GCTentacleRape()
 	doCheckForWipe = true
-    self:CancelScheduledEvent("bwcthungctentacles") -- ok
-    self:ScheduleEvent("bwcthungctentacles", self.GCTentacleRape, timer.p2GiantClaw, self )
+    --self:CancelScheduledEvent("bwcthungctentacles") -- ok
+    --self:ScheduleEvent("bwcthungctentacles", self.GCTentacleRape, timer.p2GiantClaw, self )
     if phase2started then
         if self.db.profile.giant then
             self:Bar(L["barGiantC"], timer.p2GiantClaw, icon.giantClaw)
@@ -747,4 +776,55 @@ function module:TentacleRape()
 		self:Bar(self.db.profile.rape and L["barTentacle"] or L["barNoRape"], tentacletime, icon.eyeTentacles)
 		self:DelayedMessage(tentacletime - 5, self.db.profile.rape and L["tentacle"] or L["norape"], "Urgent", false, nil, true)
 	end
+end
+
+function module:SetupFleshTentacle()
+    self:TriggerEvent("BigWigs_StartHPBar", self, L["fleshtentacle1"], 100)
+    self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle1"], 0)
+    self:TriggerEvent("BigWigs_StartHPBar", self, L["fleshtentacle2"], 100)
+    self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle2"], 0)
+    
+	self:ScheduleRepeatingEvent("bwcthunCheckFleshTentacleHP", self.UpdateFleshTentacle, 0.5, self)
+end
+function module:UpdateFleshTentacle()
+    local health = self:GetFleshTentacleHealth()
+    if health <= fleshTentacle1Health then
+		fleshTentacle1Health = health
+		self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle1"], 100-fleshTentacle1Health)
+	else
+		fleshTentacle2Health = health
+		self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle2"], 100-fleshTentacle2Health)
+	end
+end
+function module:GetFleshTentacleHealth()    
+    local health = 100
+    if UnitName("playertarget") == L["fleshtentacle"] then
+    --if UnitName("playertarget") == "Ragged Timber Wolf" then
+		health = UnitHealth("playertarget")
+	else
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid"..i.."target") == L["fleshtentacle"] then
+				health = UnitHealth("Raid"..i.."target")
+				break
+			end
+		end
+	end
+    
+    -- 0 would remove the bar
+    if health == 0 then
+        health = 0.1
+    end
+    
+    return health
+end
+function module:FleshTentacleDeath()
+    fleshTentacle1Health = 0
+    self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle1"], 99.9)
+end
+function module:RemoveFleshTentacle()
+    fleshTentacle1Health = 100
+    fleshTentacle2Health = 100
+	self:TriggerEvent("BigWigs_StopHPBar", self, L["fleshtentacle1"])
+	self:TriggerEvent("BigWigs_StopHPBar", self, L["fleshtentacle2"])
+	self:CancelScheduledEvent("bwcthunCheckFleshTentacleHP")
 end
