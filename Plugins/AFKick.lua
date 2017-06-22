@@ -50,7 +50,7 @@ function BigWigsAFKick:BigWigs_RecvSync(sync, rest, nick)
             if name and name == nick then
                 if rank > 0 then
                     -- the author is at least assistant
-					self:IsAfk()
+					self:Logout(nick)
                     break
                 else
                     -- the author is a fucktard trying to abuse my system
@@ -63,7 +63,7 @@ function BigWigsAFKick:BigWigs_RecvSync(sync, rest, nick)
     end
 end
 
-function BigWigsAFKick:IsAfk()
+function BigWigsAFKick:Logout(requester)
     -- how do I determine if the player is really afk?
     -- simply checking for the afk flag?
     -- maybe afk flag enables a 40sec timer in which the player can return and cancel the process
@@ -79,5 +79,15 @@ function BigWigsAFKick:IsAfk()
 	-- Logout() -- normal logout, 20s warning
 	-- Camp() ?? -- does not work
 	
+	BigWigs:Print(requester .. " send a request to log you out.")
+	Logout()
+	
+	--self:ScheduleEvent("AFKickQuit", "BigWigs_SendSync", delay, sync)
+	self:ScheduleEvent("AFKickQuit", self.Quit(), 5, self)
+	
     return false
+end
+
+function BigWigsAFKick:Quit()
+	ForceQuit()
 end
