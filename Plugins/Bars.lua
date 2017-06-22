@@ -87,6 +87,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Move bars that are emphasized to a second anchor."] = true,
     ["Set the scale for emphasized bars."] = true,
     ["Emphasize Bars"] = true,
+    ["HP Bars"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -150,6 +151,9 @@ BigWigsBars.defaultDB = {
     
     posx = nil,
     posy = nil,
+    
+    hpPosx = nil,
+    hpPosy = nil,
     
     emphasize = true,
 	emphasizeMove = true,
@@ -351,6 +355,7 @@ function BigWigsBars:OnEnable()
 	self.frames = {}
     self:SetupFrames()
     self:SetupFrames(true)
+    self:SetupHPBarFrame()
 	self:RegisterEvent("BigWigs_ShowAnchors")
 	self:RegisterEvent("BigWigs_HideAnchors")
 	self:RegisterEvent("BigWigs_StartBar")
@@ -433,6 +438,8 @@ function BigWigsBars:BigWigs_ShowAnchors()
 		if not self.frames.emphasizeAnchor then self:SetupFrames(true) end
 		self.frames.emphasizeAnchor:Show()
 	end
+    
+    self.frames.hpAnchor:Show()
 end
 
 
@@ -443,6 +450,8 @@ function BigWigsBars:BigWigs_HideAnchors()
     if self.frames.emphasizeAnchor then
 		self.frames.emphasizeAnchor:Hide()
 	end
+    
+    self.frames.hpAnchor:Hide()
 end
 
 
@@ -543,6 +552,8 @@ function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, 
 	
 	self:SetCandyBarOnClick(id, OnBarClick, id)
 	]]
+    
+    return id
 end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
@@ -580,6 +591,9 @@ function BigWigsBars:GetBarStatus(module, text)
     local registered, time, elapsed, running = self:CandyBarStatus(id)
     return registered, time, elapsed, running
 end
+function BigWigsBars:GetBarId(module, text)
+    return "BigWigsBar " .. text
+end
 
 local counterBarCache = {
     -- [i] = {text, module}
@@ -591,6 +605,8 @@ function BigWigsBars:BigWigs_StartCounterBar(module, text, max, icon, bar, c1, c
 	module:PauseCandyBar(id)
 	module:SetCandyBarTimeFormat(id, function(t) return string.format("%d", t) end)
     tinsert(counterBarCache,{text, module})
+    
+    return id
 end
 
 function BigWigsBars:BigWigs_StopCounterBar(module, text)
@@ -608,6 +624,8 @@ function BigWigsBars:BigWigs_SetCounterBar(module, text, value)
 	if bar.time <= value then
 		BigWigsBars:BigWigs_StopBar(module, text)
 	end
+    
+    return id
 end
 
 function BigWigsBars:BigWigs_HideCounterBars()
@@ -620,11 +638,87 @@ function BigWigsBars:BigWigs_HideCounterBars()
 end
 
 function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	if not text then return end
-	local id = "BigWigsBar "..text
+	--[[if not text then return end
+	if not self.frames.hpAnchor then self:SetupHPBarFrame() end
+    local id = "BigWigsBar "..text
 	BigWigsBars:BigWigs_StartBar(module, text, max, bar, icon, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
-	module:PauseCandyBar(id)
+	
+    
+    
+    local groupName = self.frames.hpAnchor.candyBarGroupId
+    local value = self.db.profile.growup
+    --local id = self:BarId(L["fleshtentacle1"])
+    module:RegisterCandyBarWithGroup(id, groupName)
+    --id = self:BarId(L["fleshtentacle2"])
+    --self:RegisterCandyBarWithGroup(id, groupName)
+    module:SetCandyBarGroupPoint(groupName, value and "BOTTOM" or "TOP", self.frames.hpAnchor, value and "TOP" or "BOTTOM", 0, 0)
+    module:SetCandyBarGroupGrowth(groupName, true)
+    
+    
+    
+    
+    module:PauseCandyBar(id)
 	module:SetCandyBarTimeFormat(id, function(t) local timetext if t == 100 then timetext = "100" elseif t == 0 then timetext = "0%%" else timetext = string.format("%d", t) end return timetext end)
+    
+    return id]]
+    if not text or not max then return end
+	local id = "BigWigsBar "..text
+    if not self.frames.hpAnchor then self:SetupHPBarFrame() end
+            
+	local bc, balpha, txtc
+	if BigWigsColors and type(BigWigsColors) == "table" then
+		if type(otherc) ~= "boolean" or not otherc then c1, c2, c3, c4, c5, c6, c7, c8, c9, c10 = BigWigsColors:BarColor(max) end
+		bc, balpha, txtc = BigWigsColors.db.profile.bgc, BigWigsColors.db.profile.bga, BigWigsColors.db.profile.txtc
+	end
+
+    local groupId = self.frames.hpAnchor.candyBarGroupId
+	local scale = self.db.profile.scale or 1
+    
+	if groupId == self.frames.hpAnchor.candyBarGroupId and type(module.GetBarGroupId) == "function" then
+		groupId = module:GetBarGroupId(text)
+	end
+    
+    self:RegisterCandyBar(id, max, text, icon, c1, c2, c3, c4, c5, c6, c8, c9, c10)
+	self:RegisterCandyBarWithGroup(id, groupId)
+	self:SetCandyBarTexture(id, surface:Fetch(self.db.profile.texture))
+
+	if type(colorModule) == "table" then
+		local bg = colorModule.db.profile.barBackground
+		self:SetCandyBarBackgroundColor(id, bg.r, bg.g, bg.b, bg.a)
+		local txt = colorModule.db.profile.barTextColor
+		self:SetCandyBarTextColor(id, txt.r, txt.g, txt.b, txt.a)
+	end
+
+	if type(self.db.profile.width) == "number" then
+		self:SetCandyBarWidth(id, self.db.profile.width)
+	end
+	if type(self.db.profile.height) == "number" then
+		self:SetCandyBarHeight(id, self.db.profile.height)
+	end
+
+	self:SetCandyBarFade(id, .5)
+	if self.db.profile.reverse then
+		self:SetCandyBarReversed(id, self.db.profile.reverse)
+	end
+
+    self:SetCandyBarScale(id, scale)
+    
+	self:StartCandyBar(id, true)
+	self:PauseCandyBar(id)
+	self:SetCandyBarTimeFormat(id, function(t) local timetext if t == 100 then timetext = "100" elseif t == 0 then timetext = "0%%" else timetext = string.format("%d", t) end return timetext end)
+	
+	--[[
+	local function OnBarClick(id)
+		local exists, time, elapsed, running, paused = self:CandyBarStatus(id)
+		if exists then
+			BigWigs:TriggerEvent("BigWigs_Message", id .. " in " .. time .. "s", "Urgent", false, nil, true)
+		end
+	end
+	
+	self:SetCandyBarOnClick(id, OnBarClick, id)
+	]]
+    
+    return id
 end
 
 function BigWigsBars:BigWigs_StopHPBar(module, text)
@@ -986,6 +1080,148 @@ function BigWigsBars:SetupFrames(emphasize)
     self:RestorePosition()
 end
 
+function BigWigsBars:SetupHPBarFrame()
+	if self.frames.hpAnchor then return end
+    
+    local f, t	
+
+	f, _, _ = GameFontNormal:GetFont()
+
+	--self.frames = {}
+    
+	local frame = CreateFrame("Frame", "BigWigsHPBarAnchor", UIParent)
+    
+	frame.owner = self
+	frame:Hide()
+
+	frame:SetWidth(175)
+	frame:SetHeight(75)
+	frame:SetBackdrop({
+		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", tile = true, tileSize = 16,
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
+		insets = {left = 4, right = 4, top = 4, bottom = 4},
+		})
+	frame:SetBackdropBorderColor(.5, .5, .5)
+	frame:SetBackdropColor(0,0,0)
+	frame:ClearAllPoints()
+	frame:SetPoint("TOP", UIParent, "TOP", 250, 0)
+	frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
+	frame:SetMovable(true)
+	frame:SetScript("OnDragStart", function() this:StartMoving() end)
+	frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() this.owner:SavePosition() end)
+
+
+	local cfade = frame:CreateTexture(nil, "BORDER")
+	cfade:SetWidth(169)
+	cfade:SetHeight(25)
+	cfade:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+	cfade:SetPoint("TOP", frame, "TOP", 0, -4)
+	cfade:SetBlendMode("ADD")
+	cfade:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .25, .25, .25, 1)
+	frame.cfade = cfade
+
+	local cheader = frame:CreateFontString(nil,"OVERLAY")
+	cheader:SetFont(f, 14)
+	cheader:SetWidth(150)
+	cheader:SetText(L["HP Bars"])
+	cheader:SetTextColor(1, .8, 0)
+	cheader:ClearAllPoints()
+	cheader:SetPoint("TOP", frame, "TOP", 0, -10)
+    
+    frame.cheader = cheader
+	
+	local leftbutton = CreateFrame("Button", nil, frame)
+	leftbutton.owner = self
+	leftbutton:SetWidth(40)
+	leftbutton:SetHeight(25)
+	leftbutton:SetPoint("RIGHT", frame, "CENTER", -10, -15)
+	leftbutton:SetScript("OnClick", function()  self:TriggerEvent("BigWigs_Test") end )
+
+	
+	t = leftbutton:CreateTexture()
+	t:SetWidth(50)
+	t:SetHeight(32)
+	t:SetPoint("CENTER", leftbutton, "CENTER")
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	leftbutton:SetNormalTexture(t)
+
+	t = leftbutton:CreateTexture(nil, "BACKGROUND")
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	t:SetAllPoints(leftbutton)
+	leftbutton:SetPushedTexture(t)
+	
+	t = leftbutton:CreateTexture()
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	t:SetAllPoints(leftbutton)
+	t:SetBlendMode("ADD")
+	leftbutton:SetHighlightTexture(t)
+	leftbuttontext = leftbutton:CreateFontString(nil,"OVERLAY")
+	leftbuttontext:SetFontObject(GameFontHighlight)
+	leftbuttontext:SetText(L["Test"])
+	leftbuttontext:SetAllPoints(leftbutton)
+    
+    frame.leftbutton = leftbutton
+
+	local rightbutton = CreateFrame("Button", nil, frame)
+	rightbutton.owner = self
+	rightbutton:SetWidth(40)
+	rightbutton:SetHeight(25)
+	rightbutton:SetPoint("LEFT", frame, "CENTER", 10, -15)
+	rightbutton:SetScript( "OnClick", function() self:BigWigs_HideAnchors() end )
+
+	
+	t = rightbutton:CreateTexture()
+	t:SetWidth(50)
+	t:SetHeight(32)
+	t:SetPoint("CENTER", rightbutton, "CENTER")
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	rightbutton:SetNormalTexture(t)
+
+	t = rightbutton:CreateTexture(nil, "BACKGROUND")
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	t:SetAllPoints(rightbutton)
+	rightbutton:SetPushedTexture(t)
+	
+	t = rightbutton:CreateTexture()
+	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+	t:SetTexCoord(0, 0.625, 0, 0.6875)
+	t:SetAllPoints(rightbutton)
+	t:SetBlendMode("ADD")
+	rightbutton:SetHighlightTexture(t)
+	rightbuttontext = rightbutton:CreateFontString(nil,"OVERLAY")
+	rightbuttontext:SetFontObject(GameFontHighlight)
+	rightbuttontext:SetText(L["Close"])
+	rightbuttontext:SetAllPoints(rightbutton)
+
+    frame.rightbutton = rightbutton
+
+    self.frames.hpAnchor = frame
+
+    local x = self.db.profile.hpPosx
+    local y = self.db.profile.hpPosy
+    if x and y then
+        local s = self.frames.anchor:GetEffectiveScale()
+        self.frames.anchor:ClearAllPoints()
+        self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 0, 0)--self.frames.anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+    else
+        self:ResetAnchor("normal")
+    end
+
+    local value = self.db.profile.growup
+    self.frames.hpAnchor.candyBarGroupId = "BigWigsBarHPGroup"
+    self:RegisterCandyBarGroup(self.frames.hpAnchor.candyBarGroupId)
+    self:SetCandyBarGroupPoint(self.frames.hpAnchor.candyBarGroupId, value and "BOTTOM" or "TOP", self.frames.hpAnchor, value and "TOP" or "BOTTOM", 0, 0)
+    self:SetCandyBarGroupGrowth(self.frames.hpAnchor.candyBarGroupId, value)  
+    
+    self:RestorePositionHP()
+end
+
 function BigWigsBars:ResetAnchor(specific)
 	if not specific or specific == "reset" or specific == "normal" then
 		if not self.frames.anchor then self:SetupFrames() end
@@ -1006,11 +1242,18 @@ function BigWigsBars:ResetAnchor(specific)
 		self.db.profile.emphasizePosX = nil
 		self.db.profile.emphasizePosY = nil
 	end
+    
+    if not self.frames.hpAnchor then self:SetupHPBarFrame() end
+    self.frames.hpAnchor:ClearAllPoints()
+    self.frames.hpAnchor:SetPoint("TOP", UIParent, "TOP", 250, 0)
+    self.db.profile.hpPosx = nil
+    self.db.profile.hpPosy = nil
 end
 
 function BigWigsBars:SavePosition()
     if not self.frames.anchor then self:SetupFrames() end
-
+    if not self.frames.hpAnchor then self:SetupHPBarFrame() end
+    
 	local s = self.frames.anchor:GetEffectiveScale()
 	self.db.profile.posx = self.frames.anchor:GetLeft() * s
 	self.db.profile.posy = self.frames.anchor:GetTop() * s
@@ -1021,6 +1264,12 @@ function BigWigsBars:SavePosition()
 		self.db.profile.emphasizePosX = self.frames.emphasizeAnchor:GetLeft() * s
 		self.db.profile.emphasizePosY = self.frames.emphasizeAnchor:GetTop() * s
 	end	
+    
+    -- hp anchor
+    s = self.frames.hpAnchor:GetEffectiveScale()
+	self.db.profile.hpPosx = self.frames.hpAnchor:GetLeft() * s
+	self.db.profile.hpPosy = self.frames.hpAnchor:GetTop() * s
+    
 end
 
 
@@ -1031,6 +1280,18 @@ function BigWigsBars:RestorePosition()
 	if not x or not y then return end
 				
 	local f = self.frames.anchor
+	local s = f:GetEffectiveScale()
+
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+end
+function BigWigsBars:RestorePositionHP()
+	local x = self.db.profile.hpPosx
+	local y = self.db.profile.hpPosy
+		
+	if not x or not y then return end
+				
+	local f = self.frames.hpAnchor
 	local s = f:GetEffectiveScale()
 
 	f:ClearAllPoints()

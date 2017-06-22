@@ -1,4 +1,4 @@
-﻿assert(BigWigs, "BigWigs not found!")
+assert(BigWigs, "BigWigs not found!")
 
 ------------------------------
 --      Are you local?      --
@@ -6,6 +6,7 @@
 
 local L = AceLibrary("AceLocale-2.2"):new("BigWigsRaidIcon")
 local lastplayer = nil
+local lasticon = nil
 
 ----------------------------
 --      Localization      --
@@ -210,34 +211,68 @@ function BigWigsRaidIcon:OnEnable()
 	self:RegisterEvent("BigWigs_RemoveRaidIcon")
 end
 
-function BigWigsRaidIcon:BigWigs_SetRaidIcon(player, iconnumber)
-	if not self.db.profile.place or not player then return end
-	local icon = self.db.profile.icon
-	if not self.icontonumber[icon] then
-		icon = L["skull"]
+function BigWigsRaidIcon:BigWigs_SetRaidIcon(player, iconnumber, restoreTime)
+	-- check input and config
+	if not self.db.profile.place or not player then 
+		return 
 	end
-	icon = self.icontonumber[icon]
-	for i=1,GetNumRaidMembers() do
-		if UnitName("raid"..i) == player then
-			if not GetRaidTargetIndex("raid"..i) then
+	
+	if not restoreTime then
+		restoreTime = 3
+	end
+	
+	-- define icon
+	local icon = self.icontonumber[L["skull"]]
+	if iconnumber and 'number' == type(iconnumber) and iconnumber >= 1 and iconnumber <= 8 then
+		icon = iconnumber
+	elseif self.icontonumber[self.db.profile.icon] then
+		icon = self.icontonumber[self.db.profile.icon]
+	end
+	
+	-- set raid icon
+	for i=1, GetNumRaidMembers() do
+		local unitId = "raid" .. i
+		if UnitName(unitId) == player then
+			local currentIcon = GetRaidTargetIndex(unitId)
+            if currentIcon == nil then
+                currentIcon = 0
+            end
+            
+			if restoreTime > 0 then
+                self:ScheduleEvent("BigWigsRaidIconRestore" .. unitId, self.RestoreRaidIcon, restoreTime, self, unitId, currentIcon)
+            end
+			SetRaidTargetIcon(unitId, icon)
+
+			--[[if not GetRaidTargetIndex(unitId) then
 				if not iconnumber then
-					SetRaidTargetIcon("raid"..i, icon)
+					SetRaidTargetIcon("raid" .. i, icon)
 					lastplayer = player
 				else
-					SetRaidTargetIcon("raid"..i, iconnumber)
+					SetRaidTargetIcon("raid" .. i, iconnumber)
 					lastplayer = player
 				end
-			end
+			end]]
 		end
 	end
 end
 
+-- deprecated
 function BigWigsRaidIcon:BigWigs_RemoveRaidIcon()
-	if not self.db.profile.place or not lastplayer then return end
-	for i=1,GetNumRaidMembers() do
+	if not self.db.profile.place or not lastplayer then 
+		return 
+	end
+	
+	for i=1, GetNumRaidMembers() do
 		if UnitName("raid"..i) == lastplayer then
 			SetRaidTargetIcon("raid"..i, 0)
 		end
 	end
 	lastplayer = nil
+end
+
+function BigWigsRaidIcon:RestoreRaidIcon(unitId, icon)
+    if unitId and icon then
+        BigWigs:Print("RestoreRaidIcon unitId: " .. unitId .. " icon: " .. icon)
+        SetRaidTargetIcon(unitId, icon)
+    end
 end

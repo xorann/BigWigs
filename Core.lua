@@ -581,6 +581,9 @@ function BigWigs.modulePrototype:BarStatus(text)
     local registered, time, elapsed, running = BigWigsBars:GetBarStatus(self, text)
     return registered, time, elapsed, running
 end
+function BigWigs.modulePrototype:BarId(text)
+    return BigWigsBars:GetBarId(self, text)
+end
 
 function BigWigs.modulePrototype:Sound(sound)
 	self:TriggerEvent("BigWigs_Sound", sound)
@@ -594,8 +597,8 @@ function BigWigs.modulePrototype:CancelDelayedSound(sound, id)
     self:CancelScheduledEvent(delayPrefix .. "Sound" .. self:ToString() .. sound .. id)
 end
 
-function BigWigs.modulePrototype:Icon(name, iconnumber)
-	self:TriggerEvent("BigWigs_SetRaidIcon", name, iconnumber)
+function BigWigs.modulePrototype:Icon(name, iconnumber, restoreTime)
+	self:TriggerEvent("BigWigs_SetRaidIcon", name, iconnumber, restoreTime)
 end
 function BigWigs.modulePrototype:RemoveIcon()
 	self:TriggerEvent("BigWigs_RemoveRaidIcon")
@@ -609,7 +612,7 @@ function BigWigs.modulePrototype:WarningSign(icon, duration, force)
 	self:TriggerEvent("BigWigs_ShowWarningSign", "Interface\\Icons\\" .. icon, duration, force)
 end
 function BigWigs.modulePrototype:RemoveWarningSign(icon, forceHide)
-	self:TriggerEvent("BigWigs_HideWarningSign", icon, forceHide)
+	self:TriggerEvent("BigWigs_HideWarningSign", "Interface\\Icons\\" .. icon, forceHide)
 end
 function BigWigs.modulePrototype:DelayedWarningSign(delay, icon, duration, id)
 	if not id then id = "_" end
