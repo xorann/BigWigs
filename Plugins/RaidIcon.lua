@@ -238,7 +238,7 @@ function BigWigsRaidIcon:BigWigs_SetRaidIcon(player, iconnumber, restoreTime)
                 currentIcon = 0
             end
             
-			if restoreTime > 0 then
+			if restoreTime > 0 and currentIcon ~= icon then
                 self:ScheduleEvent("BigWigsRaidIconRestore" .. unitId, self.RestoreRaidIcon, restoreTime, self, unitId, currentIcon)
             end
 			SetRaidTargetIcon(unitId, icon)
@@ -272,7 +272,7 @@ end
 
 function BigWigsRaidIcon:RestoreRaidIcon(unitId, icon)
     if unitId and icon then
-        BigWigs:Print("RestoreRaidIcon unitId: " .. unitId .. " icon: " .. icon)
+        --BigWigs:Print("RestoreRaidIcon unitId: " .. unitId .. " icon: " .. icon)
         SetRaidTargetIcon(unitId, icon)
     end
 end
