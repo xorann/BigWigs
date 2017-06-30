@@ -292,6 +292,7 @@ function module:UseContainerItemByName(name)
     
     if not used then
         BigWigs:Print(string.format(L["Could not find %s in your inventory."], name))
+    end
 end
 function module:UseConsumable()
 	--[[local texture, itemCount, locked, quality, readable = GetContainerItemInfo(bagID, slotID)

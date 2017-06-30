@@ -34,8 +34,10 @@ L:RegisterTranslations("enUS", function() return {
 
 	cursewarn = "Curses removed! RENEW CURSES",
 	cursebar = "Remove Curse",
-	cursetrigger = "Loatheb's Chains of Ice is removed.",
+	--cursetrigger = "Loatheb's Chains of Ice is removed.",
+    cursetrigger  = "Loatheb's Curse (.+) is removed.",
 
+            
 	doomtimerbar = "Doom every 15sec",
 	doomtimerwarn = "Doom timerchange in %s seconds!",
 	doomtimerwarnnow = "Inevitable Doom now happens every 15sec!",
@@ -71,7 +73,8 @@ local timer = {
 	doomLong = 30,
 	doomShort = 15,
 	doom = 0, -- this variable will be changed during the encounter
-	spore = 12,
+	spore = 13,
+	firstCurse = 10,
 	curse = 30,
 }
 local icon = {
@@ -100,7 +103,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_SPELL_BREAK_AURA", "Curse")
+	self:RegisterEvent("CHAT_MSG_SPELL_BREAK_AURA", "CurseEvent")
 
 	-- 2: Doom and SporeSpawn versioned up because of the sync including the
 	-- doom/spore count now, so we don't hold back the counter.	
@@ -129,11 +132,14 @@ function module:OnEngage()
 		-- soft enrage after 5min: Doom every 15s instead of every 30s
 		--self:ScheduleEvent("bwloathebdoomtimerreduce", function() module.doomTime = 15 end, 300)
 		self:ScheduleEvent("bwloathebdoomtimerreduce", self.SoftEnrage, timer.softEnrage)
-		self:Message(L["startwarn"], "Red")
+		--self:Message(L["startwarn"], "Red")
 		self:Bar(string.format(L["doombar"], numDoom + 1), timer.doom, icon.doom)
 		self:DelayedMessage(timer.doom - 5, string.format(L["doomwarn5sec"], numDoom + 1), "Urgent")
 		timer.doom = timer.doomLong -- reduce doom timer from 120s to 30s
+
+		self:Bar(L["cursebar"], timer.firstCurse, icon.curse)
 		
+		self:Spore()
 		self:ScheduleRepeatingEvent("bwloathebspore", self.Spore, timer.spore, self)
 	end
 end
@@ -153,7 +159,7 @@ function module:Event( msg )
 	end
 end
 
-function module:Curse( msg )
+function module:CurseEvent( msg )
 	if string.find(msg, L["cursetrigger"]) then
 		self:Sync(syncName.curse)
 	end
@@ -220,4 +226,32 @@ function module:Spore()
 		--self:Message(string.format(L["sporewarn"], numSpore), "Important")
 		self:Bar(string.format(L["sporebar"], numSpore), timer.spore, icon.spore)
 	end
+end
+
+
+------------------------------
+--      Test        	    --
+------------------------------
+
+-- /run local m=BigWigs:GetModule("Loatheb");m:Test()
+function module:Test()
+    
+    local function deactivate()
+        BigWigs:Print(self:ToString().." Test deactivate")
+        self:Disable()
+    end
+    
+    BigWigs:Print(self:ToString().." Test started")
+    BigWigs:Print("  Sweep Test after 5s")
+    BigWigs:Print("  Sand Storm Test after 10s")
+    BigWigs:Print("  Submerge Test after 32s")
+    BigWigs:Print("  Emerge Test after 42s")
+    
+    
+    -- immitate CheckForEngage
+    self:SendEngageSync()
+    
+    -- reset after 50s
+    self:ScheduleEvent(self:ToString().."Test_deactivate", deactivate, 50, self)
+    
 end
