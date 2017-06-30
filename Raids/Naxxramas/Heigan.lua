@@ -33,9 +33,9 @@ L:RegisterTranslations("enUS", function() return {
 	starttrigger = "You are mine now!",
 	starttrigger2 = "You...are next!",
 	starttrigger3 = "I see you!",
-	toPlatform_trigger = "Heigan the Unclean teleports and begins to channel a spell!",
-    toFloor_trigger = "Heigan the Unclean rushes to attack once more!",
-	die_trigger = "%s takes his last breath.",
+	toPlatform_trigger = "teleports and begins to channel a spell!",
+    toFloor_trigger = "rushes to attack once more!",
+	die_trigger = "takes his last breath.",
 	dtrigger = "afflicted by Decrepit Fever.",
 
 	-- [[ Warnings ]]--
@@ -79,7 +79,7 @@ local timer = {
 	disease = 21,
 	toFloor = 45,
 	toPlatform = 90,
-    firstErruption = 15,
+    firstErruption = 10,
     firstDanceErruption = 5,
     erruption = 0, -- will be changed during the encounter
     erruptionSlow = 10,
@@ -151,15 +151,15 @@ end
 ------------------------------
 
 function module:CHAT_MSG_MONSTER_EMOTE( msg )
-	if msg == L["die_trigger"] then
+	if string.find(msg, L["die_trigger"]) then
 		self:SendBossDeathSync()
 	end
 end
 
 function module:Teleport(msg)
-    if msg == L["toPlatform_trigger"] then
+    if string.find(msg, L["toPlatform_trigger"]) then
         self:Sync(syncName.toPlatform)
-    elseif msg == L["toFloor_trigger"] then
+    elseif string.find(msg, L["toFloor_trigger"]) then
         self:Sync(syncName.toFloor)
     end
 end
@@ -176,7 +176,7 @@ function module:Erruption()
     if self.db.profile.erruption then
         -- don't show bar before teleport
         local registered, time, elapsed = self:BarStatus(L["toPlatform_bar"])
-        if registered then
+        if registered and timer and elapsed then
             local remaining = time - elapsed
             if timer.erruption < remaining then
                 self:Bar(L["erruptionbar"], timer.erruption, icon.erruption)
@@ -217,9 +217,11 @@ function module:Disease()
     
         -- don't show bar before teleport
         local registered, time, elapsed = self:BarStatus(L["toPlatform_bar"])
-        local remaining = time - elapsed
-        if timer.disease < remaining then
-            self:Bar(L["dbar"], timer.disease, icon.disease)
+        if time and elapsed then
+            local remaining = time - elapsed
+            if timer.disease < remaining then
+                self:Bar(L["dbar"], timer.disease, icon.disease)
+            end
         end
     end
 end
