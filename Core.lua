@@ -622,6 +622,9 @@ function BigWigs.modulePrototype:CancelDelayedWarningSign(icon, id)
     if not id then id = "_" end
     self:CancelScheduledEvent(delayPrefix .. "WarningSign" .. self:ToString() .. icon .. id)
 end
+function BigWigs.modulePrototype:WarningSignOnClick(func)
+	BigWigsWarningSign:OnClick(func)
+end
 
 
 function BigWigs.modulePrototype:Say(msg)
@@ -1075,8 +1078,8 @@ function BigWigs:BigWigs_RecvSync(sync, moduleName, nick)
 			self:Print(string.format(L["%s has requested forced reboot for the %s module."], nick, moduleName))
 		end
 		self:TriggerEvent("BigWigs_RebootModule", moduleName)
-    elseif module and sync == module:GetEngageSync() then	
-		if module:IsBossModule() then
+    elseif module and sync == module:GetEngageSync() then
+        if module:IsBossModule() then
 			module:Engage() 
 		end
 	--[[elseif module and sync == module:GetWipeSync() then

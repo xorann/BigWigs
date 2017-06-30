@@ -22,6 +22,9 @@ local c = {
     texture = "",       -- contains the texturePath
     endTime = 0,        -- to hide it appropriately
     force   = false,    -- will prevent it from being overwritten
+	onClick = {
+		func = nil
+	},
 }
 
 
@@ -239,8 +242,31 @@ function BigWigsWarningSign:BigWigs_HideWarningSign(texturePath, forceHide)
 			self.frames.sign:Hide()
 			self.db.profile.isVisible = false
 			self.frames.sign:SetScript('OnUpdate', nil)
+			BigWigsWarningSign:OffClick()
 		end
     end
+end
+
+function BigWigsWarningSign:ExecuteClick()
+	if c.onClick.func then
+		--c.onClick.func(c.onClick.a1, c.onClick.a2, c.onClick.a3, c.onClick.a4, c.onClick.a5, c.onClick.a6, c.onClick.a7, c.onClick.a8, c.onClick.a9, c.onClick.a10)
+        c.onClick.func()
+	end
+end
+function BigWigsWarningSign:OnClick(func)
+    if func then
+		c.onClick.func = func
+		
+		self.frames.sign:EnableMouse(true)
+		self.frames.sign:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp", "Button4Up", "Button5Up")
+		self.frames.sign:SetScript("OnClick", function() BigWigsWarningSign:ExecuteClick() end)
+	end
+end
+function BigWigsWarningSign:OffClick()
+	self.frames.sign:EnableMouse(false)
+	self.frames.sign:RegisterForClicks()
+	self.frames.sign:SetScript("OnClick", nil)
+    c.onClick.func = nil
 end
 
 function BigWigsWarningSign:PLAYER_DEAD()
@@ -401,7 +427,7 @@ function BigWigsWarningSign:CreateWarningSignFrame()
 	]]
 	
 
-	self.frames.sign = CreateFrame("Frame", "BigWigsWarningSignFrame", UIParent)
+	self.frames.sign = CreateFrame("Button", "BigWigsWarningSignFrame", UIParent)
 	self.frames.sign:Hide()
 	self.db.profile.isVisible = false
 	
