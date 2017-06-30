@@ -75,7 +75,7 @@ module.toggleoptions = {"engage", "teleport", "disease", "erruption", "bosskill"
 
 -- locals
 local timer = {
-    firstDisease = 9,
+    firstDisease = 8,
 	disease = 21,
 	toFloor = 45,
 	toPlatform = 90,
@@ -83,7 +83,7 @@ local timer = {
     firstDanceErruption = 5,
     erruption = 0, -- will be changed during the encounter
     erruptionSlow = 10,
-    erruptionFast = 3,
+    erruptionFast = 3.2,
     dancing = 10,
 }
 local icon = {
@@ -178,7 +178,7 @@ function module:Erruption()
         local registered, time, elapsed = self:BarStatus(L["toPlatform_bar"])
         if registered and timer and elapsed then
             local remaining = time - elapsed
-            if timer.erruption < remaining then
+            if timer.erruption + 1 < remaining then
                 self:Bar(L["erruptionbar"], timer.erruption, icon.erruption)
                 self:ScheduleEvent("HeiganErruption", self.Erruption, timer.erruption, self)
             else
