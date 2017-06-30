@@ -22,6 +22,10 @@ L:RegisterTranslations("enUS", function() return {
 	curse_cmd = "curse",
 	curse_name = "Remove Curse Alert",
 	curse_desc = "Warn when curses are removed from Loatheb",
+	
+	spore_cmd = "spore",
+	spore_name = "Spore Alert",
+	spore_desc = "Warn for Spores",
 
 	doombar = "Inevitable Doom %d",
 	doomwarn = "Inevitable Doom %d! %d sec to next!",
@@ -40,6 +44,9 @@ L:RegisterTranslations("enUS", function() return {
 	cursetimerwarn = "Curses removed, next in %s seconds!",
 
 	startwarn = "Loatheb engaged, 2 min to Inevitable Doom!",
+	
+	--sporewarn = "Spore spawned",
+	sporebar = "Next Spore",
 
 	you = "You",
 	are = "are",
@@ -54,7 +61,7 @@ L:RegisterTranslations("enUS", function() return {
 module.revision = 20003 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"doom", "curse", "bosskill"}
+module.toggleoptions = {"doom", "curse", "spore", "bosskill"}
 
 
 -- locals
@@ -81,6 +88,7 @@ local syncName = {
 
 local numSpore = 0 -- how many spores have been spawned
 local numDoom = 0 -- how many dooms have been casted
+local timeCurseWarning = 0
 
 
 ------------------------------
@@ -125,6 +133,8 @@ function module:OnEngage()
 		self:Bar(string.format(L["doombar"], numDoom + 1), timer.doom, icon.doom)
 		self:DelayedMessage(timer.doom - 5, string.format(L["doomwarn5sec"], numDoom + 1), "Urgent")
 		timer.doom = timer.doomLong -- reduce doom timer from 120s to 30s
+		
+		self:ScheduleRepeatingEvent("bwloathebspore", self.Spore, timer.spore, self)
 	end
 end
 
@@ -157,8 +167,6 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.doom and rest then
 		self:Doom(rest)
-	elseif sync == syncName.spore and rest then
-		self:Spore(rest)
 	elseif sync == syncName.curse then
 		self:Curse()
 	end
@@ -184,25 +192,15 @@ function module:Doom(syncNumDoom)
 	end
 end
 
-function module:Spore(syncNumSpore)
-	syncNumSpore = tonumber(syncNumSpore)
-	if not syncNumSpore then
-		if syncNumSpore == (numSpore + 1) then
-			numSpore = numSpore
-			if self.db.profile.spore then
-				self:Message(string.format(L["sporewarn"], numSpore), "Important")
-			end			
-			if self.db.profile.spore then
-				self:Bar(string.format(L["sporebar"], numSpore + 1), timer.spore, icon.spore)
-			end
-		end
-	end
-end
+
 
 function module:Curse()
 	if self.db.profile.curse then
-		self:Message(L["cursewarn"], "Important")
-		self:Bar(L["cursebar"], timer.curse, icon.curse)
+		if timeCurseWarning + 5 < GetTime() then
+			timeCurseWarning = GetTime()
+			self:Message(L["cursewarn"], "Important")
+			self:Bar(L["cursebar"], timer.curse, icon.curse)
+		end
 	end
 end
 
@@ -213,4 +211,13 @@ end
 
 function module:SoftEnrage()
 	timer.doom = timer.doomShort -- reduce doom timer from 30s to 15s
+end
+
+function module:Spore()
+	numSpore = numSpore + 1
+
+	if self.db.profile.spore then
+		--self:Message(string.format(L["sporewarn"], numSpore), "Important")
+		self:Bar(string.format(L["sporebar"], numSpore), timer.spore, icon.spore)
+	end
 end
