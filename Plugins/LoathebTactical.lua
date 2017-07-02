@@ -149,7 +149,7 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "DoomEvent")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "DoomEvent")
 	
-	BigWigs:Print(L["enablewarning"])
+	--BigWigs:Print(L["enablewarning"])
 end
 
 -- called after module is enabled and after each wipe
@@ -348,8 +348,8 @@ end
 function module:TestSpore()
 	local firstSpore = timer.firstSpore
 	local sporeMark = timer.sporeMark
-	timer.firstSpore = 1
-	timer.sporeMark = 3
+	timer.firstSpore = 0.5
+	timer.sporeMark = 1
 	
 	local function deactivate()
         self.core:DisableModule(self:ToString())

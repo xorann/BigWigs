@@ -190,7 +190,6 @@ function BigWigs:DebugMessage(msg, module)
             debugFrame = self.debugFrame
         end
     end
-        
     if core:IsDebugging() then
        (debugFrame or DEFAULT_CHAT_FRAME):AddMessage(prefix .. msg)
     end
