@@ -350,14 +350,14 @@ function module:CheckForWipe(event)
     end
 end
 
--- does not work on nefarian
+-- does finally work on nefarian
 function module:Emote( msg )
-	if string.find(msg, L["weakenedtrigger"]) then 
+	if string.find(msg, L["weakenedtrigger"]) then
         self:Sync(syncName.weaken) 
     end
 end
 -- alternative weaken trigger for nefarian
-function module:PlayerDamageEvents(msg)
+--[[function module:PlayerDamageEvents(msg)
     if not string.find(msg, "Eye of C'Thun") then
         local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["vulnerability_direct_test"])
         if stype and dmg and school then
@@ -371,7 +371,7 @@ function module:PlayerDamageEvents(msg)
             end
         end
     end
-end
+end]]
 
 function module:CheckEyeBeam(msg)
     if string.find(msg, L["eye_beam_trigger"]) then
