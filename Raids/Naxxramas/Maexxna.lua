@@ -61,7 +61,7 @@ L:RegisterTranslations("enUS", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20011 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"spray", "poison", "cocoon", "enrage", "bosskill"}
@@ -71,7 +71,7 @@ module.toggleoptions = {"spray", "poison", "cocoon", "enrage", "bosskill"}
 local timer = {
 	poison = 20,
 	cocoon = 20,
-	spider = 35,
+	spider = 30,
 	webspray = 40,
 }
 local icon = {
@@ -190,20 +190,20 @@ end
 ------------------------------
 
 function module:Webspray()
-	self:CancelDelayedMessage(L["webspraywarn30sec"])
-	self:CancelDelayedMessage(L["webspraywarn20sec"])
-	self:CancelDelayedMessage(L["webspraywarn10sec"])
-	self:CancelDelayedMessage(L["webspraywarn5sec"])
+	--self:CancelDelayedMessage(L["webspraywarn30sec"])
+	--self:CancelDelayedMessage(L["webspraywarn20sec"])
+	--self:CancelDelayedMessage(L["webspraywarn10sec"])
+	--self:CancelDelayedMessage(L["webspraywarn5sec"])
 
 	self:Message(L["webspraywarn"], "Important")
 	self:Bar(L["cocoonbar"], timer.cocoon, "Spell_Nature_Web")
 	self:Bar(L["spiderbar"], timer.spider, "INV_Misc_MonsterSpiderCarapace_01")
 	self:Bar(L["webspraybar"], timer.webspray, "Ability_Ensnare")
 	
-	self:DelayedMessage(timer.webspray - 30, L["webspraywarn30sec"], "Attention")
-	self:DelayedMessage(timer.webspray - 20, L["webspraywarn20sec"], "Attention")
-	self:DelayedMessage(timer.webspray - 10, L["webspraywarn10sec"], "Attention")
-	self:DelayedMessage(timer.webspray - 5, L["webspraywarn5sec"], "Attention")
+	--self:DelayedMessage(timer.webspray - 30, L["webspraywarn30sec"], "Attention")
+	--self:DelayedMessage(timer.webspray - 20, L["webspraywarn20sec"], "Attention")
+	--self:DelayedMessage(timer.webspray - 10, L["webspraywarn10sec"], "Attention")
+	--self:DelayedMessage(timer.webspray - 5, L["webspraywarn5sec"], "Attention")
 end
 
 function module:Poison()
