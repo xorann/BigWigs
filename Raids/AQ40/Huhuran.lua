@@ -37,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	stingtrigger = "afflicted by Wyvern Sting",
 	stingwarn = "Wyvern Sting!",
 	stingdelaywarn = "Possible Wyvern Sting in ~3 seconds!",
-	bartext = "Wyvern Sting",
+	stingbar = "Possible Wyvern Sting",
 
 	startwarn = "Huhuran engaged, 5 minutes to berserk!",
 	berserkbar = "Berserk",
@@ -71,7 +71,7 @@ L:RegisterTranslations("deDE", function() return {
 	stingtrigger = "von Stich des Flügeldrachen betroffen",
 	stingwarn = "Stich des Fl\195\188geldrachen!",
 	stingdelaywarn = "M\195\182glicher Stich des Fl\195\188geldrachen in ~3 Sekunden!",
-	bartext = "Stich",
+	stingbar = "Möglicher Stich",
 
 	startwarn = "Huhuran angegriffen! Berserkerwut in 5 Minuten!",
 	berserkbar = "Berserkerwut",
@@ -95,7 +95,8 @@ module.toggleoptions = {"wyvern", "frenzy", "berserk", "bosskill"}
 -- locals
 local timer = {
 	berserk = 300,
-	sting = 20,
+	stingMin = 15,
+	stingMax = 20,
     frenzy = 10,
 }
 local icon = {
@@ -217,8 +218,8 @@ end
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.sting then
         self:Message(L["stingwarn"], "Urgent")
-        self:Bar(L["bartext"], timer.sting, icon.sting)
-        self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent", nil, nil, true)
+        self:IrregularBar(L["stingbar"], timer.stingMin, timer.stingMax, icon.sting)
+        --self:DelayedMessage(timer.sting - 3, L["stingdelaywarn"], "Urgent", nil, nil, true)
     elseif sync == syncName.frenzyGain then
         self:FrenzyGain()
     elseif sync == syncName.frenzyOver then

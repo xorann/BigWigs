@@ -49,7 +49,7 @@ L:RegisterTranslations("enUS", function() return {
 	toxin_warn		= " is in a toxin cloud!",
 	toxin_self_warn		= "You are in the toxin cloud!",
 
-	volley_bar	= "Poison Bolt Volley",
+	volley_bar	= "Possible Poison Bolt Volley",
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -86,7 +86,7 @@ L:RegisterTranslations("deDE", function() return {
 	toxin_warn		= " ist in einer Toxin Wolke!",
 	toxin_self_warn		= "Du bist in einer Toxin Wolke!",
 
-	volley_bar        = "Giftblitzsalve",
+	volley_bar        = "Mögliche Giftblitzsalve",
 } end )
 
 ---------------------------------
@@ -102,7 +102,8 @@ module.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"
 
 -- locals
 local timer = {
-	volley = 12,
+	volleyMin = 11,
+	volleyMax = 14,
 }
 local icon = {
 	volley = "Spell_Nature_CorrosiveBreath",
@@ -180,8 +181,8 @@ end
 function module:CheckVis(arg1)
 	if not prior and self.db.profile.volley and string.find(arg1, L["volley_trigger"]) then
 		self:Message(L["volley_warn"], "Urgent")
-		self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent", nil, nil, true)
-		self:Bar(L["volley_bar"], timer.volley, icon.volley)
+		--self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent", nil, nil, true)
+		self:IrregularBar(L["volley_bar"], timer.volleyMin, timer.volleyMax, icon.volley)
 		prior = true
 	elseif string.find(arg1, L["toxin_trigger"]) then
 		local _,_, pl, ty = string.find(arg1, L["toxin_trigger"])

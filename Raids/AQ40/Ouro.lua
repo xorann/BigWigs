@@ -127,12 +127,14 @@ module.toggleoptions = {"sweep", "sandblast", -1, "emerge", "submerge", -1, "ber
 
 -- locals
 local timer = {
-    firstSweep = 35,
+    firstSweepMin = 35,
+	firstSweepMax = 40,
 	nextSubmerge = 90,
 	sweep = 1.5,
 	sweepInterval = 20,
 	sandblast = 2,
-	sandblastInterval = 20,
+	sandblastIntervalMin = 20,
+	sandblastIntervalMax = 23,
 	nextEmerge = 30,
 }
 local icon = {
@@ -199,7 +201,7 @@ function module:OnEngage()
 	end
     
     if self.db.profile.sweep then
-        self:Bar(L["firstSweep"], timer.firstSweep, icon.sweep)
+        self:IrregularBar(L["firstSweep"], timer.firstSweepMin, timer.firstSweepMax, icon.sweep)
     end
 end
 
@@ -315,8 +317,8 @@ function module:Sandblast()
 		self:RemoveBar(L["sandblastbartext"]) -- remove timer bar
         self:Bar(L["sandblastannounce"], timer.sandblast, icon.sandblast) -- show cast bar
 		self:Message(L["sandblastannounce"], "Important", true, "Alert")
-		self:DelayedMessage(timer.sandblastInterval - 5, L["sandblastwarn"], "Important", nil, nil, true)
-		self:Bar(L["sandblastbartext"], timer.sandblastInterval + timer.sandblast, icon.sandblast)
+		self:DelayedMessage(timer.sandblastIntervalMin - 5, L["sandblastwarn"], "Important", nil, nil, true)
+		self:IrregularBar(L["sandblastbartext"], timer.sandblastIntervalMin + timer.sandblast, timer.sandblastIntervalMax + timer.sandblast, icon.sandblast)
 	end
 end
 
