@@ -697,7 +697,14 @@ function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3
 	module:SetCandyBarTimeFormat(id, function(t) local timetext if t == 100 then timetext = "100" elseif t == 0 then timetext = "0%%" else timetext = string.format("%d", t) end return timetext end)
     
     return id]]
-    if not text or not max then return end
+    if not text or not max then
+		return
+	end
+
+	if not icon then
+		icon = "Interface\\Icons\\spell_shadow_metamorphosis"
+	end
+
 	local id = "BigWigsBar "..text
     if not self.frames.hpAnchor then self:SetupHPBarFrame() end
             
@@ -755,7 +762,6 @@ function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3
 	
 
 	local function OnBarClick(id, text)
-		BigWigs:Print("OnBarClick: " .. id)
 		local exists, totalHP, lostHP, running, paused = self:CandyBarStatus(id)
 		if exists then
 			local text = self:GetCandyBarText(id)
