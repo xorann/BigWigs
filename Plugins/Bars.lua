@@ -705,18 +705,31 @@ function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3
     
 	self:StartCandyBar(id, true)
 	self:PauseCandyBar(id)
-	self:SetCandyBarTimeFormat(id, function(t) local timetext if t == 100 then timetext = "100" elseif t == 0 then timetext = "0%%" else timetext = string.format("%d", t) end return timetext end)
+	self:SetCandyBarTimeFormat(id, function(t)
+		local timetext
+		if t == 100 then
+			timetext = "100%%"
+		elseif t == 0 then
+			timetext = "0%%"
+		else
+			timetext = string.format("%d%%", t)
+		end
+		return timetext
+	end)
 	
-	--[[
-	local function OnBarClick(id)
-		local exists, time, elapsed, running, paused = self:CandyBarStatus(id)
+
+	local function OnBarClick(id, text)
+		BigWigs:Print("OnBarClick: " .. id)
+		local exists, totalHP, lostHP, running, paused = self:CandyBarStatus(id)
 		if exists then
-			BigWigs:TriggerEvent("BigWigs_Message", id .. " in " .. time .. "s", "Urgent", false, nil, true)
+			local text = self:GetCandyBarText(id)
+			local remainingHP = totalHP - lostHP
+			SendChatMessage(text .. ": " .. remainingHP .. "%", "RAID")
 		end
 	end
 	
-	self:SetCandyBarOnClick(id, OnBarClick, id)
-	]]
+	self:SetCandyBarOnClick(id, OnBarClick, id, text)
+
     
     return id
 end

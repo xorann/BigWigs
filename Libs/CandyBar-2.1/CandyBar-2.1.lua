@@ -44,6 +44,7 @@ local CandyBar = Mixin {
 	"SetCandyBarTimerTextColor",
 	"SetCandyBarFontSize",
 	"SetCandyBarPoint",
+	"GetCandyBarText",
 	"GetCandyBarPoint",
     "GetCandyBarCenter",
 	"GetCandyBarOffsets",
@@ -450,6 +451,16 @@ function CandyBar:SetText(name, text)
 	CandyBar.var.handlers[name].frame.text:SetText(text)
 
 	return true
+end
+
+-- Get the text for the bar
+-- Args: name - name of the candybar
+-- returns the text of the bar
+function CandyBar:GetText(name)
+	CandyBar:argCheck(name, 2, "string")
+	if not CandyBar.var.handlers[name] then return end
+
+	return CandyBar.var.handlers[name].text
 end
 
 -- Set the fontsize
@@ -1331,6 +1342,7 @@ CandyBar.SetCandyBarTextColor = CandyBar.SetTextColor
 CandyBar.SetCandyBarTimerTextColor = CandyBar.SetTimerTextColor
 CandyBar.SetCandyBarFontSize = CandyBar.SetFontSize
 CandyBar.SetCandyBarPoint = CandyBar.SetPoint
+CandyBar.GetCandyBarText = CandyBar.GetText
 CandyBar.GetCandyBarPoint = CandyBar.GetPoint
 CandyBar.GetCandyBarCenter = CandyBar.GetCenter
 CandyBar.GetCandyBarOffsets = CandyBar.GetOffsets
