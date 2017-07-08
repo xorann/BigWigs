@@ -201,6 +201,11 @@ function module:UNIT_HEALTH(arg1)
 	end
 end
 
+-- /run local m=BigWigs:GetModule("Elder Mottled Boar");m:RaidIconTest()
+function module:RaidIconTest()
+	self:Icon("Dorann")
+	self:DelayedSync(0.5, "BigWigsRaidIconTest")
+end
 
 ------------------------------
 --      Synchronization	    --
@@ -211,12 +216,18 @@ function module:BigWigs_RecvSync( sync, rest, nick )
     
     if sync == syncName.teleport then
 		self:Teleport()
-    end
+	elseif sync == "BigWigsRaidIconTest" then
+		self:SetRaidIcon()
+	end
 end
 
 ------------------------------
 --      Sync Handlers	    --
 ------------------------------
+
+function module:SetRaidIcon()
+	self:Icon("Dorann")
+end
 
 function module:Teleport()
 	self:Bar(L["teleport_msg"], timer.teleport, icon.teleport)
