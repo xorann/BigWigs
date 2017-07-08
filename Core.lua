@@ -174,7 +174,7 @@ BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, function() waterfall:Open("BigW
 waterfall:Register('BigWigs', 'aceOptions',BigWigs.cmdtable, 'title','BigWigs', 'colorR', 0.2, 'colorG', 0.6, 'colorB', 0.2) 
 
 BigWigs.debugFrame = ChatFrame1
-BigWigs.revision = 20011
+BigWigs.revision = 20012
 
 
 function BigWigs:DebugMessage(msg, module)
