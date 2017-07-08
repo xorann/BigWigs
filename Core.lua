@@ -570,6 +570,9 @@ end
 function BigWigs.modulePrototype:RemoveBar(text)
 	self:TriggerEvent("BigWigs_StopBar", self, text)
 end
+function BigWigs.modulePrototype:IrregularBar(text, minTime, maxTime, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	BigWigsBars:StartIrregularBar(self, text, minTime, maxTime, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+end
 function BigWigs.modulePrototype:DelayedBar(delay, text, time, icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	return self:ScheduleEvent(delayPrefix .. "Bar" .. self:ToString() .. text, "BigWigs_StartBar", delay, self, text, time, "Interface\\Icons\\" .. icon, otherColor, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 end

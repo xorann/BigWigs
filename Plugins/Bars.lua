@@ -6,6 +6,9 @@ assert( BigWigs, "BigWigs not found!")
 --      Are you local?      --
 ------------------------------
 
+if not AceLibrary:HasInstance("PaintChips-2.0") then error(vmajor .. " requires PaintChips-2.0") end
+local paint = AceLibrary("PaintChips-2.0")
+
 local L = AceLibrary("AceLocale-2.2"):new("BigWigsBars")
 local paint = AceLibrary("PaintChips-2.0")
 local minscale, maxscale = 0.25, 2
@@ -377,7 +380,9 @@ function BigWigsBars:OnEnable()
         self.frames.emphasizeAnchor.emphasizeTimers = new()
         self.frames.emphasizeAnchor.moduleBars = new()
         self.frames.emphasizeAnchor.movingBars = new()
-    end
+	end
+
+	paint:RegisterColor("Gray", 0.5, 0.5, 0.5)
 end
 
 function BigWigsBars:OnDisable()
@@ -593,6 +598,37 @@ function BigWigsBars:GetBarStatus(module, text)
 end
 function BigWigsBars:GetBarId(module, text)
     return "BigWigsBar " .. text
+end
+
+-- /run BigWigsBars:StartIrregularBar(BigWigs, "test", 1, 6)
+function BigWigsBars:StartIrregularBar(module, text, minTime, maxTime, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+	-- star normal bar for the minimum timer
+	self:BigWigs_StartBar(module, text, minTime, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
+
+	local function Irregularity(module, text, time)
+		local id = self:GetBarId(self, text)
+
+		-- set bar color to gray
+		self:SetCandyBarBackgroundColor(id, "Gray")
+		self:SetCandyBarColor(id, "Gray")
+
+		-- reverse direction
+		if self:IsCandyBarReversed(id) then
+			self:SetCandyBarReversed(id, false)
+		else
+			self:SetCandyBarReversed(id, true)
+		end
+
+		-- set time to the remaining time
+		self:SetCandyBarTime(id, time)
+		self:SetCandyBarTimeLeft(id, time)
+
+		-- unregister bar after the maximum time
+		self:ScheduleEvent("BigWigsBarsIrregularBarEnd", "BigWigs_StopBar", time, self, text)
+	end
+
+	-- show the irregularity after the minimum amount of time
+	self:ScheduleEvent("BigWigsBarsIrregularBar", Irregularity, minTime, self, text, maxTime - minTime)
 end
 
 local counterBarCache = {

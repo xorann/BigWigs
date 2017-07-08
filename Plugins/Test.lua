@@ -13,7 +13,7 @@ L:RegisterTranslations("enUS", function() return {
 	["test"] = true,
 	["Test"] = true,
 	["Test Bar"] = true,
-	["Test Bar 2"] = true,
+	["Test irregular Bar"] = true,
 	["Test Bar 3"] = true,
 	["Test Bar 4"] = true,
 	["Testing"] = true,
@@ -37,7 +37,7 @@ L:RegisterTranslations("deDE", function() return {
 	-- ["test"] = true,
 	--["Test"] = "Test",
 	["Test Bar"] = "Test Balken",
-	["Test Bar 2"] = "Test Balken 2",
+	["Test irregular Bar"] = "Test irregulärer Balken",
 	["Test Bar 3"] = "Test Balken 3",
 	["Test Bar 4"] = "Test Balken 4",
 	["Testing"] = "Teste",
@@ -113,7 +113,7 @@ function BigWigsTest:BigWigs_Test()
 	self:Message(L["Testing"], "Attention", true, "Long")
 	self:Bar(L["Test Bar 4"], 3, "Spell_Nature_ResistNature", true, "black")
 	self:Bar(L["Test Bar 3"], 5, "Spell_Nature_ResistNature", true, "red")
-	self:Bar(L["Test Bar 2"], 16, "Inv_Hammer_Unique_Sulfuras")
+	self:IrregularBar(L["Test irregular Bar"], 11, 16, "Inv_Hammer_Unique_Sulfuras")
 	self:Bar(L["Test Bar"], 20, "Spell_Nature_ResistNature")
 	self:WarningSign("Inv_Hammer_Unique_Sulfuras", 10)
 
