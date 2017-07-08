@@ -28,6 +28,9 @@ L:RegisterTranslations("enUS", function() return {
 	["Sync test"] = true,
 	["Perform a sync test of BigWigs."] = true,
 	["Testing Sync"] = true,
+	["Test HP Bar 1"] = true,
+	["Test HP Bar 2"] = true,
+
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -126,6 +129,15 @@ function BigWigsTest:BigWigs_Test()
     local function deactivate()
         BigWigs:RemoveProximity()
     end
+	--HPBar
+	self:TriggerEvent("BigWigs_StartHPBar", self, L["Test HP Bar 1"], 100)
+    --self:TriggerEvent("BigWigs_SetHPBar", self, L["Test HP Bar 1"], 0)
+    self:TriggerEvent("BigWigs_StartHPBar", self, L["Test HP Bar 2"], 100)
+   -- self:TriggerEvent("BigWigs_SetHPBar", self, L["Test HP Bar 2"], 0)
+    health = 100
+	
+	self:ScheduleRepeatingEvent("bwtesthpbarrepeat", self.UpdateTestHPBars, 0.1, self)
+
     
     self:ScheduleEvent("BigWigsTestOver", deactivate, 20, self)
     
@@ -140,3 +152,11 @@ end
 --function BigWigsTest:TestCounter()
 --    self:TriggerEvent("BigWigs_SetCounterBar", self, "CounterBar Test", 5, true)
 --end
+
+function BigWigsTest:UpdateTestHPBars()
+	if health > 0 then
+		health = health - 1
+		self:TriggerEvent("BigWigs_SetHPBar", self, L["Test HP Bar 1"], 100-health)
+		self:TriggerEvent("BigWigs_SetHPBar", self, L["Test HP Bar 2"], 100-health)
+	end
+end
