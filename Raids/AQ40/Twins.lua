@@ -143,7 +143,7 @@ L:RegisterTranslations("deDE", function() return {
 
 
 -- module variables
-module.revision = 20011 -- To be overridden by the module!
+module.revision = 20012 -- To be overridden by the module!
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
 module.enabletrigger = {veklor, veknilash} -- string or table {boss, add1, add2}
@@ -186,7 +186,7 @@ module:RegisterYellEngage(L["pull_trigger10"])
 
 -- called after module is enabled
 function module:OnEnable()
-    self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+    --self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
@@ -235,11 +235,11 @@ function module:CheckForBossDeath(msg)
 	end
 end
 
-function module:CHAT_MSG_MONSTER_YELL(msg)
+--[[function module:CHAT_MSG_MONSTER_YELL(msg)
 	if string.find(msg, L["kill_trigger"]) then
         self:SendBossDeathSync()
     end
-end
+end]]
 
 function module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
 	if string.find(msg, L["blizzard_trigger"]) then
@@ -302,7 +302,8 @@ end
 function module:Teleport()
 	if self.db.profile.teleport then
 		self:Bar(L["bartext"], timer.teleport, icon.teleport)
-        
+    	--self:Bar("Tank switch", 3, icon.teleport)
+
         self:DelayedSync(timer.teleport, syncName.teleport_old)
         self:DelayedSync(timer.teleport, syncName.teleport)
         self:KTM_Reset()
