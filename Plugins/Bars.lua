@@ -146,7 +146,7 @@ L:RegisterTranslations("deDE", function() return {
 ----------------------------------
 
 BigWigsBars = BigWigs:NewModule(L["Bars"])
-BigWigsBars.revision = tonumber(string.sub("$Revision: 20003 $", 12, -3))
+BigWigsBars.revision = 20012
 BigWigsBars.defaultDB = {
 	growup = false,
 	scale = 1.0,
@@ -462,9 +462,17 @@ end
 
 function BigWigsBars:BigWigs_StartBar(module, text, time, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
     if not text or not time then return end
-	local id = "BigWigsBar "..text
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
     if not self.frames.anchor then self:SetupFrames() end
     
+	-- reset irregular bar
+	if self:IsEventScheduled("BigWigsBarsIrregularBar" .. text) then
+		self:CancelScheduledEvent("BigWigsBarsIrregularBar" .. text)
+	end
+	if self:IsEventScheduled("BigWigsBarsIrregularBarEnd" .. text) then
+		self:CancelScheduledEvent("BigWigsBarsIrregularBarEnd" .. text)
+	end
+	
     if self.frames.emphasizeAnchor then
         if not self.frames.emphasizeAnchor.moduleBars[module] then 
             self.frames.emphasizeAnchor.moduleBars[module] = {} 
@@ -563,9 +571,17 @@ end
 
 function BigWigsBars:BigWigs_StopBar(module, text)
     if not text and type(text) ~= "string" then return end    
+	
+	-- reset irregular bar
+	if self:IsEventScheduled("BigWigsBarsIrregularBar" .. text) then
+		self:CancelScheduledEvent("BigWigsBarsIrregularBar" .. text)
+	end
+	if self:IsEventScheduled("BigWigsBarsIrregularBarEnd" .. text) then
+		self:CancelScheduledEvent("BigWigsBarsIrregularBarEnd" .. text)
+	end
+	
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
 	if self.frames.emphasizeAnchor and self.frames.emphasizeAnchor.moduleBars[module] then
-		local id = "BigWigsBar "..text
-
 		if self.frames.emphasizeAnchor.movingBars[id] then
 			self.frames.emphasizeAnchor.movingBars[id] = del(self.frames.emphasizeAnchor.movingBars[id])
 		end
@@ -588,11 +604,11 @@ function BigWigsBars:BigWigs_StopBar(module, text)
 		self.frames.emphasizeAnchor.moduleBars[module][id] = nil
 	end
     
-	module:UnregisterCandyBar("BigWigsBar "..text)
+	module:UnregisterCandyBar(id)
 end
 
 function BigWigsBars:GetBarStatus(module, text)
-    local id = "BigWigsBar " .. text
+    local id = self:GetBarId(module, text) -- "BigWigsBar " .. text
     local registered, time, elapsed, running = self:CandyBarStatus(id)
     return registered, time, elapsed, running
 end
@@ -624,11 +640,11 @@ function BigWigsBars:StartIrregularBar(module, text, minTime, maxTime, icon, oth
 		self:SetCandyBarTimeLeft(id, time)
 
 		-- unregister bar after the maximum time
-		self:ScheduleEvent("BigWigsBarsIrregularBarEnd", "BigWigs_StopBar", time, self, text)
+		self:ScheduleEvent("BigWigsBarsIrregularBarEnd" .. text, "BigWigs_StopBar", time, self, text)
 	end
 
 	-- show the irregularity after the minimum amount of time
-	self:ScheduleEvent("BigWigsBarsIrregularBar", Irregularity, minTime, self, text, maxTime - minTime)
+	self:ScheduleEvent("BigWigsBarsIrregularBar" .. text, Irregularity, minTime, self, text, maxTime - minTime)
 end
 
 local counterBarCache = {
@@ -636,7 +652,7 @@ local counterBarCache = {
 }
 function BigWigsBars:BigWigs_StartCounterBar(module, text, max, icon, bar, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	if not text then return end
-	local id = "BigWigsBar "..text
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
 	BigWigsBars:BigWigs_StartBar(module, text, max, icon, bar, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	module:PauseCandyBar(id)
 	module:SetCandyBarTimeFormat(id, function(t) return string.format("%d", t) end)
@@ -652,7 +668,7 @@ end
 
 function BigWigsBars:BigWigs_SetCounterBar(module, text, value)
 	if (not text) or (value == nil) or (value < 0) then return end
-	local id = "BigWigsBar "..text
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
 	local bar = candybar.var.handlers[id]
 	if not bar then return end
 	bar.elapsed = value
@@ -705,7 +721,7 @@ function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3
 		icon = "Interface\\Icons\\spell_shadow_metamorphosis"
 	end
 
-	local id = "BigWigsBar "..text
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
     if not self.frames.hpAnchor then self:SetupHPBarFrame() end
             
 	local bc, balpha, txtc
@@ -784,7 +800,7 @@ end
 
 function BigWigsBars:BigWigs_SetHPBar(module, text, value)
 	if (not text) or (value == nil) or (value < 0) then return end
-	local id = "BigWigsBar "..text
+	local id = self:GetBarId(module, text) -- "BigWigsBar "..text
 	local bar = candybar.var.handlers[id]
 	if not bar then return end
 	bar.elapsed = value
