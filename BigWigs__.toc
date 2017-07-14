@@ -91,36 +91,14 @@ Plugins\Farclip.lua
 # Multi Server Support: Register Server
 ServerProjects\Classic-WoW\Classic-WoW.lua
 
-# Zul'Gurub
-Raids\ZG\Arlokk.lua
-Raids\ZG\Jeklik.lua
-Raids\ZG\Marli.lua
-Raids\ZG\Venoxis.lua
-Raids\ZG\Hakkar.lua
-Raids\ZG\Mandokir.lua
-Raids\ZG\Jindo.lua
-Raids\ZG\Thekal.lua
-Raids\ZG\Grilek.lua
-Raids\ZG\Renataki.lua
-Raids\ZG\Hazzarah.lua
-Raids\ZG\Wushoolay.lua
-Raids\ZG\Gahzranka.lua
-
-# AQ20
-Raids\AQ20\Ayamiss.lua
-Raids\AQ20\Buru.lua
-Raids\AQ20\GeneralRajaxx.lua
-Raids\AQ20\Guardians.lua
-Raids\AQ20\Ossirian.lua
-Raids\AQ20\Moam.lua
-Raids\AQ20\Kurinaxx.lua
-
 
 # AQ40
 Raids\AQ40\Core.lua
 Raids\AQ40\Twins\I18n.lua
 Raids\AQ40\Twins\Core.lua
 Raids\AQ40\Twins\Default.lua
+
+
 
 Raids\AQ40\Skeram.lua
 Raids\AQ40\BugFamily.lua
@@ -132,58 +110,6 @@ Raids\AQ40\Defenders.lua
 #Raids\AQ40\Twins.lua
 Raids\AQ40\Cthun.lua
 Raids\AQ40\Viscidus.lua
-
-# BWL
-Raids\BWL\Chromaggus.lua
-Raids\BWL\Ebonroc.lua
-Raids\BWL\Firemaw.lua
-Raids\BWL\Flamegor.lua
-Raids\BWL\Nefarian.lua
-Raids\BWL\Vaelastrasz.lua
-Raids\BWL\Broodlord.lua
-Raids\BWL\Razorgore.lua
-
-# MC
-Raids\MC\Lucifron.lua
-Raids\MC\BaronGeddon.lua
-Raids\MC\Gehennas.lua
-Raids\MC\Magmadar.lua
-Raids\MC\Majordomo.lua
-Raids\MC\Ragnaros.lua
-Raids\MC\Shazzrah.lua
-Raids\MC\Garr.lua
-Raids\MC\Sulfuron.lua
-Raids\MC\Golemagg.lua
-
-# Onyxia
-Raids\Onyxia\Onyxia.lua
-
-# Naxxramas
-Raids\Naxxramas\Anubrekhan.lua
-Raids\Naxxramas\Gluth.lua
-Raids\Naxxramas\Razuvious.lua
-Raids\Naxxramas\Noth.lua
-Raids\Naxxramas\Faerlina.lua
-Raids\Naxxramas\Maexxna.lua
-Raids\Naxxramas\Patchwerk.lua
-Raids\Naxxramas\Grobbulus.lua
-Raids\Naxxramas\Thaddius.lua
-Raids\Naxxramas\Heigan.lua
-Raids\Naxxramas\Gothik.lua
-Raids\Naxxramas\Loatheb.lua
-Raids\Naxxramas\Horsemen.lua
-Raids\Naxxramas\Sapphiron.lua
-Raids\Naxxramas\Kelthuzad.lua
-
-# Open World Bosses
-Raids\Other\Azuregos.lua
-Raids\Other\Kazzak.lua
-Raids\Other\Emeriss.lua
-Raids\Other\Lethon.lua
-Raids\Other\Taerar.lua
-Raids\Other\Ysondre.lua
-
-#Raids\Other\Boar.lua
 
 # Multi Server Support: Boss modules
 #ServerProjects\Classic-WoW.xml
