@@ -111,7 +111,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20006 -- To be overridden by the module!
+module.revision = 20012 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"whirlwind", "adds", "enrage", "berserk", "bosskill"}
@@ -122,7 +122,10 @@ local timer = {
 	berserk = 600,
 	firstWhirlwind = 20.3,
 	whirlwind = 15,
-	nextWhirlwind = 28,
+	nextWhirlwind = {
+		min = 25,
+		max = 30
+	},
 }
 local icon = {
 	berserk = "Spell_Shadow_UnholyFrenzy",
@@ -240,8 +243,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Message(L["whirlwindonwarn"], "Important")
 		self:Bar(L["whirlwindbartext"], timer.whirlwind, icon.whirlwind)
 		
-		self:Bar(L["whirlwindnextbartext"], timer.nextWhirlwind, icon.whirlwind)
-		self:DelayedMessage(timer.nextWhirlwind - 3, L["whirlwindinctext"], "Attention", true, "Alarm")
+		self:IrregularBar(L["whirlwindnextbartext"], timer.nextWhirlwind.min, timer.nextWhirlwind.max, icon.whirlwind)
+		self:DelayedMessage(timer.nextWhirlwind.min - 3, L["whirlwindinctext"], "Attention", true, "Alarm")
 	elseif sync == syncName.whirlwindOver and self.db.profile.whirlwind then
 		self:RemoveBar(L["whirlwindbartext"])
 		self:Message(L["whirlwindoffwarn"], "Attention")
