@@ -318,11 +318,13 @@ function BigWigs.modulePrototype:Engage()
     end
 end
 function BigWigs.modulePrototype:Disengage()
-    if BigWigs:IsModuleActive(self) then
+    -- you already released but someone else was still sending syncs
+    self:CancelAllScheduledEvents()
+	
+	if BigWigs:IsModuleActive(self) then
         self.engaged = false
         self.started = false
         
-        self:CancelAllScheduledEvents()
         
         self:KTM_ClearTarget()
 
