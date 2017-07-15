@@ -7,10 +7,13 @@ assert(BigWigs, "BigWigs not found!")
 	Servers:
 		- Nefarian
 		- Open-Beta (Naxxramas)
+
+	Server name has to be the value you get from GetRealmName()
 ]]
+
 local project = "Classic-WoW"
 BigWigs:RegisterServer(project, "Nefarian")
 BigWigs:RegisterServer(project, "Open-Beta (Naxxramas)")
 
 -- Supported Boss Modules
-BigWigs:SetServerBossSupport(project, "The Twin Emperors")
+BigWigs:ServerProjectSupportsBoss(project, "The Twin Emperors")

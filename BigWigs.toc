@@ -89,6 +89,7 @@ Plugins\Ignite.lua
 Plugins\Farclip.lua
 
 # Multi Server Support: Register Server
+ServerProjects\OtherProject\OtherProject.lua
 ServerProjects\Classic-WoW\Classic-WoW.lua
 
 # Zul'Gurub
@@ -186,5 +187,5 @@ Raids\Other\Ysondre.lua
 #Raids\Other\Boar.lua
 
 # Multi Server Support: Boss modules
-#ServerProjects\Classic-WoW.xml
 ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
+ServerProjects\OtherProject\Raids\AQ40\Twins.lua

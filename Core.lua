@@ -264,6 +264,17 @@ BigWigs.server = {}
 ]]
 function BigWigs:RegisterServer(serverProjectName, serverName)
 	if serverProjectName and serverName then
+		-- check if server was already registered
+		for aServerProjectName, aServerProject in pairs(BigWigs.server) do
+			if aServerProject.serverList[serverName] then
+				local function warning()
+					BigWigs:Print("Server already registered by project " .. aServerProjectName)
+				end
+				BigWigs:ScheduleEvent("BigWigsRegisterServer"..serverProjectName, warning, 2)
+				return
+			end
+		end
+
 		-- server project already registered
 		if BigWigs.server[serverProjectName] then
 			-- server not registered
@@ -281,33 +292,8 @@ function BigWigs:RegisterServer(serverProjectName, serverName)
 	end
 end
 
-function BigWigs:IsServerSupported()
-	local serverName = GetRealmName()
-	for aProjectName, aProject in pairs(BigWigs.server) do
-		if aProject.serverList[serverName] then
-			return true
-		end
-	end
-	
-	return false
-end
-
-function BigWigs:GetServerProjectName()
-	local serverName = GetRealmName()
-	if serverName then
-		for aProjectName, aProject in pairs(BigWigs.server) do
-			if aProject.serverList[serverName] then
-				return aProjectName
-			end
-		end
-	end
-	
-	return nil
-end
-
-function BigWigs:SetServerBossSupport(serverProjectName, bossName)
-	--local projectName BigWigs:GetServerProjectName()
-	if serverProjectName and BigWigs.server[serverProjectName] then
+function BigWigs:ServerProjectSupportsBoss(serverProjectName, bossName)
+	if serverProjectName and bossName and BigWigs.server[serverProjectName] then
 		BigWigs.server[serverProjectName].supportedBosses[bossName] = true
 	else
 		if not serverProjectName then
@@ -316,20 +302,88 @@ function BigWigs:SetServerBossSupport(serverProjectName, bossName)
 		if not bossName then
 			bossName = "nil"
 		end
-		BigWigs:Print("Unknown server. Could not SetServerBossSupport for server " .. serverProjectName .. " and boss " .. bossName .. ". Please register server first using BigWigs:RegisterServer(serverProjectName, serverName)")
+		BigWigs:Print("(ServerProjectSupportsBoss) Unknown server. Could not add support for server " .. serverProjectName .. " and boss " .. bossName .. ". Please register server first using BigWigs:RegisterServer(serverProjectName, serverName)")
 	end
 end
-function BigWigs:GetServerBossSupport(bossName)
-	local projectName = BigWigs:GetServerProjectName()
-	if projectName then
-		if BigWigs.server[projectName].supportedBosses[bossName] then
-			return true
-		else
-			return false
+
+--[[
+--	returns true if the current server is registered for the serverProject
+ ]]
+function BigWigs:IsServerRegisteredForServerProject(serverProjectName)
+	if serverProjectName then
+		-- project registered
+		if BigWigs.server[serverProjectName] then
+			-- server registered for project
+			if BigWigs.server[serverProjectName].serverList[GetRealmName()] then
+				return true
+			end
 		end
-	else
-		return false
 	end
+
+	return false
+end
+
+--[[
+-- returns true if the boss is supported by the server project
+ ]]
+function BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName)
+	if bossName and serverProjectName then
+		-- project registered
+		if BigWigs.server[serverProjectName] then
+			-- boss registered for project
+			if BigWigs.server[serverProjectName].supportedBosses[bossName] then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+--[[
+	returns nil if no server project registered the current server
+	returns the server project as string if exactly one server project registered the current server
+	returns a table of strings of all the server projects that registered the current server
+ ]]
+function BigWigs:IsServerRegisteredForAnyServerProject()
+	-- any server project registered
+	local project = nil
+	if BigWigs.server then
+		local currentServer = GetRealmName()
+		for aServerProjectName, aServerProject in pairs(BigWigs.server) do
+			if aServerProject.serverList[currentServer] then
+				if project == nil then
+					project = aServerProjectName
+				elseif type(project) == "table" then
+					table.insert(project, aServerProjectName)
+				else
+					local tmp = project
+					project = {}
+					table.insert(project, tmp)
+					table.insert(project, aServerProjectName)
+				end
+			end
+		end
+	end
+
+	return project
+end
+
+function BigWigs:IsBossSupportedByAnyServerProject(bossName)
+	if bossName then
+		if BigWigs.server then
+			local currentServer = GetRealmName()
+			for aServerProjectName, aServerProject in pairs(BigWigs.server) do
+				if aServerProject.serverList[currentServer] then
+					if aServerProject.supportedBosses[bossName] then
+						return true
+					end
+				end
+			end
+		end
+	end
+
+	return false
 end
 
 

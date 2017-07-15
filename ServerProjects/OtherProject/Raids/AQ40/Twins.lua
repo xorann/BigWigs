@@ -1,9 +1,9 @@
 
 local bossName = "The Twin Emperors"
-local serverProjectName = "Classic-WoW"
+local serverProjectName = "OtherProject"
 if BigWigs:IsServerRegisteredForServerProject(serverProjectName) and BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
 
-	--BigWigs:Print("classic-wow twins")
+	BigWigs:Print("OtherProject twins")
 
 	local module = BigWigs:GetModule(bossName)
 	local L = BigWigs.I18n[bossName]
