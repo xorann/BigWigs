@@ -3,12 +3,13 @@
 ----------------------------
 --      Localization      --
 ----------------------------
-local bossName = "The Twin Emperors"
+local bossName = BigWigs.bossmods.aq40.twins
 local L = BigWigs.I18n[bossName]
 
 L:RegisterTranslations("enUS", function() return {
 	cmd = "Twins",
 
+	-- commands
 	bug_cmd = "bug",
 	bug_name = "Exploding Bug Alert",
 	bug_desc = "Warn for exploding bugs",
@@ -29,46 +30,49 @@ L:RegisterTranslations("enUS", function() return {
     blizzard_name = "Blizzard Warning",
     blizzard_desc = "Shows an Icon if you are standing in a Blizzard",
 
-	porttrigger = "casts Twin Teleport.",
-	portwarn = "Teleport!",
-	portdelaywarn = "Teleport in 5 seconds!",
-	portdelaywarn10 = "Teleport in 10 seconds!",
-	bartext = "Teleport",
-	explodebugtrigger = "gains Explode Bug",
-	explodebugwarn = "Bug exploding nearby!",
-	enragetrigger = "becomes enraged.",
-	--trigger = "Blizzard",
-	enragewarn = "Twins are enraged",
-	healtrigger1 = "'s Heal Brother heals",
-	healtrigger2 = " Heal Brother heals",
-	healwarn = "Casting Heal!",
-	startwarn = "Twin Emperors engaged! Enrage in 15 minutes!",
-	enragebartext = "Enrage",
-	warn1 = "Enrage in 10 minutes",
-	warn2 = "Enrage in 5 minutes",
-	warn3 = "Enrage in 3 minutes",
-	warn4 = "Enrage in 90 seconds",
-	warn5 = "Enrage in 60 seconds",
-	warn6 = "Enrage in 30 seconds",
-	warn7 = "Enrage in 10 seconds",
-    
-    blizzard_trigger = "You are afflicted by Blizzard.",
-    blizzard_gone_trigger = "Blizzard fades from you",
-	blizzard_warn = "Run from Blizzard!",
-            
-            
-    pull_trigger1 = "Ah, lambs to the slaughter.",
-    pull_trigger2 = "Prepare to embrace oblivion!",
-    pull_trigger3 = "Join me brother, there is blood to be shed.",
-    pull_trigger4 = "To decorate our halls.",
-    pull_trigger5 = "Let none survive!",
-    pull_trigger6 = "It's too late to turn away.",
-    pull_trigger7 = "Look brother, fresh blood.",
-    pull_trigger8 = "Like a fly in a web.",
-    pull_trigger9 = "Shall be your undoing!",
-    pull_trigger10 = "Your brash arrogance",
-            
-    kill_trigger = "My brother...NO!",
+	-- triggers
+	trigger_teleport = "casts Twin Teleport.",
+	trigger_heal1 = "'s Heal Brother heals",
+	trigger_heal2 = " Heal Brother heals",
+	trigger_explosion = "gains Explode Bug",
+	trigger_enrage = "becomes enraged.",
+	trigger_blizzardGain = "You are afflicted by Blizzard.",
+	trigger_blizzard_gone = "Blizzard fades from you",
+
+	trigger_pull1 = "Ah, lambs to the slaughter.",
+	trigger_pull2 = "Prepare to embrace oblivion!",
+	trigger_pull3 = "Join me brother, there is blood to be shed.",
+	trigger_pull4 = "To decorate our halls.",
+	trigger_pull5 = "Let none survive!",
+	trigger_pull6 = "It's too late to turn away.",
+	trigger_pull7 = "Look brother, fresh blood.",
+	trigger_pull8 = "Like a fly in a web.",
+	trigger_pull9 = "Shall be your undoing!",
+	trigger_pull10 = "Your brash arrogance",
+
+	trigger_kill = "My brother...NO!",
+
+	-- messages
+	msg_teleport = "Teleport!",
+	msg_teleport5 = "Teleport in 5 seconds!",
+	msg_teleport10 = "Teleport in 10 seconds!",
+	msg_explosion = "Bug exploding nearby!",
+	msg_enrage = "Twins are enraged",
+	msg_heal = "Casting Heal!",
+	msg_engage = "Twin Emperors engaged! Enrage in 15 minutes!",
+	msg_blizzard = "Run from Blizzard!",
+
+	msg_enrage10m = "Enrage in 10 minutes",
+	msg_enrage5m = "Enrage in 5 minutes",
+	msg_enrage3m = "Enrage in 3 minutes",
+	msg_enrage90 = "Enrage in 90 seconds",
+	msg_enrage60 = "Enrage in 60 seconds",
+	msg_enrage30 = "Enrage in 30 seconds",
+	msg_enrage10 = "Enrage in 10 seconds",
+
+	-- bars
+	bar_teleport = "Teleport",
+	bar_enrage = "Enrage",
 } end )
 
 L:RegisterTranslations("deDE", function() return {

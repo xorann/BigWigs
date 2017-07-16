@@ -88,9 +88,7 @@ Plugins\Enrage.lua
 Plugins\Ignite.lua
 Plugins\Farclip.lua
 
-# Multi Server Support: Register Server
-ServerProjects\OtherProject\OtherProject.lua
-ServerProjects\Classic-WoW\Classic-WoW.lua
+
 
 # Zul'Gurub
 Raids\ZG\Arlokk.lua
@@ -121,7 +119,6 @@ Raids\AQ20\Kurinaxx.lua
 Raids\AQ40\Core.lua
 Raids\AQ40\Twins\I18n.lua
 Raids\AQ40\Twins\Core.lua
-Raids\AQ40\Twins\Default.lua
 
 Raids\AQ40\Skeram.lua
 Raids\AQ40\BugFamily.lua
@@ -186,6 +183,15 @@ Raids\Other\Ysondre.lua
 
 #Raids\Other\Boar.lua
 
-# Multi Server Support: Boss modules
-ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
+
+# Multi Server Support: Register Server
+ServerProjects\OtherProject\OtherProject.lua
 ServerProjects\OtherProject\Raids\AQ40\Twins.lua
+
+# Multi Server Support: Boss modules
+ServerProjects\Classic-WoW\Classic-WoW.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
+
+
+# Default Implementations
+Raids\AQ40\Twins\Default.lua

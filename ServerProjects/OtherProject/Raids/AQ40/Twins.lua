@@ -12,7 +12,7 @@ if BigWigs:IsServerRegisteredForServerProject(serverProjectName) and BigWigs:IsB
 	local syncName = module.syncName
 
 	-- module variables
-	module.revision = 20012 -- server specific revision number?
+	module.revision = 20013
 
 
 	-- timers should be overridden

@@ -200,51 +200,6 @@ end
 
 
 ------------------------------
---      AceModuleCore       --
-------------------------------
-
-local function GetModuleSuffix()
-	local suffix = ""
-	if BigWigs:IsServerSupported() then
-		suffix = BigWigs:GetServerProjectName()
-	end
-	
-	return suffix
-end
-
---[[
-function BigWigs:NewCustomModule(moduleName)
-	local suffix = ""
-	--local suffix = GetModuleSuffix()
-	return self:NewModule(moduleName .. suffix)
-end
-function BigWigs:GetCustomModule(moduleName)
-	local suffix = ""
-	--local suffix = GetModuleSuffix()
-	return self:GetModule(moduleName .. suffix)
-end
-function BigWigs:IsCustomModule(moduleName)
-	local suffix = ""
-	--local suffix = GetModuleSuffix()
-	return self:IsModule(moduleName .. suffix)
-end
-function BigWigs:IsCustomModuleActive(moduleName)
-	local suffix = ""
-	--local suffix = GetModuleSuffix()
-	return self:IsModuleActive(moduleName .. suffix)
-end
-function BigWigs:ToggleCustomModuleActive(module)
-	if type(module) == "string" then
-		local suffix = ""
-		--local suffix = GetModuleSuffix()
-		return self:ToggleModuleActive(module .. suffix)
-	else
-		return self:ToggleModuleActive(module.name)
-	end
-end]]
-
-
-------------------------------
 -- Multi Server Support		--
 ------------------------------
 
@@ -440,6 +395,18 @@ end
 --------------------------------------
 -- Generic Boss Module Functions	--
 --------------------------------------
+
+--[[
+	BigWigs.bossmods = {
+		aq40 = {
+			twins = "The Twin Emperors",
+			cthun = "C'Thun"
+		}
+	}
+
+	BigWigs.bossmods.aq40.twins
+ ]]
+BigWigs.bossmods = {}
 
 function BigWigs:CheckForEngage(module)
     if module and module:IsBossModule() and not module.engaged then

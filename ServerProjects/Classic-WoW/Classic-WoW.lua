@@ -16,4 +16,4 @@ BigWigs:RegisterServer(project, "Nefarian")
 BigWigs:RegisterServer(project, "Open-Beta (Naxxramas)")
 
 -- Supported Boss Modules
-BigWigs:ServerProjectSupportsBoss(project, "The Twin Emperors")
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.twins)

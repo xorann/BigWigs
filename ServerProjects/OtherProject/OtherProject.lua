@@ -16,4 +16,4 @@ BigWigs:RegisterServer(project, "Nefarian2")
 BigWigs:RegisterServer(project, "OtherProjectServer2")
 
 -- Supported Boss Modules
-BigWigs:ServerProjectSupportsBoss(project, "The Twin Emperors")
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.twins)
