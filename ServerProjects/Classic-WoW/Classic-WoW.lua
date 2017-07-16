@@ -17,4 +17,6 @@ BigWigs:RegisterServer(project, "Open-Beta (Naxxramas)")
 
 -- Supported Boss Modules
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.skeram)
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.sartura)
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.fankriss)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.twins)

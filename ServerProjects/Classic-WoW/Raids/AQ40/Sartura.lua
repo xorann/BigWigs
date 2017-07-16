@@ -123,7 +123,7 @@ function module:TestModule()
 
 	module:TestModuleCore()
 
-	-- check trigger functions
+	-- check event handlers
 	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_whirlwindGain"])
 	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_enrage2"])
 	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_enrage"])

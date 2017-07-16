@@ -123,12 +123,12 @@ Raids\AQ40\Skeram\I18n.lua
 Raids\AQ40\Skeram\Core.lua
 Raids\AQ40\Sartura\I18n.lua
 Raids\AQ40\Sartura\Core.lua
+Raids\AQ40\Fankriss\I18n.lua
+Raids\AQ40\Fankriss\Core.lua
 Raids\AQ40\Twins\I18n.lua
 Raids\AQ40\Twins\Core.lua
 
 Raids\AQ40\BugFamily.lua
-Raids\AQ40\Sartura.lua
-Raids\AQ40\Fankriss.lua
 Raids\AQ40\Huhuran.lua
 Raids\AQ40\Ouro.lua
 Raids\AQ40\Defenders.lua
@@ -197,8 +197,10 @@ ServerProjects\OtherProject\Raids\AQ40\Twins.lua
 # Multi Server Support: Classic-WoW
 # ###################################
 ServerProjects\Classic-WoW\Classic-WoW.lua
+
 ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Fankriss.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 
 # ##################################
@@ -206,4 +208,5 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 # ##################################
 Raids\AQ40\Skeram\Default.lua
 Raids\AQ40\Sartura\Default.lua
+Raids\AQ40\Fankriss\Default.lua
 Raids\AQ40\Twins\Default.lua

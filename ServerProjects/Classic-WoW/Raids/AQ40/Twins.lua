@@ -135,7 +135,7 @@ function module:TestModule()
 
 	module:TestModuleCore()
 
-	-- check trigger functions
+	-- check event handlers
 	module:CheckForBossDeath(string.format(UNITDIESOTHER, veklor))
 	module:CheckForBossDeath(string.format(UNITDIESOTHER, veknilash))
 	module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(L["trigger_blizzardGain"])

@@ -130,7 +130,7 @@ function module:TestModule()
 
 	module:TestModuleCore()
 
-	-- check trigger functions
+	-- check event handlers
 	module:CheckForBossDeath(string.format(UNITDIESOTHER, module.translatedName))
 	module:Event(L["trigger_mcGainOther"])
 	module:Event(L["trigger_mcOtherGone"])
