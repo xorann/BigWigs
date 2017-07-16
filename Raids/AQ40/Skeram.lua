@@ -11,55 +11,64 @@ local module, L = BigWigs:ModuleDeclaration("The Prophet Skeram", "Ahn'Qiraj")
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	mcplayer = "You are afflicted by True Fulfillment.",
-	mcplayerother = "(.*) is afflicted by True Fulfillment.",
-	mcplayeryouend = "True Fulfillment fades from you.",
-	mcplayerotherend = "True Fulfillment fades from (.*).",
-	mcplayer_message = "You are mindcontrolled!",
-	mcplayerother_message = "%s is mindcontrolled!",
-	mindcontrol_bar = "MC: %s",
-	deathyou_trigger = "You die.",
-	deathother_trigger = "(.*) dies.",
-	splitsoon_message = "Split soon! Get ready!",
-	split_message = "Split!",
-	kill_trigger = "You only delay",
-
 	cmd = "Skeram",
-	
+
+	-- commands
 	mc_cmd = "mc",
 	mc_name = "Mind Control Alert",
 	mc_desc = "Warn for Mind Control",
-	
+
 	split_cmd = "split",
 	split_name = "Split Alert",
 	split_desc = "Warn before Splitting",
-    ["You have slain %s!"] = true,
+
+	-- triggers
+	trigger_mcGainPlayer = "You are afflicted by True Fulfillment.",
+	trigger_mcGainOther = "(.*) is afflicted by True Fulfillment.",
+	trigger_mcPlayerGone = "True Fulfillment fades from you.",
+	trigger_mcOtherGone = "True Fulfillment fades from (.*).",
+	trigger_deathPlayer = "You die.",
+	trigger_deathOther = "(.*) dies.",
+	["You have slain %s!"] = true,
+
+	-- messages
+	msg_mcPlayer = "You are mindcontrolled!",
+	msg_mcOther = "%s is mindcontrolled!",
+	msg_splitSoon = "Split soon! Get ready!",
+	msg_split = "Split!",
+
+	-- bars
+	bar_mc = "MC: %s",
+
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-	mcplayer = "Ihr seid von Wahre Erf\195\188llung betroffen.",
-	mcplayerother = "(.*) ist von Wahre Erf\195\188llung betroffen.",
-	mcplayeryouend = "Wahre Erf\195\188llung\' schwindet von Euch.",
-	mcplayerotherend = "Wahre Erf\195\188llung schwindet von (.*).",
-	mcplayer_message = "Ihr seid von Wahre Erf\195\188llung betroffen.",
-	mcplayerother_message = "%s steht unter Gedankenkontrolle!",
-	mindcontrol_bar = "GK: %s",
-	deathyou_trigger = "Du stirbst.",
-	deathother_trigger = "(.*) stirbt.",
-	splitsoon_message = "Abbilder bald! Sei bereit!",
-	split_message = "Abbilder!",
-	kill_trigger = "You only delay", -- translation missing
-	
-	cmd = "Skeram",
-
-	mc_cmd = "mc",
+	-- commands
 	mc_name = "Gedankenkontrolle",
-	mc_desc = "Warnen, wenn jemand \195\188bernommen ist",
+	mc_desc = "Warnen, wenn jemand übernommen ist",
 
-	split_cmd = "split",
 	split_name = "Abbilder",
 	split_desc = "Alarm vor der Aufteilung",
-    ["You have slain %s!"] = "Ihr habt %s getötet!",
+
+	-- triggers
+	trigger_mcGainPlayer = "Ihr seid von Wahre Erfüllung betroffen.",
+	trigger_mcGainOther = "(.*) ist von Wahre Erfüllung betroffen.",
+	trigger_mcPlayerGone = "Wahre Erfüllung\' schwindet von Euch.",
+	trigger_mcOtherGone = "Wahre Erfüllung schwindet von (.*).",
+	trigger_deathPlayer = "Du stirbst.",
+	trigger_deathOther = "(.*) stirbt.",
+
+	["You have slain %s!"] = "Ihr habt %s getötet!",
+
+	-- messages
+	msg_mcPlayer = "Ihr seid von Wahre Erfüllung betroffen.",
+	msg_mcOther = "%s steht unter Gedankenkontrolle!",
+	msg_splitSoon = "Abbilder bald! Sei bereit!",
+	msg_split = "Abbilder!",
+
+	-- bars
+	bar_mc = "GK: %s",
+
 } end )
 
 ---------------------------------
@@ -67,7 +76,7 @@ L:RegisterTranslations("deDE", function() return {
 ---------------------------------
 
 -- module variables
-module.revision = 20003 -- To be overridden by the module!
+module.revision = 20013 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"mc", "split", "bosskill"}
@@ -82,9 +91,15 @@ local icon = {
 local syncName = {
 	mc = "SkeramMC",
 	mcOver = "SkeramMCEnd",
+	split80 = "SkeramSplit80Soon",
+	split75 = "SkeramSplit75Now",
+	split55 = "SkeramSplit55Soon",
+	split50 = "SkeramSplit50Now",
+	split30 = "SkeramSplit30Soon",
+	split25 = "SkeramSplit25Now",
 }
 
-local splittime = false
+module.splittime = false
 
 
 ------------------------------
@@ -93,30 +108,29 @@ local splittime = false
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY", "Event")
 	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER", "Event")
 	--self:RegisterEvent("CHAT_MSG_COMBAT_FRIENDLY_DEATH", "Event")
-	--self:RegisterEvent("UNIT_HEALTH")
-	
-	--[[self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit80Soon", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit75Now", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit55Soon", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit50Now", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit30Soon", 100)
-	self:TriggerEvent("BigWigs_ThrottleSync", "SkeramSplit25Now", 100)]]
+	self:RegisterEvent("UNIT_HEALTH")
+
 	
 	self:ThrottleSync(1, syncName.mc)
 	self:ThrottleSync(1, syncName.mcOver)
+
+	self:ThrottleSync(100, syncName.split80)
+	self:ThrottleSync(100, syncName.split75)
+	self:ThrottleSync(100, syncName.split55)
+	self:ThrottleSync(100, syncName.split50)
+	self:ThrottleSync(100, syncName.split30)
+	self:ThrottleSync(100, syncName.split25)
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-	self.started = nil
-	splittime = false
+	module.splittime = false
 end
 
 -- called after boss is engaged
@@ -174,14 +188,14 @@ function module:CheckForBossDeath(msg)
 end
 
 function module:Event(msg)
-	local _,_, mindcontrolother, mctype = string.find(msg, L["mcplayerother"])
-	local _,_, mindcontrolotherend, mctype = string.find(msg, L["mcplayerotherend"])
-	local _,_, mindcontrolotherdeath,mctype = string.find(msg, L["deathother_trigger"])
-	if string.find(msg, L["mcplayer"]) then
+	local _,_, mindcontrolother, mctype = string.find(msg, L["trigger_mcGainOther"])
+	local _,_, mindcontrolotherend, mctype = string.find(msg, L["trigger_mcOtherGone"])
+	local _,_, mindcontrolotherdeath,mctype = string.find(msg, L["trigger_deathOther"])
+	if string.find(msg, L["trigger_mcGainPlayer"]) then
 		self:Sync(syncName.mc .. " " .. UnitName("player"))
-	elseif string.find(msg, L["mcplayeryouend"]) then
+	elseif string.find(msg, L["trigger_mcPlayerGone"]) then
 		self:Sync(syncName.mcOver .. " " .. UnitName("player"))
-	elseif string.find(msg, L["deathyou_trigger"]) then
+	elseif string.find(msg, L["trigger_deathPlayer"]) then
 		self:Sync(syncName.mcOver .. " " .. UnitName("player"))
 	elseif mindcontrolother then
 		self:Sync(syncName.mc .. " " .. mindcontrolother)
@@ -192,86 +206,83 @@ function module:Event(msg)
 	end
 end
 
-function module:CHAT_MSG_MONSTER_YELL(msg)
-    if string.find(msg, L["kill_trigger"]) then
-		BigWigs:Debug("yell kill trigger")
-		--if self.db.profile.bosskill then
-		--	self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory")
-		--end
-		--self:TriggerEvent("BigWigs_RemoveRaidIcon")
-		--self.core:ToggleModuleActive(self, false)
-		--self:SendBossDeathSync()
-	end
-end
-
---[[function module:UNIT_HEALTH(arg1)
+function module:UNIT_HEALTH(arg1)
 	if UnitName(arg1) == boss then
 		local health = UnitHealth(arg1)
 		local maxhealth = UnitHealthMax(arg1)
-		if (health > 424782 and health <= 453100) and maxhealth == 566375 and not splittime then
+		if (health > 424782 and health <= 453100) and maxhealth == 566375 and not module.splittime then
 			self:Sync("SkeramSplit80Soon")
-		elseif (health > 283188 and health <= 311507) and maxhealth == 566375 and not splittime then
+		elseif (health > 283188 and health <= 311507) and maxhealth == 566375 and not module.splittime then
 			self:Sync("SkeramSplit55Soon")
-		elseif (health > 141594 and health <= 169913) and maxhealth == 566375 and not splittime then
+		elseif (health > 141594 and health <= 169913) and maxhealth == 566375 and not module.splittime then
 			self:Sync("SkeramSplit30Soon")
-		elseif (health > 311508 and health <= 424781) and maxhealth == 566375 and splittime then
+		elseif (health > 311508 and health <= 424781) and maxhealth == 566375 and module.splittime then
 			self:Sync("SkeramSplit75Now")
-		elseif (health > 169914 and health <= 283187) and maxhealth == 566375 and splittime then
+		elseif (health > 169914 and health <= 283187) and maxhealth == 566375 and module.splittime then
 			self:Sync("SkeramSplit50Now")
-		elseif (health > 1 and health <= 141593) and maxhealth == 566375 and splittime then
+		elseif (health > 1 and health <= 141593) and maxhealth == 566375 and module.splittime then
 			self:Sync("SkeramSplit25Now")
 		end
 	end
-end]]
+end
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+
+function module:BigWigs_RecvSync(sync, rest, nick)
+    if sync == syncName.split80 then
+		self:SplitSoon()
+	elseif sync == syncName.split55 then
+		self:SplitSoon()
+	elseif sync == syncName.split30 then
+		self:SplitSoon()
+	elseif sync == syncName.split75 then
+		self:Split()
+	elseif sync == syncName.split50 then
+		self:Split()
+	elseif sync == syncName.split25 then
+		self:Split()
+	elseif sync == syncName.mc then
+		self:MindControl(rest)
+	elseif sync == syncName.mcOver then
+		self:MindControlGone(rest)
+	end
+end
+
 
 ------------------------------
 --      Sync Handlers	    --
 ------------------------------
 
-function module:BigWigs_RecvSync(sync, rest, nick)
-    --[[if sync == "SkeramSplit80Soon" then
-		splittime = true
-		if self.db.profile.split then
-			self:Message(L["splitsoon_message"], "Urgent")
+function module:MindControl(name)
+	if self.db.profile.mc then
+		if name == UnitName("player") then
+			self:Bar(string.format(L["bar_mc"], UnitName("player")), timer.mc, icon.mc, true, "White")
+			self:Message(L["msg_mcPlayer"], "Attention")
+		else
+			self:Bar(string.format(L["bar_mc"], rest), timer.mc, icon.mc, true, "White")
+			self:Message(string.format(L["msg_mcOther"], rest), "Urgent")
 		end
-	elseif sync == "SkeramSplit55Soon" then
-		splittime = true
-		if self.db.profile.split then
-			self:Message(L["splitsoon_message"], "Urgent")
-		end
-	elseif sync == "SkeramSplit30Soon" then
-		splittime = true
-		if self.db.profile.split then
-			self:Message(L["splitsoon_message"], "Urgent")
-		end
-	elseif sync == "SkeramSplit75Now" then
-		splittime = false
-		if self.db.profile.split then
-			self:Message(L["split_message"], "Important", "Alarm")
-		end
-	elseif sync == "SkeramSplit50Now" then
-		splittime = false
-		if self.db.profile.split then
-			self:Message(L["split_message"], "Important", "Alarm")
-		end
-	elseif sync == "SkeramSplit25Now" then
-		splittime = false
-		if self.db.profile.split then
-			self:Message(L["split_message"], "Important", "Alarm")
-		end
-	else]]if sync == syncName.mc then
-		if self.db.profile.mc then
-			if rest == UnitName("player") then
-				self:Bar(string.format(L["mindcontrol_bar"], UnitName("player")), timer.mc, icon.mc, true, "White")
-				self:Message(L["mcplayer_message"], "Attention")
-			else
-				self:Bar(string.format(L["mindcontrol_bar"], rest), timer.mc, icon.mc, true, "White")
-				self:Message(string.format(L["mcplayerother_message"], rest), "Urgent")
-			end
-		end
-	elseif sync == syncName.mcOver then
-		if self.db.profile.mc then
-			self:RemoveBar(string.format(L["mindcontrol_bar"], rest))
-		end
+	end
+end
+
+function module:MindControlGone(name)
+	if self.db.profile.mc then
+		self:RemoveBar(string.format(L["bar_mc"], name))
+	end
+end
+
+function module:SplitSoon()
+	module.splittime = true
+	if self.db.profile.split then
+		self:Message(L["msg_splitSoon"], "Urgent")
+	end
+end
+
+function module:Split()
+	module.splittime = false
+	if self.db.profile.split then
+		self:Message(L["msg_split"], "Important", "Alarm")
 	end
 end

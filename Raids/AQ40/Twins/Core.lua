@@ -1,14 +1,13 @@
 
 ------------------------------
---      Are you local?      --
+--      Variables      --
 ------------------------------
 
 local bossName = BigWigs.bossmods.aq40.twins
+local module = BigWigs:GetModule(bossName)
 local L = BigWigs.i18n[bossName]
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
-local module = BigWigs:GetModule(bossName)
-local L = BigWigs.I18n[bossName]
 
 -- module variables
 module.revision = 20012 -- To be overridden by the module!
@@ -83,7 +82,9 @@ end
 
 function module:WarnForEnrage()
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
+		self:Bar(L["bar_enrage"],
+			timer.enrage,
+			icon.enrage)
 
 		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Attention", nil, nil, true)
@@ -117,3 +118,20 @@ function module:BugExplosion()
 		self:Message(L["msg_explosion"], "Personal", true)
 	end
 end
+
+
+----------------------------------
+-- 		Module Test Function    --
+----------------------------------
+
+-- automated test
+function module:TestModuleCore()
+	-- check core functions
+	module:Teleport()
+	module:Heal()
+	module:WarnForEnrage()
+	module:BlizzardGain()
+	module:BlizzardGone()
+	module:BugExplosion()
+end
+

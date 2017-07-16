@@ -3,7 +3,7 @@ assert( BigWigs, "BigWigs not found!")
 
 local BB = BigWigs.BabbleBoss
 local BZ = BigWigs.BabbleZone
-local L = BigWigs.I18n["Core"]
+local L = BigWigs.i18n["Core"]
 
 --------------------------------
 --      Module Prototype      --
@@ -196,9 +196,11 @@ function BigWigs.modulePrototype:TestDisable()
 	BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
 	BigWigs:DisableModule(self:ToString())
 end
-function BigWigs.modulePrototype:ModuleTest()
+function BigWigs.modulePrototype:TestModule()
 end
-function BigWigs.modulePrototype:Test()
+function BigWigs.modulePrototype:TestModuleCore()
+end
+function BigWigs.modulePrototype:TestVisual()
 end
 
 ------------------------------
@@ -344,7 +346,7 @@ function BigWigs:ModuleDeclaration(bossName, zoneName)
 	translatedName = AceLibrary("Babble-Boss-2.2")[bossName]
     local module = BigWigs:NewModule(translatedName)
     --local L = AceLibrary("AceLocale-2.2"):new("BigWigs" .. translatedName)
-	BigWigs.I18n[bossName] = AceLibrary("AceLocale-2.2"):new("BigWigs" .. module.name)
+	BigWigs.i18n[bossName] = AceLibrary("AceLocale-2.2"):new("BigWigs" .. module.name)
 	module.translatedName = translatedName
 	
 	--local name = string.gsub(bossName, "%s", "") -- untranslated, unique string
@@ -368,7 +370,7 @@ function BigWigs:ModuleDeclaration(bossName, zoneName)
     end
     
     --return module, L
-	return module, BigWigs.I18n[bossName]
+	return module, BigWigs.i18n[bossName]
 end
 
 function BigWigs:RegisterModule(name, module)
@@ -600,10 +602,10 @@ end
 function BigWigs:Test()
 	local count = 0
 	for name, module in self:IterateModules() do
-		local status, retval = pcall(module.ModuleTest)
+		local status, retval = pcall(module.TestModule)
 		if not status then
 			count = count + 1
-			BigWigs:Print("|cffff0000" .. name .. "|r ModuleTest |cffff0000failed:|r " .. retval)
+			BigWigs:Print("|cffff0000" .. name .. "|r TestModule |cffff0000failed:|r " .. retval)
 		end
 	end
 

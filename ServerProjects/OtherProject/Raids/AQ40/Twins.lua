@@ -9,7 +9,7 @@ BigWigs:Print("OtherProject twins")
 
 
 local module = BigWigs:GetModule(bossName)
-local L = BigWigs.I18n[bossName]
+local L = BigWigs.i18n[bossName]
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
 local timer = module.timer
@@ -129,18 +129,12 @@ end
 ----------------------------------
 
 -- automated test
-function module:ModuleTest()
+function module:TestModule()
 	module:OnEnable()
 	module:OnSetup()
 	module:OnEngage()
 
-	-- check every core function
-	module:Teleport()
-	module:Heal()
-	module:WarnForEnrage()
-	module:BlizzardGain()
-	module:BlizzardGone()
-	module:BugExplosion()
+	module:TestModuleCore()
 
 	-- check trigger functions
 	module:CheckForBossDeath(string.format(UNITDIESOTHER, veklor))
@@ -158,7 +152,7 @@ function module:ModuleTest()
 end
 
 -- visual test
-function module:Test()
+function module:TestVisual()
 	-- /run local m=BigWigs:GetModule("The Twin Emperors");m:Test()
 	local function TestTeleport()
 		self:Teleport()

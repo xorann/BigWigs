@@ -4,7 +4,7 @@
 --      Localization      --
 ----------------------------
 local bossName = BigWigs.bossmods.aq40.twins
-local L = BigWigs.I18n[bossName]
+local L = BigWigs.i18n[bossName]
 
 L:RegisterTranslations("enUS", function() return {
 	cmd = "Twins",
