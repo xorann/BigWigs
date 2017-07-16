@@ -1,4 +1,3 @@
-
 assert(BigWigs, "BigWigs not found!")
 
 --[[
@@ -19,4 +18,5 @@ BigWigs:RegisterServer(project, "Open-Beta (Naxxramas)")
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.skeram)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.sartura)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.fankriss)
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.huhuran)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.twins)

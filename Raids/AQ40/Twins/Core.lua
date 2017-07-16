@@ -77,7 +77,7 @@ function module:Heal()
 end
 
 ------------------------------
---      Utility			    --
+-- Utility			    	--
 ------------------------------
 
 function module:WarnForEnrage()

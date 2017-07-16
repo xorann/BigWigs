@@ -199,7 +199,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == syncName.frenzy and self.db.profile.frenzy then
 		self:Message(L["frenzy_message"], "Important", nil, true, "Alert")
 		self:Bar(L["frenzy_bar"], timer.frenzy, icon.frenzy, true, "red")
-        if playerClass == "HUNTER" or true then
+        if playerClass == "HUNTER" then
             self:WarningSign(icon.tranquil, timer.frenzy, true)
         end
         lastFrenzy = GetTime()
