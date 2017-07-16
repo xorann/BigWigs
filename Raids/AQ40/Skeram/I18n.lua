@@ -33,6 +33,8 @@ L:RegisterTranslations("enUS", function() return {
 
 	-- bars
 	bar_mc = "MC: %s",
+
+	-- misc
 }
 end)
 
@@ -60,5 +62,7 @@ L:RegisterTranslations("deDE", function() return {
 
 	-- bars
 	bar_mc = "GK: %s",
+
+	-- misc
 }
 end)

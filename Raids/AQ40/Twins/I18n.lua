@@ -72,6 +72,8 @@ L:RegisterTranslations("enUS", function() return {
 	-- bars
 	bar_teleport = "Teleport",
 	bar_enrage = "Enrage",
+
+	-- misc
 } end )
 
 L:RegisterTranslations("deDE", function() return {
@@ -133,4 +135,6 @@ L:RegisterTranslations("deDE", function() return {
 	-- bars
 	bar_enrage = "Wutanfall",
 	bar_teleport = "Teleport",
+
+	-- misc
 } end )
