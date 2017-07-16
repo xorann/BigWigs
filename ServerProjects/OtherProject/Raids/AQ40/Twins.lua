@@ -1,188 +1,200 @@
 
-local bossName = "The Twin Emperors"
+local bossName = BigWigs.bossmods.aq40.twins
 local serverProjectName = "OtherProject"
-if BigWigs:IsServerRegisteredForServerProject(serverProjectName) and BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
+if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
+	return
+end
 
-	BigWigs:Print("OtherProject twins")
-
-	local module = BigWigs:GetModule(bossName)
-	local L = BigWigs.I18n[bossName]
-	local timer = module.timer
-	local icon = module.icon
-	local syncName = module.syncName
-
-	-- module variables
-	module.revision = 20013
+BigWigs:Print("OtherProject twins")
 
 
-	-- timers should be overridden
-	timer["teleport"] = 29.8
-	timer["enrage"] = 900
-	timer["blizzard"] = 10
+local module = BigWigs:GetModule(bossName)
+local L = BigWigs.I18n[bossName]
+local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
+local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]
+local timer = module.timer
+local icon = module.icon
+local syncName = module.syncName
+
+-- module variables
+module.revision = 20013
+
+-- timers should be overridden
+timer.teleport = 29.8
+timer.enrage = 900
+timer.blizzard = 10
 
 
-	------------------------------
-	--      Initialization      --
-	------------------------------
+------------------------------
+-- Initialization      --
+------------------------------
 
-	module:RegisterYellEngage(L["pull_trigger1"])
-	module:RegisterYellEngage(L["pull_trigger2"])
-	module:RegisterYellEngage(L["pull_trigger3"])
-	module:RegisterYellEngage(L["pull_trigger4"])
-	module:RegisterYellEngage(L["pull_trigger5"])
-	module:RegisterYellEngage(L["pull_trigger6"])
-	module:RegisterYellEngage(L["pull_trigger7"])
-	module:RegisterYellEngage(L["pull_trigger8"])
-	module:RegisterYellEngage(L["pull_trigger9"])
-	module:RegisterYellEngage(L["pull_trigger10"])
+module:RegisterYellEngage(L["trigger_pull1"])
+module:RegisterYellEngage(L["trigger_pull2"])
+module:RegisterYellEngage(L["trigger_pull3"])
+module:RegisterYellEngage(L["trigger_pull4"])
+module:RegisterYellEngage(L["trigger_pull5"])
+module:RegisterYellEngage(L["trigger_pull6"])
+module:RegisterYellEngage(L["trigger_pull7"])
+module:RegisterYellEngage(L["trigger_pull8"])
+module:RegisterYellEngage(L["trigger_pull9"])
+module:RegisterYellEngage(L["trigger_pull10"])
 
-	-- called after module is enabled
-	function module:OnEnable()
-		--self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-		self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
-		self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
-		self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
-		self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-		self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
-		self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBossDeath") -- addition
-		
-		self:ThrottleSync(28, syncName.teleport)
+-- called after module is enabled
+function module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE")
+	self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
+	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH", "CheckForBossDeath") -- override module prototype
+
+	self:ThrottleSync(28, syncName.teleport)
+end
+
+-- called after module is enabled and after each wipe
+function module:OnSetup()
+end
+
+-- called after boss is engaged
+function module:OnEngage()
+	self:HandleBrokenTeleportTrigger()
+	self:WarnForEnrage()
+end
+
+-- called after boss is disengaged (wipe(retreat) or victory)
+function module:OnDisengage()
+	self:CancelScheduledEvent("BigWigsTwinsBrokenTeleportTrigger") -- cancel HandleBrokenTeleportTrigger
+end
+
+
+------------------------------
+-- Event Handlers      --
+------------------------------
+function module:CheckForBossDeath(msg)
+	if msg == string.format(UNITDIESOTHER, veklor) or msg == string.format(UNITDIESOTHER, veknilash) then
+		self:SendBossDeathSync()
 	end
+end
 
-	-- called after module is enabled and after each wipe
-	function module:OnSetup()
-		self.started = nil
+function module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
+	if string.find(msg, L["trigger_blizzardGain"]) then
+		self:BlizzardGain()
 	end
+end
 
-	-- called after boss is engaged
-	function module:OnEngage()
+function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
+	if string.find(msg, L["trigger_blizzardGone"]) then
+		self:BlizzardGone()
+	end
+end
+
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
+	if string.find(msg, L["trigger_teleport"]) then
 		self:Sync(syncName.teleport)
 
-		if self.db.profile.enrage then
-			self:Message(L["startwarn"], "Important")
-			self:Bar(L["enragebartext"], timer.enrage, icon.enrage)
-			
-			self:DelayedMessage(timer.enrage - 10 * 60, L["warn1"], "Attention", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 5 * 60, L["warn2"], "Attention", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 3 * 60, L["warn3"], "Attention", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 90, L["warn4"], "Urgent", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 60, L["warn5"], "Urgent", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 30, L["warn6"], "Important", nil, nil, true)
-			self:DelayedMessage(timer.enrage - 10, L["warn7"], "Important", nil, nil, true)
-		end
+		-- maybe someday it will be fixed on nefarian
+		BigWigs:Print("Teleport trigger has been fixed on the server. Please report this on https://github.com/xorann/BigWigs/issues")
+	end
+end
+
+function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+	if (string.find(msg, L["trigger_explosion"]) and self.db.profile.bug) then
+		self:BugExplosion()
+	end
+end
+
+function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
+	if string.find(msg, L["trigger_heal1"]) or string.find(msg, L["trigger_heal2"]) then
+		self:Sync(syncName.heal)
+	end
+end
+
+function module:CHAT_MSG_MONSTER_EMOTE(msg)
+	if (string.find(msg, L["trigger_enrage"]) and self.db.profile.enrage) then
+		self:Message(L["msg_enrage"], "Important")
+	end
+end
+
+function module:HandleBrokenTeleportTrigger()
+	function Teleport()
+		self:Sync(syncName.teleport)
+	end
+	self:ScheduleRepeatingEvent("BigWigsTwinsBrokenTeleportTrigger", Teleport, timer.teleport)
+	Teleport()
+end
+
+----------------------------------
+-- Module Test Function    --
+----------------------------------
+
+-- automated test
+function module:ModuleTest()
+	module:OnEnable()
+	module:OnSetup()
+	module:OnEngage()
+
+	-- check every core function
+	module:Teleport()
+	module:Heal()
+	module:WarnForEnrage()
+	module:BlizzardGain()
+	module:BlizzardGone()
+	module:BugExplosion()
+
+	-- check trigger functions
+	module:CheckForBossDeath(string.format(UNITDIESOTHER, veklor))
+	module:CheckForBossDeath(string.format(UNITDIESOTHER, veknilash))
+	module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(L["trigger_blizzardGain"])
+	module:CHAT_MSG_SPELL_AURA_GONE_SELF(L["trigger_blizzardGone"])
+	--module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["trigger_teleport"])
+	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_explosion"])
+	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["trigger_heal1"])
+	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["trigger_heal2"])
+	module:CHAT_MSG_MONSTER_EMOTE(L["trigger_enrage"])
+
+	module:OnDisengage()
+	module:TestDisable()
+end
+
+-- visual test
+function module:Test()
+	-- /run local m=BigWigs:GetModule("The Twin Emperors");m:Test()
+	local function TestTeleport()
+		self:Teleport()
 	end
 
-	-- called after boss is disengaged (wipe(retreat) or victory)
-	function module:OnDisengage()
+	local function TestBlizzard()
+		self:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(L["trigger_blizzardGain"])
 	end
 
-
-	------------------------------
-	--      Event Handlers      --
-	------------------------------
-
-	function module:CheckForBossDeath(msg)
-		if msg == string.format(UNITDIESOTHER, veklor) or msg == string.format(UNITDIESOTHER, veknilash) then
-			self:SendBossDeathSync()
-		end
+	local function TestBlizzardGone()
+		self:CHAT_MSG_SPELL_AURA_GONE_SELF(L["trigger_blizzardGone"])
 	end
 
-	--[[function module:CHAT_MSG_MONSTER_YELL(msg)
-		if string.find(msg, L["kill_trigger"]) then
-			self:SendBossDeathSync()
-		end
-	end]]
+	local testTimer = 0
+	BigWigs:Print(self:ToString() .. " Test started")
 
-	function module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(msg)
-		if string.find(msg, L["blizzard_trigger"]) then
-			if self.db.profile.blizzard then
-				self:Message(L["blizzard_warn"], "Personal", true, "Alarm")
-				self:WarningSign(icon.blizzard, timer.blizzard)
-			end
-		end
-	end
+	-- immitate CheckForEngage
+	self:SendEngageSync()
 
-	function module:CHAT_MSG_SPELL_AURA_GONE_SELF(msg)
-		if string.find(msg, L["blizzard_gone_trigger"]) then
-			self:RemoveWarningSign(icon.blizzard)
-		end
-	end
+	-- teleport after 5s
+	testTimer = testTimer + 5
+	self:ScheduleEvent(self:ToString() .. "testTeleport", TestTeleport, testTimer, self)
+	BigWigs:Print("  testTeleport after " .. testTimer .. "s")
 
-	function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
-		if (string.find(msg, L["porttrigger"])) then
-			self:Sync(syncName.teleport_old)
-			self:Sync(syncName.teleport)
-			self:DebugMessage("real port trigger")
-		end
-	end
+	-- blizzard after 10s
+	testTimer = testTimer + 5
+	self:ScheduleEvent(self:ToString() .. "testBlizzard", TestBlizzard, testTimer, self)
+	BigWigs:Print("  testBlizzard after " .. testTimer .. "s")
 
-	function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
-		if (string.find(msg, L["explodebugtrigger"]) and self.db.profile.bug) then
-			self:Message(L["explodebugwarn"], "Personal", true)
-		end
-	end
+	-- blizzard gone after 12s
+	testTimer = testTimer + 5
+	self:ScheduleEvent(self:ToString() .. "testBlizzardGone", TestBlizzardGone, testTimer, self)
+	BigWigs:Print("  testBlizzardGone after " .. testTimer .. "s")
 
-	function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
-		if (not self.prior and (string.find(msg, L["healtrigger1"]) or string.find(msg, L["healtrigger2"])) and self.db.profile.heal) then
-			self:Message(L["healwarn"], "Important")
-			self.prior = true
-			self:ScheduleEvent(function() module.prior = nil end, 10)
-		end
-	end
-
-	function module:CHAT_MSG_MONSTER_EMOTE(msg)
-		if (string.find(msg, L["enragetrigger"]) and self.db.profile.enrage) then
-			self:Message(L["enragewarn"], "Important")
-		end
-	end
-
-
-	----------------------------------
-	--      Module Test Function    --
-	----------------------------------
-
-	function module:Test()
-		-- /run local m=BigWigs:GetModule("The Twin Emperors");m:Test()
-		local function testTeleport()
-			module:Teleport()
-		end
-		local function testBlizzard()
-			module:CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE(L["blizzard_trigger"])
-		end
-		local function testBlizzardGone()
-			module:CHAT_MSG_SPELL_AURA_GONE_SELF(L["blizzard_gone_trigger"])
-		end
-		local function testDisable()
-			--module:SendWipeSync()
-			BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
-			BigWigs:DisableModule(module:ToString())
-		end
-
-		local testTimer = 0
-		BigWigs:Print(self:ToString() .. " Test started")
-
-		-- immitate CheckForEngage
-		self:SendEngageSync()
-
-		-- teleport after 5s
-		testTimer = testTimer + 5
-		self:ScheduleEvent(self:ToString().."testTeleport", testTeleport, testTimer, self)
-		BigWigs:Print("  testTeleport after " .. testTimer .. "s")
-
-		-- blizzard after 10s
-		testTimer = testTimer + 5
-		self:ScheduleEvent(self:ToString().."testBlizzard", testBlizzard, testTimer, self)
-		BigWigs:Print("  testBlizzard after " .. testTimer .. "s")
-
-		-- blizzard gone after 12s
-		testTimer = testTimer + 5
-		self:ScheduleEvent(self:ToString().."testBlizzardGone", testBlizzardGone, testTimer, self)
-		BigWigs:Print("  testBlizzardGone after " .. testTimer .. "s")
-
-		-- wipe
-		testTimer = testTimer + 3
-		self:ScheduleEvent(self:ToString() .. "testDisable", testDisable, testTimer, self)
-		BigWigs:Print("testDisable in " .. testTimer)
-	end
-
-end -- BigWigs:GetServerProjectName() == "Classic-WoW"
+	-- wipe
+	testTimer = testTimer + 3
+	self:ScheduleEvent(self:ToString() .. "testDisable", self.TestDisable, testTimer, self)
+	BigWigs:Print("testDisable in " .. testTimer)
+end

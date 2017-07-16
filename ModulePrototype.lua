@@ -184,9 +184,21 @@ end
 function BigWigs.modulePrototype:BigWigs_RecvSync(sync, rest, nick)
 end
 
--- test function
+-- test functions
+function BigWigs.modulePrototype:TestDisable()
+	self:CancelAllScheduledEvents()
+	self:RemoveIcon()
+	self:RemoveWarningSign("", true)
+	BigWigsBars:Disable(self)
+	BigWigsBars:BigWigs_HideCounterBars()
+	self:RemoveProximity()
+
+	BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
+	BigWigs:DisableModule(self:ToString())
+end
+function BigWigs.modulePrototype:ModuleTest()
+end
 function BigWigs.modulePrototype:Test()
-	BigWigs:Print("No tests defined for module " .. self:ToString())
 end
 
 ------------------------------
@@ -585,3 +597,21 @@ function BigWigs:BigWigs_RebootModule(moduleName)
 	end
 end
 
+function BigWigs:Test()
+	local count = 0
+	for name, module in self:IterateModules() do
+		local status, retval = pcall(module.ModuleTest)
+		if not status then
+			count = count + 1
+			BigWigs:Print("|cffff0000" .. name .. "|r ModuleTest |cffff0000failed:|r " .. retval)
+		end
+	end
+
+	local msg = ""
+	if count == 0 then
+		msg = "No errors found."
+	else
+		msg = tostring(count) .. " error(s) found"
+	end
+	BigWigs:Print(msg)
+end

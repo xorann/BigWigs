@@ -4,9 +4,10 @@
 --------------------------------------
 
 BigWigs.bossmods.aq40 = {}
+BigWigs.bossmods.aq40.skeram = "The Prophet Skeram"
 BigWigs.bossmods.aq40.twins = "The Twin Emperors"
 
---BigWigs:ModuleDeclaration("The Prophet Skeram", "Ahn'Qiraj")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.aq40.skeram, "Ahn'Qiraj")
 --BigWigs:ModuleDeclaration("The Bug Family", "Ahn'Qiraj")
 --BigWigs:ModuleDeclaration("Battleguard Sartura", "Ahn'Qiraj")
 --BigWigs:ModuleDeclaration("Fankriss the Unyielding", "Ahn'Qiraj")

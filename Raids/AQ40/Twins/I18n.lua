@@ -37,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_explosion = "gains Explode Bug",
 	trigger_enrage = "becomes enraged.",
 	trigger_blizzardGain = "You are afflicted by Blizzard.",
-	trigger_blizzard_gone = "Blizzard fades from you",
+	trigger_blizzardGone = "Blizzard fades from you",
 
 	trigger_pull1 = "Ah, lambs to the slaughter.",
 	trigger_pull2 = "Prepare to embrace oblivion!",
@@ -59,7 +59,6 @@ L:RegisterTranslations("enUS", function() return {
 	msg_explosion = "Bug exploding nearby!",
 	msg_enrage = "Twins are enraged",
 	msg_heal = "Casting Heal!",
-	msg_engage = "Twin Emperors engaged! Enrage in 15 minutes!",
 	msg_blizzard = "Run from Blizzard!",
 
 	msg_enrage10m = "Enrage in 10 minutes",
@@ -76,59 +75,62 @@ L:RegisterTranslations("enUS", function() return {
 } end )
 
 L:RegisterTranslations("deDE", function() return {
-
-	bug_name = "Explodierende K\195\164fer",
-	bug_desc = "Warnung vor explodierenden K\195\164fern.",
+	-- commands
+	bug_name = "Explodierende Käfer",
+	bug_desc = "Warnung vor explodierenden Käfern.",
 
 	teleport_name = "Teleport",
 	teleport_desc = "Warnung, wenn die Zwillings Imperatoren sich teleportieren.",
 
 	enrage_name = "Wutanfall",
-	enrage_desc = "Warnung, wenn die Zwillings Imperatoren w\195\188tend werden.",
+	enrage_desc = "Warnung, wenn die Zwillings Imperatoren wütend werden.",
 
 	heal_name = "Heilung",
 	heal_desc = "Warnung, wenn die Zwillings Imperatoren sich heilen.",
 
     blizzard_name = "Blizzard Warnung",
     blizzard_desc = "Zeigt ein Icon wenn du im Blizzard stehst",
-            
-	porttrigger = "wirkt Zwillingsteleport.",
-	portwarn = "Teleport!",
-	portdelaywarn = "Teleport in ~5 Sekunden!",
-	portdelaywarn10 = "Teleport in ~10 Sekunden!",
-	bartext = "Teleport",
-	explodebugtrigger = "bekommt 'Käfer explodieren lassen'",
-	explodebugwarn = "K\195\164fer explodiert!",
-	enragetrigger = "wird w\195\188tend.", -- ? "bekommt 'Wutanfall'"
-	enragewarn = "Zwillings Imperatoren sind w\195\188tend!",
-	healtrigger1 = "'s Bruder heilen heilt",
-	healtrigger2 = " Bruder heilen heilt",
-	healwarn = "Heilung gewirkt!",
-	startwarn = "Zwillings Imperatoren angegriffen! Wutanfall in 15 Minuten!",
-	enragebartext = "Wutanfall",
-	warn1 = "Wutanfall in 10 Minuten",
-	warn2 = "Wutanfall in 5 Minuten",
-	warn3 = "Wutanfall in 3 Minuten",
-	warn4 = "Wutanfall in 90 Sekunden",
-	warn5 = "Wutanfall in 60 Sekunden",
-	warn6 = "Wutanfall in 30 Sekunden",
-	warn7 = "Wutanfall in 10 Sekunden",
-    
-    blizzard_trigger = "Ihr seid von Blizzard betroffen.",
-    blizzard_gone_trigger = "'Blizzard' schwindet von Euch.",
-	blizzard_warn = "Lauf aus Blizzard!",
-            
-    pull_trigger1 = "Ihr seid nichts weiter als",
-    pull_trigger2 = "Seid bereit in die",
-    pull_trigger3 = "Komm Bruder",
-    pull_trigger4 = "Um unsere Hallen",
-    pull_trigger5 = "Niemand wird",
-    pull_trigger6 = "Nun gibt es kein",
-    pull_trigger7 = "Sieh Bruder",
-    pull_trigger8 = "Wie eine Fliege",
-    pull_trigger9 = "Wird euer Untergang",
-    pull_trigger10 = "Eure unversch",
-            
-    kill_trigger = "Mein Bruder...",
-} end )
 
+	-- triggers
+	trigger_teleport = "wirkt Zwillingsteleport.",
+	trigger_enrage = "wird wütend.", -- ? "bekommt 'Wutanfall'"
+	trigger_explosion = "bekommt 'Käfer explodieren lassen'",
+	trigger_heal1 = "'s Bruder heilen heilt",
+	trigger_heal2 = " Bruder heilen heilt",
+	trigger_blizzardGain = "Ihr seid von Blizzard betroffen.",
+	trigger_blizzardGone = "'Blizzard' schwindet von Euch.",
+
+	trigger_pull1 = "Ihr seid nichts weiter als",
+	trigger_pull2 = "Seid bereit in die",
+	trigger_pull3 = "Komm Bruder",
+	trigger_pull4 = "Um unsere Hallen",
+	trigger_pull5 = "Niemand wird",
+	trigger_pull6 = "Nun gibt es kein",
+	trigger_pull7 = "Sieh Bruder",
+	trigger_pull8 = "Wie eine Fliege",
+	trigger_pull9 = "Wird euer Untergang",
+	trigger_pull10 = "Eure unversch",
+
+	kill_trigger = "Mein Bruder...",
+
+	-- messages
+	msg_teleport = "Teleport!",
+	msg_teleport5 = "Teleport in ~5 Sekunden!",
+	msg_teleport10 = "Teleport in ~10 Sekunden!",
+	msg_explosion = "Käfer explodiert!",
+	msg_enrage = "Zwillings Imperatoren sind wütend!",
+	msg_heal = "Heilung gewirkt!",
+	msg_enrage10m = "Wutanfall in 10 Minuten",
+	msg_enrage5m = "Wutanfall in 5 Minuten",
+	msg_enrage3m = "Wutanfall in 3 Minuten",
+	msg_enrage90 = "Wutanfall in 90 Sekunden",
+	msg_enrage60 = "Wutanfall in 60 Sekunden",
+	msg_enrage30 = "Wutanfall in 30 Sekunden",
+	msg_enrage10 = "Wutanfall in 10 Sekunden",
+
+	blizzard_warn = "Lauf aus Blizzard!",
+
+	-- bars
+	bar_enrage = "Wutanfall",
+	bar_teleport = "Teleport",
+} end )

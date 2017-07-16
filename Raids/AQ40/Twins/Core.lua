@@ -65,13 +65,13 @@ function module:Teleport()
         self:DelayedSound(timer.teleport - 3, "Three")
         self:DelayedSound(timer.teleport - 2, "Two")
         self:DelayedSound(timer.teleport - 1, "One")
-        self:DelayedMessage(timer.teleport - 0.1, L["portwarn"], "Attention", false, "Alarm")
+        self:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
 	end
 end
 
 function module:Heal()
 	if not self.prior and self.db.profile.heal then
-		self:Message(L["healwarn"], "Important")
+		self:Message(L["msg_heal"], "Important")
 		self.prior = true
 		self:ScheduleEvent(function() module.prior = nil end, 10)
 	end
@@ -83,22 +83,27 @@ end
 
 function module:WarnForEnrage()
 	if self.db.profile.enrage then
-		self:Message(L["startwarn"], "Important")
-		self:Bar(L["enragebartext"], timer.enrage, icon.enrage)
+		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
 
-		self:DelayedMessage(timer.enrage - 10 * 60, L["warn1"], "Attention", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 5 * 60, L["warn2"], "Attention", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 3 * 60, L["warn3"], "Attention", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 90, L["warn4"], "Urgent", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 60, L["warn5"], "Urgent", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 30, L["warn6"], "Important", nil, nil, true)
-		self:DelayedMessage(timer.enrage - 10, L["warn7"], "Important", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important", nil, nil, true)
+		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important", nil, nil, true)
+	end
+end
+
+function module:Enrage()
+	if self.db.profile.enrage then
+		self:Message(L["msg_enrage"], "Important")
 	end
 end
 
 function module:BlizzardGain()
 	if self.db.profile.blizzard then
-		self:Message(L["blizzard_warn"], "Personal", true, "Alarm")
+		self:Message(L["msg_blizzard"], "Personal", true, "Alarm")
 		self:WarningSign(icon.blizzard, timer.blizzard)
 	end
 end
@@ -109,6 +114,6 @@ end
 
 function module:BugExplosion()
 	if self.db.profile.bug then
-		self:Message(L["explodebugwarn"], "Personal", true)
+		self:Message(L["msg_explosion"], "Personal", true)
 	end
 end
