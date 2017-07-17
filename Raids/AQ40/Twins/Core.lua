@@ -57,7 +57,7 @@ end
 function module:Teleport()
 	if self.db.profile.teleport then
 		self:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
-
+		self:Bar("Switch", 6, icon.teleport)
         self:KTM_Reset()
         
         self:DelayedSound(timer.teleport - 10, "Ten")
@@ -65,6 +65,7 @@ function module:Teleport()
         self:DelayedSound(timer.teleport - 2, "Two")
         self:DelayedSound(timer.teleport - 1, "One")
         self:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
+
 	end
 end
 
@@ -93,6 +94,7 @@ function module:WarnForEnrage()
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important", nil, nil, true)
+
 	end
 end
 
