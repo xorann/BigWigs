@@ -1,4 +1,7 @@
 
+local revision = 20013
+local isDeveloperVersion = true
+
 ------------------------------
 --      Are you local?      --
 ------------------------------
@@ -81,6 +84,10 @@ L:RegisterTranslations("enUS", function() return {
 	["Lord Victor Nefarius"] = true,
 	
     ["You have slain %s!"] = true,
+	
+	["You are using a developer version of BigWigs.\nPlease download a proper release at https://github.com/xorann/BigWigs/releases"] = true,
+	["Close"] = true,
+	["Cancel"] = true,
 } end)
 
   
@@ -133,6 +140,10 @@ L:RegisterTranslations("deDE", function() return {
 	-- ["Outdoor Raid Bosses Zone"] = "Outdoor Raid Bosses", -- DO NOT EVER TRANSLATE untill I find a more elegant option
             
     ["You have slain %s!"] = "Ihr habt %s getötet!",
+	
+	["You are using a developer version of BigWigs.\nPlease download a proper release at https://github.com/xorann/BigWigs/releases"] = "Du verwendest eine Entwicklerversion von BigWigs.\nBitte downloade einen ordentlichen Release von https://github.com/xorann/BigWigs/releases",
+	["Close"] = "Schliessen",
+	["Cancel"] = "Abbrechen",
 } end)
 
 
@@ -177,7 +188,8 @@ BigWigs:RegisterChatCommand({"/bw", "/BigWigs"}, function() waterfall:Open("BigW
 waterfall:Register('BigWigs', 'aceOptions',BigWigs.cmdtable, 'title','BigWigs', 'colorR', 0.2, 'colorG', 0.6, 'colorB', 0.2) 
 
 BigWigs.debugFrame = ChatFrame1
-BigWigs.revision = 20012
+BigWigs.revision = revision
+BigWigs.isDeveloperVersion = isDeveloperVersion
 
 
 function BigWigs:DebugMessage(msg, module)
@@ -529,6 +541,48 @@ function BigWigs:RemoveProximity()
     self:TriggerEvent("BigWigs_HideProximity")
 end
 
+--------------------------------------
+-- Do not use a developer version	--
+---------------------------------------
+
+function BigWigs:CheckForDeveloperVersion()
+	if self.isDeveloperVersion then
+		BigWigs:Print(L["You are using a developer version of BigWigs.\nPlease download a proper release at https://github.com/xorann/BigWigs/releases"])
+        
+        local dialog = nil
+        StaticPopupDialogs["BigWigsDeveloperVersionDialog"] = {
+            text = L["You are using a developer version of BigWigs.\nPlease download a proper release at https://github.com/xorann/BigWigs/releases"],
+            button1 = L["Close"],
+            button2 = L["Cancel"],
+            OnAccept = function()
+                StaticPopup_Hide ("BigWigsDeveloperVersionDialog")
+            end,
+            OnCancel = function()
+                StaticPopup_Hide ("BigWigsDeveloperVersionDialog")
+            end,
+            OnShow = function (self, data)
+                local editbox = getglobal(this:GetName().."WideEditBox")
+                editbox:SetText("https://github.com/xorann/BigWigs/releases")
+                editbox:SetWidth(250)
+                editbox:ClearFocus()
+                editbox:HighlightText() 
+                --self.editBox:SetText("Some text goes here")
+                getglobal(this:GetName().."Button2"):Hide()
+            end,
+            hasEditBox = true,
+            hasWideEditBox = true,
+            maxLetters = 42,
+            --EditBox:setText("Text"),
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+            preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+        }
+        local dialog = StaticPopup_Show ("BigWigsDeveloperVersionDialog")
+	end
+end
+
+
 ------------------------------
 --      Initialization      --
 ------------------------------
@@ -547,6 +601,9 @@ function BigWigs:OnInitialize()
 	-- Activate ourselves, or at least try to. If we were disabled during a reloadUI, OnEnable isn't called,
 	-- and self.loading will never be set to something else, resulting in a BigWigs that doesn't enable.
 	self:ToggleActive(true)
+	
+	-- show dialog if a developer version is being used
+	BigWigs:CheckForDeveloperVersion()
 end
 
 
