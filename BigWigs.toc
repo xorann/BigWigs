@@ -140,13 +140,14 @@ Raids\AQ40\Viscidus.lua
 Raids\BWL\Core.lua
 Raids\BWL\Razorgore\I18n.lua
 Raids\BWL\Razorgore\Core.lua
+Raids\BWL\Vaelastrasz\I18n.lua
+Raids\BWL\Vaelastrasz\Core.lua
 
 Raids\BWL\Chromaggus.lua
 Raids\BWL\Ebonroc.lua
 Raids\BWL\Firemaw.lua
 Raids\BWL\Flamegor.lua
 Raids\BWL\Nefarian.lua
-Raids\BWL\Vaelastrasz.lua
 Raids\BWL\Broodlord.lua
 
 # MC
@@ -204,6 +205,7 @@ ServerProjects\OtherProject\Raids\AQ40\Twins.lua
 ServerProjects\Classic-WoW\Classic-WoW.lua
 
 ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
+ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
 
 ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
@@ -215,6 +217,7 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 # Default Implementations
 # ##################################
 Raids\BWL\Razorgore\Default.lua
+Raids\BWL\Vaelastrasz\Default.lua
 
 Raids\AQ40\Skeram\Default.lua
 Raids\AQ40\Sartura\Default.lua

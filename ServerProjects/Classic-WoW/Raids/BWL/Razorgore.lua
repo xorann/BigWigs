@@ -5,7 +5,7 @@ if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigW
 end
 
 
---BigWigs:Print("classic-wow twins")
+--BigWigs:Print("classic-wow " .. bossName)
 
 ------------------------------
 -- Variables     			--

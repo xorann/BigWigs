@@ -4,7 +4,7 @@ if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigW
 	return
 end
 
---BigWigs:Print("classic-wow skeram")
+--BigWigs:Print("classic-wow " .. bossName)
 
 
 ------------------------------
