@@ -15,6 +15,8 @@ BigWigs:RegisterServer(project, "Nefarian")
 BigWigs:RegisterServer(project, "Open-Beta (Naxxramas)")
 
 -- Supported Boss Modules
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.bwl.razorgore)
+
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.skeram)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.sartura)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.fankriss)
