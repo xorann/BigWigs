@@ -142,13 +142,14 @@ Raids\BWL\Razorgore\I18n.lua
 Raids\BWL\Razorgore\Core.lua
 Raids\BWL\Vaelastrasz\I18n.lua
 Raids\BWL\Vaelastrasz\Core.lua
+Raids\BWL\Broodlord\I18n.lua
+Raids\BWL\Broodlord\Core.lua
 
 Raids\BWL\Chromaggus.lua
 Raids\BWL\Ebonroc.lua
 Raids\BWL\Firemaw.lua
 Raids\BWL\Flamegor.lua
 Raids\BWL\Nefarian.lua
-Raids\BWL\Broodlord.lua
 
 # MC
 Raids\MC\Lucifron.lua
@@ -206,6 +207,7 @@ ServerProjects\Classic-WoW\Classic-WoW.lua
 
 ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
 ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
+ServerProjects\Classic-WoW\Raids\BWL\Broodlord.lua
 
 ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
@@ -218,6 +220,7 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 # ##################################
 Raids\BWL\Razorgore\Default.lua
 Raids\BWL\Vaelastrasz\Default.lua
+Raids\BWL\Broodlord\Default.lua
 
 Raids\AQ40\Skeram\Default.lua
 Raids\AQ40\Sartura\Default.lua
