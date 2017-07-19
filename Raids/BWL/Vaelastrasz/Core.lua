@@ -119,13 +119,13 @@ end
 
 function module:StartSoon(time)
 	if self.db.profile.start then
-		if timer == timer.start1 then
+		if time == timer.start1 then
 			self:Bar(L["bar_engage"], timer.start1, icon.start, true, "Cyan")
 			self.barstarted = true
-		elseif timer == timer.start2 and not self.barstarted then
+		elseif time == timer.start2 and not self.barstarted then
 			self:Bar(L["bar_engage"], timer.start2, icon.start, true, "Cyan")
 			self.barstarted = true
-		elseif timer == timer.start3 and not self.barstarted then
+		elseif time == timer.start3 and not self.barstarted then
 			self:Bar(L["bar_engage"], timer.start3, icon.start, true, "Cyan")
 		end
 	end

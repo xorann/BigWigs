@@ -113,7 +113,7 @@ end
 
 function module:LandingSoon()
 	if self.db.profile.otherwarn then
-		self:Message(v[1], "Important", true, "Long")
+		self:Message(L["msg_landingSoon"], "Important", true, "Long")
 	end
 end
 

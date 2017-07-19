@@ -72,7 +72,7 @@ end
 ------------------------------
 -- Sync Handlers	    --
 ------------------------------
-function module:EggDestoyed(number)
+function module:EggDestroyed(number)
 	number = tonumber(number)
 	if number == (self.eggs + 1) and self.eggs <= 30 then
 		self.eggs = self.eggs + 1
@@ -240,7 +240,7 @@ end
 -- automated test
 function module:TestModuleCore()
 	-- check core functions
-	module:BigWigs_RecvSync(syncName.egg)
+	module:BigWigs_RecvSync(syncName.egg, 1)
 	module:BigWigs_RecvSync(syncName.eggStart)
 	module:BigWigs_RecvSync(syncName.orbOver)
 	module:BigWigs_RecvSync(syncName.volley)

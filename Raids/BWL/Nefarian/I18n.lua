@@ -55,6 +55,7 @@ L:RegisterTranslations("enUS", function() return {
 	-- messages
 	msg_fear = "Fear NOW!",
 	msg_landing = "Nefarian is landing!",
+	msg_landingSoon = "Nefarian is landing soon",
 	msg_zerg = "Zerg incoming!",
 	msg_fearCast = "Fear in 2 sec!",
 	msg_fearSoon = "Possible fear in ~5 sec",
@@ -137,6 +138,7 @@ L:RegisterTranslations("deDE", function() return {
 	-- messages
 	msg_fear = "Furcht JETZT!",
 	msg_landing = "Nefarian landet!",
+	msg_landingSoon = "Nefarian landet bald",
 	msg_zerg = "Zerg kommt!",
 	msg_fearCast = "Furcht in 2s!",
 	msg_fearSoon = "Mögliche Furcht in 5s",
