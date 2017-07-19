@@ -1,19 +1,13 @@
 ## Interface: 11200
 
-## Title: Big Wigs |cff7fff7fClassic-WoW|r
-## Title-zhCN: |cff7fff7fClassic-WoW|r Big Wigs 
+## Title: BigWigs |cff7fff7fClassic-WoW|r
 ## Notes: Boss Mods with Timer bars.
-## Notes-zhCN: 团队首领战信息提示插件，带有计时条。
-## Notes-zhTW: 團隊首領戰訊息提示插件，帶有計時條。
 ## Author: Tekkub Stoutwrithe, Ammo, Shyva, Rabbit, LYQ, Dorann & Others
 ## Version: 2.0.0
 ## X-Website: https://github.com/xorann/BigWigs/releases
 ## X-Email: xorann@gmail.com
 ## X-Category: Raid
-## X-RelSite-WoWI: 5086
-## X-RelSite-Curse: 4356
-## X-AceForum: 1222
-## X-FlySpray: 1
+
 
 ## OptionalDeps: Ace2, FuBar, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib, Surfaces, MikScrollingBattleText, sct, SpellStatusLib, SpellCacheLib, GratuityLib, Deformat, SpecialEventsEmbed
 ## X-Embeds: Ace2, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib
@@ -92,6 +86,40 @@ Plugins\Farclip.lua
 # Boss modules
 # ###################################
 
+# Onyxia
+Raids\Onyxia\Onyxia.lua
+
+# MC
+Raids\MC\Lucifron.lua
+Raids\MC\BaronGeddon.lua
+Raids\MC\Gehennas.lua
+Raids\MC\Magmadar.lua
+Raids\MC\Majordomo.lua
+Raids\MC\Ragnaros.lua
+Raids\MC\Shazzrah.lua
+Raids\MC\Garr.lua
+Raids\MC\Sulfuron.lua
+Raids\MC\Golemagg.lua
+
+# BWL
+Raids\BWL\Core.lua
+Raids\BWL\Razorgore\I18n.lua
+Raids\BWL\Razorgore\Core.lua
+Raids\BWL\Vaelastrasz\I18n.lua
+Raids\BWL\Vaelastrasz\Core.lua
+Raids\BWL\Broodlord\I18n.lua
+Raids\BWL\Broodlord\Core.lua
+Raids\BWL\Firemaw\I18n.lua
+Raids\BWL\Firemaw\Core.lua
+Raids\BWL\Ebonroc\I18n.lua
+Raids\BWL\Ebonroc\Core.lua
+Raids\BWL\Flamegor\I18n.lua
+Raids\BWL\Flamegor\Core.lua
+Raids\BWL\Chromaggus\I18n.lua
+Raids\BWL\Chromaggus\Core.lua
+Raids\BWL\Nefarian\I18n.lua
+Raids\BWL\Nefarian\Core.lua
+
 # Zul'Gurub
 Raids\ZG\Arlokk.lua
 Raids\ZG\Jeklik.lua
@@ -116,7 +144,6 @@ Raids\AQ20\Ossirian.lua
 Raids\AQ20\Moam.lua
 Raids\AQ20\Kurinaxx.lua
 
-
 # AQ40
 Raids\AQ40\Core.lua
 Raids\AQ40\Skeram\I18n.lua
@@ -135,36 +162,6 @@ Raids\AQ40\Ouro.lua
 Raids\AQ40\Defenders.lua
 Raids\AQ40\Cthun.lua
 Raids\AQ40\Viscidus.lua
-
-# BWL
-Raids\BWL\Core.lua
-Raids\BWL\Razorgore\I18n.lua
-Raids\BWL\Razorgore\Core.lua
-Raids\BWL\Vaelastrasz\I18n.lua
-Raids\BWL\Vaelastrasz\Core.lua
-Raids\BWL\Broodlord\I18n.lua
-Raids\BWL\Broodlord\Core.lua
-
-Raids\BWL\Chromaggus.lua
-Raids\BWL\Ebonroc.lua
-Raids\BWL\Firemaw.lua
-Raids\BWL\Flamegor.lua
-Raids\BWL\Nefarian.lua
-
-# MC
-Raids\MC\Lucifron.lua
-Raids\MC\BaronGeddon.lua
-Raids\MC\Gehennas.lua
-Raids\MC\Magmadar.lua
-Raids\MC\Majordomo.lua
-Raids\MC\Ragnaros.lua
-Raids\MC\Shazzrah.lua
-Raids\MC\Garr.lua
-Raids\MC\Sulfuron.lua
-Raids\MC\Golemagg.lua
-
-# Onyxia
-Raids\Onyxia\Onyxia.lua
 
 # Naxxramas
 Raids\Naxxramas\Anubrekhan.lua
@@ -208,6 +205,11 @@ ServerProjects\Classic-WoW\Classic-WoW.lua
 ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
 ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
 ServerProjects\Classic-WoW\Raids\BWL\Broodlord.lua
+ServerProjects\Classic-WoW\Raids\BWL\Firemaw.lua
+ServerProjects\Classic-WoW\Raids\BWL\Ebonroc.lua
+ServerProjects\Classic-WoW\Raids\BWL\Flamegor.lua
+ServerProjects\Classic-WoW\Raids\BWL\Chromaggus.lua
+ServerProjects\Classic-WoW\Raids\BWL\Nefarian.lua
 
 ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
@@ -221,6 +223,11 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 Raids\BWL\Razorgore\Default.lua
 Raids\BWL\Vaelastrasz\Default.lua
 Raids\BWL\Broodlord\Default.lua
+Raids\BWL\Firemaw\Default.lua
+Raids\BWL\Ebonroc\Default.lua
+Raids\BWL\Flamegor\Default.lua
+Raids\BWL\Chromaggus\Default.lua
+Raids\BWL\Nefarian\Default.lua
 
 Raids\AQ40\Skeram\Default.lua
 Raids\AQ40\Sartura\Default.lua
