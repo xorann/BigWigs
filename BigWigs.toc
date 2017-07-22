@@ -87,7 +87,9 @@ Plugins\Farclip.lua
 # ###################################
 
 # Onyxia
-Raids\Onyxia\Onyxia.lua
+Raids\Onyxia\Core.lua
+Raids\Onyxia\Onyxia\I18n.lua
+Raids\Onyxia\Onyxia\Core.lua
 
 # MC
 Raids\MC\Lucifron.lua
@@ -207,6 +209,8 @@ ServerProjects\OtherProject\Raids\AQ40\Twins.lua
 # Classic-WoW
 ServerProjects\Classic-WoW\Classic-WoW.lua
 
+ServerProjects\Classic-WoW\Raids\Onyxia\Onyxia.lua
+
 ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
 ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
 ServerProjects\Classic-WoW\Raids\BWL\Broodlord.lua
@@ -230,6 +234,8 @@ ServerProjects\Classic-WoW\Raids\AQ40\CThun.lua
 # ##################################
 # Default Implementations
 # ##################################
+Raids\Onyxia\Onyxia\Default.lua
+
 Raids\BWL\Razorgore\Default.lua
 Raids\BWL\Vaelastrasz\Default.lua
 Raids\BWL\Broodlord\Default.lua
