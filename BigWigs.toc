@@ -146,8 +146,11 @@ Raids\AQ20\Kurinaxx.lua
 
 # AQ40
 Raids\AQ40\Core.lua
+
 Raids\AQ40\Skeram\I18n.lua
 Raids\AQ40\Skeram\Core.lua
+Raids\AQ40\BugFamily\I18n.lua
+Raids\AQ40\BugFamily\Core.lua
 Raids\AQ40\Sartura\I18n.lua
 Raids\AQ40\Sartura\Core.lua
 Raids\AQ40\Fankriss\I18n.lua
@@ -164,9 +167,6 @@ Raids\AQ40\Ouro\I18n.lua
 Raids\AQ40\Ouro\Core.lua
 Raids\AQ40\CThun\I18n.lua
 Raids\AQ40\CThun\Core.lua
-
-Raids\AQ40\BugFamily.lua
-Raids\AQ40\Defenders.lua
 
 # Naxxramas
 Raids\Naxxramas\Anubrekhan.lua
@@ -217,6 +217,7 @@ ServerProjects\Classic-WoW\Raids\BWL\Chromaggus.lua
 ServerProjects\Classic-WoW\Raids\BWL\Nefarian.lua
 
 ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
+ServerProjects\Classic-WoW\Raids\AQ40\BugFamily.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Fankriss.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Viscidus.lua
@@ -239,6 +240,7 @@ Raids\BWL\Chromaggus\Default.lua
 Raids\BWL\Nefarian\Default.lua
 
 Raids\AQ40\Skeram\Default.lua
+Raids\AQ40\BugFamily\Default.lua
 Raids\AQ40\Sartura\Default.lua
 Raids\AQ40\Fankriss\Default.lua
 Raids\AQ40\Viscidus\Default.lua

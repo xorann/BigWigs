@@ -18,15 +18,8 @@ local syncName = module.syncName
 -- module variables
 module.revision = 20013 -- To be overridden by the module!
 
--- timers should be overridden
-timer.berserk = 600
-timer.firstWhirlwind = 20.3
-timer.whirlwind = 15
-timer.nextWhirlwind = {
-	min = 25,
-	max = 30
-}
-
+-- override timers if necessary
+--timer.berserk = 300
 
 ------------------------------
 -- Initialization      		--

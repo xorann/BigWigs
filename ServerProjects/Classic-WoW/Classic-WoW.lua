@@ -25,6 +25,7 @@ BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.bwl.chromaggus)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.bwl.nefarian)
 
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.skeram)
+BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.bugFamily)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.sartura)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.fankriss)
 BigWigs:ServerProjectSupportsBoss(project, BigWigs.bossmods.aq40.viscidus)
