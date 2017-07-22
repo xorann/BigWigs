@@ -116,11 +116,8 @@ function module:CHAT_MSG_MONSTER_EMOTE(msg)
 end
 
 function module:HandleBrokenTeleportTrigger()
-	function Teleport()
-		self:Sync(syncName.teleport)
-	end
-	self:ScheduleRepeatingEvent("BigWigsTwinsBrokenTeleportTrigger", Teleport, timer.teleport)
-	Teleport()
+	self:ScheduleRepeatingEvent("BigWigsTwinsBrokenTeleportTrigger", module.Teleport, timer.teleport)
+	module:Teleport()
 end
 
 ----------------------------------

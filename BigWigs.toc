@@ -156,6 +156,8 @@ Raids\AQ40\Viscidus\I18n.lua
 Raids\AQ40\Viscidus\Core.lua
 Raids\AQ40\Huhuran\I18n.lua
 Raids\AQ40\Huhuran\Core.lua
+Raids\AQ40\Defenders\I18n.lua
+Raids\AQ40\Defenders\Core.lua
 Raids\AQ40\Twins\I18n.lua
 Raids\AQ40\Twins\Core.lua
 Raids\AQ40\Ouro\I18n.lua
@@ -219,6 +221,7 @@ ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Fankriss.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Viscidus.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Huhuran.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Defenders.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Ouro.lua
 ServerProjects\Classic-WoW\Raids\AQ40\CThun.lua
@@ -241,5 +244,6 @@ Raids\AQ40\Fankriss\Default.lua
 Raids\AQ40\Viscidus\Default.lua
 Raids\AQ40\Huhuran\Default.lua
 Raids\AQ40\Twins\Default.lua
+Raids\AQ40\Defenders\Default.lua
 Raids\AQ40\Ouro\Default.lua
 Raids\AQ40\CThun\Default.lua
