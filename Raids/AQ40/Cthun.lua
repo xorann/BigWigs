@@ -779,6 +779,8 @@ function module:TentacleRape()
 end
 
 function module:SetupFleshTentacle()
+	fleshTentacle1Health = 100
+	fleshTentacle2Health = 100
     self:TriggerEvent("BigWigs_StartHPBar", self, L["fleshtentacle1"], 100)
     self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle1"], 0)
     self:TriggerEvent("BigWigs_StartHPBar", self, L["fleshtentacle2"], 100)
@@ -788,6 +790,7 @@ function module:SetupFleshTentacle()
 end
 function module:UpdateFleshTentacle()
     local health = self:GetFleshTentacleHealth()
+	BigWigs:Print("UpdateFleshTentacle 1 " .. fleshTentacle1Health .. " 2 " .. fleshTentacle2Health .. " h " .. health)
     if health <= fleshTentacle1Health then
 		fleshTentacle1Health = health
 		self:TriggerEvent("BigWigs_SetHPBar", self, L["fleshtentacle1"], 100-fleshTentacle1Health)

@@ -118,6 +118,7 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 end
 
 -- mind control
+-- /run local m=BigWigs:GetModule(BigWigs.bossmods.bwl.nefarian);m:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE("Smorgal is afflicted by Shadow Command.")
 function module:CHAT_MSG_SPELL_PERIODIC_HOSTILEPLAYER_DAMAGE(arg1)
 	local _,_, player, type = string.find(arg1, L["trigger_mindControl"])
 	if player and type then

@@ -85,7 +85,7 @@ L:RegisterTranslations("enUS", function() return {
 	-- misc
 	misc_you = "You",
 	misc_are = "are",
-	misc_drakonidsDead = true,
+	misc_drakonidsDead = "Total Drakonids",
 	
 	["NefCounter_RED"] = "Red Drakonid",
 	["NefCounter_GREEN"] = "Green Drakonid",

@@ -22,8 +22,8 @@ module.timer = {
 	shadowflameCast = 2,
 	fear = 27,
 	fearCast = 1.5,
-	landing = 15,
-	firstClasscall = 24,
+	landing = 12,
+	firstClasscall = 22,
 	firstFear = 25,
 }
 local timer = module.timer

@@ -15,8 +15,8 @@ module.toggleoptions = {"enrage", "frenzy", "breath", "breathcd", "vulnerability
 
 -- locals
 module.timer = {
-	firstBreath = 28.5,
-	secondBreath = 58.5,
+	firstBreath = 30,
+	secondBreath = 60,
 	breathInterval = 60,
 	breathCast = 2,
 	frenzy = 8,

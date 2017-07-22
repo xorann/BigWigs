@@ -102,16 +102,16 @@ module.toggleoptions = {"freeze", "volley", "toxinyou", "toxinother", "bosskill"
 
 -- locals
 local timer = {
-	volleyMin = 11,
-	volleyMax = 14,
+	volley = {
+		min = 11,
+		max = 14,
+	}
 }
 local icon = {
 	volley = "Spell_Nature_CorrosiveBreath",
 	toxin = "Spell_Nature_AbolishMagic",
 }
 local syncName = {}
-
-local prior
 
 --[[
 45:39 pull
@@ -161,8 +161,6 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-	self.started = nil
-	prior = nil
 end
 
 -- called after boss is engaged
@@ -179,11 +177,10 @@ end
 ------------------------------
 
 function module:CheckVis(arg1)
-	if not prior and self.db.profile.volley and string.find(arg1, L["volley_trigger"]) then
+	if self.db.profile.volley and string.find(arg1, L["volley_trigger"]) then
 		self:Message(L["volley_warn"], "Urgent")
 		--self:DelayedMessage(timer.volley - 3, L["volley_soon_warn"], "Urgent", nil, nil, true)
-		self:IrregularBar(L["volley_bar"], timer.volleyMin, timer.volleyMax, icon.volley)
-		prior = true
+		self:Bar(L["volley_bar"], timer.volley, icon.volley)
 	elseif string.find(arg1, L["toxin_trigger"]) then
 		local _,_, pl, ty = string.find(arg1, L["toxin_trigger"])
 		if (pl and ty) then
@@ -212,8 +209,4 @@ function module:Emote(arg1)
 	elseif arg1 == L["shatter_trigger"] then
 		self:Message(L["crack2_warn"], "Important")
 	end
-end
-
-function module:BigWigs_Message(text)
-	if text == L["volley_soon_warn"] then prior = nil end
 end
