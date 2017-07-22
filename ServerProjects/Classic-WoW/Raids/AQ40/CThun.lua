@@ -1,9 +1,11 @@
 local bossName = BigWigs.bossmods.aq40.cthun
-if BigWigs:IsBossSupportedByAnyServerProject(bossName) then
+local serverProjectName = "Classic-WoW"
+if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
 	return
 end
--- no implementation found => use default implementation
---BigWigs:Print("default " .. bossName)
+
+--BigWigs:Print("classic-wow " .. bossName)
+
 
 ------------------------------
 -- Variables     			--

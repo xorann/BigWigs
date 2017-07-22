@@ -18,7 +18,8 @@ local syncName = module.syncName
 -- module variables
 module.revision = 20013 -- To be overridden by the module!
 
-
+-- override timers if necessary
+--timer.berserk = 300
 
 ------------------------------
 -- Initialization      		--
