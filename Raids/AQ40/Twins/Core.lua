@@ -4,7 +4,7 @@
 ------------------------------
 
 local bossName = BigWigs.bossmods.aq40.twins
-local module = BigWigs:GetModule(bossName)
+local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 local veklor = AceLibrary("Babble-Boss-2.2")["Emperor Vek'lor"]
 local veknilash = AceLibrary("Babble-Boss-2.2")["Emperor Vek'nilash"]

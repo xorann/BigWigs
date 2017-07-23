@@ -3,7 +3,7 @@
 ------------------------------
 
 local bossName = BigWigs.bossmods.aq40.cthun
-local module = BigWigs:GetModule(bossName)
+local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 module.eyeofcthun = AceLibrary("Babble-Boss-2.2")["Eye of C'Thun"]
 module.cthun = AceLibrary("Babble-Boss-2.2")["C'Thun"]

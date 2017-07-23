@@ -113,7 +113,7 @@ L:RegisterTranslations("deDE", function() return {
 	trigger_pull9 = "Wird euer Untergang",
 	trigger_pull10 = "Eure unversch",
 
-	kill_trigger = "Mein Bruder...",
+	trigger_kill = "Mein Bruder...",
 
 	-- messages
 	msg_teleport = "Teleport!",
@@ -130,7 +130,7 @@ L:RegisterTranslations("deDE", function() return {
 	msg_enrage30 = "Wutanfall in 30 Sekunden",
 	msg_enrage10 = "Wutanfall in 10 Sekunden",
 
-	blizzard_warn = "Lauf aus Blizzard!",
+	msg_blizzard = "Lauf aus Blizzard!",
 
 	-- bars
 	bar_enrage = "Wutanfall",

@@ -3,7 +3,8 @@
 ------------------------------
 
 local bossName = BigWigs.bossmods.bwl.razorgore
-local module = BigWigs:GetModule(bossName)
+BigWigs:Print(bossName)
+local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 
 -- module variables

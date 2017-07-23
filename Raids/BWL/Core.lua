@@ -4,6 +4,8 @@
 --------------------------------------
 
 BigWigs.bossmods.bwl = {}
+
+
 BigWigs.bossmods.bwl.razorgore = "Razorgore the Untamed"
 BigWigs.bossmods.bwl.vaelastrasz = "Vaelastrasz the Corrupt"
 BigWigs.bossmods.bwl.broodlord = "Broodlord Lashlayer"

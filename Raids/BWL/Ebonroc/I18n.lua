@@ -48,7 +48,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-
+	cmd = "Schattenschwinge",
 	-- commands
 	wingbuffet_name = "Alarm f\195\188r Fl\195\188gelsto\195\159",
 	wingbuffet_desc = "Warnung, wenn Ebonroc Fl\195\188gelsto\195\159 wirkt.",

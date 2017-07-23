@@ -11,7 +11,7 @@ end
 -- Variables     			--
 ------------------------------
 
-local module = BigWigs:GetModule(bossName)
+local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 local timer = module.timer
 local icon = module.icon

@@ -4,7 +4,7 @@
 ------------------------------
 
 local bossName = BigWigs.bossmods.aq40.skeram
-local module = BigWigs:GetModule(bossName)
+local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 
 -- module variables

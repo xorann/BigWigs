@@ -48,6 +48,7 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("deDE", function() return {
+	cmd = "Feuerschwinge",
 	-- commands
 	flamebuffet_name = "Alarm f\195\188r Flammenpuffer",
 	flamebuffet_desc = "Warnung f\195\188r Flammenpuffer.",
