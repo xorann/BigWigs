@@ -61,7 +61,7 @@ function module:Toxin(name)
 	if name then
 
 		if self.db.profile.toxinother and name ~= UnitName("player") then
-			self:Message(pl .. L["msg_toxin"], "Important")
+			self:Message(string.format(L["msg_toxin"], name), "Important")
 			--self:TriggerEvent("BigWigs_SendTell", pl, L["msg_toxinSelf"]) -- can cause whisper bug on nefarian
 		end
 	end
