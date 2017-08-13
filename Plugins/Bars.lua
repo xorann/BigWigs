@@ -1273,8 +1273,8 @@ function BigWigsBars:SetupHPBarFrame()
 	local y = self.db.profile.hpPosy
 	if x and y then
 		local s = self.frames.anchor:GetEffectiveScale()
-		self.frames.anchor:ClearAllPoints()
-		self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 0, 0) --self.frames.anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+		self.frames.hpAnchor:ClearAllPoints()
+		self.frames.hpAnchor:SetPoint("TOP", UIParent, "TOP", 0, 0) --self.frames.hpAnchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
 	else
 		self:ResetAnchor("normal")
 	end
