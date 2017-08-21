@@ -33,6 +33,7 @@ module.syncName = {
 	enrage = "DefenderEnrage",
 	explode = "DefenderExplode",
 	thunderclap = "DefenderThunderclap",
+	plague = "DefenderPlague",
 }
 local syncName = module.syncName
 

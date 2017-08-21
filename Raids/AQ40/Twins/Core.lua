@@ -43,9 +43,9 @@ local syncName = module.syncName
 
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.teleport then
-        self:Teleport()
+        module:Teleport()
 	elseif sync == syncName.heal then
-		self:Heal()
+		module:Heal()
 	end
 end
 
@@ -54,10 +54,23 @@ end
 --      Sync Handlers	    --
 ------------------------------
 
+--[[
+
+Error:  attempt to index local `self' (a nil value)
+AddOn: BigWigs
+File: Core.lua
+Line: 58
+Count: 1
+[C]: ?
+Interface\AddOns\BigWigs\Raids\AQ40\Twins\Core.lua:58: in function `event'
+Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:430: in function <Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:407>
+
+
+]]
 function module:Teleport()
 	if self.db.profile.teleport then
 		self:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
-		self:Bar("Switch", 6, icon.teleport)
+		--self:Bar("Switch", 6, icon.teleport)
         self:KTM_Reset()
         
         self:DelayedSound(timer.teleport - 10, "Ten")

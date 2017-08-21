@@ -66,7 +66,6 @@ end
 ------------------------------
 function module:Sting()
 	if self.db.profile.wyvern then
-		BigWigs:Print("sting")
 		self:Message(L["msg_sting"], "Urgent")
 		self:Bar(L["bar_sting"], timer.sting, icon.sting)
 	end

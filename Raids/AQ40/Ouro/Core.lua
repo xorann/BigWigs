@@ -78,7 +78,7 @@ function module:Sweep()
 		self:Bar(L["bar_sweep"], timer.sweep, icon.sweep) -- show cast bar
 		self:Message(L["msg_sweep"], "Important", true, "Alarm")
 		self:DelayedMessage(timer.sweepInterval - 5, L["msg_sweepSoon"], "Important", nil, nil, true)
-		self:Bar(L["bar_sweep"], timer.sweepInterval + timer.sweep, icon.sweep)
+		self:DelayedBar(timer.sweep, L["bar_sweep"], timer.sweepInterval + timer.sweep, icon.sweep)
 	end
 end
 

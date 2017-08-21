@@ -372,7 +372,10 @@ end
 
 function module:TentacleParty()
 	timer.lastEyeTentaclesSpawn = GetTime()
-	--self:ScheduleEvent("bwcthuntentacles", self.TentacleParty, timer.tentacleParty, self)
+
+	-- fallback
+	self:ScheduleEvent("bwcthuntentacles", self.TentacleParty, timer.tentacleParty, self)
+
 	if self.db.profile.tentacle then
 		self:Bar(L["bar_tentacleParty"], timer.tentacleParty, icon.eyeTentacles)
 		self:DelayedMessage(timer.tentacleParty - 5, L["msg_tentacle"], "Urgent", false, nil, true)
@@ -392,7 +395,7 @@ end
 
 function module:UpdateFleshTentacle()
 	local health = self:GetFleshTentacleHealth()
-	BigWigs:Print("UpdateFleshTentacle 1 " .. module.fleshTentacle1Health .. " 2 " .. module.fleshTentacle2Health .. " h " .. health)
+
 	if health <= module.fleshTentacle1Health then
 		module.fleshTentacle1Health = health
 		self:TriggerEvent("BigWigs_SetHPBar", self, L["misc_fleshTentacleFirst"], 100 - module.fleshTentacle1Health)
