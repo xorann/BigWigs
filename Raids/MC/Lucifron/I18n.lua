@@ -86,9 +86,9 @@ L:RegisterTranslations("deDE", function() return {
 	
 	-- messages
 	msg_curseSoon = "5 Sekunden bis Lucifrons Fluch!",
-	msg_curseNow = "Lucifrons Fluch - 20 Sekunden bis zum nächsten!",
+	--msg_curseNow = "Lucifrons Fluch - 20 Sekunden bis zum nächsten!",
 	msg_doomSoon = "5 Sekunden bis Drohende Verdammnis!",
-	msg_doomNow = "Drohende Verdammnis - 15 Sekunden bis zur nächsten!",
+	--msg_doomNow = "Drohende Verdammnis - 15 Sekunden bis zur nächsten!",
 	msg_mindControlOther = "%s ist gedankenkontrolliert!",
 	msg_mindControlYou = "Du bist gedankenkontrolliert!",
 	msg_add = "%d/2 Feuerschuppenbeschützer tot!",
