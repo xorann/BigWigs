@@ -134,19 +134,30 @@ Raids\BWL\Nefarian\I18n.lua
 Raids\BWL\Nefarian\Core.lua
 
 # Zul'Gurub
-Raids\ZG\Arlokk.lua
-Raids\ZG\Jeklik.lua
-Raids\ZG\Marli.lua
+Raids\ZG\Core.lua
+Raids\ZG\Arlokk\I18n.lua
+Raids\ZG\Arlokk\Core.lua
+Raids\ZG\Gahzranka\I18n.lua
+Raids\ZG\Gahzranka\Core.lua
+Raids\ZG\Grilek\I18n.lua
+Raids\ZG\Grilek\Core.lua
+Raids\ZG\Hakkar\I18n.lua
+Raids\ZG\Hakkar\Core.lua
+Raids\ZG\Hazzarah\I18n.lua
+Raids\ZG\Hazzarah\Core.lua
+Raids\ZG\Jeklik\I18n.lua
+Raids\ZG\Jeklik\Core.lua
+Raids\ZG\Jindo\I18n.lua
+Raids\ZG\Jindo\Core.lua
+Raids\ZG\Mandokir\I18n.lua
+Raids\ZG\Mandokir\Core.lua
+Raids\ZG\Marli\I18n.lua
+Raids\ZG\Marli\Core.lua
+
 Raids\ZG\Venoxis.lua
-Raids\ZG\Hakkar.lua
-Raids\ZG\Mandokir.lua
-Raids\ZG\Jindo.lua
 Raids\ZG\Thekal.lua
-Raids\ZG\Grilek.lua
 Raids\ZG\Renataki.lua
-Raids\ZG\Hazzarah.lua
 Raids\ZG\Wushoolay.lua
-Raids\ZG\Gahzranka.lua
 
 # AQ20
 Raids\AQ20\Core.lua
@@ -210,12 +221,16 @@ Raids\Naxxramas\Kelthuzad.lua
 Raids\Other\Core.lua
 Raids\Other\Azuregos\I18n.lua
 Raids\Other\Azuregos\Core.lua
-Raids\Other\Kazzak.lua
-Raids\Other\Emeriss.lua
-Raids\Other\Lethon.lua
-Raids\Other\Taerar.lua
-Raids\Other\Ysondre.lua
-
+Raids\Other\Kazzak\I18n.lua
+Raids\Other\Kazzak\Core.lua
+Raids\Other\Emeriss\I18n.lua
+Raids\Other\Emeriss\Core.lua
+Raids\Other\Lethon\I18n.lua
+Raids\Other\Lethon\Core.lua
+Raids\Other\Taerar\I18n.lua
+Raids\Other\Taerar\Core.lua
+Raids\Other\Ysondre\I18n.lua
+Raids\Other\Ysondre\Core.lua
 #Raids\Other\Boar\I18n.lua
 #Raids\Other\Boar\Core.lua
 
@@ -272,6 +287,13 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Ouro.lua
 ServerProjects\Classic-WoW\Raids\AQ40\CThun.lua
 
+ServerProjects\Classic-WoW\Raids\Other\Azuregos.lua
+ServerProjects\Classic-WoW\Raids\Other\Kazzak.lua
+ServerProjects\Classic-WoW\Raids\Other\Emeriss.lua
+ServerProjects\Classic-WoW\Raids\Other\Lethon.lua
+ServerProjects\Classic-WoW\Raids\Other\Taerar.lua
+ServerProjects\Classic-WoW\Raids\Other\Ysondre.lua
+
 # ##################################
 # Default Implementations
 # ##################################
@@ -297,6 +319,15 @@ Raids\BWL\Flamegor\Default.lua
 Raids\BWL\Chromaggus\Default.lua
 Raids\BWL\Nefarian\Default.lua
 
+Raids\ZG\Arlokk\Default.lua
+Raids\ZG\Gahzranka\Default.lua
+Raids\ZG\Grilek\Default.lua
+Raids\ZG\Hakkar\Default.lua
+Raids\ZG\Hazzarah\Default.lua
+Raids\ZG\Jeklik\Default.lua
+Raids\ZG\Jindo\Default.lua
+Raids\ZG\Mandokir\Default.lua
+Raids\ZG\Marli\Default.lua
 
 Raids\AQ20\Kurinnaxx\Default.lua
 Raids\AQ20\Rajaxx\Default.lua
@@ -318,4 +349,9 @@ Raids\AQ40\Ouro\Default.lua
 Raids\AQ40\CThun\Default.lua
 
 Raids\Other\Azuregos\Default.lua
+Raids\Other\Kazzak\Default.lua
+Raids\Other\Emeriss\Default.lua
+Raids\Other\Lethon\Default.lua
+Raids\Other\Taerar\Default.lua
+Raids\Other\Ysondre\Default.lua
 #Raids\Other\Boar\Default.lua
