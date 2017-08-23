@@ -104,7 +104,7 @@ function module:OrbStart(name)
 			self:RemoveBar(string.format(L["bar_orb"], self.previousorb))
 		end
 		self:Bar(string.format(L["bar_orb"], name), timer.orb, icon.orb, true, "white")
-		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_orb"], rest), function(name, button, extra)
+		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_orb"], name), function(name, button, extra)
 			TargetByName(extra, true)
 		end, name)
 	end
