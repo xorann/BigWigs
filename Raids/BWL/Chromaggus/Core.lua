@@ -7,7 +7,7 @@ local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 
 -- module variables
-module.revision = 20013 -- To be overridden by the module!
+module.revision = 20014 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"enrage", "frenzy", "breath", "breathcd", "vulnerability", "bosskill"}
@@ -164,7 +164,7 @@ function module:IdentifyVulnerability(school)
     
     module.vulnerability = school
     self:Message(format(L["msg_vulnerability"], school), "Positive")
-    if lastVuln then
+    if module.lastVuln then
         self:RemoveBar(format(L["bar_vulnerability"], "???"))
         self:Bar(format(L["bar_vulnerability"], school), (module.lastVuln + timer.vulnerability) - GetTime(), icon.vulnerability)
     end

@@ -17,7 +17,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20013 -- To be overridden by the module!
+module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -26,6 +26,7 @@ module.revision = 20013 -- To be overridden by the module!
 ------------------------------
 --      Initialization      --
 ------------------------------
+
 
 -- called after module is enabled
 function module:OnEnable()
