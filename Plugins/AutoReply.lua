@@ -29,6 +29,7 @@ L:RegisterTranslations("enUS", function() return {
 	statusRequest_desc = "Allow querying the Boss Status",
 	
 	-- messages
+	msg_statusRequest = "status",
 	msg_prefix = "BigWigs - ",
 	msg_autoReply = "I am currently fighting against %s.",
     msg_victory = "The fight against %s has ended. We won :)",
@@ -64,7 +65,8 @@ end
 ------------------------------
 
 function BigWigsAutoReply:CHAT_MSG_WHISPER(msg, name)
-	if msg == L["status"] then
+	BigWigs:Print("whisper received: " .. msg .. " " .. name)
+	if msg == L["msg_statusRequest"] then
 		self:SendStatus(name)
 	else
 		self:Reply(name)
@@ -93,11 +95,13 @@ function BigWigsAutoReply:SendStatus(name)
 end
 
 function BigWigsAutoReply:Reply(name)
+	BigWigs:Print("reply to " .. name)
 	-- only autoreply once
 	if not cache.replied[name] then
 		cache.replied[name] = true
 		
-		self:Whisper(L["msg_prefix"] .. L["msg_autoReply"], name)
+		--self:Whisper(L["msg_prefix"] .. L["msg_autoReply"], name)
+		SendChatMessage(L["msg_prefix"] .. L["msg_autoReply"], "WHISPER", nil, name)
 	end
 end
 
