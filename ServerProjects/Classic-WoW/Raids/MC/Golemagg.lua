@@ -87,7 +87,6 @@ function module:TestModule()
 
 	-- check event handlers
 	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_enrage"])
-	module:UNIT_HEALTH("test")
 	
 	module:OnDisengage()
 	module:TestDisable()

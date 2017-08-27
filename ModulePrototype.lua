@@ -75,6 +75,7 @@ function BigWigs.modulePrototype:Engage()
 	if self.bossSync and not self.engaged then
 		self.engaged = true
 		self:Message(string.format(L["%s engaged!"], self.translatedName), "Positive")
+		BigWigsAutoReply:StartBossfight(self)
 		BigWigsBossRecords:StartBossfight(self)
 		self:KTM_SetTarget(self:ToString())
 
@@ -86,14 +87,11 @@ function BigWigs.modulePrototype:Disengage()
 	-- you already released but someone else was still sending syncs
 	self:CancelAllScheduledEvents()
 
-	if BigWigs:IsModuleActive(self) then
+	if BigWigs:IsModuleActive(self) then		
 		self.engaged = false
 		self.started = false
 
-
 		self:KTM_ClearTarget()
-
-		BigWigsAutoReply:EndBossfight()
 
 		self:RemoveIcon()
 		self:RemoveWarningSign("", true)
@@ -106,16 +104,65 @@ function BigWigs.modulePrototype:Disengage()
 	end
 end
 
-function BigWigs.modulePrototype:Victory()
+function BigWigs.modulePrototype:IsEngaged()
 	if self.engaged then
+		return true
+	end
+	
+	return false
+end
+
+function BigWigs.modulePrototype:GetBossPercentage()
+	local percentage = nil
+	
+	if self:IsEngaged() then		
+		if UnitName("playertarget") == self:ToString() then
+			percentage = UnitHealth(unitId) / UnitHealthMax(unitId) * 100
+		else
+			for i = 1, GetNumRaidMembers(), 1 do
+				if UnitName("Raid" .. i .. "target") == self:ToString() then
+					percentage = UnitHealth(unitId) / UnitHealthMax(unitId) * 100
+					break
+				end
+			end
+		end
+	end
+	
+	return percentage
+end
+
+function BigWigs.modulePrototype:GetStatus()
+	local percentage = GetBossPercentage()
+	local alive = 0
+	local members = GetNumRaidMembers()
+	
+	for i = 1, members, 1 do
+		if not UnitIsDead("Raid" .. i) then
+			alive = alive + 1
+		end
+	end
+	
+	return percentage, alive, members
+end
+
+function BigWigs.modulePrototype:Victory()
+	if self:IsEngaged() then
 		if self.db.profile.bosskill then
 			self:Message(string.format(L["%s has been defeated"], self.translatedName), "Bosskill", nil, "Victory")
 		end
 
+		BigWigsAutoReply:Victory(self)
 		BigWigsBossRecords:EndBossfight(self)
 
 		self:DebugMessage("Boss dead, disabling module [" .. self:ToString() .. "].")
 		self.core:DisableModule(self:ToString())
+	end
+end
+
+function BigWigs.modulePrototype:Wipe()
+	if self:IsEngaged() then
+		BigWigsAutoReply:Wipe(self)
+		BigWigs:BigWigs_RebootModule(self:ToString())
 	end
 end
 
@@ -250,6 +297,10 @@ end
 
 function BigWigs.modulePrototype:CancelDelayedMessage(text)
 	self:CancelScheduledEvent(delayPrefix .. "Message" .. self:ToString() .. text)
+end
+
+function BigWigs.modulePrototype:Whisper(text, name)
+	self:TriggerEvent("BigWigs_SendTell", text, name)
 end
 
 --[[
@@ -641,7 +692,7 @@ function BigWigs:BigWigs_RebootModule(moduleName)
 	end
 	--local moduleName = (BB:HasTranslation(moduleName) and BB[moduleName]) or (BB:HasReverseTranslation(moduleName) and BB[moduleName]) or moduleName
 
-		local m = self:GetModule(moduleName)
+	local m = self:GetModule(moduleName)
 	if m and m:IsBossModule() then
 		self:DebugMessage("BigWigs:BigWigs_RebootModule(): " .. m:ToString())
 		m:Disengage()

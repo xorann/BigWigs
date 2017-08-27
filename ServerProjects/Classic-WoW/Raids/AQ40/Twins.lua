@@ -120,6 +120,19 @@ function module:HandleBrokenTeleportTrigger()
 	module:Teleport()
 end
 
+
+------------------------------
+--      Synchronization	    --
+------------------------------
+-- override this function on nefarian to ignore teleport syncs
+function module:BigWigs_RecvSync(sync, rest, nick)
+	if sync == syncName.teleport then
+        --module:Teleport()
+	elseif sync == syncName.heal then
+		module:Heal()
+	end
+end
+
 ----------------------------------
 -- Module Test Function    --
 ----------------------------------

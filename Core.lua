@@ -517,7 +517,8 @@ function BigWigs:CheckForWipe(module)
         if not inCombat then
             module:DebugMessage("Wipe detected for module ["..module:ToString().."].")
             module:CancelScheduledEvent(module:ToString().."_CheckWipe")
-            self:TriggerEvent("BigWigs_RebootModule", module:ToString())
+            --self:TriggerEvent("BigWigs_RebootModule", module:ToString())
+			module:Wipe()
 			--module:SendWipeSync()
         end
     end

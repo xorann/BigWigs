@@ -69,7 +69,7 @@ end
 
 
 ------------------------------
--- Sync Handlers	    --
+-- Sync Handlers	    	--
 ------------------------------
 function module:Sweep()
 	if self.db.profile.sweep then
@@ -163,7 +163,7 @@ end
 
 
 ------------------------------
--- Utility	Functions   --
+-- Utility	Functions   	--
 ------------------------------
 function module:PossibleSubmerge()
 	if self.db.profile.emerge then

@@ -1,4 +1,4 @@
-local bossName = BigWigs.bossmods.mc.lucifron
+local bossName = BigWigs.bossmods.mc.magmadar
 local serverProjectName = "Classic-WoW"
 if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
 	return
@@ -68,7 +68,7 @@ function module:CheckPanic(msg)
 end
 
 function module:CHAT_MSG_MONSTER_EMOTE(msg)
-	if string.find(arg1, L["trigger_frenzy"]) and self.db.profile.frenzy then
+	if string.find(msg, L["trigger_frenzy"]) and self.db.profile.frenzy then
 		self:Sync(syncName.frenzy)
 	end
 end

@@ -1,8 +1,7 @@
 --[[
-    by LYQ(Virose / MOUZU)
-    https://github.com/MOUZU/BigWigs
+    by Dorann
     
-    This is a small plugin which is inspired by later Bossmod versions which included a module to reply
+    This is a small plugin which is inspired by LYQ and later Bossmod versions which included a module to reply
     to whispers incoming during encounters.
     It can be used to inform that the player can not reply at the moment or to get a status of the
     current fight.
@@ -12,10 +11,11 @@
 --      Are you local?      --
 ------------------------------
 local L = AceLibrary("AceLocale-2.2"):new("BigWigsAutoReply")
-local c = {
+local cache = {
     replied = {
         -- this is a list of players which we've already informed once to prevent spam
-    }
+    },
+	currentBoss = nil
 }
 
 ----------------------------
@@ -23,19 +23,24 @@ local c = {
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-    
+    -- commands
     statusRequest_cmd = "statusRequest",
 	statusRequest_name = "Status Request",
 	statusRequest_desc = "Allow querying the Boss Status",
-            
-    healthStatus_cmd = "healthStatus",
-	healthStatus_name = "Health Status",
-	healthStatus_desc = "Allow Players to know the current Boss HP",
-            
-    playersAlive_cmd = "playersAlive",
-	playersAlive_name = "Players Alive",
-	playersAlive_desc = "Allow Players to know how many Raidmembers are alive",
-            
+	
+	-- messages
+	msg_prefix = "BigWigs - ",
+	msg_autoReply = "I am currently fighting against %s.",
+    msg_victory = "The fight against %s has ended. We won :)",
+	msg_wipe = "The fight against %s has ended. We lost :(",
+	
+	msg_percentage = "%s is at %s% health",
+	msg_percentageUnknown = "Health of %s is unknown",
+	msg_alive = "%d/%d players are alive.",
+	msg_noStatus = "I am currently not fighting any bosses.",
+	
+	-- misc
+	misc_unknown = "Unknown",
 } end )
 
 
@@ -44,7 +49,7 @@ L:RegisterTranslations("enUS", function() return {
 ----------------------------------
 
 BigWigsAutoReply = BigWigs:NewModule("AutoReply")
-BigWigsAutoReply.toggleoptions = { "statusRequest", "healthStatus", "playersAlive" }
+BigWigsAutoReply.toggleoptions = { "statusRequest" }
 
 ------------------------------
 --      Initialization      --
@@ -58,27 +63,75 @@ end
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsAutoReply:CHAT_MSG_WHISPER()
-    -- arg1 = msg / arg2 = unitName
-    if arg1 == "status" and self.db.profile.statusRequest then
-        -- if we allow others to request our status
-        
-        -- send whisper
-    else
-        for i=1, table.getn(c.replied) do
-            if c.replied[i] == arg2 then return end
-        end
-        
-        -- send whisper
-        tinsert(c.replied, arg2)
-    end
+function BigWigsAutoReply:CHAT_MSG_WHISPER(msg, name)
+	if msg == L["status"] then
+		self:SendStatus(name)
+	else
+		self:Reply(name)
+	end
 end
 
-function BigWigsAutoReply:EndBossfight()
-    -- send whisper that the fight ended to c.replied and then reset c.replied
-    
-    -- reset replied list
-    for i=1, table.getn(c.replied) do
-        c.replied[i] = nil  -- if I make this, does tinsert overwrite those again?
-    end
+function BigWigsAutoReply:SendStatus(name)
+	if self.db.profile.statusRequest and name then
+		if cache.currentBoss and cache.currentBoss:IsBossModule() then
+			local percentage, alive, members = cache.currentBoss:GetStatus()
+			local msg = L["msg_prefix"]
+			
+			if percentage then
+				msg = msg .. string.format(L["msg_percentage"], cache.currentBoss:ToString(), percentage)
+			else
+				msg = msg .. string.format(L["msg_percentageUnknown"], cache.currentBoss:ToString())
+			end
+			
+			msg = msg .. ". " .. string.format(L["msg_alive"], alive, members)
+			
+			self:Whisper(msg, name)
+		else
+			self:Whisper(L["msg_prefix"] .. L["msg_noStatus"], name)
+		end
+	end
+end
+
+function BigWigsAutoReply:Reply(name)
+	-- only autoreply once
+	if not cache.replied[name] then
+		cache.replied[name] = true
+		
+		self:Whisper(L["msg_prefix"] .. L["msg_autoReply"], name)
+	end
+end
+
+function BigWigsAutoReply:StartBossfight(mod)
+	cache.currentBoss = mod
+end
+
+function BigWigsAutoReply:Victory(mod)
+    local boss = L["misc_unknown"]
+	if cache.currentBoss and cache.currentBoss:ToString() then
+		boss = cache.currentBoss:ToString()
+	end
+	local msg = L["msg_prefix"] .. string.format(L["msg_victory"], boss)
+	
+	self:EndBossfight(msg)
+end
+
+function BigWigsAutoReply:Wipe(mod)
+    local boss = L["misc_unknown"]
+	if cache.currentBoss and cache.currentBoss:ToString() then
+		boss = cache.currentBoss:ToString()
+	end
+	local msg = L["msg_prefix"] .. string.format(L["msg_wipe"], boss)
+	
+	self:EndBossfight(msg)
+end
+
+function BigWigsAutoReply:EndBossfight(msg)
+	-- send whisper that the fight ended to cache.replied and then reset cache.replied
+	for name, value in pairs(cache.replied) do
+		self:Whisper(msg, name)
+	end
+	
+	-- reset cache
+	cache.replied = {}
+	cache.currentBoss = nil
 end

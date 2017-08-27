@@ -153,11 +153,14 @@ Raids\ZG\Mandokir\I18n.lua
 Raids\ZG\Mandokir\Core.lua
 Raids\ZG\Marli\I18n.lua
 Raids\ZG\Marli\Core.lua
-
-Raids\ZG\Venoxis.lua
-Raids\ZG\Thekal.lua
-Raids\ZG\Renataki.lua
-Raids\ZG\Wushoolay.lua
+Raids\ZG\Venoxis\I18n.lua
+Raids\ZG\Venoxis\Core.lua
+Raids\ZG\Thekal\I18n.lua
+Raids\ZG\Thekal\Core.lua
+Raids\ZG\Renataki\I18n.lua
+Raids\ZG\Renataki\Core.lua
+Raids\ZG\Wushoolay\I18n.lua
+Raids\ZG\Wushoolay\Core.lua
 
 # AQ20
 Raids\AQ20\Core.lua
@@ -178,7 +181,6 @@ Raids\AQ20\Ayamiss\Core.lua
 
 # AQ40
 Raids\AQ40\Core.lua
-
 Raids\AQ40\Skeram\I18n.lua
 Raids\AQ40\Skeram\Core.lua
 Raids\AQ40\BugFamily\I18n.lua
@@ -201,21 +203,37 @@ Raids\AQ40\CThun\I18n.lua
 Raids\AQ40\CThun\Core.lua
 
 # Naxxramas
-Raids\Naxxramas\Anubrekhan.lua
-Raids\Naxxramas\Gluth.lua
-Raids\Naxxramas\Razuvious.lua
-Raids\Naxxramas\Noth.lua
-Raids\Naxxramas\Faerlina.lua
-Raids\Naxxramas\Maexxna.lua
-Raids\Naxxramas\Patchwerk.lua
-Raids\Naxxramas\Grobbulus.lua
-Raids\Naxxramas\Thaddius.lua
-Raids\Naxxramas\Heigan.lua
-Raids\Naxxramas\Gothik.lua
-Raids\Naxxramas\Loatheb.lua
-Raids\Naxxramas\Horsemen.lua
-Raids\Naxxramas\Sapphiron.lua
-Raids\Naxxramas\Kelthuzad.lua
+Raids\Naxxramas\Core.lua
+Raids\Naxxramas\Anubrekhan\I18n.lua
+Raids\Naxxramas\Anubrekhan\Core.lua
+Raids\Naxxramas\Faerlina\I18n.lua
+Raids\Naxxramas\Faerlina\Core.lua
+Raids\Naxxramas\Maexxna\I18n.lua
+Raids\Naxxramas\Maexxna\Core.lua
+Raids\Naxxramas\Noth\I18n.lua
+Raids\Naxxramas\Noth\Core.lua
+Raids\Naxxramas\Heigan\I18n.lua
+Raids\Naxxramas\Heigan\Core.lua
+Raids\Naxxramas\Loatheb\I18n.lua
+Raids\Naxxramas\Loatheb\Core.lua
+Raids\Naxxramas\Patchwerk\I18n.lua
+Raids\Naxxramas\Patchwerk\Core.lua
+Raids\Naxxramas\Grobbulus\I18n.lua
+Raids\Naxxramas\Grobbulus\Core.lua
+Raids\Naxxramas\Gluth\I18n.lua
+Raids\Naxxramas\Gluth\Core.lua
+Raids\Naxxramas\Thaddius\I18n.lua
+Raids\Naxxramas\Thaddius\Core.lua
+Raids\Naxxramas\Razuvious\I18n.lua
+Raids\Naxxramas\Razuvious\Core.lua
+Raids\Naxxramas\Gothik\I18n.lua
+Raids\Naxxramas\Gothik\Core.lua
+Raids\Naxxramas\Horsemen\I18n.lua
+Raids\Naxxramas\Horsemen\Core.lua
+Raids\Naxxramas\Sapphiron\I18n.lua
+Raids\Naxxramas\Sapphiron\Core.lua
+Raids\Naxxramas\Kelthuzad\I18n.lua
+Raids\Naxxramas\Kelthuzad\Core.lua
 
 # Open World Bosses
 Raids\Other\Core.lua
@@ -246,6 +264,8 @@ ServerProjects\OtherProject\Raids\AQ40\Twins.lua
 # Classic-WoW
 ServerProjects\Classic-WoW\Classic-WoW.lua
 
+ServerProjects\Classic-WoW\Raids\Onyxia\Onyxia.lua
+
 ServerProjects\Classic-WoW\Raids\MC\Lucifron.lua
 ServerProjects\Classic-WoW\Raids\MC\Magmadar.lua
 ServerProjects\Classic-WoW\Raids\MC\Gehennas.lua
@@ -257,8 +277,6 @@ ServerProjects\Classic-WoW\Raids\MC\Golemagg.lua
 ServerProjects\Classic-WoW\Raids\MC\Majordomo.lua
 ServerProjects\Classic-WoW\Raids\MC\Ragnaros.lua
 
-ServerProjects\Classic-WoW\Raids\Onyxia\Onyxia.lua
-
 ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
 ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
 ServerProjects\Classic-WoW\Raids\BWL\Broodlord.lua
@@ -267,6 +285,20 @@ ServerProjects\Classic-WoW\Raids\BWL\Ebonroc.lua
 ServerProjects\Classic-WoW\Raids\BWL\Flamegor.lua
 ServerProjects\Classic-WoW\Raids\BWL\Chromaggus.lua
 ServerProjects\Classic-WoW\Raids\BWL\Nefarian.lua
+
+ServerProjects\Classic-WoW\Raids\ZG\Jeklik.lua
+ServerProjects\Classic-WoW\Raids\ZG\Venoxis.lua
+ServerProjects\Classic-WoW\Raids\ZG\Marli.lua
+ServerProjects\Classic-WoW\Raids\ZG\Mandokir.lua
+ServerProjects\Classic-WoW\Raids\ZG\Grilek.lua
+ServerProjects\Classic-WoW\Raids\ZG\Hazzarah.lua
+ServerProjects\Classic-WoW\Raids\ZG\Renataki.lua
+ServerProjects\Classic-WoW\Raids\ZG\Wushoolay.lua
+ServerProjects\Classic-WoW\Raids\ZG\Gahzranka.lua
+ServerProjects\Classic-WoW\Raids\ZG\Thekal.lua
+ServerProjects\Classic-WoW\Raids\ZG\Arlokk.lua
+ServerProjects\Classic-WoW\Raids\ZG\Jindo.lua
+ServerProjects\Classic-WoW\Raids\ZG\Hakkar.lua
 
 ServerProjects\Classic-WoW\Raids\AQ20\Kurinnaxx.lua
 ServerProjects\Classic-WoW\Raids\AQ20\Rajaxx.lua
@@ -287,6 +319,22 @@ ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
 ServerProjects\Classic-WoW\Raids\AQ40\Ouro.lua
 ServerProjects\Classic-WoW\Raids\AQ40\CThun.lua
 
+ServerProjects\Classic-WoW\Raids\Naxxramas\Anubrekhan.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Faerlina.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Maexxna.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Noth.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Heigan.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Loatheb.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Patchwerk.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Grobbulus.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Gluth.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddiust.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Razuvious.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Gothik.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Horsemen.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Sapphiron.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Kelthuzad.lua
+
 ServerProjects\Classic-WoW\Raids\Other\Azuregos.lua
 ServerProjects\Classic-WoW\Raids\Other\Kazzak.lua
 ServerProjects\Classic-WoW\Raids\Other\Emeriss.lua
@@ -297,6 +345,8 @@ ServerProjects\Classic-WoW\Raids\Other\Ysondre.lua
 # ##################################
 # Default Implementations
 # ##################################
+Raids\Onyxia\Onyxia\Default.lua
+
 Raids\MC\Lucifron\Default.lua
 Raids\MC\Magmadar\Default.lua
 Raids\MC\Gehennas\Default.lua
@@ -308,8 +358,6 @@ Raids\MC\Golemagg\Default.lua
 Raids\MC\Majordomo\Default.lua
 Raids\MC\Ragnaros\Default.lua
 
-Raids\Onyxia\Onyxia\Default.lua
-
 Raids\BWL\Razorgore\Default.lua
 Raids\BWL\Vaelastrasz\Default.lua
 Raids\BWL\Broodlord\Default.lua
@@ -319,15 +367,19 @@ Raids\BWL\Flamegor\Default.lua
 Raids\BWL\Chromaggus\Default.lua
 Raids\BWL\Nefarian\Default.lua
 
-Raids\ZG\Arlokk\Default.lua
-Raids\ZG\Gahzranka\Default.lua
-Raids\ZG\Grilek\Default.lua
-Raids\ZG\Hakkar\Default.lua
-Raids\ZG\Hazzarah\Default.lua
 Raids\ZG\Jeklik\Default.lua
-Raids\ZG\Jindo\Default.lua
-Raids\ZG\Mandokir\Default.lua
+Raids\ZG\Venoxis\Default.lua
 Raids\ZG\Marli\Default.lua
+Raids\ZG\Mandokir\Default.lua
+Raids\ZG\Grilek\Default.lua
+Raids\ZG\Hazzarah\Default.lua
+Raids\ZG\Renataki\Default.lua
+Raids\ZG\Wushoolay\Default.lua
+Raids\ZG\Gahzranka\Default.lua
+Raids\ZG\Thekal\Default.lua
+Raids\ZG\Arlokk\Default.lua
+Raids\ZG\Jindo\Default.lua
+Raids\ZG\Hakkar\Default.lua
 
 Raids\AQ20\Kurinnaxx\Default.lua
 Raids\AQ20\Rajaxx\Default.lua
@@ -347,6 +399,22 @@ Raids\AQ40\Twins\Default.lua
 Raids\AQ40\Defenders\Default.lua
 Raids\AQ40\Ouro\Default.lua
 Raids\AQ40\CThun\Default.lua
+
+Raids\Naxxramas\Anubrekhan\Default.lua
+Raids\Naxxramas\Faerlina\Default.lua
+Raids\Naxxramas\Maexxna\Default.lua
+Raids\Naxxramas\Noth\Default.lua
+Raids\Naxxramas\Heigan\Default.lua
+Raids\Naxxramas\Loatheb\Default.lua
+Raids\Naxxramas\Patchwerk\Default.lua
+Raids\Naxxramas\Grobbulus\Default.lua
+Raids\Naxxramas\Gluth\Default.lua
+Raids\Naxxramas\Thaddius\Default.lua
+Raids\Naxxramas\Razuvious\Default.lua
+Raids\Naxxramas\Gothik\Default.lua
+Raids\Naxxramas\Horsemen\Default.lua
+Raids\Naxxramas\Sapphiron\Default.lua
+Raids\Naxxramas\Kelthuzad\Default.lua
 
 Raids\Other\Azuregos\Default.lua
 Raids\Other\Kazzak\Default.lua

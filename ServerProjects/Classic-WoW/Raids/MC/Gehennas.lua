@@ -1,4 +1,4 @@
-local bossName = BigWigs.bossmods.mc.lucifron
+local bossName = BigWigs.bossmods.mc.gehennas
 local serverProjectName = "Classic-WoW"
 if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
 	return
