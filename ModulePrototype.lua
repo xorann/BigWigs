@@ -128,6 +128,10 @@ function BigWigs.modulePrototype:GetBossPercentage()
 		end
 	end
 	
+	-- round
+	--percentage = percentage + 0.5 - (percentage + 0.5) % 1
+	percentage = floor(percentage + 0.5)
+	
 	return percentage
 end
 

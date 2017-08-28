@@ -30,12 +30,12 @@ L:RegisterTranslations("enUS", function() return {
 	
 	-- messages
 	msg_statusRequest = "status",
-	msg_prefix = "BigWigs - ",
-	msg_autoReply = "I am currently fighting against %s.",
+	msg_prefix = "<BigWigs> ", -- do not translate
+	msg_autoReply = "I am currently busy fighting against %s. Send \"status\" to get the status of the current engagement.",
     msg_victory = "The fight against %s has ended. We won :)",
 	msg_wipe = "The fight against %s has ended. We lost :(",
 	
-	msg_percentage = "%s is at %s% health",
+	msg_percentage = "%s is at %d% health", -- first parameter is the boss name, second parameter is the health percentage
 	msg_percentageUnknown = "Health of %s is unknown",
 	msg_alive = "%d/%d players are alive.",
 	msg_noStatus = "I am currently not fighting any bosses.",
@@ -64,12 +64,26 @@ end
 --      Event Handlers      --
 ------------------------------
 
+function BigWigsAutoReply:IsRaidMember(name)
+	if name then
+		for i = 1, GetNumRaidMembers(), 1 do
+            local aName = GetRaidRosterInfo(i)
+            if aName and aName == name then
+                return true
+            end
+        end
+	end
+	
+	return false
+end
+
 function BigWigsAutoReply:CHAT_MSG_WHISPER(msg, name)
-	BigWigs:Print("whisper received: " .. msg .. " " .. name)
-	if msg == L["msg_statusRequest"] then
-		self:SendStatus(name)
-	else
-		self:Reply(name)
+	if name and not self:IsRaidMember(name) then
+		if string.lower(msg) == L["msg_statusRequest"] then
+			self:SendStatus(name)
+		else
+			self:Reply(name)
+		end
 	end
 end
 
@@ -95,35 +109,35 @@ function BigWigsAutoReply:SendStatus(name)
 end
 
 function BigWigsAutoReply:Reply(name)
-	BigWigs:Print("reply to " .. name)
-	-- only autoreply once
-	if not cache.replied[name] then
-		cache.replied[name] = true
-		
-		--self:Whisper(L["msg_prefix"] .. L["msg_autoReply"], name)
-		SendChatMessage(L["msg_prefix"] .. L["msg_autoReply"], "WHISPER", nil, name)
+	-- only autoreply during a boss encounter
+	if cache.currentBoss and cache.currentBoss:IsBossModule() then
+		-- only autoreply once
+		if name and not cache.replied[name] then
+			cache.replied[name] = true
+			
+			--self:Whisper(L["msg_prefix"] .. L["msg_autoReply"], name) -- the default BigWigs whisper function only whispers members of the raid
+			SendChatMessage(L["msg_prefix"] .. string.format(L["msg_autoReply"], cache.currentBoss:ToString()), "WHISPER", nil, name)
+		end
 	end
 end
 
 function BigWigsAutoReply:StartBossfight(mod)
-	cache.currentBoss = mod
+	if mod and mod:IsBossModule() and cache.currentBoss:ToString() then
+		cache.currentBoss = mod
+	end
 end
 
 function BigWigsAutoReply:Victory(mod)
-    local boss = L["misc_unknown"]
-	if cache.currentBoss and cache.currentBoss:ToString() then
-		boss = cache.currentBoss:ToString()
-	end
+    --local boss = L["misc_unknown"]
+	local boss = cache.currentBoss:ToString()
 	local msg = L["msg_prefix"] .. string.format(L["msg_victory"], boss)
 	
 	self:EndBossfight(msg)
 end
 
 function BigWigsAutoReply:Wipe(mod)
-    local boss = L["misc_unknown"]
-	if cache.currentBoss and cache.currentBoss:ToString() then
-		boss = cache.currentBoss:ToString()
-	end
+    --local boss = L["misc_unknown"]
+	local boss = cache.currentBoss:ToString()
 	local msg = L["msg_prefix"] .. string.format(L["msg_wipe"], boss)
 	
 	self:EndBossfight(msg)
