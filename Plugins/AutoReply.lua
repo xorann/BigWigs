@@ -35,7 +35,7 @@ L:RegisterTranslations("enUS", function() return {
     msg_victory = "The fight against %s has ended. We won :)",
 	msg_wipe = "The fight against %s has ended. We lost :(",
 	
-	msg_percentage = "%s is at %d% health", -- first parameter is the boss name, second parameter is the health percentage
+	msg_percentage = "%s is at %s%%%% health", -- first parameter is the boss name, second parameter is the health percentage
 	msg_percentageUnknown = "Health of %s is unknown",
 	msg_alive = "%d/%d players are alive.",
 	msg_noStatus = "I am currently not fighting any bosses.",
@@ -88,12 +88,20 @@ function BigWigsAutoReply:CHAT_MSG_WHISPER(msg, name)
 end
 
 function BigWigsAutoReply:SendStatus(name)
-	if self.db.profile.statusRequest and name then
+	BigWigs:Print("status 1 ")
+	if name then
+		BigWigs:Print("status 1+ " .. name)
+	end
+	if --[[self.db.profile.statusRequest and]] name then
+		BigWigs:Print("status 2")
 		if cache.currentBoss and cache.currentBoss:IsBossModule() then
+			BigWigs:Print("status 3")
 			local percentage, alive, members = cache.currentBoss:GetStatus()
 			local msg = L["msg_prefix"]
-			
+						
 			if percentage then
+				BigWigs:Print(percentage)
+				BigWigs:Print(cache.currentBoss:ToString())
 				msg = msg .. string.format(L["msg_percentage"], cache.currentBoss:ToString(), percentage)
 			else
 				msg = msg .. string.format(L["msg_percentageUnknown"], cache.currentBoss:ToString())
@@ -101,9 +109,9 @@ function BigWigsAutoReply:SendStatus(name)
 			
 			msg = msg .. ". " .. string.format(L["msg_alive"], alive, members)
 			
-			self:Whisper(msg, name)
+			SendChatMessage(msg, "WHISPER", nil, name)
 		else
-			self:Whisper(L["msg_prefix"] .. L["msg_noStatus"], name)
+			SendChatMessage(L["msg_prefix"] .. L["msg_noStatus"], "WHISPER", nil, name)
 		end
 	end
 end
@@ -122,20 +130,27 @@ function BigWigsAutoReply:Reply(name)
 end
 
 function BigWigsAutoReply:StartBossfight(mod)
-	if mod and mod:IsBossModule() and cache.currentBoss:ToString() then
+	BigWigs:Print("start 1")
+	if mod and mod:IsBossModule() and mod:ToString() then
+		BigWigs:Print("start 2")
 		cache.currentBoss = mod
 	end
 end
 
 function BigWigsAutoReply:Victory(mod)
     --local boss = L["misc_unknown"]
-	local boss = cache.currentBoss:ToString()
-	local msg = L["msg_prefix"] .. string.format(L["msg_victory"], boss)
-	
-	self:EndBossfight(msg)
+	BigWigs:Print("victory 1")
+	if cache.currentBoss then
+		BigWigs:Print("victory 2")
+		local boss = cache.currentBoss:ToString()
+		local msg = L["msg_prefix"] .. string.format(L["msg_victory"], boss)
+		
+		self:EndBossfight(msg)
+	end
 end
 
 function BigWigsAutoReply:Wipe(mod)
+	BigWigs:Print("wipe 1")
     --local boss = L["misc_unknown"]
 	local boss = cache.currentBoss:ToString()
 	local msg = L["msg_prefix"] .. string.format(L["msg_wipe"], boss)
@@ -145,8 +160,10 @@ end
 
 function BigWigsAutoReply:EndBossfight(msg)
 	-- send whisper that the fight ended to cache.replied and then reset cache.replied
+	BigWigs:Print("end 1")
 	for name, value in pairs(cache.replied) do
-		self:Whisper(msg, name)
+		--self:Whisper(msg, name)
+		SendChatMessage(msg, "WHISPER", nil, name)
 	end
 	
 	-- reset cache

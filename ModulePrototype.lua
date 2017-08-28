@@ -114,13 +114,15 @@ end
 
 function BigWigs.modulePrototype:GetBossPercentage()
 	local percentage = nil
-	
-	if self:IsEngaged() then		
-		if UnitName("playertarget") == self:ToString() then
+	local unitId = nil
+	if self:IsEngaged() then
+		unitId = "playertarget"
+		if UnitName(unitId) == self:ToString() then
 			percentage = UnitHealth(unitId) / UnitHealthMax(unitId) * 100
 		else
 			for i = 1, GetNumRaidMembers(), 1 do
-				if UnitName("Raid" .. i .. "target") == self:ToString() then
+				unitId = "Raid" .. i .. "target"
+				if UnitName(unitId) == self:ToString() then
 					percentage = UnitHealth(unitId) / UnitHealthMax(unitId) * 100
 					break
 				end
@@ -136,7 +138,7 @@ function BigWigs.modulePrototype:GetBossPercentage()
 end
 
 function BigWigs.modulePrototype:GetStatus()
-	local percentage = GetBossPercentage()
+	local percentage = self:GetBossPercentage()
 	local alive = 0
 	local members = GetNumRaidMembers()
 	

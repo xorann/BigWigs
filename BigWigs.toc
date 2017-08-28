@@ -81,6 +81,7 @@ Plugins\DousedRunes.lua
 Plugins\Enrage.lua
 Plugins\Ignite.lua
 Plugins\Farclip.lua
+Plugins\AFKick.lua
 
 # ###################################
 # Boss modules

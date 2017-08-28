@@ -15,6 +15,8 @@
 ------------------------------
 --      Are you local?      --
 ------------------------------
+
+local L = AceLibrary("AceLocale-2.2"):new("BigWigsAFKick")
 local lastAFKickRequest = nil
 
 
@@ -99,7 +101,7 @@ function BigWigsBars:SendRequest(name)
 		-- check the name
 		for i = 1, GetNumRaidMembers(), 1 do
 			if UnitName("Raid" .. i) == name then
-				self:Sync("AFKick", name) -- send request
+				self:Sync("AFKick " .. name) -- send request
 				SendChatMessage(string.format(L["<BigWigs> %s sent a request to logout %s."], UnitName("player"), name), "RAID") -- inform the raid
 				return
 			end
@@ -139,7 +141,7 @@ function BigWigsAFKick:Logout(requester)
 	
 	local dialog = nil
 	StaticPopupDialogs["BigWigsAFKickDialog"] = {
-		text = L["%s sent a request to log you out. Press \"Ok\" to logout or \"Cancel\" to stay logged in. You will logout automatically in 20 seconds."],
+		text = string.format(L["%s sent a request to log you out. Press \"Ok\" to logout or \"Cancel\" to stay logged in. You will logout automatically in 20 seconds."], requester),
 		button1 = L["Ok"],
 		button2 = L["Cancel"],
 		OnAccept = function()
@@ -171,8 +173,8 @@ function BigWigsAFKick:Logout(requester)
 		hideOnEscape = true,
 		preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
 	}
-	local dialog = StaticPopup_Show ("BigWigsAFKickDialog")
-	Logout()
+	dialog = StaticPopup_Show("BigWigsAFKickDialog")
+	--Logout()
 	
 	--self:ScheduleEvent("AFKickQuit", "BigWigs_SendSync", delay, sync)
 	self:ScheduleEvent("AFKickQuit", self.Quit, 21, self)
