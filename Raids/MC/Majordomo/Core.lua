@@ -74,7 +74,7 @@ function module:HealerDeath(number)
 end
 
 function module:EliteDeath(number)
-	if number and number <= 4 and self.eliteDead < number then
+	if number and number <= 4 and (not self.eliteDead or self.eliteDead < number) then
 		self.eliteDead = number
 		if self.db.profile.adds then
 			self:Message(string.format(L["msg_eliteDeath"], self.eliteDead), "Positive")
