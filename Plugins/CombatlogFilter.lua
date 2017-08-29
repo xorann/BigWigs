@@ -8,7 +8,7 @@ assert( BigWigs, "BigWigs not found!")
 ------------------------------
 --      Are you local?      --
 ------------------------------
-local L = AceLibrary("AceLocale-2.2"):new("BigWigsEventHandler")
+local L = AceLibrary("AceLocale-2.2"):new("BigWigsCombatlogFilter")
 
 local Events = {
 	"CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_HITS",
@@ -94,8 +94,8 @@ local filter = {}
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-	["EventHandler"] = true,
-	["eventHandler"] = true,
+	["CombatlogFilter"] = true,
+	["combatlogFilter"] = true,
 } end)
 
 --[[L:RegisterTranslations("deDE", function() return {
@@ -106,13 +106,13 @@ L:RegisterTranslations("enUS", function() return {
 --      Module Declaration      --
 ----------------------------------
 
-local module = BigWigs:NewModule(L["EventHandler"])
+local module = BigWigs:NewModule(L["CombatlogFilter"])
 module.revision = 20014
 module.defaultDB = {
 }
-module.consoleCmd = L["eventHandler"]
+module.consoleCmd = L["combatlogFilter"]
 
-module.consoleOptions = {
+--[[module.consoleOptions = {
 	type = "group",
 	name = L["EventHandler"],
 	desc = L["Reduces the terrain distance to the minimum in Naxxramas to avoid screen freezes."],
@@ -127,7 +127,7 @@ module.consoleOptions = {
 			--passValue = "reverse",
 		}
 	}
-}
+}]]
 
 ------------------------------
 --      Initialization      --
@@ -135,21 +135,21 @@ module.consoleOptions = {
 
 function module:OnEnable()
     for k, event in pairs(Events) do 
-        self:RegisterEvent(event, "EventHandler")
+        self:RegisterEvent(event, "CombatlogFilter")
     end
 end
 
-function module:AddFilter(aModuleName, filter, callback)
+function module:AddFilter(aModuleName, aFilter, callback)
 	if aModuleName and type(aModuleName) == "string" 
-		and filter and type(filter) == "string"
+		and aFilter and type(aFilter) == "string"
 		and callback and type (callback) == "function" then
 		
 		if not filter[aModuleName] then
 			filter[aModuleName] = {}
 		end
 		
-		if not filter[aModuleName][filter] then
-			filter[aModuleName][filter] = callback
+		if not filter[aModuleName][aFilter] then
+			filter[aModuleName][aFilter] = callback
 		
 			return true
 		end
@@ -158,12 +158,12 @@ function module:AddFilter(aModuleName, filter, callback)
 	return false
 end
 
-function module:RemoveFilter(aModuleName, filter)
+function module:RemoveFilter(aModuleName, aFilter)
 	if aModuleName and type(aModuleName) == "string" 
-		and filter and type(filter) == "string" then
+		and aFilter and type(aFilter) == "string" then
 		
-		if filter[aModuleName] and filter[aModuleName][filter] then
-			filter[aModuleName][filter] = nil
+		if filter[aModuleName] and filter[aModuleName][aFilter] then
+			filter[aModuleName][aFilter] = nil
 		
 			return true
 		end
@@ -186,14 +186,14 @@ end
 
 
 
-function module:EventHandler()
+function module:CombatlogFilter()
 	if event and arg1 then		
 		-- iterate modules
 		for aModuleName, moduleFilters in filter do
 			-- iterate filters
 			for filter, callback in moduleFilters do
 				if string.find(arg1, filter) then
-					callback(arg1, event)
+					callback(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
 				end
 			end
 		end		

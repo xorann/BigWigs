@@ -104,8 +104,11 @@ function BigWigsContribute:ZONE_CHANGED_NEW_AREA()
                 --if (GetGuildInfo("player") == nil) or (not GetGuildInfo("player") == "improved") then
                     BigWigs:Print(L["This |cf75DE52fClassic-WoW|r Version was made by |cff7f7fffDorann|r."])
                 --end
-                if "Nefarian" ~= GetRealmName() then
+                --[[if "Nefarian" ~= GetRealmName() then
                     BigWigs:Print(L["This version of BigWigs is |cffff0000not intended for your realm|r. Please be aware that |cffff0000timers might be wrong or not working at all|r."])    
+                end]]
+				if not BigWigs:IsServerRegisteredForAnyServerProject() then
+					BigWigs:Print(L["This version of BigWigs is |cffff0000not intended for your realm|r. Please be aware that |cffff0000timers might be wrong or not working at all|r."])    
                 end
                 
                 BigWigsContributeFlag = true

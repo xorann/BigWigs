@@ -39,13 +39,22 @@ Several other BigWigs Plugins are included in this repository, so you only need 
     <li><b>CustomBar</b> <br> Allows you to create a custom bar with the following command: /bwcb <seconds> <message></li>
 	<li><b>Version</b>  <i>modified by Dorann</i> <br> Checks your BigWigs version and warns you if there is a newer version available.</li>
 	<li><b>BigWigs_CommonAuras</b> <br \>  Keeps track of certain Buffs and Cooldowns eg. Shield Wall and Challenging Shout</li>
-    <li><b>BigWigs_NefCount</b> <i>deactivated atm (NEEDS REWORK)</i> <br \>  improved mechanism for Nefarian phase 1, keeps track of the Adds killed since that triggers phase 2.</li>
     <li><b>BigWigs_ZombieFood</b> <i>modified by LYQ</i> <br> announces if a player is getting dazed</li>
-    <li><b>BigWigs_LoathebTactical</b> <br> Spore and Consumable warnings for Loatheb</li>
+    <li><b>BigWigs_LoathebTactical</b> <i>modified by Dorann</i> <br> Spore and Consumable warnings for Loatheb</li>
     <li><b>BigWigs_RespawnTimers</b> <i>(NEEDS REWORK)</i> <br>  Trash respawn timers</li>
 	<li><b>BossRecords</b>  <i>made by LYQ</i> <br> This Plugin will keep record of your time used in bossfights and compare it to your fastest.</li>
     <li><b>RaidOfficer</b>  <i>made by LYQ</i> <br> This Plugin will enable for Raid Assistants dragging Players of one Raid-subgroup to another. This was on vanilla previously only enabled for RaidLeaders but the API allows Assistants to do so too.</li>
     <li><b>DousedRunes</b>  <i>made by Dorann</i> <br> Shows you which runes in Molten Core have been doused and which still have to be doused to summon Majordomus. The Frame will be shown after a Rune has been doused and after a boss has been killed (beginning at Magmadar).</li>
+	<li><b>AFKick</b>  <i>made by Dorann</i> <br> Allows you to send a request to automatically logout a raid member. If the player does not react within 20 seconds a normal Logout will be triggered. If the logout did not work the client will be closed after another 20 seconds.</li>
+	<li><b>AutoReply</b>  <i>made by Dorann</i> <br> Whenever someone whispers you during an encounter you will automatically send a response that you are busy. You will also send another message as soon as the fight is over.</li>
+	<li><b>Farclip</b>  <i>made by Dorann</i> <br> If your viewing distance (farclip) is set to high in Naxxramas you will experience frequent screen freezes for several second. As a workaround this plugin sets your viewing distance to the minimum in Naxxramas and restores your old value whenever you leave Naxxramas.</li>
+</ul>
+
+To change the settings of BigWigs and its plugins you have several possibilities:
+<ul>
+	<li><b>Command Line</b> By writing the command "/bwcl" (shorthand for Big Wigs Command Line) you can access the command line. You will get a list of all available commands to help you find your desired setting.</li>
+	<li><b>Minimap Icon</b> By rightclicking on the minimap Icon (or if you are using FuBar rightclicking the Icon on your FuBar) you can access the menu with all available settings.</li>
+	<li><b>GUI</b> By writing the command "/bw" or "/BigWigs" into the chatframe you can access a automatically generated GUI for all settings.</li>
 </ul>
 
 ## Raid Adjustments
@@ -80,11 +89,15 @@ This is a (incomplete) documentation of the <a href="http://wow.gamepedia.com/Bi
 :Message(text[, priority[, noRaidSay[, sound[, broadcastOnly]]]]) <br />
 table :DelayedMessage(delay, text[, priority[, noRaidSay[, sound[, broadcastOnly]]]]) <br />
 :CancelDelayedMessage(text) <br />
+:Whisper(text, name) <br />
  <br />
 :Bar(text, time, icon[, otherColor, c1[, c2[, c3[, c4[, c5[, c6[, c7[, c8[, c9[, c10]]]]]]]]]]) <br />
 :RemoveBar(text) <br />
+:IrregularBar(text, minTime, maxTime, icon[, otherColor, c1[, c2[, c3[, c4[, c5[, c6[, c7[, c8[, c9[, c10]]]]]]]]]]) <br />
 table :DelayedBar(delay, text, time, icon[, otherColor, c1[, c2[, c3[, c4[, c5[, c6[, c7[, c8[, c9[, c10]]]]]]]]]]) <br />
 :CancelDelayedBar(text) <br />
+:BarStatus(text) <br />
+:BarId(text) <br />
  <br />
 :Sound(sound) <br />
 table :DelayedSound(delay, sound[, id]) <br />
@@ -92,26 +105,30 @@ table :DelayedSound(delay, sound[, id]) <br />
  <br />
 :Icon(name[, iconnumber]) <br />
 :RemoveIcon() <br />
+:DelayedRemoveIcon(delay) <br />
  <br />
 :WarningSign(texturePath, duration[, force]) <br />
 :RemoveWarningSign(texturePath[, forceHide]) <br />
 :DelayedWarningSign(delay, icon, duration[, id]) <br />
 :CancelDelayedWarningSign(icon[, id]) <br />
+:WarningSignOnClick(func)
  <br />
 :Say(msg) <br />
  <br />
+:Proximity() <br/>
+:RemoveProximity() <br />
 -- KLHThreatMeter <br />
 :KTM_Reset() <br />
 :KTM_ClearTarget([forceReset]) <br />
 :KTM_SetTarget(targetName[, forceReset]) <br />
  <br />
 ## :Bar(text, length, icon, otherColor, ...)
-Starts a timer bar that counts down for the specified length of time.
+Starts a timer bar that counts down for the specified length of time. If the length argument is table with the keys "min" and "max" a irregular bar will be created.
 
 ### Arguments
 <ul>
 	<li><b>text</b> string<br />The text to show on the bar.</li>
-	<li><b>length</b> number<br />The length of the bar in seconds.</li>
+	<li><b>length</b> number/table<br />The length of the bar in seconds or a table with the keys min and max (will create a irregular bar)</li>
 	<li><b>icon</b> string<br />What icon to show on the bar.</li>
 	<li><b>otherColor</b> boolean<br />Optional, if not specified, the configured colors will be used. If specified, you must provide 1 to 10 colors to use as arguments after otherColor.</li>
 	<li><b>...</b> color<br />Optional, if otherColor is specified, you must provide 1 to 10 colors.</li>
@@ -124,7 +141,8 @@ Nothing
 		
 ### Example
 self:Bar("Adds incoming!", 30, "Spell_Nature_Web")<br />
-self:Bar("Testing Colors!", 60, "Spell_Nature_Web", true, "red", "yellow", "green")
+self:Bar("Testing Colors!", 60, "Spell_Nature_Web", true, "red", "yellow", "green")<br />
+self:Bar("More adds incoming!", { min: 20, max: 25 }, "Spell_Nature_Web")
 
 
 ## :Icon(name, iconnumber)
@@ -267,9 +285,6 @@ void BigWigs.modulePrototype:Disable() <br />
 -- synchronize functions, do not override <br />
 string BigWigs.modulePrototype:GetEngageSync() <br />
 void BigWigs.modulePrototype:SendEngageSync() <br />
- <br />
-string BigWigs.modulePrototype:GetWipeSync() <br />
-void BigWigs.modulePrototype:SendWipeSync() <br />
  <br />
 string BigWigs.modulePrototype:GetBossDeathSync() <br />
 void BigWigs.modulePrototype:SendBossDeathSync() <br />

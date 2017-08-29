@@ -82,6 +82,7 @@ Plugins\Enrage.lua
 Plugins\Ignite.lua
 Plugins\Farclip.lua
 Plugins\AFKick.lua
+Plugins\CombatlogFilter.lua
 
 # ###################################
 # Boss modules

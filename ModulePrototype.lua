@@ -396,6 +396,27 @@ function BigWigs.modulePrototype:Say(msg)
 	SendChatMessage(msg, "SAY")
 end
 
+function BigWigs.modulePrototype:CombatlogFilter(filter, callback)
+	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
+	CombatlogFilter:AddFilter(self:ToString(), filter, callback)
+end
+
+-- CombatlogFilter
+function BigWigs.modulePrototype:CombatlogFilter(filter, callback)
+	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
+	CombatlogFilter:AddFilter(self:ToString(), filter, callback)
+end
+
+function BigWigs.modulePrototype:RemoveCombatlogFilter(filter)
+	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
+	CombatlogFilter:AddFilter(self:ToString(), filter)
+end
+
+function BigWigs.modulePrototype:RemoveAllCombatlogFilters()
+	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
+	CombatlogFilter:AddFilter(self:ToString())
+end
+
 -- proximity
 function BigWigs.modulePrototype:Proximity()
 	BigWigs:Proximity(self:ToString())

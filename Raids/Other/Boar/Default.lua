@@ -43,6 +43,10 @@ function module:OnEnable()
     self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "UmlautCheck")
 
     self:RegisterEvent("UNIT_HEALTH")
+	
+	--local EventHandler = BigWigs:GetModule("EventHandler")
+	--EventHandler:AddFilter(self:ToString(), "hits", self.EventHandlerTest)
+	self:CombatlogFilter("hits", self.EventHandlerTest)
     
 end
 
@@ -75,6 +79,11 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
+
+function module:EventHandlerTest(event, msg)
+	BigWigs:Print("event: " .. event)
+	BigWigs:Print("msg: " .. msg)
+end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
     BigWigs:CheckForBossDeath(msg, self)
