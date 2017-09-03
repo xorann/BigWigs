@@ -1,4 +1,12 @@
+--[[
 
+[2017/08/30 20:43:40-456]: Twins\Core.lua:71: attempt to index local `self' (a nil value)
+Twins\Core.lua:71: in function `event'
+AceEvent-2.0\AceEvent-2.0.lua:430: in function <Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:407>
+
+  ---
+  
+ ]]
 ------------------------------
 --      Variables      --
 ------------------------------
@@ -69,15 +77,15 @@ Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:430: in function <Interface\
 ]]
 function module:Teleport()
 	if self.db.profile.teleport then
-		self:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
+		module:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
 		--self:Bar("Switch", 6, icon.teleport)
-        self:KTM_Reset()
+        module:KTM_Reset()
         
-        self:DelayedSound(timer.teleport - 10, "Ten")
-        self:DelayedSound(timer.teleport - 3, "Three")
-        self:DelayedSound(timer.teleport - 2, "Two")
-        self:DelayedSound(timer.teleport - 1, "One")
-        self:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
+        module:DelayedSound(timer.teleport - 10, "Ten")
+        module:DelayedSound(timer.teleport - 3, "Three")
+        module:DelayedSound(timer.teleport - 2, "Two")
+        module:DelayedSound(timer.teleport - 1, "One")
+        module:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
 
 	end
 end
