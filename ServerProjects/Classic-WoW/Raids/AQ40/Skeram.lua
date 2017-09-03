@@ -39,6 +39,8 @@ function module:OnEnable()
 
 	self:ThrottleSync(1, syncName.mc)
 	self:ThrottleSync(1, syncName.mcOver)
+	
+	self:CombatlogFilter(L["trigger_arcaneExplosion"], self.ArcaneExplosionEvent)
 end
 
 -- called after module is enabled and after each wipe
@@ -117,6 +119,11 @@ function module:Event(msg)
 	end
 end
 
+function module:ArcaneExplosionEvent(event, msg)
+	BigWigs:DebugMessage("Arcane Explosion Event: " .. event)
+	self:Sync(syncName.arcaneExplosion)
+end
+
 
 ----------------------------------
 -- 		Module Test Function    --
@@ -138,7 +145,8 @@ function module:TestModule()
 	module:Event(L["trigger_mcGainPlayer"])
 	module:Event(L["trigger_mcPlayerGone"])
 	module:Event(L["trigger_deathPlayer"])
-
+	module:ArcaneExplosionEvent("test", "test")
+	
 	module:OnDisengage()
 	module:TestDisable()
 end

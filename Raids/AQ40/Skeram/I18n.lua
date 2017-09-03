@@ -15,6 +15,10 @@ L:RegisterTranslations("enUS", function() return {
 	split_cmd = "split",
 	split_name = "Split Alert",
 	split_desc = "Warn before Splitting",
+	
+	arcaneExplosion_cmd = "arcane explosion",
+	arcaneExplosion_name = "Arcane Explosion",
+	arcaneExplosion_desc = "Warn for Arcane Explosion",
 
 	-- triggers
 	trigger_mcGainPlayer = "You are afflicted by True Fulfillment.",
@@ -23,6 +27,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_mcOtherGone = "True Fulfillment fades from (.*).",
 	trigger_deathPlayer = "You die.",
 	trigger_deathOther = "(.*) dies.",
+	trigger_arcaneExplosion = "The Prophet Skeram begins to cast Arcane Explosion.",
 	["You have slain %s!"] = true,
 
 	-- messages
@@ -33,6 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 
 	-- bars
 	bar_mc = "MC: %s",
+	bar_arcaneExplosion = "Arcane Explosion",
 
 	-- misc
 }

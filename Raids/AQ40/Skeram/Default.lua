@@ -17,7 +17,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20013 -- To be overridden by the module!
+module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -47,6 +47,8 @@ function module:OnEnable()
 	self:ThrottleSync(100, syncName.split50)
 	self:ThrottleSync(100, syncName.split30)
 	self:ThrottleSync(100, syncName.split25)
+	
+	self:CombatlogFilter(L["trigger_arcaneExplosion"], self.ArcaneExplosionEvent)
 end
 
 -- called after module is enabled and after each wipe
@@ -146,6 +148,10 @@ function module:UNIT_HEALTH(arg1)
 	end
 end
 
+function module:ArcaneExplosionEvent(event, msg)
+	BigWigs:DebugMessage("Arcane Explosion Event: " .. event)
+	self:Sync(syncName.arcaneExplosion)
+end
 
 
 ----------------------------------

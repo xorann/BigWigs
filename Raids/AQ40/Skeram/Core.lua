@@ -8,19 +8,21 @@ local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 
 -- module variables
-module.revision = 20013 -- To be overridden by the module!
+module.revision = 20014 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"mc", "split", "bosskill"}
+module.toggleoptions = {"mc", "arcaneExplosion", "split", "bosskill"}
 
 -- locals
 module.timer = {
 	mc = 20,
+	arcaneExplosion = 1.2,
 }
 local timer = module.timer
 
 module.icon = {
 	mc = "Spell_Shadow_Charm",
+	arcaneExplosion = "Spell_Nature_WispSplode",
 }
 local icon = module.icon
 
@@ -33,6 +35,7 @@ module.syncName = {
 	split50 = "SkeramSplit50Now",
 	split30 = "SkeramSplit30Soon",
 	split25 = "SkeramSplit25Now",
+	arcaneExplosion = "SkeramArcaneExplosion"
 }
 local syncName = module.syncName
 
@@ -60,6 +63,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:MindControl(rest)
 	elseif sync == syncName.mcOver and rest then
 		self:MindControlGone(rest)
+	elseif sync == syncName.arcaneExplosion then
+		self:ArcaneExplosion()
 	end
 end
 
@@ -100,6 +105,11 @@ function module:Split()
 	end
 end
 
+function module:ArcaneExplosion()
+	if self.db.profile.split then
+		self:Bar(L["bar_arcaneExplosion"], timer.arcaneExplosion, icon.arcaneExplosion)
+	end
+end
 
 ----------------------------------
 -- 		Module Test Function    --
@@ -114,6 +124,8 @@ function module:TestModuleCore()
 	module:MindControlGone(name)
 	module:SplitSoon()
 	module:Split()
+	module:ArcaneExplosion()
+	
 	module:BigWigs_RecvSync(syncName.split80)
 	module:BigWigs_RecvSync(syncName.split55)
 	module:BigWigs_RecvSync(syncName.split30)
@@ -122,4 +134,5 @@ function module:TestModuleCore()
 	module:BigWigs_RecvSync(syncName.split25)
 	module:BigWigs_RecvSync(syncName.mc, name)
 	module:BigWigs_RecvSync(syncName.mcOver, name)
+	module:BigWigs_RecvSync(syncName.arcaneExplosion)
 end
