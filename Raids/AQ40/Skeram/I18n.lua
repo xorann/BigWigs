@@ -16,7 +16,7 @@ L:RegisterTranslations("enUS", function() return {
 	split_name = "Split Alert",
 	split_desc = "Warn before Splitting",
 	
-	arcaneExplosion_cmd = "arcane explosion",
+	arcaneExplosion_cmd = "arcaneExplosion",
 	arcaneExplosion_name = "Arcane Explosion",
 	arcaneExplosion_desc = "Warn for Arcane Explosion",
 

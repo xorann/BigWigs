@@ -50,10 +50,14 @@ local syncName = module.syncName
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
+	local mod = BigWigs:GetModule(BigWigs.bossmods.aq40.twins)
+	
 	if sync == syncName.teleport then
-        module:Teleport()
+        --self:Teleport()
+        mod:Teleport()
 	elseif sync == syncName.heal then
-		module:Heal()
+		--self:Heal()
+		mod:Heal()
 	end
 end
 
@@ -76,16 +80,17 @@ Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:430: in function <Interface\
 
 ]]
 function module:Teleport()
-	if self.db.profile.teleport then
-		module:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
+	local mod = BigWigs:GetModule(BigWigs.bossmods.aq40.twins)
+	if mod.db.profile.teleport then
+		mod:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
 		--self:Bar("Switch", 6, icon.teleport)
-        module:KTM_Reset()
+        mod:KTM_Reset()
         
-        module:DelayedSound(timer.teleport - 10, "Ten")
-        module:DelayedSound(timer.teleport - 3, "Three")
-        module:DelayedSound(timer.teleport - 2, "Two")
-        module:DelayedSound(timer.teleport - 1, "One")
-        module:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
+        mod:DelayedSound(timer.teleport - 10, "Ten")
+        mod:DelayedSound(timer.teleport - 3, "Three")
+        mod:DelayedSound(timer.teleport - 2, "Two")
+        mod:DelayedSound(timer.teleport - 1, "One")
+        mod:DelayedMessage(timer.teleport - 0.1, L["msg_teleport"], "Attention", false, "Alarm")
 
 	end
 end

@@ -187,7 +187,8 @@ function module:CThunP2Start()
 			self:SetupFleshTentacle()
 		end
 
-		--self:ScheduleEvent("bwcthunstarttentacles", self.TentacleParty, timer.p2FirstEyeTentacles, self)
+		-- fallback in case server script is .. lacking
+		self:ScheduleEvent("bwcthunstarttentacles", self.TentacleParty, timer.p2FirstEyeTentacles, self)
 		--self:ScheduleEvent("bwcthunstartgiant", self.GiantEyeTentacle, timer.p2FirstGiantEye, self )
 		--self:ScheduleEvent("bwcthunstartgiantc", self.GiantClawTentacle, timer.p2FirstGiantClaw, self )
 

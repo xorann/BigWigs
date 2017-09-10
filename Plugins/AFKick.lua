@@ -31,12 +31,15 @@ L:RegisterTranslations("enUS", function() return {
 	-- console
 	["Send Request"] = true,
 	["Send Request to log someone out."] = true,
+	["<player name>"] = true,
 	
 	-- request messages
 	["You have to be the raid leader or an assistant."] = true,
 	["<BigWigs> %s sent a request to logout %s."] = true,
 	["%s is not in your raid"] = true,
 	["Please provide a name."] = true,
+	["Your AFKick Request for %s was not acknowledged. %s is probably not using a current compatible version of BigWigs."] = true,
+	["%s is already offline."] = true,
 	
 	-- dialog
 	["%s sent a request to log you out. Press \"Ok\" to logout or \"Cancel\" to stay logged in. You will logout automatically in 20 seconds."] = true,
@@ -62,7 +65,9 @@ BigWigsAFKick.consoleOptions = {
 			desc = L["Send Request to log someone out."],
 			order = 1,
 			get = false,
-			set = function(name) BigWigsBars:SendRequest(name) end,
+			set = function(name) BigWigsAFKick:SendRequest(name) end,
+			usage = L["<player name>"],
+			disabled = function() return (not IsRaidLeader() and not IsRaidOfficer()) and UnitInRaid("player") end,
 		},
 	},
 }
@@ -79,8 +84,10 @@ end
 --      Event Handlers      --
 ------------------------------
 
-function BigWigsBars:SendRequest(name)
+function BigWigsAFKick:SendRequest(name)
 	if name then
+
+		name = string.gsub(name, "^%l", string.upper) -- first character uppercase
 		local myName = UnitName("player")
 		
 		-- Raid officers only
@@ -101,8 +108,13 @@ function BigWigsBars:SendRequest(name)
 		-- check the name
 		for i = 1, GetNumRaidMembers(), 1 do
 			if UnitName("Raid" .. i) == name then
-				self:Sync("AFKick " .. name) -- send request
-				SendChatMessage(string.format(L["<BigWigs> %s sent a request to logout %s."], UnitName("player"), name), "RAID") -- inform the raid
+				if UnitIsConnected("Raid" .. i) then
+					self:Sync("AFKick " .. name) -- send request
+					self:ScheduleEvent("AFKickWaitForAcknowledge" .. name, self.NoAcknowledge, 10, self, name)
+				else
+					BigWigs:Print(string.format(L["%s is already offline."], name))
+				end
+				
 				return
 			end
 		end
@@ -114,23 +126,42 @@ function BigWigsBars:SendRequest(name)
 end
 
 function BigWigsAFKick:BigWigs_RecvSync(sync, rest, nick)
-    if sync == "AFKick" and rest and rest == UnitName("player") then
-        -- Check the author of this Sync first
-        -- only RaidOfficers are allowed to use this function
-        for i = 1, GetNumRaidMembers(), 1 do
-            local name, rank = GetRaidRosterInfo(i)
-            if name and name == nick then
-                if rank > 0 then
-                    -- the author is at least an assistant
-					self:Logout(nick)
-                    break
-                else
-                    -- the author is a fucktard trying to abuse my system
-                    return
-                end
-            end
-        end
-    end
+    if sync == "AFKick" and rest and nick then
+        self:RequestReceived(rest, nick)
+    elseif sync == "AFKickAcknowledge" and rest and nick then
+		self:Acknowledge(rest, nick)
+	end
+end
+
+function BigWigsAFKick:RequestReceived(name, requester)
+	if name == UnitName("player") then
+		-- Check the author of this Sync first
+		-- only RaidOfficers are allowed to use this function
+		for i = 1, GetNumRaidMembers(), 1 do
+			local aName, rank = GetRaidRosterInfo(i)
+			if aName and aName == requester then
+				if rank > 0 then
+					-- the author is at least an assistant
+					self:Logout(requester)
+					break
+				else
+					-- the author is a fucktard trying to abuse my system
+					return
+				end
+			end
+		end
+	end
+end
+
+function BigWigsAFKick:Acknowledge(requester, name)
+	if requester == UnitName("player") and name then
+		self:CancelScheduledEvent("AFKickWaitForAcknowledge" .. name)
+		SendChatMessage(string.format(L["<BigWigs> %s sent a request to logout %s."], UnitName("player"), name), "RAID") -- inform the raid
+	end
+end
+
+function BigWigsAFKick:NoAcknowledge(name)
+	BigWigs:Print(string.format(L["Your AFKick Request for %s was not acknowledged. %s is probably not using a compatible version of BigWigs."], name, name))
 end
 
 function BigWigsAFKick:Logout(requester)
@@ -138,6 +169,8 @@ function BigWigsAFKick:Logout(requester)
 	-- ForceQuit() -- immidiate exit
 	-- Logout() -- normal logout, 20s warning
 	-- Camp() ?? -- does not work
+	
+	self:Sync("AFKickAcknowledge " .. requester)
 	
 	local dialog = nil
 	StaticPopupDialogs["BigWigsAFKickDialog"] = {
@@ -183,8 +216,8 @@ function BigWigsAFKick:Logout(requester)
 end
 
 function BigWigsAFKick:Quit()
-	Quit() -- normal exit game, 20s warning
-	self:ScheduleEvent("AFKickForceQuit", self.ForceQuit, 21, self)
+	Logout() -- normal exit game, 20s warning
+	self:ScheduleEvent("AFKickForceQuit", self.ForceQuit, 22, self)
 end
 
 function BigWigsAFKick:ForceQuit()
