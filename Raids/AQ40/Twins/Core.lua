@@ -80,7 +80,9 @@ Interface\AddOns\Ace2\AceEvent-2.0\AceEvent-2.0.lua:430: in function <Interface\
 
 ]]
 function module:Teleport()
-	local mod = BigWigs:GetModule(BigWigs.bossmods.aq40.twins)
+	--local mod = BigWigs:GetModule(BigWigs.bossmods.aq40.twins)
+	local mod = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
+	
 	if mod.db.profile.teleport then
 		mod:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
 		--self:Bar("Switch", 6, icon.teleport)

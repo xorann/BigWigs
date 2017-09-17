@@ -709,16 +709,18 @@ end
 -- event handler
 function BigWigs:BigWigs_RebootModule(moduleName)
 	--local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-
-	-- requester has en client
-	if BB:HasTranslation(moduleName) and BB[moduleName] then
-		moduleName = BB[moduleName]
-	-- requester has not en client
-	elseif BB:HasReverseTranslation(moduleName)  then
-		moduleName = BB:GetReverseTranslation(moduleName)
+	local m = nil
+	if not BigWigs:HasModule(moduleName) then
+		-- requester has en client
+		if BB:HasTranslation(moduleName) and BB[moduleName] then
+			moduleName = BB[moduleName]
+		-- requester has not en client
+		elseif BB:HasReverseTranslation(moduleName)  then
+			moduleName = BB:GetReverseTranslation(moduleName)
+		end
+		--local moduleName = (BB:HasTranslation(moduleName) and B*B[moduleName]) or (BB:HasReverseTranslation(moduleName) and BB[moduleName]) or moduleName
 	end
-	--local moduleName = (BB:HasTranslation(moduleName) and BB[moduleName]) or (BB:HasReverseTranslation(moduleName) and BB[moduleName]) or moduleName
-
+	
 	local m = self:GetModule(moduleName)
 	if m and m:IsBossModule() then
 		self:DebugMessage("BigWigs:BigWigs_RebootModule(): " .. m:ToString())

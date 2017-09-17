@@ -101,11 +101,11 @@ end
 -- automated test
 function module:TestModuleCore()
 	-- check core functions
-	module:Weakness(L["Shadow"], 0)
+	module:Weakness("Shadow", 0)
 	module:Crystal()
 	module:Supreme()
 	
-	module:BigWigs_RecvSync(syncName.weakness, L["Shadow"])
+	module:BigWigs_RecvSync(syncName.weakness, "Shadow")
 	module:BigWigs_RecvSync(syncName.crystal)
 	module:BigWigs_RecvSync(syncName.supreme)
 end
