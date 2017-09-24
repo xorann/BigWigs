@@ -89,7 +89,7 @@ end
 ------------------------------
 function module:Volley()
 	if self.db.profile.toxicvolley then
-		self:Bar(L["bar_toxicVolley"], timer.volley, icon.volley, true, "green")
+		self:Bar(L["bar_toxicVolley"], timer.volley, icon.volley)
 	end
 end
 
@@ -97,7 +97,7 @@ function module:Heal()
 	module.healtime = GetTime()
 	module.castingheal = true
 	if self.db.profile.heal then
-		self:Bar(L["bar_heal"], timer.heal, icon.heal, true, "yellow")
+		self:Bar(L["bar_heal"], timer.heal, icon.heal, true, "Blue")
 		self:Message(L["msg_heal"], "Attention", true, "Alert")
 	end
 end
@@ -109,7 +109,7 @@ end
 
 function module:Panic()
 	if self.db.profile.panic then
-		self:Bar(L["bar_panic"], timer.panic, icon.panic, true, "white")
+		self:Bar(L["bar_panic"], timer.panic, icon.panic, true, "Orange")
 		self:Message(L["msg_panic"], "Urgent", true, "Alarm")
 	end
 end

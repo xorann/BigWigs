@@ -72,10 +72,10 @@ function module:BigWigs_RecvSync(sync, rest, nick)
         self:Bar(L["Knockback"], timer.knockback, icon.knockback)
 	elseif sync == syncName.heal and self.db.profile.heal then
 		self:Message(L["msg_heal"], "Attention", "Alarm")
-		self:Bar(L["bar_heal"], 4, icon.heal, true, "Black")
+		self:Bar(L["bar_heal"], 4, icon.heal, true, "Blue")
 	elseif sync == syncName.frenzy and self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", true, "Alarm")
-		self:Bar(L["bar_frenzy"], 8, icon.frenzy, true, "Black")
+		self:Bar(L["bar_frenzy"], 8, icon.frenzy, true, "Yellow")
 	elseif sync == syncName.frenzyOver and self.db.profile.frenzy then
         self:RemoveBar(L["bar_frenzy"])
 	elseif sync == syncName.bloodlust and self.db.profile.bloodlust then
@@ -91,7 +91,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == syncName.mortalcleave and self.db.profile.cleave then
 		self:Bar(string.format(L["bar_mortalCleave"], rest), 5, icon.mortalCleave)
 	elseif sync == syncName.disarm and self.db.profile.disarm then
-		self:Bar(string.format(L["bar_disarm"], rest), 5, icon.disarm, true, "Yellow")
+		self:Bar(string.format(L["bar_disarm"], rest), 5, icon.disarm)
 	elseif sync == syncName.enrage and self.db.profile.enraged then
 		self:Message(L["msg_enrage"], "Urgent")
 	end
@@ -103,7 +103,7 @@ end
 ------------------------------
 function module:PhaseSwitch()
     BigWigs:ToggleModuleActive(module, true)
-    module:Bar(L["bar_phase2"], 9, icon.phase2)
+    module:Bar(L["bar_phase2"], 9, icon.phase2, true, "Cyan")
     module.phase = 1.5;
 end
 

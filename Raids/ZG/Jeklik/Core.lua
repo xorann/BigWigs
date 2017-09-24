@@ -75,7 +75,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		end
         self:Bar("Fire Bombs", timer.fireBombs, icon.bomb)
 	elseif sync == syncName.fear and self.db.profile.fear then
-		self:Bar(L["bar_fear"], timer.fear, icon.fear)
+		self:Bar(L["bar_fear"], timer.fear, icon.fear, true, "Orange")
 	elseif sync == syncName.fear2 then
 		if self.db.profile.fear then
 			self:Bar(L["bar_fear"], timer.fear2, icon.fear2)
@@ -103,7 +103,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.heal then
             self:RemoveBar("Next Heal")
 			self:Message(L["msg_heal"], "Important", "Alarm")
-			self:Bar(L["bar_heal"], timer.healCast, icon.heal)
+			self:Bar(L["bar_heal"], timer.healCast, icon.heal, true, "Blue")
 		end
 	elseif sync == syncName.healOver then
 		self.castingheal = 0

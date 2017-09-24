@@ -112,7 +112,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy and not module.frenzied then
 		self:Message(L["msg_frenzy"], "Attention")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "red")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
 		
 		if module.playerClass == "HUNTER" then
 			self:WarningSign(icon.tranquil, timer.frenzy, true)

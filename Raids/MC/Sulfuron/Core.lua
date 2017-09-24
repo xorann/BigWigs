@@ -76,7 +76,7 @@ end
 function module:Heal()
 	if self.db.profile.heal then		
 		self:Message(L["msg_heal"], "Attention", true, "Alarm")
-		self:Bar(L["bar_heal"], timer.heal, icon.heal)
+		self:Bar(L["bar_heal"], timer.heal, icon.heal, true, "Blue")
 	end
 end
 

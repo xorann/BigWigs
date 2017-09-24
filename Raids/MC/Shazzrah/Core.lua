@@ -88,7 +88,7 @@ function module:Blink()
     
     if self.db.profile.blink then
         self:Message(L["msg_blinkNow"], "Important")
-        self:Bar(L["bar_blink"], timer.blink, icon.blink)
+        self:Bar(L["bar_blink"], timer.blink, icon.blink, true, "Black")
         
         self:DelayedMessage(timer.blink - 5, L["msg_blinkSoon"], "Attention", "Alarm", nil, nil, true)
     end

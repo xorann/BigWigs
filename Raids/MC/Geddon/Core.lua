@@ -71,7 +71,7 @@ end
 ------------------------------
 function module:Bomb(name)
 	if self.db.profile.bomb then
-		self:Bar(string.format(L["bar_bomb"], name), timer.bomb, icon.bomb)
+		self:Bar(string.format(L["bar_bomb"], name), timer.bomb, icon.bomb, true, "Black")
 		if name == UnitName("player") then
 			self:Message(L["msg_bombYou"], "Attention", "RunAway")
 			self:WarningSign(icon.bombSign, timer.bomb)

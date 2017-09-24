@@ -72,7 +72,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", nil, true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "red")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
         
 		if module.playerClass == "HUNTER" then
             self:WarningSign(icon.tranquil, timer.frenzy, true)
@@ -97,7 +97,7 @@ end
 function module:Fear()
 	if self.db.profile.fear then
 		self:Message(L["msg_fearNow"], "Important")
-		self:Bar(L["bar_fear"], timer.fear, icon.fear)
+		self:Bar(L["bar_fear"], timer.fear, icon.fear, true, "Orange")
 		self:DelayedMessage(timer.fear - 5, L["msg_fearSoon"], "Urgent")
 	end
 end

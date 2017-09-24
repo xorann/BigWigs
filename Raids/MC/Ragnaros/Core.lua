@@ -76,7 +76,7 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:EngageSoon()
-	self:Bar(L["msg_combat"], timer.emerge_soon, icon.emerge_soon)
+	self:Bar(L["msg_combat"], timer.emerge_soon, icon.emerge_soon, true, "Cyan")
 end
 
 function module:SonDeath(number)
@@ -156,7 +156,7 @@ function module:Knockback()
 end
 
 function module:Hammer()
-	self:Bar(L["bar_hammer"], timer.hammer_of_ragnaros, icon.hammer_of_ragnaros) -- isn't doing anything on nefarian
+	self:Bar(L["bar_hammer"], timer.hammer_of_ragnaros, icon.hammer_of_ragnaros)
 end
 
 

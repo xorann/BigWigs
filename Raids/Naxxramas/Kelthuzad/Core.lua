@@ -112,7 +112,7 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Phase2()
-	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2)
+	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, "Cyan")
 	self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
 	self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
 	self:DelayedMessage(timer.phase2, L["msg_phase2Now"], "Important")
@@ -138,7 +138,7 @@ end
 
 function module:MindControl()
 	self:Message(L["msg_mindControl"], "Urgent", nil, "Beware")
-	self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol)
+	self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol, true, "Purple")
 	
 	self:KTM_Reset()
 end
@@ -146,7 +146,7 @@ end
 function module:Guardians()
 	if self.db.profile.guardians then
 		self:Message(L["msg_guardians"], "Important")
-		self:Bar(L["bar_guardians"], timer.guardians, icon.guardians)
+		self:Bar(L["bar_guardians"], timer.guardians, icon.guardians, true, "Cyan")
 	end
 end
 

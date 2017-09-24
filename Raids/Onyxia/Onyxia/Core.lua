@@ -20,6 +20,9 @@ module.timer = {
 	fear = 29.5,
 	fearCast = 1.5,
 	wingbuffet = 1,
+	flamebreath = 2,
+	deepbreath = 5,
+	fireball = 3,
 }
 local timer = module.timer
 
@@ -29,6 +32,7 @@ module.icon = {
 	deepbreath = "Spell_Fire_SelfDestruct",
 	deepbreath_sign = "Spell_Fire_Lavaspawn",
 	fireball = "Spell_Fire_FlameBolt",
+	flamebreath = "Spell_Fire_Fire",
 }
 local icon = module.icon
 
@@ -82,7 +86,7 @@ end
 function module:Phase3()
 	if self.db.profile.phase and module.phase < 3 then
 		self:Message(L["msg_phase3"], "Important", true, "Beware")
-		self:Bar(L["bar_fearNext"], timer.firstFear + timer.fearCast, icon.fear)
+		self:Bar(L["bar_fearNext"], timer.firstFear + timer.fearCast, icon.fear, true, "Orange")
 		module.phase = 3
 	end
 end
@@ -90,20 +94,20 @@ end
 function module:DeepBreath()
 	if self.db.profile.deepbreath then
 		self:Message(L["msg_deepBreath"], "Important", true, "RunAway")
-		self:Bar(L["bar_deepBreath"], 5, icon.deepbreath, true, "black")
-		self:WarningSign(icon.deepbreath_sign, 5)
+		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath, true, "black")
+		self:WarningSign(icon.deepbreath_sign, timer.deepbreath)
 	end
 end
 
 function module:FlameBreath()
 	if self.db.profile.flamebreath then
-		self:Bar(L["bar_flameBreath"], 2, "Spell_Fire_Fire")
+		self:Bar(L["bar_flameBreath"], timer.flamebreath, icon.flamebreath)
 	end
 end
 
 function module:Fireball()
 	if self.db.profile.fireball then
-		self:Bar(L["bar_fireball"], 3, icon.fireball, true, "red")
+		self:Bar(L["bar_fireball"], timer.fireball, icon.fireball)
 	end
 end
 
@@ -112,8 +116,8 @@ function module:Fear()
 		self:RemoveBar(L["bar_fearNext"]) -- remove timer bar
 
 		self:Message(L["msg_fear"], "Important", true, "Alarm")
-		self:Bar(L["bar_fearCast"], timer.fearCast, icon.fear, true, "white") -- add cast bar
-		self:DelayedBar(timer.fearCast, L["bar_fearNext"], timer.fear, icon.fear) -- delayed timer bar
+		self:Bar(L["bar_fearCast"], timer.fearCast, icon.fear, true, "Orange") -- add cast bar
+		self:DelayedBar(timer.fearCast, L["bar_fearNext"], timer.fear, icon.fear, true, "Orange") -- delayed timer bar
 		self:WarningSign(icon.fear, 5)
 	end
 end

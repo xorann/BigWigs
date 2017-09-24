@@ -111,9 +111,7 @@ end
 
 function module:WarnForEnrage()
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"],
-			timer.enrage,
-			icon.enrage)
+		self:Bar(L["bar_enrage"], timer.enrage,	icon.enrage, true, "Red")
 
 		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Attention", nil, nil, true)

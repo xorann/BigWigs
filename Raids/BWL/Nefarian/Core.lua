@@ -105,7 +105,7 @@ function module:Fear()
 	if self.db.profile.fear then
         self:RemoveBar(L["bar_fear"]) -- remove timer bar
 		self:Message(L["msg_fearCast"], "Important", true, "Alert")
-		self:Bar(L["msg_fear"], timer.fearCast, icon.fear) -- show cast bar
+		self:Bar(L["msg_fear"], timer.fearCast, icon.fear, true, "Orange") -- show cast bar
 		self:DelayedBar(timer.fearCast, L["bar_fear"], timer.fear, icon.fear) -- delayed timer bar
         --self:WarningSign(icon.fear, 5)
 	end
@@ -122,7 +122,7 @@ function module:Landing()
         self.phase2 = true
 		self:TriggerEvent("BigWigs_StopCounterBar", self, L["misc_drakonidsDead"])
 		
-        self:Bar(L["msg_landing"], timer.landing, icon.landing)
+        self:Bar(L["msg_landing"], timer.landing, icon.landing, true, "Cyan")
         self:Message(L["msg_landing"], "Important", nil, "Beware")
 		
 		-- landing in 15s
@@ -152,7 +152,7 @@ end
 function module:MindControl(name)
 	if name and self.db.profile.mc then 
 		self:Message(string.format(L["msg_mindControlPlayer"], name), "Important")
-		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, "Orange")
+		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, "Purple")
 	end
 end
 

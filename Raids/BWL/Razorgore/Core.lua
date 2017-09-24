@@ -89,7 +89,7 @@ function module:DestroyingEgg()
 	--self:CancelScheduledEvent("destroyegg_check")
 	--self:ScheduleEvent("destroyegg_check", self.DestroyEggCheck, 3, self)
 	if self.db.profile.eggs then
-		self:Bar(L["bar_egg"], timer.egg, icon.egg, true, "purple")
+		self:Bar(L["bar_egg"], timer.egg, icon.egg, true, "white")
 	end
 	self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
 end
@@ -128,7 +128,7 @@ end
 
 function module:Volley()
 	if self.db.profile.fireballvolley then
-		self:Bar(L["bar_volley"], timer.volley, icon.volley, true, "red")
+		self:Bar(L["bar_volley"], timer.volley, icon.volley)
 		self:Message(L["msg_volley"], "Urgent")
 		self:WarningSign(icon.volley, 2)
 	end
@@ -136,7 +136,7 @@ end
 
 function module:Conflagration()
 	if self.db.profile.conflagration then
-		self:Bar(L["bar_conflagration"], timer.conflagrate, icon.conflagrate, true, "red")
+		self:Bar(L["bar_conflagration"], timer.conflagrate, icon.conflagrate)
 	end
 end
 
@@ -169,7 +169,7 @@ function module:Engaged()
 		self:Message(L["msg_engage"], "Attention")
 	end
 	if self.db.profile.mobs then
-		self:Bar(L["bar_mobs"], timer.mobspawn, icon.mobspawn)
+		self:Bar(L["bar_mobs"], timer.mobspawn, icon.mobspawn, true, "Cyan")
 		self:Message(timer.mobspawn - 5, L["msg_mobsSoon"], "Important")
 	end
 	self:TriggerEvent("BigWigs_StartCounterBar", self, "Eggs destroyed", 30, "Interface\\Icons\\" .. icon.eggDestroyed)
@@ -183,7 +183,7 @@ function module:MindControl(name)
 
 	if self.db.profile.mc then
 		self:Message(string.format(L["msg_mindControlOther"], name), "Important")
-		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mindControl, true, "black")
+		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mindControl, true, "Purple")
 		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_mindControl"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 	end
 end
@@ -195,7 +195,7 @@ end
 function module:Polymorph(name)
 	if self.db.profile.polymorph then
 		self:Message(string.format(L["msg_polymorphOther"], name), "Important")
-		self:Bar(string.format(L["bar_polymorph"], name), timer.polymorph, icon.polymorph, true, "cyan")
+		self:Bar(string.format(L["bar_polymorph"], name), timer.polymorph, icon.polymorph)
 		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_polymorph"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 	end
 end

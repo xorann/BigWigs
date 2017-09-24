@@ -63,7 +63,7 @@ function module:LocustCast()
         -- add cast bar
 		self:Message(L["msg_locustSwarmNow"], "Orange", nil, "Beware")
 		self:WarningSign(icon.locust, timer.locustSwarmCastTime)
-		self:Bar(L["bar_locustSwarmCast"], timer.locustSwarmCastTime, icon.locust )
+		self:Bar(L["bar_locustSwarmCast"], timer.locustSwarmCastTime, icon.locust, true, "Black")
 	end
 end
 

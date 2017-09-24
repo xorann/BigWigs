@@ -58,7 +58,7 @@ function module:WingBuffet()
 	if 	self.db.profile.wingbuffet then
 		self:Message(L["msg_wingBuffet"], "Important")
 		self:RemoveBar(L["bar_wingBuffetNext"]) -- remove timer bar
-		self:Bar(L["bar_wingBuffetCast"], timer.wingbuffetCast, icon.wingbuffet, true, "Black") -- show cast bar
+		self:Bar(L["bar_wingBuffetCast"], timer.wingbuffetCast, icon.wingbuffet) -- show cast bar
 		self:DelayedBar(timer.wingbuffetCast, L["bar_wingBuffetNext"], timer.wingbuffet, icon.wingbuffet) -- delayed timer bar
         self:DelayedMessage(timer.wingbuffet - 5, L["msg_wingBuffetSoon"], "Attention", nil, nil, true)
 	end

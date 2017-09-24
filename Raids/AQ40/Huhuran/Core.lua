@@ -74,7 +74,7 @@ end
 function module:FrenzyGain()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", nil, true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "red")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
 
 		local _, playerClass = UnitClass("player")
 		if playerClass == "HUNTER" or true then
@@ -115,7 +115,7 @@ end
 ------------------------------
 function module:WarnForBerserk()
 	if self.db.profile.berserk then
-		self:Bar(L["bar_berserk"], timer.berserk, icon.berserk)
+		self:Bar(L["bar_berserk"], timer.berserk, icon.berserk, true, "Red")
 		self:DelayedMessage(timer.berserk - 60, L["msg_berserk60"], "Attention", nil, nil, true)
 		self:DelayedMessage(timer.berserk - 30, L["msg_berserk30"], "Urgent", nil, nil, true)
 		self:DelayedMessage(timer.berserk - 5, L["msg_berserk5"], "Important", nil, nil, true)

@@ -68,7 +68,7 @@ end
 
 function module:Flamebreath()
 	if self.db.profile.flamebreath then
-		self:Bar(L["bar_breath"], timer.flamebreath, icon.flamebreath, true, "Red")
+		self:Bar(L["bar_breath"], timer.flamebreath, icon.flamebreath)
 		self:Message(L["msg_breath"], "Urgent")
 	end
 end

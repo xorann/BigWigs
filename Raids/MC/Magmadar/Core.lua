@@ -63,7 +63,7 @@ function module:Panic(delay)
 		end
 	
 		self:DelayedMessage(timer.panic - 5 + delay, L["msg_panicSoon"], "Urgent", nil, nil, true)		
-		self:Bar(L["bar_panic"], timer.panic + delay, icon.panic)
+		self:Bar(L["bar_panic"], timer.panic + delay, icon.panic, true, "Orange")
 		
 		if playerClass == "WARRIOR" then
 			self:DelayedSound(timer.panic - 10 + delay, "Ten")
@@ -77,7 +77,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "red")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
 		if playerClass == "HUNTER" then
 			self:WarningSign(icon.tranquil, timer.frenzy, true)
 		end

@@ -71,7 +71,7 @@ function module:WingBuffet()
         self:Message(L["msg_wingBuffet"], "Important")
 		self:RemoveBar(L["bar_wingBuffetNext"]) -- remove timer bar
         self:DelayedMessage(timer.wingbuffet - 5, L["msg_wingBuffetSoon"], "Attention", nil, nil, true)
-		self:Bar(L["bar_wingBuffetCast"], timer.wingbuffetCast, icon.wingbuffet, true, "black") -- show cast bar
+		self:Bar(L["bar_wingBuffetCast"], timer.wingbuffetCast, icon.wingbuffet) -- show cast bar
 		self:DelayedBar(timer.wingbuffetCast, L["bar_wingBuffetNext"], timer.wingbuffet, icon.wingbuffet) -- delayed timer bar
 	end
 end
@@ -80,7 +80,7 @@ function module:ShadowFlame()
 	if self.db.profile.shadowflame then
         self:Message(L["msg_shadowFlame"], "Important", true, "Alarm")
 		self:RemoveBar(L["bar_shadowFlameNext"]) -- remove timer bar
-		self:Bar(L["bar_shadowFlameCast"], timer.shadowflameCast, icon.shadowflame, true, "red") -- show cast bar
+		self:Bar(L["bar_shadowFlameCast"], timer.shadowflameCast, icon.shadowflame) -- show cast bar
         self:DelayedBar(timer.shadowflameCast, L["bar_shadowFlameNext"], timer.shadowflame, icon.shadowflame) -- delayed timer bar
 	end
 end
@@ -88,7 +88,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", nil, true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "red")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
         if module.playerClass == "HUNTER" then
             self:WarningSign(icon.tranquil, timer.frenzy, true)
         end

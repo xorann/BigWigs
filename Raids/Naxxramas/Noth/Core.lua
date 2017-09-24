@@ -94,7 +94,7 @@ function module:Blink()
 		self:Message(L["msg_blinkNow"], "Important")
 		--self:DelayedMessage(timer.regularBlink - 10, L["msg_blink10"], "Attention")
 		--self:DelayedMessage(timer.regularBlink - 5, L["msg_blink5"], "Attention")
-		self:Bar(L["bar_blink"], timer.regularBlink, icon.blink)
+		self:Bar(L["bar_blink"], timer.regularBlink, icon.blink, true, "Black")
 	end
 	
 	-- aggro reset?
@@ -144,7 +144,7 @@ function module:TeleportToRoom()
 
 	if self.db.profile.teleport then
 		self:Message(string.format(L["msg_backNow"], timer.room), "Important")
-		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink)
+		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink, true, "Black")
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention") -- praeda
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention") -- praeda
 		

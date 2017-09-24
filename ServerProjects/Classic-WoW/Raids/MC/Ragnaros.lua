@@ -72,9 +72,10 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 	elseif string.find(msg, L["trigger_engage"]) then
 		self:SendEngageSync()
     elseif string.find(msg, L["trigger_engageSoon"]) then
-        self:Sync(syncName.engageSoon)
-    elseif string.find(msg, L["trigger_hammer"]) then
-        self:Sync(syncName.hammer)
+        self:Sync(syncName.engageSoon)    
+	-- more annoying than useful
+	--elseif string.find(msg, L["trigger_hammer"]) then
+    --    self:Sync(syncName.hammer)
 	end
 end
 
