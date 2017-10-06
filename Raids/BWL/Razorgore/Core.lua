@@ -48,6 +48,18 @@ module.syncName = {
 }
 local syncName = module.syncName
 
+module.doCheckForWipe = nil
+
+------------------------------
+-- Override CheckForWipe  	--
+------------------------------
+function module:CheckForWipe(event)
+    if module.doCheckForWipe then
+        BigWigs:DebugMessage("doCheckForWipe")
+        BigWigs:CheckForWipe(self)
+    end
+end
+
 
 ------------------------------
 -- Synchronization	    --
@@ -174,6 +186,13 @@ function module:Engaged()
 	end
 	self:TriggerEvent("BigWigs_StartCounterBar", self, "Eggs destroyed", 30, "Interface\\Icons\\" .. icon.eggDestroyed)
 	self:TriggerEvent("BigWigs_SetCounterBar", self, "Eggs destroyed", (30 - 0.1))
+	
+	-- do not check for wipe until the first wave of mobs since we get out of combat in between
+	module.doCheckForWipe = false
+	function DelayCheckForWipe()
+		module.doCheckForWipe = true
+	end
+	self:ScheduleEvent("BigWigsRazorgoreDelayedCheckForWipe", DelayCheckForWipe, timer.mobspawn + 5, self)
 end
 
 function module:MindControl(name)
