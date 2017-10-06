@@ -35,7 +35,7 @@ L:RegisterTranslations("enUS", function() return {
     msg_victory = "The fight against %s has ended. We won :)",
 	msg_wipe = "The fight against %s has ended. We lost :(",
 	
-	msg_percentage = "%s is at %s%%%% health", -- first parameter is the boss name, second parameter is the health percentage
+	msg_percentage = "%s is at %s%% health", -- first parameter is the boss name, second parameter is the health percentage
 	msg_percentageUnknown = "Health of %s is unknown",
 	msg_alive = "%d/%d players are alive.",
 	msg_noStatus = "I am currently not fighting any bosses.",
