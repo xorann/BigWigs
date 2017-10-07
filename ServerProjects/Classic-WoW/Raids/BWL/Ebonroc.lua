@@ -51,7 +51,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.wingbuffet - 5, L["msg_wingBuffetSoon"], "Attention", nil, nil, true)
 	end
 	if self.db.profile.curse then
-		self:Bar(L["bar_shadowCurseFirst"], timer.curse, icon.curse, true, "white")
+		self:Bar(L["bar_shadowCurseFirst"], timer.curse, icon.curse, true, BigWigsColors.db.profile.significant)
 	end
 	if self.db.profile.shadowflame then
 		self:Bar(L["bar_shadowFlameNext"], timer.shadowflameCast, icon.shadowflame)

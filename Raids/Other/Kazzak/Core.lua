@@ -53,7 +53,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.markofkazzak then
 		    self:Message(string.format(L["msg_mark"], rest), "Important")
 			self:Whisper(rest, L["msg_markYou"])
-			self:Bar(string.format(L["bar_mark"], rest), timer.mark, icon.mark, true, "white")
+			self:Bar(string.format(L["bar_mark"], rest), timer.mark, icon.mark)
 		end
 		
 		if self.db.profile.puticon then
@@ -96,7 +96,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		module.voidbolttime = GetTime()
 		module.castingvoidbolt = true
 		if self.db.profile.voidbolt then
-			self:Bar(L["bar_voidbolt"], timer.voidboltCast, icon.voidbolt, true, "purple")
+			self:Bar(L["bar_voidbolt"], timer.voidboltCast, icon.voidbolt)
 		end
 	elseif sync == syncName.voidboltStop then
 		module.castingvoidbolt = false

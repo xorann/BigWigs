@@ -112,7 +112,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy and not module.frenzied then
 		self:Message(L["msg_frenzy"], "Attention")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzy)
 		
 		if module.playerClass == "HUNTER" then
 			self:WarningSign(icon.tranquil, timer.frenzy, true)
@@ -127,7 +127,7 @@ function module:FrenzyGone()
 		self:RemoveBar(L["bar_frenzy"])
         if module.lastFrenzy ~= 0 then
             local NextTime = (module.lastFrenzy + timer.nextFrenzy) - GetTime()
-			self:Bar(L["bar_frenzyNext"], NextTime, icon.frenzy, true, "white")
+			self:Bar(L["bar_frenzyNext"], NextTime, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext)
 		end
 	end
     self:RemoveWarningSign(icon.tranquil, true)
@@ -188,9 +188,9 @@ function module:Engaged()
 			firstBarMSG   = string.format(L["msg_breath"], module.breathCache[1])
 		end
 		self:DelayedMessage(timer.firstBreath - 5, firstBarMSG, "Attention", nil, nil, true)
-		self:Bar(firstBarName, timer.firstBreath, icon.unknown, true, "cyan")
+		self:Bar(firstBarName, timer.firstBreath, icon.unknown, true, BigWigsColors.db.profile.start)
 		self:DelayedMessage(timer.secondBreath - 5, secondBarMSG, "Attention", nil, nil, true)
-		self:Bar(secondBarName, timer.secondBreath, icon.unknown, true, "cyan")
+		self:Bar(secondBarName, timer.secondBreath, icon.unknown, true, BigWigsColors.db.profile.start)
 	end
 	if self.db.profile.breathcd then
 		self:DelayedSound(timer.firstBreath - 10, "Ten", "b1_10")
@@ -204,7 +204,7 @@ function module:Engaged()
 		self:DelayedSound(timer.secondBreath - 1, "One", "b2_1")
 	end
 	if self.db.profile.frenzy then
-		self:Bar(L["bar_frenzyNext"], timer.nextFrenzy, icon.frenzy, true, "white") 
+		self:Bar(L["bar_frenzyNext"], timer.nextFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
 	self:Bar(format(L["bar_vulnerability"], "???"), timer.vulnerability, icon.vulnerability)
     

@@ -143,7 +143,7 @@ function module:Submerge()
 	if self.db.profile.submerge then
 		self:Message(L["msg_submerge"], "Important")
 		self:ScheduleEvent("bwsubmergewarn", "BigWigs_Message", timer.nextEmerge - 5, L["msg_emergeSoon"], "Important")
-		self:Bar(L["bar_emerge"], timer.nextEmerge, icon.submerge, true, "Cyan")
+		self:Bar(L["bar_emerge"], timer.nextEmerge, icon.submerge, true, BigWigsColors.db.profile.start)
 	end
 end
 
@@ -168,7 +168,7 @@ end
 function module:PossibleSubmerge()
 	if self.db.profile.emerge then
 		self:DelayedMessage(timer.nextSubmerge - 15, L["msg_submergeSoon"], "Important", nil, nil, true)
-		self:Bar(L["bar_submerge"], timer.nextSubmerge, icon.submerge, true, "Black")
+		self:Bar(L["bar_submerge"], timer.nextSubmerge, icon.submerge, true, BigWigsColors.db.profile.significant)
 	end
 end
 

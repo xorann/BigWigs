@@ -122,7 +122,7 @@ function module:Landing()
         self.phase2 = true
 		self:TriggerEvent("BigWigs_StopCounterBar", self, L["misc_drakonidsDead"])
 		
-        self:Bar(L["msg_landing"], timer.landing, icon.landing, true, "Cyan")
+        self:Bar(L["msg_landing"], timer.landing, icon.landing, true, BigWigsColors.db.profile.start)
         self:Message(L["msg_landing"], "Important", nil, "Beware")
 		
 		-- landing in 15s
@@ -152,7 +152,7 @@ end
 function module:MindControl(name)
 	if name and self.db.profile.mc then 
 		self:Message(string.format(L["msg_mindControlPlayer"], name), "Important")
-		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, "Purple")
+		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, true, BigWigsColors.db.profile.mindControl)
 	end
 end
 

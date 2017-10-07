@@ -97,7 +97,7 @@ function module:Heal()
 	module.healtime = GetTime()
 	module.castingheal = true
 	if self.db.profile.heal then
-		self:Bar(L["bar_heal"], timer.heal, icon.heal, true, "Blue")
+		self:Bar(L["bar_heal"], timer.heal, icon.heal, true, BigWigsColors.db.profile.interrupt)
 		self:Message(L["msg_heal"], "Attention", true, "Alert")
 	end
 end

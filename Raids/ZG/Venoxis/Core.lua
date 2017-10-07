@@ -82,7 +82,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		module.holyfiretime = GetTime()
 		module.castingholyfire = 1
 		if self.db.profile.holyfire then
-			self:Bar(L["bar_holyFire"], timer.holyfireCast, icon.holyfire, true, "Blue")
+			self:Bar(L["bar_holyFire"], timer.holyfireCast, icon.holyfire, true, BigWigsColors.db.profile.interrupt)
 			self:Bar("Next Holy Fire", timer.holyfire, icon.holyfire)
 		end
 	elseif sync == "VenoxisHolyFireStop" then

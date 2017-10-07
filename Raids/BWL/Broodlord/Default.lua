@@ -46,7 +46,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.bw then
-		self:Bar(L["bar_blastWave"], timer.blastWave, icon.blastWave, true, "Red")
+		self:Bar(L["bar_blastWave"], timer.blastWave, icon.blastWave, true, BigWigsColors.db.profile.enrage)
 	end
 end
 

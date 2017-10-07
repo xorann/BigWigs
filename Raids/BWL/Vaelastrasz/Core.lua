@@ -61,7 +61,7 @@ end
 ------------------------------
 function module:Tankburn()
 	if self.db.profile.tankburn then
-		self:Bar(L["bar_tankburn"], timer.tankburn, icon.tankburn, true, "Black")
+		self:Bar(L["bar_tankburn"], timer.tankburn, icon.tankburn, true, BigWigsColors.db.profile.significant)
 		self:DelayedMessage(timer.tankburn - 5, L["msg_tankBurnSoon"], "Urgent", nil, nil, true)
 	end
 end
@@ -82,7 +82,7 @@ function module:Adrenaline(name)
 
 		-- bar and message
 		if self.db.profile.adrenaline then
-			self:Bar(string.format(L["bar_adrenaline"], name), timer.adrenaline, icon.adrenaline, true, "White")
+			self:Bar(string.format(L["bar_adrenaline"], name), timer.adrenaline, icon.adrenaline, true, BigWigsColors.db.profile.significant)
 			self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_adrenaline"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 			if name == UnitName("player") then
 				self:Message(L["msg_adrenalineYou"], "Attention", true, "Beware")
@@ -120,13 +120,13 @@ end
 function module:StartSoon(time)
 	if self.db.profile.start then
 		if time == timer.start1 then
-			self:Bar(L["bar_engage"], timer.start1, icon.start, true, "Cyan")
+			self:Bar(L["bar_engage"], timer.start1, icon.start, true, BigWigsColors.db.profile.start)
 			self.barstarted = true
 		elseif time == timer.start2 and not self.barstarted then
-			self:Bar(L["bar_engage"], timer.start2, icon.start, true, "Cyan")
+			self:Bar(L["bar_engage"], timer.start2, icon.start, true, BigWigsColors.db.profile.start)
 			self.barstarted = true
 		elseif time == timer.start3 and not self.barstarted then
-			self:Bar(L["bar_engage"], timer.start3, icon.start, true, "Cyan")
+			self:Bar(L["bar_engage"], timer.start3, icon.start, true, BigWigsColors.db.profile.start)
 		end
 	end
 end

@@ -80,7 +80,7 @@ end
 
 function module:FlameBuffet()
 	if self.db.profile.flamebuffet then
-		self:Bar(L["bar_flameBuffet"], timer.flameBuffet, icon.flameBuffet, true, "White")
+		self:Bar(L["bar_flameBuffet"], timer.flameBuffet, icon.flameBuffet)
 	end
 end
 

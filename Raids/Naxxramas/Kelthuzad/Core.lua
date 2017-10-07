@@ -112,7 +112,7 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Phase2()
-	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, "Cyan")
+	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, BigWigsColors.db.profile.start)
 	self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
 	self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
 	self:DelayedMessage(timer.phase2, L["msg_phase2Now"], "Important")
@@ -138,7 +138,7 @@ end
 
 function module:MindControl()
 	self:Message(L["msg_mindControl"], "Urgent", nil, "Beware")
-	self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol, true, "Purple")
+	self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol, true, BigWigsColors.db.profile.mindControl)
 	
 	self:KTM_Reset()
 end
@@ -146,7 +146,7 @@ end
 function module:Guardians()
 	if self.db.profile.guardians then
 		self:Message(L["msg_guardians"], "Important")
-		self:Bar(L["bar_guardians"], timer.guardians, icon.guardians, true, "Cyan")
+		self:Bar(L["bar_guardians"], timer.guardians, icon.guardians, true, BigWigsColors.db.profile.start)
 	end
 end
 
@@ -174,7 +174,7 @@ function module:Frostbolt()
 			self:Message(L["msg_frostbolt"], "Personal")
 		end
 		if self.db.profile.frostboltbar then
-			self:Bar(L["bar_frostbolt"], timer.frostbolt, icon.frostbolt, true, "blue")
+			self:Bar(L["bar_frostbolt"], timer.frostbolt, icon.frostbolt, true, BigWigsColors.db.profile.interrupt)
 		end
 	end
 end

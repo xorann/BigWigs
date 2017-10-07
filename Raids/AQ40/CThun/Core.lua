@@ -204,7 +204,7 @@ function module:CThunWeakened()
 	if self.db.profile.weakened then
 		self:Message(L["msg_weakened"], "Positive")
 		self:Sound("Murloc")
-		self:Bar(L["bar_weakened"], timer.weakened, icon.weaken, true, "white")
+		self:Bar(L["bar_weakened"], timer.weakened, icon.weaken, true, BigWigsColors.db.profile.significant)
 		self:Message(timer.weakened - 5, L["msg_weakenedOverSoon"], "Urgent")
 	end
 
@@ -342,7 +342,7 @@ function module:DarkGlare()
 
 			self:WarningSign(icon.darkGlare, 5)
 			self:Message(L["msg_darkGlare"], "Urgent", true, "Beware")
-			self:Bar(L["bar_darkGlareCast"], timer.p1GlareCasting, icon.darkGlare, true, "black")
+			self:Bar(L["bar_darkGlareCast"], timer.p1GlareCasting, icon.darkGlare, true, BigWigsColors.db.profile.significant)
 
 			self:DelayedBar(timer.p1GlareCasting, L["bar_darkGlareEnd"], timer.p1GlareDuration, icon.darkGlare)
 			self:DelayedMessage(timer.p1GlareCasting + timer.p1GlareDuration - 5, L["msg_darkGlareEnds"], "Urgent", false, nil, true)

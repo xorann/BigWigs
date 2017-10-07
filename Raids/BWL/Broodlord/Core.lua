@@ -46,7 +46,7 @@ function module:MortalStrike(name)
 			self:Message(string.format(L["msg_mortalStrikeOther"], name), "Core", true, "Alarm")
 		end
 
-		self:Bar(string.format(L["bar_mortalStrike"], name), timer.mortalStrike, icon.mortalStrike, true, "Black")
+		self:Bar(string.format(L["bar_mortalStrike"], name), timer.mortalStrike, icon.mortalStrike, true, BigWigsColors.db.profile.significant)
 		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_mortalStrike"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 	end
 end

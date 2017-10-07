@@ -62,7 +62,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Bar(L["bar_gazeCast"], 2, icon.gaze)
         self:RemoveBar(L["Possible Gaze"])
 	elseif sync == syncName.gazeAfflicted and rest and self.db.profile.gaze then
-		self:Bar(string.format(L["bar_watch"], rest), 5, icon.gaze, true, "Black")
+		self:Bar(string.format(L["bar_watch"], rest), 5, icon.gaze, true, BigWigsColors.db.profile.significant)
 	elseif sync == syncName.gazeOver and rest then
 		if self.db.profile.gaze then
 			self:RemoveBar(string.format(L["bar_watch"], rest))

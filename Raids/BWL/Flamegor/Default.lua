@@ -54,7 +54,7 @@ function module:OnEngage()
 		self:Bar(L["bar_shadowFlameNext"], timer.firstShadowflame, icon.shadowflame)
 	end
 	if self.db.profile.frenzy then
-		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, "white") 
+		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
 end
 

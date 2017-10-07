@@ -76,10 +76,10 @@ end
 function module:MindControl(name)
 	if self.db.profile.mc then
 		if name == UnitName("player") then
-			self:Bar(string.format(L["bar_mc"], UnitName("player")), timer.mc, icon.mc, true, "Purple")
+			self:Bar(string.format(L["bar_mc"], UnitName("player")), timer.mc, icon.mc, true, BigWigsColors.db.profile.mindControl)
 			self:Message(L["msg_mcPlayer"], "Attention")
 		else
-			self:Bar(string.format(L["bar_mc"], name), timer.mc, icon.mc, true, "Purple")
+			self:Bar(string.format(L["bar_mc"], name), timer.mc, icon.mc, true, BigWigsColors.db.profile.mindControl)
 			self:Message(string.format(L["msg_mcOther"], name), "Urgent")
 		end
 	end
@@ -107,7 +107,7 @@ end
 
 function module:ArcaneExplosion()
 	if self.db.profile.split then
-		self:Bar(L["bar_arcaneExplosion"], timer.arcaneExplosion, icon.arcaneExplosion, true, "Blue")
+		self:Bar(L["bar_arcaneExplosion"], timer.arcaneExplosion, icon.arcaneExplosion, true, BigWigsColors.db.profile.interrupt)
 	end
 end
 

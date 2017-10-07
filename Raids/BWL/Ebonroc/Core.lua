@@ -84,7 +84,7 @@ function module:ShadowOfEbonroc(name)
 			self:Message(string.format(L["msg_shadowCurseOther"], name), "Attention")
 		end
 		
-		self:Bar(string.format(L["bar_shadowCurse"], name), timer.curse, icon.curse, true, "white")
+		self:Bar(string.format(L["bar_shadowCurse"], name), timer.curse, icon.curse, true, BigWigsColors.db.profile.significant)
 	end
 end
 

@@ -61,7 +61,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == syncName.hex and rest and self.db.profile.hex then
         self:RemoveBar("Next Hex")
 		self:Message(string.format(L["msg_hex"], rest), "Important")
-		self:Bar(string.format(L["bar_hex"], rest), timer.hex, icon.hex, true, "White")
+		self:Bar(string.format(L["bar_hex"], rest), timer.hex, icon.hex)
 	elseif sync == syncName.hexOver and rest and self.db.profile.hex then
 		self:RemoveBar(string.format(L["bar_hex"], rest))
 	end

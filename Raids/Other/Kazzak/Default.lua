@@ -73,7 +73,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.supreme - 60, L["msg_supreme1min"], "Attention")
 		self:DelayedMessage(timer.supreme - 30, L["msg_supreme30"], "Urgent")
 		self:DelayedMessage(timer.supreme - 10, L["msg_supreme10"], "Important")
-		self:Bar(L["bar_enrage"], timer.supreme, icon.supreme, "Green", "Yellow", "Orange", "Red")
+		self:Bar(L["bar_enrage"], timer.supreme, icon.supreme, true, BigWigsColors.db.profile.enrage)
 	end
 end
 
@@ -136,7 +136,7 @@ function module:EventSelf(msg)
 	if string.find(msg, L["trigger_markYouGain"]) then
 		if self.db.profile.markofkazzak then
 			self:Message(L["msg_markYou"], "Attention", true, "Alert")
-			self:Bar(string.format(L["bar_mark"], UnitName("player")), timer.mark, icon.mark, true, "white")
+			self:Bar(string.format(L["bar_mark"], UnitName("player")), timer.mark, icon.mark)
 		end
 		
 		if self.db.profile.puticon then

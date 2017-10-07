@@ -70,14 +70,14 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.panic then
-		self:Bar(L["bar_panicFirst"], timer.firstPanic, icon.panic, true, "white")
+		self:Bar(L["bar_panicFirst"], timer.firstPanic, icon.panic, true, BigWigsColors.db.profile.fear)
 	end
 	if self.db.profile.toxicvolley then
 		self:Bar(L["bar_toxicVolley"], timer.firstVolley, icon.volley, true, "green")
 		self:DelayedMessage(timer.firstVolley - 3, L["msg_toxicVolley"], "Urgent")
 	end
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, "red")
+		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, BigWigsColors.db.profile.enrage)
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Attention", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention", nil, nil, true)

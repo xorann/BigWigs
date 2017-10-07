@@ -95,7 +95,7 @@ function module:Phase2()
 		self:Message(L["msg_phase2"], "Important") 
 	end
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, "Red")
+		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, BigWigsColors.db.profile.enrage)
 		self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention")
 		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention")
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")

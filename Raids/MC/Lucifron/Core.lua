@@ -86,10 +86,10 @@ function module:MindControl(name)
 	if self.db.profile.mc and name then
 		if name == UnitName("player") then
 			self:Message(L["msg_mindControlYou"], "Attention")
-			self:Bar(string.format(L["bar_mindControl"], UnitName("player")), timer.mc, icon.mc, true, "purple")
+			self:Bar(string.format(L["bar_mindControl"], UnitName("player")), timer.mc, icon.mc, true, BigWigsColors.db.profile.mindControl)
 		else
 			self:Message(string.format(L["msg_mindControlOther"], name), "Urgent")
-			self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, true, "purple")
+			self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mc, true, BigWigsColors.db.profile.mindControl)
 		end
 	end
 end

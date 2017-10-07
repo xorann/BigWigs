@@ -78,7 +78,7 @@ function module:VanishPhase()
 	end
 	if self.db.profile.vanish then
         self:RemoveBar(L["bar_vanishNext"])
-		self:Bar(L["bar_vanishReturn"], timer.unvanish, icon.vanish, true, "White")
+		self:Bar(L["bar_vanishReturn"], timer.unvanish, icon.vanish)
 	end
 	self:ScheduleRepeatingEvent("checkunvanish", self.CheckUnvanish, 0.5, self)
 end

@@ -61,7 +61,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, "Red")
+		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, BigWigsColors.db.profile.enrage)
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Urgent", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage1m"], "Urgent", nil, nil, true)
 		self:DelayedMessage(timer.enrage - 30, string.format(L["msg_enrageSeconds"], 30), "Urgent", nil, nil, true)
@@ -74,7 +74,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.bloodSiphon - 10, string.format(L["msg_siphonSoon"], 10), "Attention", nil, nil, true)
 	end
 	if self.db.profile.mc then
-		self:Bar(L["bar_firstMindControl"], timer.firstMindcontrol, icon.mindcontrol, true, "Purple")
+		self:Bar(L["bar_firstMindControl"], timer.firstMindcontrol, icon.mindcontrol, true, BigWigsColors.db.profile.mindControl)
 	end
 end
 

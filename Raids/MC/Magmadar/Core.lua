@@ -77,7 +77,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzy)
 		if playerClass == "HUNTER" then
 			self:WarningSign(icon.tranquil, timer.frenzy, true)
 		end

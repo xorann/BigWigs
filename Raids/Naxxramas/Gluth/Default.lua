@@ -68,7 +68,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Urgent")
 	end
     if self.db.profile.frenzy then
-		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, "white") 
+		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
 end
 

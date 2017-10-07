@@ -103,7 +103,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.heal then
             self:RemoveBar("Next Heal")
 			self:Message(L["msg_heal"], "Important", "Alarm")
-			self:Bar(L["bar_heal"], timer.healCast, icon.heal, true, "Blue")
+			self:Bar(L["bar_heal"], timer.healCast, icon.heal, true, BigWigsColors.db.profile.interrupt)
 		end
 	elseif sync == syncName.healOver then
 		self.castingheal = 0

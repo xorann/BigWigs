@@ -94,7 +94,7 @@ end
 function module:DeepBreath()
 	if self.db.profile.deepbreath then
 		self:Message(L["msg_deepBreath"], "Important", true, "RunAway")
-		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath, true, "black")
+		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath, true, BigWigsColors.db.profile.significant)
 		self:WarningSign(icon.deepbreath_sign, timer.deepbreath)
 	end
 end

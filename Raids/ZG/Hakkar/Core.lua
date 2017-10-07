@@ -125,7 +125,7 @@ end
 function module:MindControl(rest)
 	if self.db.profile.mc and rest then
 		self:DelayedBar(timer.mindcontrol, L["bar_nextMindControl"], 11, icon.mindcontrol)
-		self:Bar(string.format(L["bar_mindControl"], rest), timer.mindcontrol, icon.mindcontrol, true, "Purple")
+		self:Bar(string.format(L["bar_mindControl"], rest), timer.mindcontrol, icon.mindcontrol, true, BigWigsColors.db.profile.mindControl)
 		if rest == UnitName("player") then
 			self:Message(L["msg_mindControlYou"], "Attention", true, "Alarm")
 		else

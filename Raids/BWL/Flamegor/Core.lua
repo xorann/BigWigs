@@ -88,7 +88,7 @@ end
 function module:Frenzy()
 	if self.db.profile.frenzy then
 		self:Message(L["msg_frenzy"], "Important", nil, true, "Alert")
-		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, "Yellow")
+		self:Bar(L["bar_frenzy"], timer.frenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzy)
         if module.playerClass == "HUNTER" then
             self:WarningSign(icon.tranquil, timer.frenzy, true)
         end
@@ -102,7 +102,7 @@ function module:FrenzyGone()
         self:RemoveWarningSign(icon.tranquil, true)
         if module.lastFrenzy ~= 0 then
             local NextTime = (module.lastFrenzy + timer.frenzy) - GetTime()
-            self:Bar(L["bar_frenzyNext"], NextTime, icon.frenzy, true, "white")
+            self:Bar(L["bar_frenzyNext"], NextTime, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext)
         end
 	end
 end

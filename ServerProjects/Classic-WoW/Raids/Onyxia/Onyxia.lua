@@ -98,7 +98,7 @@ function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
 	elseif msg == L["trigger_flameBreath"] then
 		self:Sync(syncName.flamebreath)
 	elseif msg == L["trigger_wingBuffet"] and self.db.profile.wingbuffet then -- made local because 1s cast, with sync it would not be very accurate
-		self:Bar(L["bar_wingBuffet"], timer.wingbuffet, icon.wingbuffet, true, "yellow")
+		self:Bar(L["bar_wingBuffet"], timer.wingbuffet, icon.wingbuffet, true, BigWigsColors.db.profile.significant)
 	elseif msg == L["trigger_fireball"] then
 		self:Sync(syncName.fireball)
 	end

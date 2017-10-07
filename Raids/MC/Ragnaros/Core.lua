@@ -76,7 +76,7 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:EngageSoon()
-	self:Bar(L["msg_combat"], timer.emerge_soon, icon.emerge_soon, true, "Cyan")
+	self:Bar(L["msg_combat"], timer.emerge_soon, icon.emerge_soon, true, BigWigsColors.db.profile.start)
 end
 
 function module:SonDeath(number)

@@ -181,7 +181,7 @@ function module:Engaged()
 		self:Message(L["msg_engage"], "Attention")
 	end
 	if self.db.profile.mobs then
-		self:Bar(L["bar_mobs"], timer.mobspawn, icon.mobspawn, true, "Cyan")
+		self:Bar(L["bar_mobs"], timer.mobspawn, icon.mobspawn, true, BigWigsColors.db.profile.start)
 		self:Message(timer.mobspawn - 5, L["msg_mobsSoon"], "Important")
 	end
 	self:TriggerEvent("BigWigs_StartCounterBar", self, "Eggs destroyed", 30, "Interface\\Icons\\" .. icon.eggDestroyed)
@@ -202,7 +202,7 @@ function module:MindControl(name)
 
 	if self.db.profile.mc then
 		self:Message(string.format(L["msg_mindControlOther"], name), "Important")
-		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mindControl, true, "Purple")
+		self:Bar(string.format(L["bar_mindControl"], name), timer.mc, icon.mindControl, true, BigWigsColors.db.profile.mindControl)
 		self:SetCandyBarOnClick("BigWigsBar " .. string.format(L["bar_mindControl"], name), function(name, button, extra) TargetByName(extra, true) end, name)
 	end
 end
