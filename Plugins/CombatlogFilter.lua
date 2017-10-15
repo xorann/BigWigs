@@ -71,11 +71,16 @@ local Events = {
 	"PLAYER_AURAS_CHANGED",
     
     "SPELLCAST_START",
-	"SPELLCAST_CHANNEL_START",
 	"SPELLCAST_STOP",
-	"SPELLCAST_FAILED",
 	"SPELLCAST_INTERRUPTED",
-
+	"SPELLCAST_FAILED",
+	"SPELLCAST_DELAYED",
+	"SPELLCAST_CHANNEL_START",
+	"SPELLCAST_CHANNEL_STOP",
+	"SPELLCAST_CHANNEL_UPDATE",
+	"UI_ERROR_MESSAGE",
+	"CHAT_MSG_SPELL_FAILED_LOCALPLAYER",
+	
 	"SPELLS_CHANGED", 
 
 	--"UNIT_AURA",
@@ -137,6 +142,7 @@ function module:OnEnable()
     for k, event in pairs(Events) do 
         self:RegisterEvent(event, "CombatlogFilter")
     end
+	--self:RegisterAllEvents("CombatlogFilter")
 end
 
 function module:AddFilter(aModuleName, aFilter, callback)
@@ -186,7 +192,7 @@ end
 
 
 
-function module:CombatlogFilter()
+function module:CombatlogFilter()	
 	if event and arg1 then		
 		-- iterate modules
 		for aModuleName, moduleFilters in filter do
@@ -198,4 +204,16 @@ function module:CombatlogFilter()
 			end
 		end		
 	end
+	
+	--[[
+	local msg = ""
+	if event then msg = msg .. "e: " .. event end
+	if arg1 then msg = msg .. " arg1: " .. arg1 end
+	if arg2 then msg = msg .. " arg2: " .. arg2 end
+	if arg3 then msg = msg .. " arg3: " .. arg3 end
+	if arg4 then msg = msg .. " arg4: " .. arg4 end
+	if arg5 then msg = msg .. " arg5: " .. arg5 end
+	if arg6 then msg = msg .. " arg6: " .. arg6 end
+	if arg7 then msg = msg .. " arg7: " .. arg7 end
+	BigWigs:Print(msg)]]
 end
