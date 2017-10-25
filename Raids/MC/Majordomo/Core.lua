@@ -64,7 +64,7 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:HealerDeath(number)
-	if number and number <= 4 and self.healerDead < number then
+	if number and self.healerDead and number <= 4 and self.healerDead < number then
 		self.healerDead = number
 		if self.db.profile.adds then
 			self:Message(string.format(L["msg_healerDeath"], self.healerDead), "Positive")
