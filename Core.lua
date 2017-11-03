@@ -1,6 +1,6 @@
 
 local revision = 20014
-local isDeveloperVersion = true
+local isDeveloperVersion = false
 
 ------------------------------
 --      Are you local?      --
