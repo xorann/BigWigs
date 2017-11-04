@@ -253,15 +253,25 @@ function BigWigsDousedRunes:Update(rune)
     local function green(t)
         return "|cff00ff00" .. t .. "|r"
     end
-
-    local text = ""
-    for key, value in pairs(self.db.profile.runes) do
-        if value then
-            text = text .. green(key) .. "\n"
-        else
-            text = text .. red(key) .. "\n"
-        end         
-    end
+	local function addBoss(name)
+		local tmp = ""
+		if self.db.profile.runes[name] then
+			tmp = green(name) .. "\n"
+		else
+			tmp = red(name) .. "\n"
+		end
+		
+		return tmp
+	end
+	
+    local text = ""	
+	text = addBoss("Magmadar")
+	text = text .. addBoss("Gehennas")
+	text = text .. addBoss("Garr")
+	text = text .. addBoss("Geddon")
+	text = text .. addBoss("Shazzrah")
+	text = text .. addBoss("Sulfuron")
+	text = text .. addBoss("Golemagg")
 
     if not frame then self:SetupFrames() end
     frame.text:SetText(text)
