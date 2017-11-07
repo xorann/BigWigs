@@ -63,18 +63,18 @@ end
 ------------------------------
 
 function BigWigsReadyCheck:READY_CHECK(name)
-	BigWigs:Print("Event READY_CHECK")
-	BigWigs:Print(name)
+	--BigWigs:Print("Event READY_CHECK")
+	--BigWigs:Print(name)
 end
 
 function BigWigsReadyCheck:READY_CHECK_CONFIRM(id, response)
-	BigWigs:Print("Event READY_CHECK_CONFIRM")
-	BigWigs:Print(id)
-	BigWigs:Print(response)
+	--BigWigs:Print("Event READY_CHECK_CONFIRM")
+	--BigWigs:Print(id)
+	--BigWigs:Print(response)
 end
 
 function BigWigsReadyCheck:READY_CHECK_FINISHED()
-	BigWigs:Print("Event READY_CHECK_FINISHED")
+	--BigWigs:Print("Event READY_CHECK_FINISHED")
 end
 
 ------------------------------
