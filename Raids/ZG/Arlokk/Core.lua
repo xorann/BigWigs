@@ -43,9 +43,9 @@ module.vanished = nil
 ------------------------------
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.pantherPhase then
-		self:PantherPhase()
+		--self:PantherPhase()
 	elseif sync == syncName.vanishPhase then
-		self:VanishPhase()
+		--self:VanishPhase()
 	end
 end
 
