@@ -73,8 +73,8 @@ BigWigsDousedRunes.defaultDB = {
         ["Magmadar"] = false,
         ["Gehennas"] = false,
         ["Garr"] = false,
-        ["Geddon"] = false,
         ["Shazzrah"] = false,
+        ["Geddon"] = false,
         ["Sulfuron"] = false,
         ["Golemagg"] = false,
     },
@@ -268,8 +268,8 @@ function BigWigsDousedRunes:Update(rune)
 	text = addBoss("Magmadar")
 	text = text .. addBoss("Gehennas")
 	text = text .. addBoss("Garr")
-	text = text .. addBoss("Geddon")
 	text = text .. addBoss("Shazzrah")
+	text = text .. addBoss("Geddon")
 	text = text .. addBoss("Sulfuron")
 	text = text .. addBoss("Golemagg")
 
