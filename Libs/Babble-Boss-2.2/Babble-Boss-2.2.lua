@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Boss-2.2"
-local MINOR_VERSION = 20004
+local MINOR_VERSION = 20005
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -364,8 +364,11 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Rethilgore"] = true;
 		["Atiesh"] = true;
 		["Stratholme Courier"] = true;
-                ["Elder Mottled Boar"] = true,
-                ["Stoneskin Gargoyle"] = true,
+        ["Elder Mottled Boar"] = true,
+        ["Stoneskin Gargoyle"] = true;
+		["Ancient Core Hound"] = true;
+		["Gurubashi Berserker"] = true;
+		["Anubisath Warder"] = true;
 	}
 end)
 
@@ -930,8 +933,11 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Wolf Master Nandos"] = "Wolfmeister Nados",
 		["Rend Blackhand"] = "Rend Blackhand",
 
-                ["Stoneskin Gargoyle"] = "Steinhautgargoyle",
-                ["Elder Mottled Boar"] = "Alter scheckiger Eber",
+        ["Stoneskin Gargoyle"] = "Steinhautgargoyle",
+        ["Elder Mottled Boar"] = "Alter scheckiger Eber",
+		["Ancient Core Hound"] = "Uralter Kernhund";
+		["Gurubashi Berserker"] = "Berserker der Gurubashi";
+		["Anubisath Warder"] = "Wächter des Anubisath";
 	}
 end)
 
