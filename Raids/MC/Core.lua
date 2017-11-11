@@ -7,6 +7,7 @@ BigWigs.bossmods.mc = {}
 
 
 BigWigs.bossmods.mc.lucifron = "Lucifron"
+BigWigs.bossmods.mc.coreHound = "Ancient Core Hound"
 BigWigs.bossmods.mc.magmadar = "Magmadar"
 BigWigs.bossmods.mc.gehennas = "Gehennas"
 BigWigs.bossmods.mc.garr = "Garr"
@@ -18,6 +19,7 @@ BigWigs.bossmods.mc.majordomo = "Majordomo Executus"
 BigWigs.bossmods.mc.ragnaros = "Ragnaros"
 
 BigWigs:ModuleDeclaration(BigWigs.bossmods.mc.lucifron, "Molten Core")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.mc.coreHound, "Molten Core")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.mc.magmadar, "Molten Core")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.mc.gehennas, "Molten Core")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.mc.garr, "Molten Core")
