@@ -83,6 +83,8 @@ Plugins\Ignite.lua
 Plugins\Farclip.lua
 Plugins\AFKick.lua
 Plugins\CombatlogFilter.lua
+Plugins\WorldBuffTimers.lua
+Plugins\FrostBlast.lua
 
 # ###################################
 # Boss modules
@@ -97,6 +99,8 @@ Raids\Onyxia\Onyxia\Core.lua
 Raids\MC\Core.lua
 Raids\MC\Lucifron\I18n.lua
 Raids\MC\Lucifron\Core.lua
+Raids\MC\CoreHound\I18n.lua
+Raids\MC\CoreHound\Core.lua
 Raids\MC\Magmadar\I18n.lua
 Raids\MC\Magmadar\Core.lua
 Raids\MC\Gehennas\I18n.lua
@@ -163,6 +167,8 @@ Raids\ZG\Renataki\I18n.lua
 Raids\ZG\Renataki\Core.lua
 Raids\ZG\Wushoolay\I18n.lua
 Raids\ZG\Wushoolay\Core.lua
+Raids\ZG\GurubashiBerserker\I18n.lua
+Raids\ZG\GurubashiBerserker\Core.lua
 
 # AQ20
 Raids\AQ20\Core.lua
@@ -199,6 +205,8 @@ Raids\AQ40\Defenders\I18n.lua
 Raids\AQ40\Defenders\Core.lua
 Raids\AQ40\Twins\I18n.lua
 Raids\AQ40\Twins\Core.lua
+Raids\AQ40\Warder\I18n.lua
+Raids\AQ40\Warder\Core.lua
 Raids\AQ40\Ouro\I18n.lua
 Raids\AQ40\Ouro\Core.lua
 Raids\AQ40\CThun\I18n.lua
@@ -350,6 +358,7 @@ ServerProjects\Classic-WoW\Raids\Other\Ysondre.lua
 Raids\Onyxia\Onyxia\Default.lua
 
 Raids\MC\Lucifron\Default.lua
+Raids\MC\CoreHound\Default.lua
 Raids\MC\Magmadar\Default.lua
 Raids\MC\Gehennas\Default.lua
 Raids\MC\Garr\Default.lua
@@ -382,6 +391,7 @@ Raids\ZG\Thekal\Default.lua
 Raids\ZG\Arlokk\Default.lua
 Raids\ZG\Jindo\Default.lua
 Raids\ZG\Hakkar\Default.lua
+Raids\ZG\GurubashiBerserker\Default.lua
 
 Raids\AQ20\Kurinnaxx\Default.lua
 Raids\AQ20\Rajaxx\Default.lua
@@ -398,6 +408,7 @@ Raids\AQ40\Fankriss\Default.lua
 Raids\AQ40\Viscidus\Default.lua
 Raids\AQ40\Huhuran\Default.lua
 Raids\AQ40\Twins\Default.lua
+Raids\AQ40\Warder\Default.lua
 Raids\AQ40\Defenders\Default.lua
 Raids\AQ40\Ouro\Default.lua
 Raids\AQ40\CThun\Default.lua
