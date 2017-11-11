@@ -18,6 +18,7 @@ BigWigs.bossmods.zg.renataki = "Renataki"
 BigWigs.bossmods.zg.thekal = "High Priest Thekal"
 BigWigs.bossmods.zg.venoxis = "High Priest Venoxis"
 BigWigs.bossmods.zg.wushoolay = "Wushoolay"
+BigWigs.bossmods.zg.gurubashiBerserker = "Gurubashi Berserker"
 
 BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.arlokk, "Zul'Gurub")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.gahzranka, "Zul'Gurub")
@@ -32,3 +33,4 @@ BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.renataki, "Zul'Gurub")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.thekal, "Zul'Gurub")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.venoxis, "Zul'Gurub")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.wushoolay, "Zul'Gurub")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.zg.gurubashiBerserker, "Zul'Gurub")
