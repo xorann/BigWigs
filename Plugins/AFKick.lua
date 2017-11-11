@@ -53,6 +53,7 @@ end)
 ----------------------------------
 
 BigWigsAFKick = BigWigs:NewModule("AFKick")
+BigWigsAFKick.external = true
 
 BigWigsAFKick.consoleOptions = {
 	type = "group",
