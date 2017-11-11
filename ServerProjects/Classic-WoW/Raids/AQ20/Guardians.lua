@@ -57,7 +57,7 @@ end
 
 -- override to suppress victory message and sound
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
-	if msg == string.format(UNITDIESOTHER, boss) then
+	if msg == string.format(UNITDIESOTHER, AceLibrary("Babble-Boss-2.2")[bossName]) then
 		self.core:ToggleModuleActive(self, false)
 	end
 end
