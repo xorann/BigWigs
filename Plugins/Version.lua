@@ -46,39 +46,58 @@ L:RegisterTranslations("enUS", function() return {
     ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = true,
     ["Close"] = true,
     ["Cancel"] = true,
-            
+	
+	["Gathering Data, please wait..."] = true,
+	["<BigWigs> Everyone has the current version of BigWigs Classic-WoW. I'm proud of you!"] = true,
+	["<BigWigs> Players without BigWigs Classic-WoW:"] = true,
+	["<BigWigs> no one"] = true,
+	["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"] = true,
+	["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"] = true,
+    ["Notify old versions"] = true,
+	["Lists players with an old version in raid chat."] = true,
+	["notifyOldVersions"] = true,
 } end )
 
 L:RegisterTranslations("deDE", function() return {
 	["versionquery"] = "Versionsabfrage",
 	["Version Query"] = "Versionsabfrage",
 	["Commands for querying the raid for Big Wigs versions."] = "Kommandos um den Schlachtzug nach verwendeten BigWigs Versionen abzufragen.",
-	["Query already running, please wait 5 seconds before trying again."] = "Abfrage l\195\164uft bereits, bitte 5 Sekunden warten bis zum n\195\164chsten Versuch.",
-	["Querying versions for "] = "Frage Versionen ab f\195\188r ",
+	["Query already running, please wait 5 seconds before trying again."] = "Abfrage läuft bereits, bitte 5 Sekunden warten bis zum nächsten Versuch.",
+	["Querying versions for "] = "Frage Versionen ab für ",
 	["Big Wigs Version Query"] = "BigWigs Versionsabfrage",
 	["Close window"] = "Schlie\195\159e Fenster", -- I know, it's really a Tablet.
-	["Showing version for "] = "Zeige Version f\195\188r ",
-	["Green versions are newer than yours, red are older, and white are the same."] = "Gr\195\188ne Versionen sind neuer, rote sind \195\164lter, wei\195\159e sind gleich.",
+	["Showing version for "] = "Zeige Version für ",
+	["Green versions are newer than yours, red are older, and white are the same."] = "Grüne Versionen sind neuer, rote sind älter, wei\195\159e sind gleich.",
 	["Player"] = "Spieler",
 	["Version"] = "Version",
 	["Current zone"] = "Momentane Zone",
 	["<zone>"] = "<zone>",
 	["Version query done."] = "Versionsabfrage beendet.",
-	["Runs a version query on your current zone."] = "Versionsabfrage f\195\188r die momentane Zone starten.",
+	["Runs a version query on your current zone."] = "Versionsabfrage für die momentane Zone starten.",
 	["Closes the version query window."] = "Schlie\195\159t das Versionsabfrage-Fenster.",
 	["current"] = "gegenw\195\164rtig",
-	["Runs a version query on the given zone."] = "Versionsabfrage in f\195\188r eine gegebene Zone starten.",
+	["Runs a version query on the given zone."] = "Versionsabfrage in für eine gegebene Zone starten.",
 	["Zone"] = "Zone",
 	["zone"] = "Zone",
 	["N/A"] = "N/A",
 	["BigWigs"] = "BigWigs",
-	["Runs a version query on the BigWigs core."] = "Versionsabfrage f\195\188r die BigWigs Kernkomponente starten.",
+	["Runs a version query on the BigWigs core."] = "Versionsabfrage für die BigWigs Kernkomponente starten.",
 	["Nr Replies"] = "Anzahl der Antworten",
 	["Ancient"] = "Alt",
             
     ["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = "Deine Version von Big Wigs Classic-WoW ist veraltet! Bitte downloade die neuste Version von https://github.com/xorann/BigWigs/releases",
     ["Close"] = "Schliessen",
     ["Cancel"] = "Abbrechen",
+	
+	["Gathering Data, please wait..."] = "Daten werden gesammelt, bitte warten...",
+	["<BigWigs> Everyone has the current version of BigWigs Classic-WoW. I'm proud of you!"] = "<BigWigs> Alle haben die aktuelle Version von BigWigs Classic-WoW. Ich bin stolz auf euch!",
+	["<BigWigs> Players without BigWigs Classic-WoW:"] = "<BigWigs> Spieler ohne BigWigs Classic-WoW:",
+	["<BigWigs> no one"] = "<BigWigs> Niemand",
+	["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"] = "<BigWigs> Spieler mit einer veralteten Version von BigWigs Classic-WoW:",
+	["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"] = "<BigWig> Bitte downloade die neuste Version von BigWigs Classic-WoW von https://github.com/xorann/BigWigs/releases",
+	["Notify old versions"] = "Alte Versionen abfragen",
+	["Lists players with an old version in raid chat."] = "Liste alle Spieler mit einer alten Version im Raidchat auf.",
+	["notifyOldVersions"] = "alteVersionenAbfragen",
 } end )
 
 
@@ -113,6 +132,12 @@ BigWigsVersionQuery.consoleOptions = {
 			usage = L["<zone>"],
 			get = false,
 			set = function(zone) BigWigsVersionQuery:QueryVersion(zone) end,
+		},
+		[L["notifyOldVersions"]] = {
+			type = "execute",
+			name = L["Notify old versions"],
+			desc = L["Lists players with an old version in raid chat."],
+			func = function() BigWigsVersionQuery:NotifyOldVersions() end,
 		},
 	}
 }
@@ -187,6 +212,11 @@ function BigWigsVersionQuery:UpdateTablet()
 						"tooltipText", L["Runs a version query on your current zone."],
 						"func", function() self:QueryVersion() end)
 					dewdrop:AddLine(
+						"text", L["Notify old versions"],
+						"tooltipTitle", L["Notify old versions"],
+						"tooltipText", L["Lists players with an old version in raid chat."],
+						"func", function() self:NotifyOldVersions() end)
+					dewdrop:AddLine(
 						"text", L["Close window"],
 						"tooltipTitle", L["Close window"],
 						"tooltipText", L["Closes the version query window."],
@@ -250,6 +280,69 @@ function BigWigsVersionQuery:IsOutOfDate()
         local dialog = StaticPopup_Show ("BigWigsOutOfDateDialog")
         
 	end
+end
+
+
+local function Blame()
+	-- no BigWigs at all
+	local noBigWigs = nil
+	local outdated = nil
+	
+	if not BigWigsVersionQuery.responseTable then
+		BigWigs:Print("that didn't work...")		
+		return
+	end
+
+	for i = 1, GetNumRaidMembers(), 1 do
+		local name = UnitName("Raid" .. i)
+		local version = BigWigsVersionQuery.responseTable[name]
+
+		if version then
+			-- has bigwigs
+			if BigWigs.revision and version < BigWigs.revision then
+				-- bigwigs is out of date
+				if not outdated then
+					outdated = name
+				else
+					outdated = outdated .. ", " .. name
+				end
+			end
+		else
+			-- does not have bigwigs
+			if not noBigWigs then
+				noBigWigs = name
+			else
+				noBigWigs = noBigWigs .. ", " .. name
+			end
+		end
+	end
+	
+	-- inform raid
+	if not noBigWigs and not outdated then
+		SendChatMessage(L["<BigWigs> Everyone has the current version of BigWigs Classic-WoW. I'm proud of you!"], "RAID")
+	else
+		SendChatMessage(L["<BigWigs> Players without BigWigs Classic-WoW:"], "RAID")
+		if not noBigWigs then
+			SendChatMessage(L["<BigWigs> no one"], "RAID")
+		else
+			SendChatMessage("<BigWigs> " .. noBigWigs, "RAID")
+		end
+		
+		SendChatMessage(L["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"], "RAID")
+		if not outdated then
+			SendChatMessage(L["<BigWigs> no one"], "RAID")
+		else
+			SendChatMessage("<BigWigs> " .. outdated, "RAID")
+		end
+		
+		SendChatMessage(L["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"], "RAID")
+	end
+end
+
+function BigWigsVersionQuery:NotifyOldVersions()
+	self:QueryVersion("BigWigs")
+	self:ScheduleEvent(Blame, 5)
+	BigWigs:Print(L["Gathering Data, please wait..."])
 end
 
 function BigWigsVersionQuery:OnTooltipUpdate()
