@@ -709,13 +709,15 @@ end
 -- event handler
 function BigWigs:BigWigs_RebootModule(moduleName)
 	--local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
-	local m = nil
 	if not BigWigs:HasModule(moduleName) then
+		BigWigs:Print("no has module")
 		-- requester has en client
 		if BB:HasTranslation(moduleName) and BB[moduleName] then
+			BigWigs:Print("has translation")
 			moduleName = BB[moduleName]
 		-- requester has not en client
 		elseif BB:HasReverseTranslation(moduleName)  then
+			BigWigs:Print("has reverse translation")
 			moduleName = BB:GetReverseTranslation(moduleName)
 		end
 		--local moduleName = (BB:HasTranslation(moduleName) and B*B[moduleName]) or (BB:HasReverseTranslation(moduleName) and BB[moduleName]) or moduleName
@@ -728,6 +730,20 @@ function BigWigs:BigWigs_RebootModule(moduleName)
 		self:SetupModule(moduleName)
 	end
 end
+--[[ [2017/11/19 20:25:40-618]: BigWigs\ModulePrototype.lua:724: AceModuleCore-2.0: Cannot find module "Die Zwillingsimperatoren".
+<in C code>: in function `error'
+AceLibrary\AceLibrary.lua:123: in function `error'
+AceModuleCore-2.0\AceModuleCore-2.0.lua:190: in function `GetModule'
+BigWigs\ModulePrototype.lua:724: in function `obj_method'
+AceEvent-2.0\AceEvent-2.0.lua:315: in function `TriggerEvent'
+BigWigs\Core.lua:738: in function `obj_method'
+AceEvent-2.0\AceEvent-2.0.lua:315: in function `TriggerEvent'
+Plugins\Comm.lua:51: in function `obj_method'
+AceEvent-2.0\AceEvent-2.0.lua:315: in function `TriggerEvent'
+AceEvent-2.0\AceEvent-2.0.lua:902: in function <...ce\AddOns\Abraxas\Libs\AceEvent-2.0\AceEvent-2.0.lua:894>
+
+  ---
+  --]]
 
 function BigWigs:Test()
 	local count = 0

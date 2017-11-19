@@ -53,8 +53,8 @@ function module:OnEngage()
 	self.ability1 = nil
 	self.ability2 = nil
 
-	self:Bar("First Ability", 10, icon.unknown)
-	self:Bar("Second Ability", 20, icon.unknown)
+	self:Bar("First Ability", timer.firstAbility, icon.unknown)
+	self:Bar("Second Ability", timer.secondAbility, icon.unknown)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)

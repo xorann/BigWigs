@@ -14,7 +14,7 @@ module.toggleoptions = {"bars" --[[, "bosskill"]]}
 
 -- locals
 module.timer = {
-	firstAbility = 12,
+	firstAbility = 10,
 	ability = 14,
 }
 local timer = module.timer
@@ -48,6 +48,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		if self.db.profile.bars then		
 			local ability = module.abilityTable[rest]
 			if ability then
+				self:RemoveBar(L["bar_unknown"])
 				self:Bar(ability, timer.ability, icon.ability)
 			end
 		end

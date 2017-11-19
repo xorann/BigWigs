@@ -15,14 +15,28 @@ module.toggleoptions = {"fear", "silence", "roots", "dust", "warnings" --[[, "bo
 
 -- locals
 module.timer = {
-	fear = 20,
+	fear = {
+		min = 17,
+		max = 20
+	},
 	fearCast = 1.5,
-	silence = 15,
+	silence = {
+		min = 17,
+		max = 20
+	},
 	silenceCast = 1.5,
-	roots = 15,
+	roots = {
+		min = 17,
+		max = 20
+	},
 	rootsCast = 1.5,
-	dust = 15,
+	dust = {
+		min = 17,
+		max = 20
+	},
 	dustCast = 1.5,
+	firstAbility = 10.5,
+	secondAbility = 14.5,
 }
 local timer = module.timer
 
@@ -69,7 +83,7 @@ function module:Fear()
 	if self.db.profile.fear then
 		--self:RemoveBar(L["bar_possibleFear"])
 		self:Bar(L["bar_fear"], timer.fearCast, icon.fear, true, BigWigsColors.db.profile.fear)
-		self:DelayedBar(timer.fearCast, L["bar_possibleFear"], timer.fear - timer.fearCast, icon.fear, true, BigWigsColors.db.profile.fear)
+		self:DelayedBar(timer.fearCast, L["bar_possibleFear"], timer.fear.min - timer.fearCast, icon.fear, true, BigWigsColors.db.profile.fear)
 	end
 	self:AbilityWarn("fear")
 end
@@ -78,7 +92,7 @@ function module:Silence()
 	if self.db.profile.silence then
 		--self:RemoveBar(L["bar_possibleSilence"])
 		self:Bar(L["bar_silence"], timer.silenceCast, icon.silence)
-		self:DelayedBar(timer.silenceCast, L["bar_possibleSilence"], timer.silence - timer.silenceCast, icon.silence)
+		self:DelayedBar(timer.silenceCast, L["bar_possibleSilence"], timer.silence.min - timer.silenceCast, icon.silence)
 	end
 	self:AbilityWarn("silence")
 end
@@ -87,7 +101,7 @@ function module:Roots()
 	if self.db.profile.roots then
 		--self:RemoveBar(L["bar_possibleRoots"])
 		self:Bar(L["bar_roots"], timer.rootsCast, icon.roots)
-		self:DelayedBar(timer.rootsCast, L["bar_possibleRoots"], timer.roots - timer.rootsCast, icon.roots)
+		self:DelayedBar(timer.rootsCast, L["bar_possibleRoots"], timer.roots.min - timer.rootsCast, icon.roots)
 	end
 	self:AbilityWarn("roots")
 end
@@ -96,7 +110,7 @@ function module:Dust()
 	if self.db.profile.dust then
 		--self:RemoveBar(L["bar_possibleDust"])
 		self:Bar(L["bar_dust"], timer.dustCast, icon.dust)
-		self:DelayedBar(timer.dustCast, L["bar_possibleDust"], timer.dust - timer.dustCast, icon.dust)
+		self:DelayedBar(timer.dustCast, L["bar_possibleDust"], timer.dust.min - timer.dustCast, icon.dust)
 	end
 	self:AbilityWarn("dust")
 end

@@ -34,6 +34,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_nefHeadAlliance = "Citizens of the Alliance, the Lord of Blackrock is slain! Nefarian has been subdued by the combined might of",
 
 	trigger_zgHeart = "Now, only one step remains to rid us of the Soulflayer's threat...",
+	trigger_zgHeart2 = "Begin the ritual, my servants. We must banish the heart of Hakkar back into the void!",
 	trigger_rendHead = "Honor your heroes! On this day, they have dealt a great blow against one of our most hated enemies! The false Warchief, Rend Blackhand, has fallen!",
 
 	-- bars
@@ -121,13 +122,22 @@ local syncName = {
 	onyHeadAlliance = "WorldBuffsOnyHeadAlliance",
 	nefHeadAlliance = "WorldBuffsNefHeadAlliance",
 	zgHeart = "WorldBuffsZgHeart",
+	zgHeart2 = "WorldBuffsZgHeart2",
 	rendHead = "WorldBuffsRendHead",
 }
 
 
 function BigWigsWorldBuffs:OnEnable()
+	self:RegisterEvent("BigWigs_RecvSync")
+	
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
 	self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
+	
+	self:CombatlogFilter(L["trigger_zgHeart"], self.ZgEvent)
+	self:CombatlogFilter(L["trigger_zgHeart2"], self.ZgEvent2)
+	self:CombatlogFilter(L["trigger_onyHeadHorde"], self.OnyEvent)
+	self:CombatlogFilter(L["trigger_nefHeadHorde"], self.NefEvent)
+	self:CombatlogFilter(L["trigger_rendHead"], self.RendEvent)
 end
 
 
@@ -151,9 +161,38 @@ function BigWigsWorldBuffs:CHAT_MSG_MONSTER_YELL(msg)
 		self:Sync(syncName.nefHeadAlliance)
 	elseif string.find(msg, L["trigger_rendHead"]) then
 		self:Sync(syncName.rendHead)
+	elseif string.find(msg, L["trigger_zgHeart2"]) then
+		self:Sync(syncName.zgHeart2)
 	end
 end
 
+function BigWigsWorldBuffs:ZgEvent(event, msg)
+	BigWigs:Print("ZgEvent")
+	BigWigs:Print(event)
+	BigWigs:Print(msg)
+end
+
+function BigWigsWorldBuffs:ZgEvent2(event, msg)
+	BigWigs:Print("ZgEvent2")
+	BigWigs:Print(event)
+	BigWigs:Print(msg)
+end
+
+function BigWigsWorldBuffs:OnyEvent(event, msg)
+	BigWigs:Print("OnyEvent")
+	BigWigs:Print(event)
+	BigWigs:Print(msg)
+end
+function BigWigsWorldBuffs:NefEvent(event, msg)
+	BigWigs:Print("NefEvent")
+	BigWigs:Print(event)
+	BigWigs:Print(msg)
+end
+function BigWigsWorldBuffs:RendEvent(event, msg)
+	BigWigs:Print("RendEvent")
+	BigWigs:Print(event)
+	BigWigs:Print(msg)
+end
 
 ------------------------------
 --      Synchronization	    --
