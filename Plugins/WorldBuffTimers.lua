@@ -104,12 +104,12 @@ BigWigsWorldBuffs.external = true
 --      Initialization      --
 ------------------------------
 local timer = {
-	onyHeadHorde = 15,
-	nefHeadHorde = 17,
-	onyHeadAlliance = 17,
-	nefHeadAlliance = 17,
-	zgHeart = 59,
-	rendHead = 12,
+	onyHeadHorde = 28, -- ??
+	nefHeadHorde = 27.5,	-- test
+	onyHeadAlliance = 17, -- ??
+	nefHeadAlliance = 17, -- ??
+	zgHeart = 59, -- ??
+	rendHead = 16, -- test
 }
 local icon = {
 	dragonslayer = "inv_misc_head_dragon_01",

@@ -43,7 +43,7 @@ end
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.fear then
-		self:Bar(L["bar_fear"], timer.firstFear, icon.fear)
+		--self:Bar(L["bar_fear"], timer.firstFear, icon.fear)
 	end
 	
 	if self.db.profile.knockback then

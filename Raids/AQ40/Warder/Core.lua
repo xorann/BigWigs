@@ -31,8 +31,8 @@ module.timer = {
 	},
 	rootsCast = 1.5,
 	dust = {
-		min = 17,
-		max = 20
+		min = 24,
+		max = 24
 	},
 	dustCast = 1.5,
 	firstAbility = 10.5,
