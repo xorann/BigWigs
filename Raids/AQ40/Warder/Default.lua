@@ -22,6 +22,8 @@ module.revision = 20013 -- To be overridden by the module!
 --timer.berserk = 300
 
 
+local d, r, f, s = nil, nil, nil, nil
+
 ------------------------------
 -- Initialization      		--
 ------------------------------
@@ -55,10 +57,16 @@ function module:OnEngage()
 
 	self:Bar("First Ability", timer.firstAbility, icon.unknown)
 	self:Bar("Second Ability", timer.secondAbility, icon.unknown)
+	
+	d = GetTime()
+	r = GetTime()
+	f = GetTime()
+	s = GetTime()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	d, r, f, s = nil, nil, nil, nil
 end
 
 
@@ -68,12 +76,24 @@ end
 function module:Event(msg)
 	if string.find(msg, L["trigger_fear"]) then
 		self:Sync(syncName.fear)
+		
+		self.core:Print("Fear Interval: " .. GetTime() - f)
+		f = GetTime()
 	elseif string.find(msg, L["trigger_silence"]) then
 		self:Sync(syncName.silence)
+		
+		self.core:Print("Silence Interval: " .. GetTime() - s)
+		s = GetTime()
 	elseif string.find(msg, L["trigger_roots"]) then
 		self:Sync(syncName.roots)
+		
+		self.core:Print("Roots Interval: " .. GetTime() - r)
+		r = GetTime()
 	elseif string.find(msg, L["trigger_dust"]) then
 		self:Sync(syncName.dust)
+		
+		self.core:Print("Dust Interval: " .. GetTime() - d)
+		d = GetTime()
 	end
 end
 

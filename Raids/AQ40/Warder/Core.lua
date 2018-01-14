@@ -21,21 +21,21 @@ module.timer = {
 	},
 	fearCast = 1.5,
 	silence = {
-		min = 17,
-		max = 20
+		min = 20,
+		max = 25
 	},
 	silenceCast = 1.5,
 	roots = {
-		min = 17,
+		min = 15,
 		max = 20
 	},
 	rootsCast = 1.5,
 	dust = {
 		min = 24,
-		max = 24
+		max = 26
 	},
 	dustCast = 1.5,
-	firstAbility = 10.5,
+	firstAbility = 9,
 	secondAbility = 14.5,
 }
 local timer = module.timer

@@ -183,16 +183,6 @@ function BigWigsWorldBuffs:OnyEvent(event, msg)
 	BigWigs:Print(event)
 	BigWigs:Print(msg)
 end
-function BigWigsWorldBuffs:NefEvent(event, msg)
-	BigWigs:Print("NefEvent")
-	BigWigs:Print(event)
-	BigWigs:Print(msg)
-end
-function BigWigsWorldBuffs:RendEvent(event, msg)
-	BigWigs:Print("RendEvent")
-	BigWigs:Print(event)
-	BigWigs:Print(msg)
-end
 
 ------------------------------
 --      Synchronization	    --
