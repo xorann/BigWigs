@@ -47,6 +47,21 @@ L:RegisterTranslations("enUS", function() return {
 	["Bosskill"] = true,
 	["Core"] = true,
 
+	["Special Events"] = true,
+	["SpecialEvents"] = true, -- console command
+	["Colors special events bars."] = true,
+	["Change the color."] = true,
+	["Enrage"] = true,
+	["Fear"] = true,
+	["Frenzy"] = true,
+	["NextFrenzy"] = true, -- console command
+	["Next Frenzy"] = true,
+	["Interrupt"] = true,
+	["MindControl"] = true, -- console command
+	["Mind Control"] = true,
+	["Start"] = true,
+	["Significant"] = true,
+		
 	["1st"] = true,
 	["2nd"] = true,
 	["3rd"] = true,
@@ -274,6 +289,15 @@ BigWigsColors.defaultDB = {
 	bosskill = "00ff00", -- Green
 	core = "00ffff", -- Cyan
 	
+	enrage = "ff0000", -- red
+	fear = "ff7f00", -- orange
+	frenzy = "ffff00", -- yellow
+	nextFrenzy = "ffffff", -- white
+	interrupt = "0000ff", -- blue
+	mindControl = "660099", -- purple
+	start = "00ffff", -- cyan
+	significant = "000000", -- black
+	
 	shortbar = {"ffff00", "ff7f00", "ff0000"},
 	shortnr = 3,
 	longbar = {"00ff00", "ffff00", "ff7f00", "ff0000"},
@@ -471,6 +495,78 @@ BigWigsColors.consoleOptions = {
 						},
 					},
 				},
+				[L["SpecialEvents"]] = {
+					type = "group",
+					name = L["Special Events"],
+					desc = L["Colors special events bars."],
+					order = 3,
+					args = {
+						[L["Enrage"]] = {
+							name = L["Enrage"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.enrage); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.enrage = hex end,
+							order = 1,
+						},
+						[L["Fear"]] = {
+							name = L["Fear"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.fear); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.fear = hex end,
+							order = 2,
+						},
+						[L["Frenzy"]] = {
+							name = L["Frenzy"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.frenzy); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.frenzy = hex end,
+							order = 3,
+						},
+						[L["NextFrenzy"]] = {
+							name = L["Next Frenzy"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.nextFrenzy); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.nextFrenzy = hex end,
+							order = 4,
+						},
+						[L["Interrupt"]] = {
+							name = L["Interrupt"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.interrupt); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.interrupt = hex end,
+							order = 5,
+						},
+						[L["MindControl"]] = {
+							name = L["Mind Control"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.mindControl); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.mindControl = hex end,
+							order = 6,
+						},
+						[L["Start"]] = {
+							name = L["Start"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.start); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.start = hex end,
+							order = 7,
+						},
+						[L["Significant"]] = {
+							name = L["Significant"],
+							type = "color",
+							desc = L["Change the color."],
+							get = function() local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.significant); return r, g, b end,
+							set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.significant = hex end,
+							order = 8,
+						},
+					},
+				},
 				[L["Background"]] = {
 					name = L["Background"],
 					type = "color",
@@ -478,7 +574,7 @@ BigWigsColors.consoleOptions = {
 					hasAlpha = true,
 					get = function() if BigWigsColors.db.profile.bgc then local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.bgc); return r, g, b, BigWigsColors.db.profile.bga else return  0, .5, .5, .5 end end,
 					set = function(r, g, b, a) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.bgc = hex; BigWigsColors.db.profile.bga = a end,
-					order = 3,
+					order = 4,
 				},
 				[L["Text"]] = {
 					name = L["Text"],
@@ -486,7 +582,7 @@ BigWigsColors.consoleOptions = {
 					desc = L["Change the text color."],
 					get = function() if BigWigsColors.db.profile.txtc then local _, r, g, b = PaintChips:GetRGBPercent(BigWigsColors.db.profile.txtc); return r, g, b else return 1, 1, 1 end end,
 					set = function(r, g, b) local hex = BigWigsColors:RGBToHex(r, g, b); PaintChips:RegisterHex(hex); BigWigsColors.db.profile.txtc = hex end,
-					order = 4,
+					order = 5,
 				},
 			}
 		},
@@ -529,6 +625,15 @@ function BigWigsColors:ResetDB()
 	BigWigsColors.db.profile.bgc = BigWigsColors.defaultDB.bgc
 	BigWigsColors.db.profile.bga = BigWigsColors.defaultDB.bga
 	BigWigsColors.db.profile.txtc = BigWigsColors.defaultDB.txtc
+	
+	BigWigsColors.db.profile.enrage = BigWigsColors.defaultDB.enrage
+	BigWigsColors.db.profile.fear = BigWigsColors.defaultDB.fear
+	BigWigsColors.db.profile.frenzy = BigWigsColors.defaultDB.frenzy
+	BigWigsColors.db.profile.nextFrenzy = BigWigsColors.defaultDB.nextFrenzy
+	BigWigsColors.db.profile.interrupt = BigWigsColors.defaultDB.interrupt
+	BigWigsColors.db.profile.mindControl = BigWigsColors.defaultDB.mindControl
+	BigWigsColors.db.profile.start = BigWigsColors.defaultDB.start
+	BigWigsColors.db.profile.significant = BigWigsColors.defaultDB.significant
 end
 
 function BigWigsColors:RegHex(hex)

@@ -1,6 +1,3 @@
-Important:
-- improve configuration for warnicon
-		
 Nice to have:
 - enrage plugin: 
 	- show 2 bars on top of each other. one for the enrage timer and one with the boss hp.
@@ -10,9 +7,8 @@ Nice to have:
 	- list of names with a bar right of the name. the bar shows the cooldown of the interrupt skill or if it's available.
 	- configuration which classes should be shown
 	- text color coded (green: ready, orange: cooldown, red: dead)
-- AFKick Plugin
-- AutoReply Plugin
 - LoathebTactical Plugin
+	- improve configuration of spore groups
 - LoathebHealer Plugin
     - frame with a sortable list of all possible healers
     - show healing spells being cast
@@ -23,12 +19,10 @@ Nice to have:
     - announce successful and failed mind controls
     - show duration of mind control
     - show duration and cooldown of shield wall
-- Thaddius Plugin
-    - Check if debuff changed
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
-- RaidIcon Plugin: Save and reset old raid icon (if a player already had a raid icon before we set one, reset it to the old one after a certain amount of time) (number GetRaidTargetIndex("unit"))
-- Ignite Plugin: 
-	- Track Ignite Stacks
-	- Who owns the Ignite?
-	- compare tank threat to ignite owner threat
-	- clickable frame to send warning to other players
+- RaidIcon Plugin: 
+	- improve icon restore
+	
+- reboot module for all raid members with a non english client
+- test sound
+- wipe decovery

@@ -1,19 +1,13 @@
 ## Interface: 11200
 
-## Title: Big Wigs |cff7fff7fClassic-WoW|r
-## Title-zhCN: |cff7fff7fClassic-WoW|r Big Wigs 
+## Title: BigWigs |cff7fff7fClassic-WoW|r
 ## Notes: Boss Mods with Timer bars.
-## Notes-zhCN: 团队首领战信息提示插件，带有计时条。
-## Notes-zhTW: 團隊首領戰訊息提示插件，帶有計時條。
 ## Author: Tekkub Stoutwrithe, Ammo, Shyva, Rabbit, LYQ, Dorann & Others
 ## Version: 2.0.0
 ## X-Website: https://github.com/xorann/BigWigs/releases
 ## X-Email: xorann@gmail.com
 ## X-Category: Raid
-## X-RelSite-WoWI: 5086
-## X-RelSite-Curse: 4356
-## X-AceForum: 1222
-## X-FlySpray: 1
+
 
 ## OptionalDeps: Ace2, FuBar, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib, Surfaces, MikScrollingBattleText, sct, SpellStatusLib, SpellCacheLib, GratuityLib, Deformat, SpecialEventsEmbed
 ## X-Embeds: Ace2, FuBarPlugin-2.0, Babble-2.2, CandyBar, CompostLib, DewdropLib, PaintChipsLib, TabletLib, SurfaceLib
@@ -21,6 +15,7 @@
 ## SavedVariables: BigWigsDB, BigWigsFubarDB, BigWigsCommonAurasDB, BigWigsZombieFoodDB, BigWigsRespawnTimersDB, BigWigsContributeFlag
 ## SavedVariablesPerCharacter: BigWigsDBPerChar
 
+# Libraries
 Libs\AceLibrary\AceLibrary.lua
 
 Libs\Compost-2.0\Compost-2.0.lua
@@ -50,10 +45,13 @@ Libs\SpellStatus-1.0\SpellStatus-1.0.lua
 Libs\SpecialEvents-Aura-2.0\SpecialEvents-Aura-2.0.lua
 Libs\Waterfall-1.0\Waterfall-1.0.lua
 
+# Core
 LoadOnDemand.lua
 Core.lua
+ModulePrototype.lua
 Options.lua
 
+# Plugins
 Plugins\Comm.lua
 Plugins\Colors.lua
 Plugins\TargetMonitor.lua
@@ -83,84 +81,358 @@ Plugins\DousedRunes.lua
 Plugins\Enrage.lua
 Plugins\Ignite.lua
 Plugins\Farclip.lua
+Plugins\AFKick.lua
+Plugins\CombatlogFilter.lua
+Plugins\WorldBuffTimers.lua
+Plugins\FrostBlast.lua
 
-Raids\ZG\Arlokk.lua
-Raids\ZG\Jeklik.lua
-Raids\ZG\Marli.lua
-Raids\ZG\Venoxis.lua
-Raids\ZG\Hakkar.lua
-Raids\ZG\Mandokir.lua
-Raids\ZG\Jindo.lua
-Raids\ZG\Thekal.lua
-Raids\ZG\Grilek.lua
-Raids\ZG\Renataki.lua
-Raids\ZG\Hazzarah.lua
-Raids\ZG\Wushoolay.lua
-Raids\ZG\Gahzranka.lua
+# ###################################
+# Boss modules
+# ###################################
 
-Raids\AQ20\Ayamiss.lua
-Raids\AQ20\Buru.lua
-Raids\AQ20\GeneralRajaxx.lua
-Raids\AQ20\Guardians.lua
-Raids\AQ20\Ossirian.lua
-Raids\AQ20\Moam.lua
-Raids\AQ20\Kurinaxx.lua
+# Onyxia
+Raids\Onyxia\Core.lua
+Raids\Onyxia\Onyxia\I18n.lua
+Raids\Onyxia\Onyxia\Core.lua
 
-Raids\AQ40\Skeram.lua
-Raids\AQ40\BugFamily.lua
-Raids\AQ40\Sartura.lua
-Raids\AQ40\Fankriss.lua
-Raids\AQ40\Huhuran.lua
-Raids\AQ40\Ouro.lua
-Raids\AQ40\Defenders.lua
-Raids\AQ40\Twins.lua
-Raids\AQ40\Cthun.lua
-Raids\AQ40\Viscidus.lua
+# MC
+Raids\MC\Core.lua
+Raids\MC\Lucifron\I18n.lua
+Raids\MC\Lucifron\Core.lua
+Raids\MC\CoreHound\I18n.lua
+Raids\MC\CoreHound\Core.lua
+Raids\MC\Magmadar\I18n.lua
+Raids\MC\Magmadar\Core.lua
+Raids\MC\Gehennas\I18n.lua
+Raids\MC\Gehennas\Core.lua
+Raids\MC\Garr\I18n.lua
+Raids\MC\Garr\Core.lua
+Raids\MC\Geddon\I18n.lua
+Raids\MC\Geddon\Core.lua
+Raids\MC\Shazzrah\I18n.lua
+Raids\MC\Shazzrah\Core.lua
+Raids\MC\Sulfuron\I18n.lua
+Raids\MC\Sulfuron\Core.lua
+Raids\MC\Golemagg\I18n.lua
+Raids\MC\Golemagg\Core.lua
+Raids\MC\Majordomo\I18n.lua
+Raids\MC\Majordomo\Core.lua
+Raids\MC\Ragnaros\I18n.lua
+Raids\MC\Ragnaros\Core.lua
 
-Raids\BWL\Chromaggus.lua
-Raids\BWL\Ebonroc.lua
-Raids\BWL\Firemaw.lua
-Raids\BWL\Flamegor.lua
-Raids\BWL\Nefarian.lua
-Raids\BWL\Vaelastrasz.lua
-Raids\BWL\Broodlord.lua
-Raids\BWL\Razorgore.lua
+# BWL
+Raids\BWL\Core.lua
+Raids\BWL\Razorgore\I18n.lua
+Raids\BWL\Razorgore\Core.lua
+Raids\BWL\Vaelastrasz\I18n.lua
+Raids\BWL\Vaelastrasz\Core.lua
+Raids\BWL\Broodlord\I18n.lua
+Raids\BWL\Broodlord\Core.lua
+Raids\BWL\Firemaw\I18n.lua
+Raids\BWL\Firemaw\Core.lua
+Raids\BWL\Ebonroc\I18n.lua
+Raids\BWL\Ebonroc\Core.lua
+Raids\BWL\Flamegor\I18n.lua
+Raids\BWL\Flamegor\Core.lua
+Raids\BWL\Chromaggus\I18n.lua
+Raids\BWL\Chromaggus\Core.lua
+Raids\BWL\Nefarian\I18n.lua
+Raids\BWL\Nefarian\Core.lua
 
-Raids\MC\Lucifron.lua
-Raids\MC\BaronGeddon.lua
-Raids\MC\Gehennas.lua
-Raids\MC\Magmadar.lua
-Raids\MC\Majordomo.lua
-Raids\MC\Ragnaros.lua
-Raids\MC\Shazzrah.lua
-Raids\MC\Garr.lua
-Raids\MC\Sulfuron.lua
-Raids\MC\Golemagg.lua
+# Zul'Gurub
+Raids\ZG\Core.lua
+Raids\ZG\Arlokk\I18n.lua
+Raids\ZG\Arlokk\Core.lua
+Raids\ZG\Gahzranka\I18n.lua
+Raids\ZG\Gahzranka\Core.lua
+Raids\ZG\Grilek\I18n.lua
+Raids\ZG\Grilek\Core.lua
+Raids\ZG\Hakkar\I18n.lua
+Raids\ZG\Hakkar\Core.lua
+Raids\ZG\Hazzarah\I18n.lua
+Raids\ZG\Hazzarah\Core.lua
+Raids\ZG\Jeklik\I18n.lua
+Raids\ZG\Jeklik\Core.lua
+Raids\ZG\Jindo\I18n.lua
+Raids\ZG\Jindo\Core.lua
+Raids\ZG\Mandokir\I18n.lua
+Raids\ZG\Mandokir\Core.lua
+Raids\ZG\Marli\I18n.lua
+Raids\ZG\Marli\Core.lua
+Raids\ZG\Venoxis\I18n.lua
+Raids\ZG\Venoxis\Core.lua
+Raids\ZG\Thekal\I18n.lua
+Raids\ZG\Thekal\Core.lua
+Raids\ZG\Renataki\I18n.lua
+Raids\ZG\Renataki\Core.lua
+Raids\ZG\Wushoolay\I18n.lua
+Raids\ZG\Wushoolay\Core.lua
+Raids\ZG\GurubashiBerserker\I18n.lua
+Raids\ZG\GurubashiBerserker\Core.lua
 
-Raids\Other\Azuregos.lua
-Raids\Other\Kazzak.lua
-Raids\Other\Emeriss.lua
-Raids\Other\Lethon.lua
-Raids\Other\Taerar.lua
-Raids\Other\Ysondre.lua
+# AQ20
+Raids\AQ20\Core.lua
+Raids\AQ20\Kurinnaxx\I18n.lua
+Raids\AQ20\Kurinnaxx\Core.lua
+Raids\AQ20\Rajaxx\I18n.lua
+Raids\AQ20\Rajaxx\Core.lua
+Raids\AQ20\Moam\I18n.lua
+Raids\AQ20\Moam\Core.lua
+Raids\AQ20\Guardians\I18n.lua
+Raids\AQ20\Guardians\Core.lua
+Raids\AQ20\Ossirian\I18n.lua
+Raids\AQ20\Ossirian\Core.lua
+Raids\AQ20\Buru\I18n.lua
+Raids\AQ20\Buru\Core.lua
+Raids\AQ20\Ayamiss\I18n.lua
+Raids\AQ20\Ayamiss\Core.lua
 
-#Raids\Other\Boar.lua
+# AQ40
+Raids\AQ40\Core.lua
+Raids\AQ40\Skeram\I18n.lua
+Raids\AQ40\Skeram\Core.lua
+Raids\AQ40\BugFamily\I18n.lua
+Raids\AQ40\BugFamily\Core.lua
+Raids\AQ40\Sartura\I18n.lua
+Raids\AQ40\Sartura\Core.lua
+Raids\AQ40\Fankriss\I18n.lua
+Raids\AQ40\Fankriss\Core.lua
+Raids\AQ40\Viscidus\I18n.lua
+Raids\AQ40\Viscidus\Core.lua
+Raids\AQ40\Huhuran\I18n.lua
+Raids\AQ40\Huhuran\Core.lua
+Raids\AQ40\Defenders\I18n.lua
+Raids\AQ40\Defenders\Core.lua
+Raids\AQ40\Twins\I18n.lua
+Raids\AQ40\Twins\Core.lua
+Raids\AQ40\Warder\I18n.lua
+Raids\AQ40\Warder\Core.lua
+Raids\AQ40\Ouro\I18n.lua
+Raids\AQ40\Ouro\Core.lua
+Raids\AQ40\CThun\I18n.lua
+Raids\AQ40\CThun\Core.lua
 
-Raids\Onyxia\Onyxia.lua
+# Naxxramas
+Raids\Naxxramas\Core.lua
+Raids\Naxxramas\Anubrekhan\I18n.lua
+Raids\Naxxramas\Anubrekhan\Core.lua
+Raids\Naxxramas\Faerlina\I18n.lua
+Raids\Naxxramas\Faerlina\Core.lua
+Raids\Naxxramas\Maexxna\I18n.lua
+Raids\Naxxramas\Maexxna\Core.lua
+Raids\Naxxramas\Noth\I18n.lua
+Raids\Naxxramas\Noth\Core.lua
+Raids\Naxxramas\Heigan\I18n.lua
+Raids\Naxxramas\Heigan\Core.lua
+Raids\Naxxramas\Loatheb\I18n.lua
+Raids\Naxxramas\Loatheb\Core.lua
+Raids\Naxxramas\Patchwerk\I18n.lua
+Raids\Naxxramas\Patchwerk\Core.lua
+Raids\Naxxramas\Grobbulus\I18n.lua
+Raids\Naxxramas\Grobbulus\Core.lua
+Raids\Naxxramas\Gluth\I18n.lua
+Raids\Naxxramas\Gluth\Core.lua
+Raids\Naxxramas\Thaddius\I18n.lua
+Raids\Naxxramas\Thaddius\Core.lua
+Raids\Naxxramas\Razuvious\I18n.lua
+Raids\Naxxramas\Razuvious\Core.lua
+Raids\Naxxramas\Gothik\I18n.lua
+Raids\Naxxramas\Gothik\Core.lua
+Raids\Naxxramas\Horsemen\I18n.lua
+Raids\Naxxramas\Horsemen\Core.lua
+Raids\Naxxramas\Sapphiron\I18n.lua
+Raids\Naxxramas\Sapphiron\Core.lua
+Raids\Naxxramas\Kelthuzad\I18n.lua
+Raids\Naxxramas\Kelthuzad\Core.lua
 
-Raids\Naxxramas\Anubrekhan.lua
-Raids\Naxxramas\Gluth.lua
-Raids\Naxxramas\Razuvious.lua
-Raids\Naxxramas\Noth.lua
-Raids\Naxxramas\Faerlina.lua
-Raids\Naxxramas\Maexxna.lua
-Raids\Naxxramas\Patchwerk.lua
-Raids\Naxxramas\Grobbulus.lua
-Raids\Naxxramas\Thaddius.lua
-Raids\Naxxramas\Heigan.lua
-Raids\Naxxramas\Gothik.lua
-Raids\Naxxramas\Loatheb.lua
-Raids\Naxxramas\Horsemen.lua
-Raids\Naxxramas\Sapphiron.lua
-Raids\Naxxramas\Kelthuzad.lua
+# Open World Bosses
+Raids\Other\Core.lua
+Raids\Other\Azuregos\I18n.lua
+Raids\Other\Azuregos\Core.lua
+Raids\Other\Kazzak\I18n.lua
+Raids\Other\Kazzak\Core.lua
+Raids\Other\Emeriss\I18n.lua
+Raids\Other\Emeriss\Core.lua
+Raids\Other\Lethon\I18n.lua
+Raids\Other\Lethon\Core.lua
+Raids\Other\Taerar\I18n.lua
+Raids\Other\Taerar\Core.lua
+Raids\Other\Ysondre\I18n.lua
+Raids\Other\Ysondre\Core.lua
+#Raids\Other\Boar\I18n.lua
+#Raids\Other\Boar\Core.lua
 
+# ###################################
+# Multi Server Support
+# ###################################
+
+# OtherProject
+ServerProjects\OtherProject\OtherProject.lua
+ServerProjects\OtherProject\Raids\AQ40\Twins.lua
+
+
+# Classic-WoW
+ServerProjects\Classic-WoW\Classic-WoW.lua
+
+ServerProjects\Classic-WoW\Raids\Onyxia\Onyxia.lua
+
+ServerProjects\Classic-WoW\Raids\MC\Lucifron.lua
+ServerProjects\Classic-WoW\Raids\MC\Magmadar.lua
+ServerProjects\Classic-WoW\Raids\MC\Gehennas.lua
+ServerProjects\Classic-WoW\Raids\MC\Garr.lua
+ServerProjects\Classic-WoW\Raids\MC\Geddon.lua
+ServerProjects\Classic-WoW\Raids\MC\Shazzrah.lua
+ServerProjects\Classic-WoW\Raids\MC\Sulfuron.lua
+ServerProjects\Classic-WoW\Raids\MC\Golemagg.lua
+ServerProjects\Classic-WoW\Raids\MC\Majordomo.lua
+ServerProjects\Classic-WoW\Raids\MC\Ragnaros.lua
+
+ServerProjects\Classic-WoW\Raids\BWL\Razorgore.lua
+ServerProjects\Classic-WoW\Raids\BWL\Vaelastrasz.lua
+ServerProjects\Classic-WoW\Raids\BWL\Broodlord.lua
+ServerProjects\Classic-WoW\Raids\BWL\Firemaw.lua
+ServerProjects\Classic-WoW\Raids\BWL\Ebonroc.lua
+ServerProjects\Classic-WoW\Raids\BWL\Flamegor.lua
+ServerProjects\Classic-WoW\Raids\BWL\Chromaggus.lua
+ServerProjects\Classic-WoW\Raids\BWL\Nefarian.lua
+
+ServerProjects\Classic-WoW\Raids\ZG\Jeklik.lua
+ServerProjects\Classic-WoW\Raids\ZG\Venoxis.lua
+ServerProjects\Classic-WoW\Raids\ZG\Marli.lua
+ServerProjects\Classic-WoW\Raids\ZG\Mandokir.lua
+ServerProjects\Classic-WoW\Raids\ZG\Grilek.lua
+ServerProjects\Classic-WoW\Raids\ZG\Hazzarah.lua
+ServerProjects\Classic-WoW\Raids\ZG\Renataki.lua
+ServerProjects\Classic-WoW\Raids\ZG\Wushoolay.lua
+ServerProjects\Classic-WoW\Raids\ZG\Gahzranka.lua
+ServerProjects\Classic-WoW\Raids\ZG\Thekal.lua
+ServerProjects\Classic-WoW\Raids\ZG\Arlokk.lua
+ServerProjects\Classic-WoW\Raids\ZG\Jindo.lua
+ServerProjects\Classic-WoW\Raids\ZG\Hakkar.lua
+
+ServerProjects\Classic-WoW\Raids\AQ20\Kurinnaxx.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Rajaxx.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Moam.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Guardians.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Ossirian.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Buru.lua
+ServerProjects\Classic-WoW\Raids\AQ20\Ayamiss.lua
+
+ServerProjects\Classic-WoW\Raids\AQ40\Skeram.lua
+ServerProjects\Classic-WoW\Raids\AQ40\BugFamily.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Sartura.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Fankriss.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Viscidus.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Huhuran.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Defenders.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Twins.lua
+ServerProjects\Classic-WoW\Raids\AQ40\Ouro.lua
+ServerProjects\Classic-WoW\Raids\AQ40\CThun.lua
+
+ServerProjects\Classic-WoW\Raids\Naxxramas\Anubrekhan.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Faerlina.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Maexxna.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Noth.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Heigan.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Loatheb.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Patchwerk.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Grobbulus.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Gluth.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddiust.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Razuvious.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Gothik.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Horsemen.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Sapphiron.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Kelthuzad.lua
+
+ServerProjects\Classic-WoW\Raids\Other\Azuregos.lua
+ServerProjects\Classic-WoW\Raids\Other\Kazzak.lua
+ServerProjects\Classic-WoW\Raids\Other\Emeriss.lua
+ServerProjects\Classic-WoW\Raids\Other\Lethon.lua
+ServerProjects\Classic-WoW\Raids\Other\Taerar.lua
+ServerProjects\Classic-WoW\Raids\Other\Ysondre.lua
+
+# ##################################
+# Default Implementations
+# ##################################
+Raids\Onyxia\Onyxia\Default.lua
+
+Raids\MC\Lucifron\Default.lua
+Raids\MC\CoreHound\Default.lua
+Raids\MC\Magmadar\Default.lua
+Raids\MC\Gehennas\Default.lua
+Raids\MC\Garr\Default.lua
+Raids\MC\Geddon\Default.lua
+Raids\MC\Shazzrah\Default.lua
+Raids\MC\Sulfuron\Default.lua
+Raids\MC\Golemagg\Default.lua
+Raids\MC\Majordomo\Default.lua
+Raids\MC\Ragnaros\Default.lua
+
+Raids\BWL\Razorgore\Default.lua
+Raids\BWL\Vaelastrasz\Default.lua
+Raids\BWL\Broodlord\Default.lua
+Raids\BWL\Firemaw\Default.lua
+Raids\BWL\Ebonroc\Default.lua
+Raids\BWL\Flamegor\Default.lua
+Raids\BWL\Chromaggus\Default.lua
+Raids\BWL\Nefarian\Default.lua
+
+Raids\ZG\Jeklik\Default.lua
+Raids\ZG\Venoxis\Default.lua
+Raids\ZG\Marli\Default.lua
+Raids\ZG\Mandokir\Default.lua
+Raids\ZG\Grilek\Default.lua
+Raids\ZG\Hazzarah\Default.lua
+Raids\ZG\Renataki\Default.lua
+Raids\ZG\Wushoolay\Default.lua
+Raids\ZG\Gahzranka\Default.lua
+Raids\ZG\Thekal\Default.lua
+Raids\ZG\Arlokk\Default.lua
+Raids\ZG\Jindo\Default.lua
+Raids\ZG\Hakkar\Default.lua
+Raids\ZG\GurubashiBerserker\Default.lua
+
+Raids\AQ20\Kurinnaxx\Default.lua
+Raids\AQ20\Rajaxx\Default.lua
+Raids\AQ20\Moam\Default.lua
+Raids\AQ20\Guardians\Default.lua
+Raids\AQ20\Ossirian\Default.lua
+Raids\AQ20\Buru\Default.lua
+Raids\AQ20\Ayamiss\Default.lua
+
+Raids\AQ40\Skeram\Default.lua
+Raids\AQ40\BugFamily\Default.lua
+Raids\AQ40\Sartura\Default.lua
+Raids\AQ40\Fankriss\Default.lua
+Raids\AQ40\Viscidus\Default.lua
+Raids\AQ40\Huhuran\Default.lua
+Raids\AQ40\Twins\Default.lua
+Raids\AQ40\Warder\Default.lua
+Raids\AQ40\Defenders\Default.lua
+Raids\AQ40\Ouro\Default.lua
+Raids\AQ40\CThun\Default.lua
+
+Raids\Naxxramas\Anubrekhan\Default.lua
+Raids\Naxxramas\Faerlina\Default.lua
+Raids\Naxxramas\Maexxna\Default.lua
+Raids\Naxxramas\Noth\Default.lua
+Raids\Naxxramas\Heigan\Default.lua
+Raids\Naxxramas\Loatheb\Default.lua
+Raids\Naxxramas\Patchwerk\Default.lua
+Raids\Naxxramas\Grobbulus\Default.lua
+Raids\Naxxramas\Gluth\Default.lua
+Raids\Naxxramas\Thaddius\Default.lua
+Raids\Naxxramas\Razuvious\Default.lua
+Raids\Naxxramas\Gothik\Default.lua
+Raids\Naxxramas\Horsemen\Default.lua
+Raids\Naxxramas\Sapphiron\Default.lua
+Raids\Naxxramas\Kelthuzad\Default.lua
+
+Raids\Other\Azuregos\Default.lua
+Raids\Other\Kazzak\Default.lua
+Raids\Other\Emeriss\Default.lua
+Raids\Other\Lethon\Default.lua
+Raids\Other\Taerar\Default.lua
+Raids\Other\Ysondre\Default.lua
+#Raids\Other\Boar\Default.lua

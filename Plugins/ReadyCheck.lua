@@ -51,11 +51,34 @@ function BigWigsReadyCheck:OnEnable()
     self:RegisterEvent("BigWigs_RecvSync")
     self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateButton")
     self:RegisterEvent("PARTY_CONVERTED_TO_RAID", "UpdateButton")
-    self:ScheduleEvent(self.SetupFrames,2)
+    --self:ScheduleEvent(self.SetupFrames,2)
+	
+    self:RegisterEvent("READY_CHECK")
+    self:RegisterEvent("READY_CHECK_CONFIRM")
+    self:RegisterEvent("READY_CHECK_FINISHED")	
 end
 
 ------------------------------
 --      Event Handlers      --
+------------------------------
+
+function BigWigsReadyCheck:READY_CHECK(name)
+	--BigWigs:Print("Event READY_CHECK")
+	--BigWigs:Print(name)
+end
+
+function BigWigsReadyCheck:READY_CHECK_CONFIRM(id, response)
+	--BigWigs:Print("Event READY_CHECK_CONFIRM")
+	--BigWigs:Print(id)
+	--BigWigs:Print(response)
+end
+
+function BigWigsReadyCheck:READY_CHECK_FINISHED()
+	--BigWigs:Print("Event READY_CHECK_FINISHED")
+end
+
+------------------------------
+--      Synchronization	    --
 ------------------------------
 
 function BigWigsReadyCheck:BigWigs_RecvSync(sync, rest, nick)
@@ -139,6 +162,10 @@ function BigWigsReadyCheck:BigWigs_RecvSync(sync, rest, nick)
         
     end
 end
+
+-----------------------
+-- Utility Functions --
+-----------------------
 
 function BigWigsReadyCheck:SetupFrames()
     -- I'm overwriting the related Button scripts to use my sync

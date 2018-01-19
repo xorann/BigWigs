@@ -1,0 +1,29 @@
+r20015
+New:
+	- Skeram: Added a bar for Arcane Explosion
+	- Autoreply plugin: Whispers you receive during a bossfight will be automatically answered with a message that you are currently busy and the current status can be queried by whispering "status". Another message will be send as soon as the fight ends.
+	- AFKick plugin: Allows the raid leader and the assistants to send a request automatically logout a raid member. If the player does not react within 20 seconds a normal Logout will be triggered. If the logout did not work the client will be closed after another 20 seconds.
+	- Frost Blast Plugin: Frame with all players afflicted by Frost Blast (Created by Hosq - https://github.com/hosq)
+	- World Buff Timer plugin: Shows a timer when world buffs are going out (Created by Hosq - https://github.com/hosq)
+	- Version plugin: Added a function to list all players without BigWigs or an outdated version (Created by Hosq - https://github.com/hosq)
+	- Ancient Core Hound: Added a boss module for Ancient Core Hounds in MC (Created by Hosq - https://github.com/hosq)
+	- Gurubashi Berserker: Added a boss module for the Gurubashi Berserkers in ZG (Created by Hosq - https://github.com/hosq)
+	- Anubisath Warder: Added a boss module for the Anubisath Warders in AQ40 (Created by Hosq - https://github.com/hosq)
+	- Bar Color Scheme: Defined a uniform color scheme with defined colors for certain events: 
+		- Berserk/Enrage: Red
+		- Fear: Orange
+		- Frenzy: Yellow
+		- Next Frenzy: White
+		- Interruptable casts: Blue
+		- Mind Control: Purple
+		- Phase Changes/Very Important Events: Black	
+	
+Fixes:
+	- Module reboot requests from someone with an non english client are working now
+	- Chromaggus: Show Vulnerability on bar
+	- C'Thun: Improved the Flesh Tentacle health bars
+	- Twin Emperors: Teleport is not synchronized anymore which fixes an issue with the reboot of the module after a wipe
+	
+Developer:
+	- Separation of Concerns: Complete overhaul of the architecture of all boss modules to separate internationalization, event handling and front-end (bars, messages, etc.). This also allows multi-server support
+	- CombatlogFilter Plugin: eases combatlog parsing and allows for quicker changes

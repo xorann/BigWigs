@@ -33,6 +33,7 @@ local sounds = {
     Pain = "Sound\\Creature\\Thaddius\\THAD_NAXX_ELECT.wav",
 }
 
+local isImportantDay = false
 
 ----------------------------
 --      Localization      --
@@ -112,22 +113,43 @@ BigWigsSound.consoleOptions = {
 function BigWigsSound:OnEnable()
 	self:RegisterEvent("BigWigs_Message")
 	self:RegisterEvent("BigWigs_Sound")
+	
+	if string.find(date(), "04/01/") then
+		isImportantDay = true
+	end
 end
 function BigWigsSound:OnDisable()
     BigWigs:DebugMessage("OnDisable")
 end
 
 function BigWigsSound:BigWigs_Message(text, color, noraidsay, sound, broadcastonly)
-	if not text or sound == false or broadcastonly then return end
+	if not text or sound == false or broadcastonly then 
+		return 
+	end
 
-	if sounds[sound] and not self.db.profile.defaultonly then PlaySoundFile(sounds[sound])
-	else PlaySound("RaidWarning") end
+	if sounds[sound] and not self.db.profile.defaultonly then 
+		if isImportantDay then
+			PlaySoundFile(sounds["Murloc"])
+		else
+			PlaySoundFile(sounds[sound])
+		end
+	else 
+		PlaySound("RaidWarning") 
+	end
 end
 
 function BigWigsSound:BigWigs_Sound( sound )
 	if sounds[sound] and not self.db.profile.defaultonly then 
-		PlaySoundFile(sounds[sound])
+		if isImportantDay then
+			PlaySoundFile(sounds["Murloc"])
+		else
+			PlaySoundFile(sounds[sound])
+		end
 	else 
 		PlaySound("RaidWarning") 
 	end
+end
+
+function BigWigsSound:IDontLikeMurlocs()
+	isImportantDay = false
 end

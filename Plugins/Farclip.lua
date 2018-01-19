@@ -33,6 +33,8 @@ L:RegisterTranslations("enUS", function() return {
 
 BigWigsFarclip = BigWigs:NewModule(L["Farclip"])
 BigWigsFarclip.revision = 20011
+BigWigsFarclip.external = true
+
 BigWigsFarclip.defaultDB = {
     active = true,
 	defaultFarclip = 777,

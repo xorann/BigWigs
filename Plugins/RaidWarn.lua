@@ -231,7 +231,7 @@ function BigWigsRaidWarn:BigWigs_SendTell(player, msg)
 end
 
 function BigWigsRaidWarn:WhisperHandler(event)
-	if not self.db.profile.showwhispers and sentWhispers[arg1] then
+	if arg1 and not self.db.profile.showwhispers and sentWhispers[arg1] then
 		self:Debug("Suppressing self-sent whisper.", event, arg1)
 		return
 	end

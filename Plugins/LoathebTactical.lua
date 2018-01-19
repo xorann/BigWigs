@@ -304,6 +304,11 @@ function module:UseConsumable()
 	if consumable then
 		module:UseContainerItemByName(consumable)
 	end
+	
+	-- on the 5. doom we also have to use a bandage
+	if numDoom == 5 then
+		module:UseContainerItemByName(L["Heavy Runecloth Bandage"])
+	end
 end
 
 ----------------------------------
