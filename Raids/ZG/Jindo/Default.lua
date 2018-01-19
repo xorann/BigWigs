@@ -81,11 +81,11 @@ end
  
 function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
     if self.db.profile.brainwash and string.find(msg, L["trigger_brainWash"]) then
-		self:Message(L["msg_brainWash"], "Attention", true, "Alarm")
+		--self:Message(L["msg_brainWash"], "Attention", true, "Alarm")
 		--self:Bar(L["bar_brainWash"], timer.brainwashUptime, icon.brainwash, true, "Black")
         --self:Bar(L["bar_brainWashNext"], timer.brainwash, icon.brainwash)
 	elseif self.db.profile.healingward and msg == L["trigger_healing"] then
-		self:Message(L["msg_healing"], "Attention", true, "Alarm")
+		--self:Message(L["msg_healing"], "Attention", true, "Alarm")
 		--self:Bar(L["bar_healing"], timer.healingUptime, icon.healing, true, "Yellow")
         --self:Bar(L["bar_healingNext"], timer.healing, icon.healing)
 	end

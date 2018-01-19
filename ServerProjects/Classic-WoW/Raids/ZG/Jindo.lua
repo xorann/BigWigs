@@ -70,9 +70,9 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	BigWigs:CheckForBossDeath(msg, self) -- don't forget this, we are overriding the default functionality
 	
 	if msg == L["trigger_brainWashDeath"] then
-		self:RemoveBar(L["bar_brainWash"])
+		--self:RemoveBar(L["bar_brainWash"])
 	elseif msg == L["trigger_healingDeath"] then
-		self:RemoveBar(L["bar_healing"])
+		--self:RemoveBar(L["bar_healing"])
 	--[[elseif msg == L["trigger_bossDeath"] then
 		if self.db.profile.bosskill then self:Message(string.format(AceLibrary("AceLocale-2.2"):new("BigWigs")["%s has been defeated"], self:ToString()), "Bosskill", nil, "Victory") end
 		self:TriggerEvent("BigWigs_RemoveRaidIcon")
