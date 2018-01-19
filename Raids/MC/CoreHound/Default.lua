@@ -68,8 +68,10 @@ function module:Ability(msg)
 		if ((string.find(msg, hit)) or (string.find(msg, immune)) or (string.find(msg, resist))) then
 			self:Sync(syncName.ability .. " " .. ability)
 			
-			self.core:Print(ability .. " interval: " .. GetTime() - t)
-			t = GetTime()
+			if (GetTime() - t) > 1 then
+				self.core:DebugMessage(ability .. " interval: " .. GetTime() - t)
+				t = GetTime()
+			end
 		end
 	end
 end

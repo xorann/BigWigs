@@ -15,7 +15,7 @@ module.toggleoptions = {"bars" --[[, "bosskill"]]}
 -- locals
 module.timer = {
 	firstAbility = 10,
-	ability = 14,
+	ability = 12,
 }
 local timer = module.timer
 
