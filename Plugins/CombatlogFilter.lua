@@ -253,7 +253,7 @@ function module:MeassureTime(aModuleName, aFilter)
 		local past = stopwatch[aModuleName][aFilter]
 		local present = GetTime()
 		
-		BigWigs:Print("Stopwatch - " .. aFilter .. ": " .. present - past)
+		BigWigs:DebugMessage("Stopwatch - " .. aFilter .. ": " .. present - past)
 		stopwatch[aModuleName][aFilter] = present
 	end
 end

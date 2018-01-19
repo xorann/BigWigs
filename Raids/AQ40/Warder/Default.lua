@@ -77,22 +77,22 @@ function module:Event(msg)
 	if string.find(msg, L["trigger_fear"]) then
 		self:Sync(syncName.fear)
 		
-		self.core:Print("Fear Interval: " .. GetTime() - f)
+		self.core:DebugMessage("Fear Interval: " .. GetTime() - f)
 		f = GetTime()
 	elseif string.find(msg, L["trigger_silence"]) then
 		self:Sync(syncName.silence)
 		
-		self.core:Print("Silence Interval: " .. GetTime() - s)
+		self.core:DebugMessage("Silence Interval: " .. GetTime() - s)
 		s = GetTime()
 	elseif string.find(msg, L["trigger_roots"]) then
 		self:Sync(syncName.roots)
 		
-		self.core:Print("Roots Interval: " .. GetTime() - r)
+		self.core:DebugMessage("Roots Interval: " .. GetTime() - r)
 		r = GetTime()
 	elseif string.find(msg, L["trigger_dust"]) then
 		self:Sync(syncName.dust)
 		
-		self.core:Print("Dust Interval: " .. GetTime() - d)
+		self.core:DebugMessage("Dust Interval: " .. GetTime() - d)
 		d = GetTime()
 	end
 end
