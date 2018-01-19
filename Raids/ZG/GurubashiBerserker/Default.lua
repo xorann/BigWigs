@@ -29,11 +29,11 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- called after module is enabled
 function module:OnEnable()
-	self:CombatlogFilter(L["trigger_fearHit"], self.FearEvent)
+	self:CombatlogFilter(L["trigger_fearHit"], self.FearEvent, true)
 	self:CombatlogFilter(L["trigger_fearImmune"], self.FearEvent)
 	self:CombatlogFilter(L["trigger_fearResist"], self.FearEvent)
 	
-	self:CombatlogFilter(L["trigger_knockback"], self.KnockbackEvent)
+	self:CombatlogFilter(L["trigger_knockback"], self.KnockbackEvent, true)
 end
 
 -- called after module is enabled and after each wipe

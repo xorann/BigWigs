@@ -21,6 +21,7 @@ module.revision = 20014 -- To be overridden by the module!
 -- override timers if necessary
 --timer.berserk = 300
 
+local t = nil
 
 ------------------------------
 -- Initialization      		--
@@ -45,6 +46,8 @@ function module:OnEngage()
 	if self.db.profile.bars then
 		self:Bar(L["bar_unknown"], timer.firstAbility, icon.ability)
 	end
+	
+	t = GetTime()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -64,6 +67,9 @@ function module:Ability(msg)
 		
 		if ((string.find(msg, hit)) or (string.find(msg, immune)) or (string.find(msg, resist))) then
 			self:Sync(syncName.ability .. " " .. ability)
+			
+			self.core:Print(ability .. " interval: " .. GetTime() - t)
+			t = GetTime()
 		end
 	end
 end

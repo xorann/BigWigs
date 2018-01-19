@@ -1,8 +1,4 @@
 r20015
-Developer:
-	- Separation of Concerns: Complete overhaul of the architecture of all boss modules to separate internationalization, event handling and front-end (bars, messages, etc.). This also allows multi-server support
-	- CombatlogFilter Plugin: eases combatlog parsing and allows for quicker changes
-	
 New:
 	- Skeram: Added a bar for Arcane Explosion
 	- Autoreply plugin: Whispers you receive during a bossfight will be automatically answered with a message that you are currently busy and the current status can be queried by whispering "status". Another message will be send as soon as the fight ends.
@@ -26,3 +22,8 @@ Fixes:
 	- Module reboot requests from someone with an non english client are working now
 	- Chromaggus: Show Vulnerability on bar
 	- C'Thun: Improved the Flesh Tentacle health bars
+	- Twin Emperors: Teleport is not synchronized anymore which fixes an issue with the reboot of the module after a wipe
+	
+Developer:
+	- Separation of Concerns: Complete overhaul of the architecture of all boss modules to separate internationalization, event handling and front-end (bars, messages, etc.). This also allows multi-server support
+	- CombatlogFilter Plugin: eases combatlog parsing and allows for quicker changes

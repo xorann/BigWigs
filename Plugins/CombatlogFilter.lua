@@ -93,6 +93,7 @@ local Events = {
 }
 
 local filter = {}
+local stopwatch = {}
 
 ----------------------------
 --      Localization      --
@@ -145,10 +146,14 @@ function module:OnEnable()
 	--self:RegisterAllEvents("CombatlogFilter")
 end
 
-function module:AddFilter(aModuleName, aFilter, callback)
+function module:AddFilter(aModuleName, aFilter, callback, addStopwatch)
 	if aModuleName and type(aModuleName) == "string" 
 		and aFilter and type(aFilter) == "string"
 		and callback and type (callback) == "function" then
+		
+		if addStopwatch then
+			module:AddStopwatch(aModuleName, aFilter)
+		end
 		
 		if not filter[aModuleName] then
 			filter[aModuleName] = {}
@@ -197,9 +202,10 @@ function module:CombatlogFilter()
 		-- iterate modules
 		for aModuleName, moduleFilters in filter do
 			-- iterate filters
-			for filter, callback in moduleFilters do
-				if string.find(arg1, filter) then
+			for aFilter, callback in moduleFilters do
+				if string.find(arg1, aFilter) then
 					callback(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+					module:MeassureTime(aModuleName, aFilter)
 				end
 			end
 		end		
@@ -216,4 +222,38 @@ function module:CombatlogFilter()
 	if arg6 then msg = msg .. " arg6: " .. arg6 end
 	if arg7 then msg = msg .. " arg7: " .. arg7 end
 	BigWigs:Print(msg)]]
+end
+
+
+function module:OnEngage(aModuleName)
+	if aModuleName and type(aModuleName) == "string" then
+		if stopwatch[aModuleName] then
+			local present = GetTime()
+			--stopwatch[aModuleName]["EngageTime"] = present
+			
+			for aFilter, v in stopwatch do
+				stopwatch[aModuleName][aFilter] = present
+			end
+		end
+	end
+end
+
+function module:AddStopwatch(aModuleName, aFilter)
+	if not stopwatch[aModuleName] then
+		stopwatch[aModuleName] = {}
+	end
+	
+	if not stopwatch[aModuleName][aFilter] then
+		stopwatch[aModuleName][aFilter] = GetTime()
+	end
+end
+
+function module:MeassureTime(aModuleName, aFilter)
+	if stopwatch[aModuleName] and stopwatch[aModuleName][aFilter] then
+		local past = stopwatch[aModuleName][aFilter]
+		local present = GetTime()
+		
+		BigWigs:Print("Stopwatch - " .. aFilter .. ": " .. present - past)
+		stopwatch[aModuleName][aFilter] = present
+	end
 end

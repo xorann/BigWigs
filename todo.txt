@@ -22,3 +22,7 @@ Nice to have:
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
 - RaidIcon Plugin: 
 	- improve icon restore
+	
+- reboot module for all raid members with a non english client
+- test sound
+- wipe decovery

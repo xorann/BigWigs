@@ -29,7 +29,6 @@ module.syncName = {
 }
 local syncName = module.syncName
 
-
 module.abilityTable = {
 	["Ancient Dread"] = L["misc_dread"],
 	["Ancient Despair"] = L["misc_dispair"],
@@ -43,6 +42,7 @@ module.abilityTable = {
 ------------------------------
 --      Synchronization	    --
 ------------------------------
+
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.ability and rest then
 		if self.db.profile.bars then		

@@ -78,6 +78,9 @@ function BigWigs.modulePrototype:Engage()
 		BigWigsAutoReply:StartBossfight(self)
 		BigWigsBossRecords:StartBossfight(self)
 		self:KTM_SetTarget(self:ToString())
+		BigWigs:GetModule("CombatlogFilter"):OnEngage(self:ToString())
+		
+		
 
 		self:OnEngage()
 	end
@@ -396,15 +399,15 @@ function BigWigs.modulePrototype:Say(msg)
 	SendChatMessage(msg, "SAY")
 end
 
-function BigWigs.modulePrototype:CombatlogFilter(filter, callback)
+function BigWigs.modulePrototype:CombatlogFilter(filter, callback, addStopwatch)
 	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
-	CombatlogFilter:AddFilter(self:ToString(), filter, callback)
+	CombatlogFilter:AddFilter(self:ToString(), filter, callback, addStopwatch)
 end
 
 -- CombatlogFilter
-function BigWigs.modulePrototype:CombatlogFilter(filter, callback)
+function BigWigs.modulePrototype:CombatlogFilter(filter, callback, addStopwatch)
 	local CombatlogFilter = BigWigs:GetModule("CombatlogFilter")
-	CombatlogFilter:AddFilter(self:ToString(), filter, callback)
+	CombatlogFilter:AddFilter(self:ToString(), filter, callback, addStopwatch)
 end
 
 function BigWigs.modulePrototype:RemoveCombatlogFilter(filter)
