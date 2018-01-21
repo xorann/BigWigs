@@ -558,7 +558,16 @@ function BigWigs:RegisterModule(name, module)
 						name = L["Reboot All"],
 						desc = L["Forces the module to reset for everyone in the raid.\n\n(Requires assistant or higher)"],
 						order = 3,
-						func = function() if (IsRaidLeader() or IsRaidOfficer()) then m.core:TriggerEvent("BigWigs_SendSync", "RebootModule " .. tostring(module)) end end,
+						func = function() 
+							if (IsRaidLeader() or IsRaidOfficer()) then 
+								local name = tostring(module)
+								if BigWigs.BabbleBoss:HasReverseTranslation(name) then
+									name = BigWigs.BabbleBoss:GetReverseTranslation(name)
+								end
+								BigWigs:DebugMessage("module sync ".. name)
+								m.core:TriggerEvent("BigWigs_SendSync", "RebootModule " .. name) 
+							end 
+						end,
 						hidden = function() return not m.core:IsModuleActive(m) end,
 					},
 					[L["debug"]] = {
@@ -712,16 +721,23 @@ end
 -- event handler
 function BigWigs:BigWigs_RebootModule(moduleName)
 	--local moduleName = BB:HasTranslation(moduleName) and BB[moduleName] or moduleName
+	BigWigs:DebugMessage(moduleName)
 	if not BigWigs:HasModule(moduleName) then
-		BigWigs:Print("no has module")
+		BigWigs:DebugMessage("no has module")
 		-- requester has en client
-		if BB:HasTranslation(moduleName) and BB[moduleName] then
-			BigWigs:Print("has translation")
+		if BB:HasTranslation(moduleName) --[[and BB[moduleName]] then
+			BigWigs:DebugMessage("has translation")
 			moduleName = BB[moduleName]
 		-- requester has not en client
 		elseif BB:HasReverseTranslation(moduleName)  then
-			BigWigs:Print("has reverse translation")
+			BigWigs:DebugMessage("has reverse translation")
 			moduleName = BB:GetReverseTranslation(moduleName)
+		else
+			local s1, s2 = "-", "-"
+			s1 = BB:GetTranslation(moduleName)
+			s2 = BB:GetReverseTranslation(moduleName)
+			--BigWigs:DebugMessage(s1)
+			BigWigs:DebugMessage(s2)
 		end
 		--local moduleName = (BB:HasTranslation(moduleName) and B*B[moduleName]) or (BB:HasReverseTranslation(moduleName) and BB[moduleName]) or moduleName
 	end

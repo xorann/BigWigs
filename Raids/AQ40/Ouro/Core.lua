@@ -21,7 +21,7 @@ module.timer = {
 	},
 	nextSubmerge = 90,
 	sweep = 1.5,
-	sweepInterval = 20,
+	sweepInterval = 18.5,
 	sandblast = 2,
 	sandblastInterval = {
 		min = 22,

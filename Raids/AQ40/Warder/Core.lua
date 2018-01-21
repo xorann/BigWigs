@@ -16,7 +16,7 @@ module.toggleoptions = {"fear", "silence", "roots", "dust", "warnings" --[[, "bo
 -- locals
 module.timer = {
 	fear = {
-		min = 17,
+		min = 15,
 		max = 20
 	},
 	fearCast = 1.5,

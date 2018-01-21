@@ -175,7 +175,12 @@ function BigWigsOptions:OnClick()
 			for name, module in deuce.core:IterateModules() do
 				if module:IsBossModule() and deuce.core:IsModuleActive(module) then
 					if (IsRaidLeader() or IsRaidOfficer()) then
-						deuce.core:TriggerEvent("BigWigs_SendSync", "RebootModule "..tostring(module))
+						local name = tostring(module)
+						if BigWigs.BabbleBoss:HasReverseTranslation(name) then
+							name = BigWigs.BabbleBoss:GetReverseTranslation(name)
+						end
+						BigWigs:DebugMessage("options sync ".. name)
+						deuce.core:TriggerEvent("BigWigs_SendSync", "RebootModule " .. name) 
 					end
 				end
 			end

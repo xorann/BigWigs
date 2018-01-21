@@ -937,7 +937,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
         ["Elder Mottled Boar"] = "Alter scheckiger Eber",
 		["Ancient Core Hound"] = "Uralter Kernhund";
 		["Gurubashi Berserker"] = "Berserker der Gurubashi";
-		["Anubisath Warder"] = "Wächter des Anubisath";
+		["Anubisath Warder"] = "Aufseher des Anubisath";
 	}
 end)
 
