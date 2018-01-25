@@ -471,7 +471,6 @@ end
 
 function BigWigs:CheckForWipe(module)    
     if module and module:IsBossModule() then
-		-- prevent reset from someone outside the instance
 		local isInZone = false
 		if type(module.zonename) == "string" and module.zonename == GetRealZoneText() then
 			isInZone = true
@@ -484,6 +483,9 @@ function BigWigs:CheckForWipe(module)
 			end
 		end
 		if not isInZone then 
+			BigWigs:DebugMessage("not in the zone: wipe")
+			-- reset if you are not in the zone
+			module:Wipe()
 			return
 		end
 		

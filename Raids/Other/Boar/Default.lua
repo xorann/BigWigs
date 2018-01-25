@@ -81,8 +81,8 @@ end
 ------------------------------
 
 function module:EventHandlerTest(event, msg)
-	BigWigs:Print("event: " .. event)
-	BigWigs:Print("msg: " .. msg)
+	--BigWigs:Print("event: " .. event)
+	--BigWigs:Print("msg: " .. msg)
 end
 
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
