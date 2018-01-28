@@ -104,10 +104,10 @@ BigWigsWorldBuffs.external = true
 --      Initialization      --
 ------------------------------
 local timer = {
-	onyHeadHorde = 28, -- ??
-	nefHeadHorde = 27.5,	-- test
-	onyHeadAlliance = 17, -- ??
-	nefHeadAlliance = 17, -- ??
+	onyHeadHorde = 28,
+	nefHeadHorde = 27.5,	
+	onyHeadAlliance = 18.4, 
+	nefHeadAlliance = 18.4, -- ??
 	zgHeart = 59, -- ??
 	rendHead = 16, -- test
 }

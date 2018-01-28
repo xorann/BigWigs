@@ -38,7 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 	["<BigWigs> %s sent a request to logout %s."] = true,
 	["%s is not in your raid"] = true,
 	["Please provide a name."] = true,
-	["Your AFKick Request for %s was not acknowledged. %s is probably not using a current compatible version of BigWigs."] = true,
+	["Your AFKick Request for %s was not acknowledged. %s is probably not using a compatible version of BigWigs."] = true,
 	["%s is already offline."] = true,
 	
 	-- dialog
