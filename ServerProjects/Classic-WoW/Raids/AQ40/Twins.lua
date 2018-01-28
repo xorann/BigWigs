@@ -19,7 +19,7 @@ local syncName = module.syncName
 module.revision = 20013
 
 -- timers should be overridden
-timer.teleport = 29.62 -- 29.8? 30?
+timer.teleport = 29.8 -- 30?
 timer.enrage = 900
 timer.blizzard = 10
 
