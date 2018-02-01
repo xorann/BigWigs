@@ -5,6 +5,7 @@ New:
 	- AFKick plugin: Allows the raid leader and the assistants to send a request automatically logout a raid member. If the player does not react within 20 seconds a normal Logout will be triggered. If the logout did not work the client will be closed after another 20 seconds.
 	- Frost Blast Plugin: Frame with all players afflicted by Frost Blast (Created by Hosq - https://github.com/hosq)
 	- World Buff Timer plugin: Shows a timer when world buffs are going out (Created by Hosq - https://github.com/hosq)
+	- Pulltimer plugin: Allows you to start a pull timer. Usage: "/pull" or "/pull <duration>" (Created by Vnm-Kronos - https://github.com/Vnm-Kronos)
 	- Version plugin: Added a function to list all players without BigWigs or an outdated version (Created by Hosq - https://github.com/hosq)
 	- Ancient Core Hound: Added a boss module for Ancient Core Hounds in MC (Created by Hosq - https://github.com/hosq)
 	- Gurubashi Berserker: Added a boss module for the Gurubashi Berserkers in ZG (Created by Hosq - https://github.com/hosq)

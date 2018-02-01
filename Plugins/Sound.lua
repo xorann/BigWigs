@@ -31,6 +31,9 @@ local sounds = {
     
     Murloc = "Sound\\Creature\\Murloc\\mMurlocAggroOld.wav",
     Pain = "Sound\\Creature\\Thaddius\\THAD_NAXX_ELECT.wav",
+	
+	Warning = "Sound\\Doodad\\BellTollNightElf.wav",
+	Special = "Sound\\Spells\\PVPFlagTaken.wav"
 }
 
 local isImportantDay = false

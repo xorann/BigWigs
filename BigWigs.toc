@@ -85,6 +85,7 @@ Plugins\AFKick.lua
 Plugins\CombatlogFilter.lua
 Plugins\WorldBuffTimers.lua
 Plugins\FrostBlast.lua
+Plugins\Pulltimer.lua
 
 # ###################################
 # Boss modules

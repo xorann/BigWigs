@@ -15,14 +15,7 @@ Nice to have:
     - show length of debuff
     - announce successful heals
     - announce next healer
-- Razuvious Plugin
-    - announce successful and failed mind controls
-    - show duration of mind control
-    - show duration and cooldown of shield wall
 - Spell Announce Plugin: Rezz, Interrupt, Taunt Resist, etc.
 - RaidIcon Plugin: 
 	- improve icon restore
-	
-- reboot module for all raid members with a non english client
-- test sound
-- wipe decovery
+	     
