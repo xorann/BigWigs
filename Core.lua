@@ -357,9 +357,15 @@ end
 ------------------------------
 --      KLHThreatMeter      --
 ------------------------------
+local function IsKtmActive()
+	if IsAddOnLoaded("KLHThreatMeter") and klhtm and klhtm.net and klhtm.target then
+		return true
+	end
+	return false
+end
 
 function BigWigs:KTM_Reset()
-	if IsAddOnLoaded("KLHThreatMeter") then
+	if IsKtmActive() then
         if IsRaidLeader() or IsRaidOfficer() then
             klhtm.net.clearraidthreat()
         end
@@ -370,7 +376,7 @@ BigWigs.masterTarget = nil;
 BigWigs.forceReset = nil;
 
 function BigWigs:KTM_ClearTarget(forceReset)
-    if IsAddOnLoaded("KLHThreatMeter") and (IsRaidLeader() or IsRaidOfficer()) then
+    if IsKtmActive() and (IsRaidLeader() or IsRaidOfficer()) then
         klhtm.net.clearmastertarget()
         if forceReset then
             self:KTM_Reset()
@@ -379,7 +385,7 @@ function BigWigs:KTM_ClearTarget(forceReset)
 end
 
 function BigWigs:PLAYER_TARGET_CHANGED()
-    if IsAddOnLoaded("KLHThreatMeter") and BigWigs.masterTarget and (IsRaidLeader() or IsRaidOfficer()) then
+    if IsKtmActive() and BigWigs.masterTarget and (IsRaidLeader() or IsRaidOfficer()) then
         if klhtm.target.targetismaster(BigWigs.masterTarget) then
             -- the masterTarget was already setup correctly
             BigWigs:UnregisterEvent("PLAYER_TARGET_CHANGED")

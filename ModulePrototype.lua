@@ -439,7 +439,7 @@ function BigWigs.modulePrototype:KTM_ClearTarget(forceReset)
 end
 
 function BigWigs.modulePrototype:KTM_SetTarget(targetName, forceReset)
-	if IsAddOnLoaded("KLHThreatMeter") then
+	if IsAddOnLoaded("KLHThreatMeter") and klhtm and klhtm.net and klhtm.target then
 		if targetName and type(targetName) == "string" and (IsRaidLeader() or IsRaidOfficer()) then
 			if UnitName("target") == targetName then
 				klhtm.net.sendmessage("target " .. targetName)
