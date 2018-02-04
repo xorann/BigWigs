@@ -42,6 +42,12 @@ L:RegisterTranslations("enUS", function() return {
 	
 	-- misc
 	misc_unknown = "Unknown",
+	
+	["autoreply"] = true,
+	["AutoReply"] = true,
+	["Replies whispers during an encounter."] = true,
+	["Enabled"] = true,
+	["Enable Plugin."] = true,
 } end )
 
 
@@ -50,6 +56,28 @@ L:RegisterTranslations("enUS", function() return {
 ----------------------------------
 
 BigWigsAutoReply = BigWigs:NewModule("AutoReply")
+BigWigsAutoReply.external = true
+
+BigWigsAutoReply.defaultDB = {
+    enabled = true
+}
+BigWigsAutoReply.consoleCmd = L["autoreply"]
+
+BigWigsAutoReply.consoleOptions = {
+	type = "group",
+	name = L["AutoReply"],
+	desc = L["Replies whispers during an encounter."],
+	args = {
+		enable = {
+			type = "toggle",
+			name = L["Enabled"],
+			desc = L["Enable Plugin."],
+			order = 1,
+			get = function() return BigWigsAutoReply.db.profile.enabled end,
+			set = function(v) BigWigsAutoReply.db.profile.enabled = v end,
+		},
+	},
+}
 BigWigsAutoReply.toggleoptions = { "statusRequest" }
 
 ------------------------------
@@ -78,7 +106,7 @@ function BigWigsAutoReply:IsRaidMember(name)
 end
 
 function BigWigsAutoReply:CHAT_MSG_WHISPER(msg, name)
-	if name and not self:IsRaidMember(name) then
+	if self.db.profile.enabled and name and not self:IsRaidMember(name) then
 		if string.lower(msg) == L["msg_statusRequest"] then
 			self:SendStatus(name)
 		else
@@ -148,10 +176,12 @@ function BigWigsAutoReply:Wipe(mod)
 end
 
 function BigWigsAutoReply:EndBossfight(msg)
-	-- send whisper that the fight ended to cache.replied and then reset cache.replied
-	for name, value in pairs(cache.replied) do
-		--self:Whisper(msg, name)
-		SendChatMessage(msg, "WHISPER", nil, name)
+	if self.db.profile.enabled then
+		-- send whisper that the fight ended to cache.replied and then reset cache.replied
+		for name, value in pairs(cache.replied) do
+			--self:Whisper(msg, name)
+			SendChatMessage(msg, "WHISPER", nil, name)
+		end
 	end
 	
 	-- reset cache
