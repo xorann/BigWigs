@@ -48,6 +48,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Replies whispers during an encounter."] = true,
 	["Enabled"] = true,
 	["Enable Plugin."] = true,
+	["Suppress"] = true,
+	["Suppress outgoing messages."] = true,
 } end )
 
 
@@ -55,11 +57,12 @@ L:RegisterTranslations("enUS", function() return {
 --      Module Declaration      --
 ----------------------------------
 
-BigWigsAutoReply = BigWigs:NewModule("AutoReply")
+BigWigsAutoReply = BigWigs:NewModule("AutoReply", "AceHook-2.1")
 BigWigsAutoReply.external = true
 
 BigWigsAutoReply.defaultDB = {
-    enabled = true
+    enabled = true,
+	suppress = false,
 }
 BigWigsAutoReply.consoleCmd = L["autoreply"]
 
@@ -76,6 +79,14 @@ BigWigsAutoReply.consoleOptions = {
 			get = function() return BigWigsAutoReply.db.profile.enabled end,
 			set = function(v) BigWigsAutoReply.db.profile.enabled = v end,
 		},
+		suppress = {
+			type = "toggle",
+			name = L["Suppress"],
+			desc = L["Suppress outgoing messages."],
+			order = 2,
+			get = function() return BigWigsAutoReply.db.profile.suppress end,
+			set = function(v) BigWigsAutoReply.db.profile.suppress = v end,
+		},
 	},
 }
 BigWigsAutoReply.toggleoptions = { "statusRequest" }
@@ -86,6 +97,12 @@ BigWigsAutoReply.toggleoptions = { "statusRequest" }
 
 function BigWigsAutoReply:OnEnable()
     self:RegisterEvent("CHAT_MSG_WHISPER")
+	
+	if ChatFrame_MessageEventHandler ~= nil and type(ChatFrame_MessageEventHandler) == "function" then
+		self:Hook("ChatFrame_MessageEventHandler", "ChatFrame_OnEvent", true)
+	else
+		self:Hook("ChatFrame_OnEvent", true)
+	end
 end
 
 ------------------------------
@@ -187,4 +204,37 @@ function BigWigsAutoReply:EndBossfight(msg)
 	-- reset cache
 	cache.replied = {}
 	cache.currentBoss = nil
+end
+
+---------------
+function BigWigsAutoReply:ChatFrame_OnEvent(event)
+	--BigWigs:Print(event)
+	if self.db.profile.suppress and event and event == "CHAT_MSG_WHISPER_INFORM" then
+		if self:IsSpam(arg1) then
+			--BigWigs:Print("Suppressing Message", event, arg1)
+			return
+		end
+	end
+	
+	if event then
+		if type(self.hooks["ChatFrame_OnEvent"]) == "function" then
+			--BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
+			self.hooks["ChatFrame_OnEvent"](event)
+		else
+			return self.hooks["ChatFrame_MessageEventHandler"](event)
+		end
+	end
+end
+
+function BigWigsAutoReply:IsSpam(text)
+	if not text then 
+		return false
+	end
+	
+	local start = string.find(text, L["msg_prefix"])
+	if start == 1 then
+		return true
+	end
+	
+	return false
 end

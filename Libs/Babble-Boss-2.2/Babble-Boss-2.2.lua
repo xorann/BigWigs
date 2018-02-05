@@ -369,6 +369,9 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Ancient Core Hound"] = true;
 		["Gurubashi Berserker"] = true;
 		["Anubisath Warder"] = true;
+		["Venom Stalker"] = true;
+		["Necro Stalker"] = true;
+		["Living Monstrosity"] = true;
 	}
 end)
 
