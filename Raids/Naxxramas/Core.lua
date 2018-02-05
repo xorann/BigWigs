@@ -6,6 +6,7 @@
 BigWigs.bossmods.naxx = {}
 
 BigWigs.bossmods.naxx.anubrekhan = "Anub'Rekhan"
+BigWigs.bossmods.naxx.venomstalker = "Venom Stalker"
 BigWigs.bossmods.naxx.faerlina = "Grand Widow Faerlina"
 BigWigs.bossmods.naxx.maexxna = "Maexxna"
 BigWigs.bossmods.naxx.noth = "Noth the Plaguebringer"
@@ -22,6 +23,7 @@ BigWigs.bossmods.naxx.sapphiron = "Sapphiron"
 BigWigs.bossmods.naxx.kelthuzad = "Kel'Thuzad"
 
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.anubrekhan, "Naxxramas")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.venomstalker, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.faerlina, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.maexxna, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.noth, "Naxxramas")

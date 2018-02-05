@@ -217,6 +217,8 @@ Raids\AQ40\CThun\Core.lua
 Raids\Naxxramas\Core.lua
 Raids\Naxxramas\Anubrekhan\I18n.lua
 Raids\Naxxramas\Anubrekhan\Core.lua
+Raids\Naxxramas\VenomStalker\I18n.lua
+Raids\Naxxramas\VenomStalker\Core.lua
 Raids\Naxxramas\Faerlina\I18n.lua
 Raids\Naxxramas\Faerlina\Core.lua
 Raids\Naxxramas\Maexxna\I18n.lua
@@ -415,6 +417,7 @@ Raids\AQ40\Ouro\Default.lua
 Raids\AQ40\CThun\Default.lua
 
 Raids\Naxxramas\Anubrekhan\Default.lua
+Raids\Naxxramas\VenomStalker\Default.lua
 Raids\Naxxramas\Faerlina\Default.lua
 Raids\Naxxramas\Maexxna\Default.lua
 Raids\Naxxramas\Noth\Default.lua
