@@ -142,8 +142,8 @@ function module:TestModule()
 
 	-- check event handlers
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(UNITDIESOTHER, module.thane))
-	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["voidtrigger"])
-	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(msg)
+	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["trigger_void"])
+	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS(L["trigger_shieldWall"])
 	
 	module:OnDisengage()
 	module:TestDisable()
