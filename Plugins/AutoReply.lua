@@ -48,7 +48,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Replies whispers during an encounter."] = true,
 	["Enabled"] = true,
 	["Enable Plugin."] = true,
-	["Suppress"] = true,
+	["Suppress messages"] = true,
 	["Suppress outgoing messages."] = true,
 } end )
 
@@ -81,7 +81,7 @@ BigWigsAutoReply.consoleOptions = {
 		},
 		suppress = {
 			type = "toggle",
-			name = L["Suppress"],
+			name = L["Suppress messages"],
 			desc = L["Suppress outgoing messages."],
 			order = 2,
 			get = function() return BigWigsAutoReply.db.profile.suppress end,
