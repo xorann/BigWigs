@@ -65,6 +65,41 @@ L:RegisterTranslations("enUS", function() return {
 
 	["Offline"] = true,
 	["Dead"] = true,
+	
+	trigger_forstblast = "^([^%s]+) ([^%s]+) afflicted by Frost Blast.",
+	misc_you = "You",
+	misc_are = "are",
+} end)
+
+L:RegisterTranslations("deDE", function() return {
+	--["FrostBlast"] = true,
+	--["Frost Blast"] = true,
+	--["Options for the Frost Blast frame."] = true,
+	--["Lock frame"] = true,
+	--["Lock the frost blast frame."] = true,
+
+	--["Disabled"] = true,
+	--["Disable the frost blast display."] = true,
+
+	font = "Fonts\\FRIZQT__.TTF",
+
+	--["Color Names"] = true,
+	--["Class colored names."] = true,
+	--["Color Bars"] = true,
+	--["Class colored bars."] = true,
+
+	--["Test"] = true,
+	--["Perform a Frost Blast test."] = true,
+
+	--["Reset position"] = true,
+	--["Reset the anchor position, moving it to the center of your screen."] = true,
+
+	--["Offline"] = true,
+	["Dead"] = "Tot",
+	
+	trigger_forstblast = "^([^%s]+) ([^%s]+) von Frostschlag betroffen.",
+	misc_you = "Ihr",
+	misc_are = "seid",
 } end)
 
 -----------------------------------------------------------------------
@@ -163,6 +198,7 @@ BigWigsFrostBlast.consoleOptions = {
 	}
 }
 
+
 -----------------------------------------------------------------------
 --      Initialization
 -----------------------------------------------------------------------
@@ -172,6 +208,8 @@ end
 
 function BigWigsFrostBlast:OnEnable()
 	self:RegisterEvent("Ace2_AddonDisabled")
+	
+	self:CombatlogFilter(L["trigger_forstblast"], self.FrostBlastEvent)
 end
 
 function BigWigsFrostBlast:OnDisable()
@@ -181,6 +219,19 @@ end
 -----------------------------------------------------------------------
 --      Event Handlers
 -----------------------------------------------------------------------
+function BigWigsFrostBlast:FrostBlastEvent(msg)
+	local _, _, name, verb = string.find(msg, L["trigger_forstblast"])
+	if name and verb then
+		if name == L["misc_you"] and verb == L["misc_are"] then
+			--self:Sync(syncName.frostblast .. " " .. UnitName("player"))
+			self:AddFrostBlastTarget(UnitName("player"))
+		else
+			--self:Sync(syncName.frostblast .. " " .. name)
+			self:AddFrostBlastTarget(name)
+		end
+	end
+end
+
 function BigWigsFrostBlast:Lock()
 	if anchor then
 		anchor:EnableMouse(false)
@@ -260,7 +311,7 @@ function BigWigsFrostBlast:AddFrostBlastTarget(name)
 		if not check then
 			local unit = self:FindPlayerUnitByName(name)
 			if unit then
-				tinsert(FrostblastTargets,unit);
+				tinsert(FrostblastTargets, unit);
 				self:FrostBlastUpdate()
 			end
 		end
