@@ -73,7 +73,7 @@ Plugins\LoathebTactical.lua
 Plugins\RespawnTimers.lua
 Plugins\WarningSign.lua
 Plugins\BossRecords.lua
-#Plugins\ReadyCheck.lua
+Plugins\ReadyCheck.lua
 Plugins\RaidOfficer.lua
 Plugins\AutoReply.lua
 Plugins\Proximity.lua
@@ -229,6 +229,8 @@ Raids\Naxxramas\Heigan\I18n.lua
 Raids\Naxxramas\Heigan\Core.lua
 Raids\Naxxramas\Loatheb\I18n.lua
 Raids\Naxxramas\Loatheb\Core.lua
+Raids\Naxxramas\LivingMonstrosity\I18n.lua
+Raids\Naxxramas\LivingMonstrosity\Core.lua
 Raids\Naxxramas\Patchwerk\I18n.lua
 Raids\Naxxramas\Patchwerk\Core.lua
 Raids\Naxxramas\Grobbulus\I18n.lua
@@ -423,6 +425,7 @@ Raids\Naxxramas\Maexxna\Default.lua
 Raids\Naxxramas\Noth\Default.lua
 Raids\Naxxramas\Heigan\Default.lua
 Raids\Naxxramas\Loatheb\Default.lua
+Raids\Naxxramas\LivingMonstrosity\Default.lua
 Raids\Naxxramas\Patchwerk\Default.lua
 Raids\Naxxramas\Grobbulus\Default.lua
 Raids\Naxxramas\Gluth\Default.lua
