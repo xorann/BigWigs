@@ -23,6 +23,7 @@ BigWigs.modulePrototype.wipemobs = nil -- adds that will be considered in CheckF
 BigWigs.modulePrototype.toggleoptions = nil -- {"sweep", "sandblast", "scarab", -1, "emerge", "submerge", -1, "berserk", "bosskill"}
 BigWigs.modulePrototype.proximityCheck = nil -- function(unit) return CheckInteractDistance(unit, 2) end
 BigWigs.modulePrototype.proximitySilent = nil -- false
+BigWigs.modulePrototype.trashMod = nil -- change to true for trash/special boss mods
 
 -- do not override
 function BigWigs.modulePrototype:IsBossModule()
@@ -74,13 +75,15 @@ function BigWigs.modulePrototype:Engage()
 
 	if self.bossSync and not self.engaged then
 		self.engaged = true
-		self:Message(string.format(L["%s engaged!"], self.translatedName), "Positive")
-		BigWigsAutoReply:StartBossfight(self)
-		BigWigsBossRecords:StartBossfight(self)
+		
+		if not self.trashMod then
+			self:Message(string.format(L["%s engaged!"], self.translatedName), "Positive")
+			BigWigsAutoReply:StartBossfight(self)
+			BigWigsBossRecords:StartBossfight(self)
+		end
+		
 		self:KTM_SetTarget(self:ToString())
 		BigWigs:GetModule("CombatlogFilter"):OnEngage(self:ToString())
-		
-		
 
 		self:OnEngage()
 	end
@@ -160,9 +163,11 @@ function BigWigs.modulePrototype:Victory()
 			self:Message(string.format(L["%s has been defeated"], self.translatedName), "Bosskill", nil, "Victory")
 		end
 
-		BigWigsAutoReply:Victory(self)
-		BigWigsBossRecords:EndBossfight(self)
-
+		if not self.trashMod then
+			BigWigsAutoReply:Victory(self)
+			BigWigsBossRecords:EndBossfight(self)
+		end
+		
 		self:DebugMessage("Boss dead, disabling module [" .. self:ToString() .. "].")
 		self.core:DisableModule(self:ToString())
 	end
@@ -170,7 +175,10 @@ end
 
 function BigWigs.modulePrototype:Wipe()
 	if self:IsEngaged() then
-		BigWigsAutoReply:Wipe(self)
+		if not self.trashMod then
+			BigWigsAutoReply:Wipe(self)
+		end
+		
 		BigWigs:BigWigs_RebootModule(self:ToString())
 	end
 end
@@ -674,7 +682,10 @@ function BigWigs:EnableModule(moduleName, nosync)
 				m.translatedName = m:ToString()
 				self:DebugMessage("translatedName for module " .. m:ToString() .. " missing")
 			end
-			self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m.translatedName or "??"), "Core", true)
+			
+			if not m.trashMod then
+				self:TriggerEvent("BigWigs_Message", string.format(L["%s mod enabled"], m.translatedName or "??"), "Core", true)
+			end
 		end
 
 		--if not nosync then self:TriggerEvent("BigWigs_SendSync", (m.external and "EnableExternal " or "EnableModule ") .. m.bossSync or (BB:GetReverseTranslation(moduleName))) end
