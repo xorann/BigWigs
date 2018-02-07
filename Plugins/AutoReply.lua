@@ -48,8 +48,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Replies whispers during an encounter."] = true,
 	["Enabled"] = true,
 	["Enable Plugin."] = true,
-	["Suppress messages"] = true,
-	["Suppress outgoing messages."] = true,
+	["Hide outgoing messages"] = true,
+	["Hides all automatically generated outgoing whisper messages."] = true,
 } end )
 
 
@@ -62,7 +62,7 @@ BigWigsAutoReply.external = true
 
 BigWigsAutoReply.defaultDB = {
     enabled = true,
-	suppress = false,
+	hide = false,
 }
 BigWigsAutoReply.consoleCmd = L["autoreply"]
 
@@ -79,13 +79,13 @@ BigWigsAutoReply.consoleOptions = {
 			get = function() return BigWigsAutoReply.db.profile.enabled end,
 			set = function(v) BigWigsAutoReply.db.profile.enabled = v end,
 		},
-		suppress = {
+		hide = {
 			type = "toggle",
-			name = L["Suppress messages"],
-			desc = L["Suppress outgoing messages."],
+			name = L["Hide outgoing messages"],
+			desc = L["Hides all automatically generated outgoing whisper messages."],
 			order = 2,
-			get = function() return BigWigsAutoReply.db.profile.suppress end,
-			set = function(v) BigWigsAutoReply.db.profile.suppress = v end,
+			get = function() return BigWigsAutoReply.db.profile.hide end,
+			set = function(v) BigWigsAutoReply.db.profile.hide = v end,
 		},
 	},
 }
@@ -209,9 +209,9 @@ end
 ---------------
 function BigWigsAutoReply:ChatFrame_OnEvent(event)
 	--BigWigs:Print(event)
-	if self.db.profile.suppress and event and event == "CHAT_MSG_WHISPER_INFORM" then
+	if self.db.profile.hide and event and event == "CHAT_MSG_WHISPER_INFORM" then
 		if self:IsSpam(arg1) then
-			--BigWigs:Print("Suppressing Message", event, arg1)
+			--BigWigs:Print("hide message", event, arg1)
 			return
 		end
 	end

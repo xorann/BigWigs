@@ -41,6 +41,7 @@ L:RegisterTranslations("enUS", function() return {
 	["pulltimer"] = true,
 	["Options for Pull Timer"] = true,
 	pullstart_message = "Pull in %d sec. (Sent by %s)",
+	pullstop_message = "Pull aborted (Sent by %s)",
 	pull1_message = "Pull in 1",
 	pull2_message = "Pull in 2",
 	pull3_message = "Pull in 3",
@@ -90,7 +91,7 @@ local function BWPT(seconds)
 	if tonumber(seconds) then
 		seconds = tonumber(seconds)
 	else
-		seconds = 6
+		seconds = 0
 	end
 	BigWigsPulltimer:BigWigs_PullCommand(seconds)
 end
@@ -141,6 +142,9 @@ function BigWigsPulltimer:BigWigs_RecvSync(sync, rest, nick)
 	end
 	if sync == syncName.stoppulltimer then
 		self:BigWigs_StopPulltimer()
+		
+		self:Message(string.format(L["pullstop_message"], nick), "Attention", false)
+		PlaySound("igQuestFailed")
 	end
 end
 
@@ -156,12 +160,21 @@ function BigWigsPulltimer:BigWigs_PullCommand(msg)
 			self:Sync(syncName.stoppulltimer)
 			return
 		end
+		
 		if  timer.pulltimer == 0 then
-			self:Sync(syncName.stoppulltimer)
-			return
+			-- stop pull timer if it is already running 
+			local registered, time, elapsed, running = self:BarStatus(L["Pull"])
+			if running then
+				self:Sync(syncName.stoppulltimer)
+				return
+			-- otherwise start a 6s pull timer
+			else
+				timer.pulltimer = 6
+			end
 		elseif ((timer.pulltimer > 63) or (timer.pulltimer < 1))  then
 			return
 		end
+		
 		self:Sync("BWCustomBar "..timer.pulltimer.." ".."bwPullTimer")	--[[This triggers a pull timer for older versions of bigwigs.
 																			Modified CustomBar.lua RecvSync to ignore sync calls with "bwPullTimer" string in them.
 																		--]]
@@ -196,7 +209,7 @@ function BigWigsPulltimer:BigWigs_Pulltimer(duration, requester)
 		return
 	end
 	
-	self:Message(string.format(L["pullstart_message"], timer.pulltimer, requester), "Attention", false, "Special")
+	self:Message(string.format(L["pullstart_message"], timer.pulltimer, requester), "Attention", false, "RaidAlert")
 	self:Bar(L["Pull"], timer.pulltimer, icon.pulltimer)
 	
 	--self:DelayedSound(timer.pulltimer, "Warning")
