@@ -12,6 +12,7 @@ BigWigs.bossmods.naxx.maexxna = "Maexxna"
 BigWigs.bossmods.naxx.noth = "Noth the Plaguebringer"
 BigWigs.bossmods.naxx.heigan = "Heigan the Unclean"
 BigWigs.bossmods.naxx.loatheb = "Loatheb"
+BigWigs.bossmods.naxx.livingmonstrosity = "Living Monstrosity"
 BigWigs.bossmods.naxx.patchwerk = "Patchwerk"
 BigWigs.bossmods.naxx.grobbulus = "Grobbulus"
 BigWigs.bossmods.naxx.gluth = "Gluth"
@@ -29,6 +30,7 @@ BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.maexxna, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.noth, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.heigan, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.loatheb, "Naxxramas")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.livingmonstrosity, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.patchwerk, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.grobbulus, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.gluth, "Naxxramas")

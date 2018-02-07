@@ -1,3 +1,16 @@
+r20016
+New:
+	- Venom Stalker: Added a new boss module for Venom Stalkers in Naxxramas (Created by Vnm-Kronos - https://github.com/Vnm-Kronos)
+	- Autoreply plugin: Added options to disable the plugin and to hide the automatically generated outgoing whispers
+	- Pulltimer: Added the possiblity to abort a pull timer. Just type /pull (without a duration) to abort the current pull timer.
+	- ReadyCheck Participant plugin: Added the ReadyCheck Participant plugin of oRA2. This allows you to participate in ready checks and votes initiated by oRA2.
+	
+Fixes:
+	- Fixed lua errors in the default implementation of Gluth and the The Four Horsemen
+	- Using the translated name for the Onyxia module (fixes an error for the zhCN (and probably other) Client)
+	- Fixed the Frostblast Plugin
+
+
 r20015
 New:
 	- Skeram: Added a bar for Arcane Explosion
