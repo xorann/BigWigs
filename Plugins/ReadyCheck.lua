@@ -239,7 +239,6 @@ if not oRA then
 	-------------------------
 
 	function BigWigsPReady:CHAT_MSG_ADDON(prefix, message, type, sender)
-		BigWigs:Print(prefix .. " " .. message .. " " .. type .. " " .. sender)
 		if prefix == "CTRA" and type == "RAID" and sender then
 			if message == "CHECKREADY" then
 				BigWigsPReady:oRA_ReadyCheck(message, sender)
@@ -252,8 +251,6 @@ if not oRA then
 	-- Handles an incoming ready check
 
 	function BigWigsPReady:oRA_ReadyCheck(msg, author)
-		BigWigs:Print("ready check")
-		
 		--if not self:IsValidRequest(author) then return end
 		if UnitName("player") ~= author then
 			if self.db.profile.sound then 
@@ -359,7 +356,7 @@ if not oRA then
 		self:RegisterCandyBar( "BigWigsPReadyTimeOut", 30, L["Closing Vote"], nil, "green", "yellow", "orange", "red")
 		self:SetCandyBarPoint( "BigWigsPReadyTimeOut", "BOTTOM", self.frames.check, "BOTTOM", 0, 7 )
 		self:SetCandyBarBackgroundColor( "BigWigsPReadyTimeOut", "black", 0 )
-		self:SetCandyBarTexture( "BigWigsPReadyTimeOut", surface:Fetch(self.core.db.profile.bartexture))
+		self:SetCandyBarTexture( "BigWigsPReadyTimeOut", surface:Fetch("BantoBar"))
 		self:StartCandyBar( "BigWigsPReadyTimeOut", 1)
 
 		self:ScheduleEvent( "BigWigsPReady_HideCheck", function() self.frames.check:Hide() end, 30)
