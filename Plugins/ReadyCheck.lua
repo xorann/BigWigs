@@ -1,272 +1,508 @@
+
+assert(BigWigs, "BigWigs not found!")
+
 --[[
-    by LYQ(Virose / MOUZU)
-    https://github.com/MOUZU/BigWigs
-    
-    This is a small plugin to make the ReadyCheck from later expansions usable.
---]]
+	this Plugin allows you to answer oRA2 ready checks and votes without having oRA2 installed
+]]
 
-------------------------------
---      Are you local?      --
-------------------------------
-local c = {
-    lastReadyCheck  = 0,
-    amReady         = false,
-    statusList      = {
-        -- this list is resetting every finished ready check
-        -- it keeps track of the results from the ongoing ready check
-        -- [player] = response,
-        --      -1  =   ??
-        --      0   =   not ready
-        --      1   =   ready
-    },
-    statusListIndex = {},
-    initialized     = false,    -- init process(overwrite things)
-    
-    ackList         = {
-        -- this should list the acknowledges which we received
-        -- to determine who is not using a compatible version
-    },
-    withoutAddOn    = {
-        -- this shall cache who is not using a compatible version
-    },
-}
-local f = CreateFrame("Frame")
+if not oRA then
 
-----------------------------
---      Localization      --
-----------------------------
+	------------------------------
+	--      Are you local?      --
+	------------------------------
 
+	local L = AceLibrary("AceLocale-2.2"):new("BigWigsPReady")
+	local surface = AceLibrary("Surface-1.0")
 
-----------------------------------
---      Module Declaration      --
-----------------------------------
+	----------------------------
+	--      Localization      --
+	----------------------------
 
-BigWigsReadyCheck = BigWigs:NewModule("ReadyCheck")
+	L:RegisterTranslations("enUS", function() return {
+		["ready"] = true,
+		["readyparticipant"] = true,
+		["Options for ready checks and votes."] = true,
+		["sound"] = true,
+		["Sound"] = true,
+		["Toggle an audio warning upon a ready check or vote."] = true,
+		["Ready"] = true,
+		["Ready_1"] = "Ready", -- need for ruRU locale
+		["Not Ready"] = true,
+		["Are you Ready?"] = true,
+		["Yes"] = true,
+		["No"] = true,
+		["Ready Check"] = true,
+		["check"] = true,
+		["Vote"] = true,
+		["vote"] = true,
+		["Perform a vote."] = true,
+		["Participant/Ready"] = true,
+		["Closing Vote"] = true,
+		["Closing Check"] = true,
+		[" ...hic!"] = true,
+	} end)
 
-------------------------------
---      Initialization      --
-------------------------------
+	L:RegisterTranslations("ruRU", function() return {
+		["Options for ready checks and votes."] = "Опции для проверки готовности и голосования.",
+		["Sound"] = "Звук",
+		["Toggle an audio warning upon a ready check or vote."] = "Вкл./Выкл. звукового предупреждения при проверке готовности или голосования.",
+		["Ready"] = "Готовность",
+		["Ready_1"] = "Готов",
+		["Not Ready"] = "Не готов",
+		["Are you Ready?"] = "Вы готовы?",
+		["Yes"] = "Да",
+		["No"] = "Нет",
+		["Ready Check"] = "Проверка готовности",
+		["Vote"] = "Голосование",
+		["Perform a vote."] = "Провести голосование.",
+		["Participant/Ready"] = "Участник/Готовность",
+		["Closing Vote"] = "Завершить голосование",
+		["Closing Check"] = "Завершить проверку",
+		[" ...hic!"] = " ...ик!",
+	} end)
 
-function BigWigsReadyCheck:OnEnable()
-    self:RegisterEvent("BigWigs_RecvSync")
-    self:RegisterEvent("RAID_ROSTER_UPDATE", "UpdateButton")
-    self:RegisterEvent("PARTY_CONVERTED_TO_RAID", "UpdateButton")
-    --self:ScheduleEvent(self.SetupFrames,2)
+	L:RegisterTranslations("koKR", function() return {
+
+		["Options for ready checks and votes."] = "준비 확인과 투표 설정",
+		["Sound"] = "소리",
+		["Toggle an audio warning upon a ready check or vote."] = "투표나 준비 확인시 경고음 토글",
+		["Ready"] = "준비완료",
+		["Ready_1"] = "준비완료",
+		["Not Ready"] = "준비안됨",
+		["Are you Ready?"] = "준비 되셨습니까?",
+		["Yes"] = "예",
+		["No"] = "아니오",
+		["Ready Check"] = "준비 확인",
+		["check"] = "확인",
+		["Vote"] = "투표",
+		["Perform a vote."] = "투표를 실시합니다.",
+		["Participant/Ready"] = "부분/준비",
+		["Closing Vote"] = "투표 닫기",
+		["Closing Check"] = "확인 닫기",
+		[" ...hic!"] = " ...딸꾹!",
+	} end)
+
+	L:RegisterTranslations("zhCN", function() return {
+		["ready"] = "准备",
+		["readyparticipant"] = "readyparticipant",
+		["Options for ready checks and votes."] = "准备检查和投票的选项",
+		["sound"] = "声音",
+		["Sound"] = "声音",
+		["Toggle an audio warning upon a ready check or vote."] = "准备检查或投票时发声",
+		["Ready"] = "准备就绪",
+		["Ready_1"] = "准备就绪",
+		["Not Ready"] = "未准备好",
+		["Are you Ready?"] = "准备好了么？",
+		["Yes"] = "是",
+		["No"] = "否",
+		["Ready Check"] = "准备检查",
+		["check"] = "检查",
+		["Vote"] = "投票",
+		["vote"] = "投票",
+		["Perform a vote."] = "进行投票",
+		["Participant/Ready"] = "Participant/Ready",
+		["Closing Vote"] = "关闭投票",
+		["Closing Check"] = "关闭检查",
+		[" ...hic!"] = "...嗝!",
+	} end)
+
+	L:RegisterTranslations("zhTW", function() return {
+		["ready"] = "就位確認",
+		["readyparticipant"] = "readyparticipant",
+		["Options for ready checks and votes."] = "就位確認與投票選項",
+		["sound"] = "聲音",
+		["Sound"] = "聲音",
+		["Toggle an audio warning upon a ready check or vote."] = "就位確認與投票時播放音效",
+		["Ready"] = "已就緒",
+		["Ready_1"] = "已就緒",
+		["Not Ready"] = "未就緒",
+		["Are you Ready?"] = "準備好了嗎？",
+		["Yes"] = "是",
+		["No"] = "否",
+		["Ready Check"] = "就位確認",
+		["check"] = "檢查",
+		["Vote"] = "投票",
+		["vote"] = "投票",
+		["Perform a vote."] = "進行投票",
+		["Participant/Ready"] = "隊員/就位確認",
+		["Closing Vote"] = "關閉投票",
+		["Closing Check"] = "關閉檢查",
+		[" ...hic!"] = "...啊!",
+	} end)
+
+	L:RegisterTranslations("frFR", function() return {
+		--["ready"] = true,
+		--["readyparticipant"] = true,
+		["Options for ready checks and votes."] = "Options concernant les appels et les votes.",
+		--["sound"] = true,
+		["Sound"] = "Son",
+		["Toggle an audio warning upon a ready check or vote."] = "Joue ou non un avertissement sonore lors d'un appel ou d'un vote.",
+		["Ready"] = "Pr\195\170t",
+		["Ready_1"] = "Pr\195\170t",
+		["Not Ready"] = "Pas pr\195\170t",
+		["Are you Ready?"] = "\195\138tes-vous pr\195\170t ?",
+		["Yes"] = "Oui",
+		["No"] = "Non",
+		["Ready Check"] = "Appel",
+		--["check"] = true,
+		["Vote"] = "Vote",
+		--["vote"] = true,
+		["Perform a vote."] = "Soumet un vote.",
+		["Participant/Ready"] = "Participant/Appel",
+		["Closing Vote"] = "Cl\195\180ture du vote",
+		["Closing Check"] = "Cl\195\180ture de l'appel",
+		[" ...hic!"] = " ... hic !",
+	} end)
 	
-    self:RegisterEvent("READY_CHECK")
-    self:RegisterEvent("READY_CHECK_CONFIRM")
-    self:RegisterEvent("READY_CHECK_FINISHED")	
-end
+	L:RegisterTranslations("deDE", function() return {
+		--["ready"] = true,
+		--["readyparticipant"] = true,
+		["Options for ready checks and votes."] = "Optionen für Ready Checks und Abstimmungen.",
+		--["sound"] = true,
+		["Sound"] = "Sound",
+		["Toggle an audio warning upon a ready check or vote."] = "Umschalten der Audiowarnung bei einem Ready Check oder einer Abstimmung.",
+		["Ready"] = "Bereit",
+		["Ready_1"] = "Bereit", -- need for ruRU locale
+		["Not Ready"] = "Nicht Bereit",
+		["Are you Ready?"] = "Bist du bereit?",
+		["Yes"] = "Ja",
+		["No"] = "Nein",
+		["Ready Check"] = "Ready Check",
+		["check"] = "check",
+		["Vote"] = "Abstimmung",
+		--["vote"] = true,
+		["Perform a vote."] = "Abstimmung durchführen",
+		["Participant/Ready"] = "Teilnehmer/Ready",
+		["Closing Vote"] = "Abstimmung schliessen",
+		["Closing Check"] = "Check schliessen",
+		[" ...hic!"] = " ...hic!",
+	} end)
 
-------------------------------
---      Event Handlers      --
-------------------------------
+	----------------------------------
+	--      Module Declaration      --
+	----------------------------------
 
-function BigWigsReadyCheck:READY_CHECK(name)
-	--BigWigs:Print("Event READY_CHECK")
-	--BigWigs:Print(name)
-end
+	BigWigsPReady = BigWigs:NewModule(L["readyparticipant"], "CandyBar-2.1")
+	BigWigsPReady.defaults = {
+		sound = true,
+	}
+	BigWigsPReady.participant = true
+	BigWigsPReady.name = L["Participant/Ready"]
+	BigWigsPReady.consoleCmd = L["ready"]
+	BigWigsPReady.consoleOptions = {
+		type = "group",
+		desc = L["Options for ready checks and votes."],
+		name = L["Ready"],
+		args = {
+			[L["sound"]] = {
+				name = L["Sound"], type = "toggle",
+				desc = L["Toggle an audio warning upon a ready check or vote."],
+				get = function() return BigWigsPReady.db.profile.sound end,
+				set = function(v)
+					BigWigsPReady.db.profile.sound = v
+				end,
+			},
+		}
+	}
 
-function BigWigsReadyCheck:READY_CHECK_CONFIRM(id, response)
-	--BigWigs:Print("Event READY_CHECK_CONFIRM")
-	--BigWigs:Print(id)
-	--BigWigs:Print(response)
-end
+	------------------------------
+	--      Initialization      --
+	------------------------------
 
-function BigWigsReadyCheck:READY_CHECK_FINISHED()
-	--BigWigs:Print("Event READY_CHECK_FINISHED")
-end
+	function BigWigsPReady:OnEnable()
+		--self:RegisterCheck("CHECKREADY", "oRA_ReadyCheck")
+		--self:RegisterCheck("VOTE", "oRA_Vote")
+		self:RegisterEvent("oRA_ReadyCheck")
+		self:RegisterEvent("oRA_Vote")
+		
+		
+		self:RegisterEvent("CHAT_MSG_ADDON")
+		
+		self:RegisterEvent( "oRA_BarTexture" )
 
-------------------------------
---      Synchronization	    --
-------------------------------
+		self:SetupFrames()
+	end
 
-function BigWigsReadyCheck:BigWigs_RecvSync(sync, rest, nick)
-    --[[
-        we consider four different scenarios:
-        - a raidmember does not have this addon, he will not acknowledge the request
-        - a raidmember does have it, but is not responding in time (AFK), he will acknowledge but neither confirm nor deny
-        - a raidmember does have it and confirms it, he will acknowledge and confirm
-        - a raidmember does have it and denies it(he is not ready but not afk), he will acknowledge and deny
-    --]]
-    if sync == "ReadyCheckRequest" and nick ~= UnitName("player") then
-        -- a RaidOfficer started a ReadyCheck, we acknowledge his request
-        self:TriggerEvent("BigWigs_SendSync", "ReadyCheckAcknowledge")
-        
-        -- we clear the result table
-        for unit=1, GetNumRaidMembers() do
-            local name = GetRaidRosterInfo(unit)
-            c.statusList[name] = -1
-        end
-        -- we clear the ack table because we want to know only the results of this current raid setup
-        for i=1, table.getn(c.ackList) do
-            c.ackList[i] = nil
-        end
-        
-        -- setting up the popup window
-        for i=1, MAX_RAID_MEMBERS do
-            local name = GetRaidRosterInfo(i)
-            if name and name == rest then
-                SetPortraitTexture(ReadyCheckPortrait, "raid"..i)
-                break
-            end
-        end
-        ReadyCheckFrameText:SetText(format(READY_CHECK_MESSAGE, rest))        
-        ReadyCheckFrame:Show()
-        c.lastReadyCheck    = GetTime()
-        c.amReady           = false
-        PlaySound("ReadyCheck")
-        
-        f:Show()
-        
-        
-        -- TODO: setup OnUpdate to hide the frame after 29s again
-        --          if the time runs out and the player did not respond, make a message that the player missed a readycheck
-    elseif sync == "ReadyCheckAcknowledge" then
-        -- another raidmember acknowledged the request
-        tinsert(c.ackList, nick)
-        if not c.statusList[nick] then
-            c.statusList[nick] = -1
-        end
-        -- TODO: display a question mark on his raidframe
-    elseif sync == "ReadyCheckConfirm" then
-        
-        if nick == UnitName("player") then
-            c.amReady = true
-        end
-        
-        if rest == "Y" then
-            c.statusList[nick] = 1
-            -- TODO: display a green check sign on his raidframe (hide the question mark)
-        elseif rest == "N" then
-            c.statusList[nick] = 0
-            -- TODO: display a red cross on his raidframe (hide the question mark)
-        end
-        
-        -- 8seconds is the minimum time for a readycheck. I expect the ackList to be full by then
-        if (c.lastReadyCheck + 8) < GetTime() and table.getn(c.statusListIndex) == table.getn(c.ackList) then
-            -- check who is not using the addon
-            for i=1, GetNumRaidMembers() do
-                if not c.statusList[UnitName("raid"..i)] then
-                    for j=1, table.getn(c.withoutAddOn) do
-                        if c.withoutAddOn[j] == UnitName("raid"..i) then
-                            -- TODO btw if case is probably not what I want
-                        end
-                    end
-                end
-            end
-            
-            -- check the results of the ones with the addon
-            
-        end
-        
-    end
-end
+	function BigWigsPReady:OnDisable()
+		self:UnregisterAllEvents()
+		--self:UnregisterCheck("CHECKREADY")
+		--self:UnregisterCheck("VOTE")
+	end
 
------------------------
--- Utility Functions --
------------------------
+	-------------------------
+	--   Command Handlers  --
+	-------------------------
 
-function BigWigsReadyCheck:SetupFrames()
-    -- I'm overwriting the related Button scripts to use my sync
-    if not c.initialized then
-        -- lol this button below fired a nil value, I guess it's only being setup when joining a raid or opening raid frame
-        RaidFrameReadyCheckButton:SetScript('OnClick', function()
-                
-                -- init onupdate and possibly enable readycheck for raid assistants too, need to make the button for them visible beforehand too
-                -- OnUpdate for - disabling the button for 30s while the current ReadyCheck is ongoing. and analyzing the results of it.
-                -- if time is up and raidmember did ack but not respond make him display as denied.
-                -- how long should the results be visible after the time is up or all ack members responded? 5s? 10s?
-                -- TODO: check for compatibility of Grid, sRaidFrames and LunaRaidFrames
-                -- TO RETHINK: option to display AFK players in raidchat or maybe players without the addon?, these options should only be for RL
-                
-                BigWigsReadyCheck:TriggerEvent("BigWigs_SendSync", "ReadyCheckRequest " .. UnitName("player"))
-                c.lastReadyCheck    = GetTime()
-                c.amReady           = true
-                f:Show()
-            end)
-        
-        ReadyCheckFrameYesButton:SetScript('OnClick', function()
-                ReadyCheckFrame:Hide()
-                BigWigsReadyCheck:TriggerEvent("BigWigs_SendSync", "ReadyCheckConfirm Y")
-            end)
-        ReadyCheckFrameNoButton:SetScript('OnClick', function()
-                ReadyCheckFrame:Hide()
-                BigWigsReadyCheck:TriggerEvent("BigWigs_SendSync", "ReadyCheckConfirm N")
-            end)
-        -- the following is the popup window update, it was only used to alert the player if he missed a check - this does not suffice in our case
-        ReadyCheckFrame:SetScript('OnUpdate', nil)
-        f:SetScript('OnUpdate', function()
-                if c.lastReadyCheck > 0 and (c.lastReadyCheck + 30) < GetTime() then
-                    c.lastReadyCheck = 0
-                    ReadyCheckFrame:Hide()
-                    BigWigsReadyCheck:CheckResults()
-                    
-                    f:Hide()
-                end
-            end)
-        f:Hide()
-        
-        for i=1, 40 do
-            -- setup the readycheck result textures now
-            local this      = getglobal("RaidGroupButton"..i)
-            this.ReadyCheck = CreateFrame("Frame", nil, this)
-            this.ReadyCheck:SetWidth(11)
-            this.ReadyCheck:SetHeight(11)
-            this.ReadyCheckTex = this.ReadyCheck:CreateTexture(nil, "ARTWORK")
-            this.ReadyCheckTex:SetAllPoints(this.ReadyCheck)
-            this.ReadyCheck:SetPoint("CENTER", this)
-            
-            --[[
-            BigWigsWarnIcon.frame = CreateFrame("Frame", nil, UIParent)
-            BigWigsWarnIcon.frame:SetFrameStrata("MEDIUM")
-            BigWigsWarnIcon.frame:SetWidth(100) 
-            BigWigsWarnIcon.frame:SetHeight(100)
-            BigWigsWarnIcon.texture = BigWigsWarnIcon.frame:CreateTexture(nil, "BACKGROUND")
-            BigWigsWarnIcon.texture:SetAllPoints(BigWigsWarnIcon.frame)
-            BigWigsWarnIcon.frame:SetAlpha(0.8)
-            BigWigsWarnIcon.frame:SetPoint("CENTER", 0, 250)
-            BigWigsWarnIcon.frame:Hide()
-            
-            /run RaidGroupButton2.ReadyCheckTex:SetTexture("Interface\\AddOns\\BigWigs\\Icons\\ReadyCheck-Ready")
-/run RaidGroupButton2.ReadyCheckTex:SetTexture("Interface\\Icons\\Spell_Fire_Fireball")
 
-/run RaidGroupButton2.ReadyCheckTex:SetBlendMode("BLEND")
+	-------------------------
+	--   Event Handlers    --
+	-------------------------
 
-/run RaidGroupButton2.ReadyCheck:SetPoint("CENTER", UIParent)
-            ]]
-        end
-        
-        BigWigsReadyCheck:UpdateButton()
-        
-        c.initialized = true
-    end
-end
+	function BigWigsPReady:CHAT_MSG_ADDON(prefix, message, type, sender)
+		BigWigs:Print(prefix .. " " .. message .. " " .. type .. " " .. sender)
+		if prefix == "CTRA" and type == "RAID" and sender then
+			if message == "CHECKREADY" then
+				BigWigsPReady:oRA_ReadyCheck(message, sender)
+			elseif string.find(message, "VOTE") then
+				BigWigsPReady:oRA_Vote(message, sender)
+			end
+		end
+	end
+	
+	-- Handles an incoming ready check
 
-function BigWigsReadyCheck:UpdateButton()
-    -- by default this is hidden and on this update it would hide the button again
-    if GetNumRaidMembers() > 0 and IsRaidOfficer() then
-        RaidFrameReadyCheckButton:Show()
-    else
-        RaidFrameReadyCheckButton:Hide()
-    end
-end
+	function BigWigsPReady:oRA_ReadyCheck(msg, author)
+		BigWigs:Print("ready check")
+		
+		--if not self:IsValidRequest(author) then return end
+		if UnitName("player") ~= author then
+			if self.db.profile.sound then 
+				PlaySoundFile("Sound\\interface\\levelup2.wav") 
+			end
+			
+			self:ShowReady(author)
+		end
+	end
 
-function BigWigsReadyCheck:CheckResults()
-    
-end
+	-- Handles an incoming vote
+	local function CleanMessage( msg )
+		msg = string.gsub(msg, "%$", "s")
+		msg = string.gsub(msg, "§", "S")
+		
+		if strsub(msg, strlen(msg)-strlen(L[" ...hic!"]) ) == L[" ...hic!"] then
+			msg = strsub(msg, 1, strlen(msg)-strlen(L[" ...hic!"]))
+		end
+		return msg
+	end
 
-function BigWigsReadyCheck:DisplayResult(raidIndex, response)
-    --[[
-        -1  Acknowledge received, but no result yet
-        0   not ready
-        1   ready
-    --]]
-    if response == -1 then
-        --Interface\\AddOns\\BigWigs\\Icons\\ReadyCheck-Waiting
-    elseif response == 0 then
-        --Interface\\AddOns\\BigWigs\\Icons\\ReadyCheck-NotReady
-    elseif response == 1 then
-        --Interface\\AddOns\\BigWigs\\Icons\\ReadyCheck-Ready
-    end
+	
+	function BigWigsPReady:oRA_Vote(msg, author)
+		--if not self:IsValidRequest(author) then return end
+		msg = CleanMessage(msg)
+		local _, _, question = string.find(msg, "^VOTE (.+)$")
+		if not question then 
+			return 
+		end
+		
+		if UnitName("player") ~= author then
+			if self.db.profile.sound then 
+				PlaySoundFile("Sound\\interface\\levelup2.wav") 
+			end
+			
+			self:ShowVote(author, question)
+		end
+	end
+
+	function BigWigsPReady:oRA_BarTexture(texture)
+		if self:CandyBarStatus("BigWigsPReadyTimeOut") then
+			self:SetCandyBarTexture("BigWigsPReadyTimeOut", surface:Fetch(texture))
+		end
+	end
+
+	--------------------------
+	--     Core function    --
+	--------------------------
+
+	function BigWigsPReady:Vote(answer)
+		if not answer then return end
+		if answer == "yes" then 
+			--self:SendMessage("VOTEYES")
+			SendAddonMessage("oRA", "VOTEYES", "RAID")
+		elseif answer == "no" then 
+			--self:SendMessage("VOTENO")
+			SendAddonMessage("oRA", "VOTENO", "RAID")		
+		end
+	end
+
+
+	function BigWigsPReady:Ready( readystate )
+		if not readystate then 
+			return 
+		end
+		
+		if readystate == "ready" then 
+			--self:SendMessage("READY")
+			SendAddonMessage("oRA", "READY", "RAID")
+		elseif readystate == "notready" then 
+			--self:SendMessage("NOTREADY")
+			SendAddonMessage("oRA", "NOTREADY", "RAID")
+		end
+	end
+
+	------------------------------------
+	--     Frame Setup and Handling   --
+	------------------------------------
+
+	function BigWigsPReady:ShowVote( author, question )
+		self.frames.cheader:SetText(L["Vote"])
+		self.frames.cinfo:SetText("|cffffffff"..author.. "|r: " .. question)
+		self.frames.leftbuttontext:SetText(L["Yes"])
+		self.frames.rightbuttontext:SetText(L["No"])
+
+		self.frames.leftbutton:SetScript("OnClick", 
+				function() 
+					this.owner:Vote("yes")
+					this.owner:StopCandyBar("BigWigsPReadyTimeOut")
+					this.owner.frames.check:Hide()
+					this.owner:CancelScheduledEvent("BigWigsPReady_HideCheck")
+				end )
+		self.frames.rightbutton:SetScript("OnClick",
+				function() 
+					this.owner:Vote("no")
+					this.owner:StopCandyBar("BigWigsPReadyTimeOut")
+					this.owner.frames.check:Hide()
+					this.owner:CancelScheduledEvent("BigWigsPReady_HideCheck")
+				end )
+
+		self.frames.check:Show()
+
+		self:RegisterCandyBar( "BigWigsPReadyTimeOut", 30, L["Closing Vote"], nil, "green", "yellow", "orange", "red")
+		self:SetCandyBarPoint( "BigWigsPReadyTimeOut", "BOTTOM", self.frames.check, "BOTTOM", 0, 7 )
+		self:SetCandyBarBackgroundColor( "BigWigsPReadyTimeOut", "black", 0 )
+		self:SetCandyBarTexture( "BigWigsPReadyTimeOut", surface:Fetch(self.core.db.profile.bartexture))
+		self:StartCandyBar( "BigWigsPReadyTimeOut", 1)
+
+		self:ScheduleEvent( "BigWigsPReady_HideCheck", function() self.frames.check:Hide() end, 30)
+	end
+
+
+	function BigWigsPReady:ShowReady( author )
+		self.frames.cheader:SetText(L["Ready Check"])
+		self.frames.cinfo:SetText("|cffffffff"..author.. "|r: " .. L["Are you Ready?"] )
+		self.frames.leftbuttontext:SetText(L["Ready_1"])
+		self.frames.rightbuttontext:SetText(L["Not Ready"])
+
+		self.frames.leftbutton:SetScript("OnClick",
+			function() 
+					this.owner:Ready("ready")
+					this.owner:StopCandyBar("BigWigsPReadyTimeOut") 
+					this.owner.frames.check:Hide()
+					this.owner:CancelScheduledEvent("BigWigsPReady_HideCheck")
+				end )
+		self.frames.rightbutton:SetScript("OnClick",
+				function() 
+					this.owner:Ready("notready") 
+					this.owner:StopCandyBar("BigWigsPReadyTimeOut")
+					this.owner.frames.check:Hide()
+					this.owner:CancelScheduledEvent("BigWigsPReady_HideCheck")
+				end )
+		self.frames.check:Show()
+
+		self:RegisterCandyBar( "BigWigsPReadyTimeOut", 30, L["Closing Check"], nil, "green", "yellow", "orange", "red")
+		self:SetCandyBarPoint( "BigWigsPReadyTimeOut", "BOTTOM", self.frames.check, "BOTTOM", 0, 7 )
+		self:SetCandyBarBackgroundColor( "BigWigsPReadyTimeOut", "black", 0 )
+		self:SetCandyBarTexture( "BigWigsPReadyTimeOut", surface:Fetch("BantoBar"))
+		self:StartCandyBar( "BigWigsPReadyTimeOut", 1)
+
+		self:ScheduleEvent( "BigWigsPReady_HideCheck", function() self.frames.check:Hide() end, 30)
+	end
+
+	function BigWigsPReady:SetupFrames()
+		local f, t	
+
+		f, _, _ = GameFontNormal:GetFont()
+
+		self.frames = {}
+		self.frames.check = CreateFrame("Frame", nil, UIParent)
+		self.frames.check:Hide()
+		self.frames.check:SetWidth(325)
+		self.frames.check:SetHeight(125)
+		self.frames.check:SetBackdrop({
+			bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", tile = true, tileSize = 16,
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
+			insets = {left = 4, right = 4, top = 4, bottom = 4},
+			})
+		self.frames.check:SetBackdropBorderColor(.5, .5, .5)
+		self.frames.check:SetBackdropColor(0,0,0)
+		self.frames.check:ClearAllPoints()
+		self.frames.check:SetPoint("CENTER", WorldFrame, "CENTER", 0, 0)
+
+		self.frames.cfade = self.frames.check:CreateTexture(nil, "BORDER")
+		self.frames.cfade:SetWidth(319)
+		self.frames.cfade:SetHeight(25)
+		self.frames.cfade:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
+		self.frames.cfade:SetPoint("TOP", self.frames.check, "TOP", 0, -4)
+		self.frames.cfade:SetBlendMode("ADD")
+		self.frames.cfade:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .25, .25, .25, 1)
+		self.frames.check.Fade = self.frames.fade
+
+		self.frames.cheader = self.frames.check:CreateFontString(nil,"OVERLAY")
+		self.frames.cheader:SetFont(f, 14)
+		self.frames.cheader:SetWidth(300)
+		self.frames.cheader:SetText("header")
+		self.frames.cheader:SetTextColor(1, .8, 0)
+		self.frames.cheader:ClearAllPoints()
+		self.frames.cheader:SetPoint("TOP", self.frames.check, "TOP", 0, -10)
+
+		self.frames.cinfo = self.frames.check:CreateFontString(nil,"OVERLAY")
+		self.frames.cinfo:SetFont(f, 10)
+		self.frames.cinfo:SetWidth(300)
+		self.frames.cinfo:SetText("info")
+		self.frames.cinfo:SetTextColor(1, .8, 0)
+		self.frames.cinfo:ClearAllPoints()
+		self.frames.cinfo:SetPoint("TOP", self.frames.cheader, "BOTTOM", 0, -10)
+		
+		self.frames.leftbutton = CreateFrame("Button", nil, self.frames.check)
+		self.frames.leftbutton.owner = self
+		self.frames.leftbutton:SetWidth(125)
+		self.frames.leftbutton:SetHeight(32)
+		self.frames.leftbutton:SetPoint("RIGHT", self.frames.check, "CENTER", -10, -20)
+		
+		t = self.frames.leftbutton:CreateTexture()
+		t:SetWidth(125)
+		t:SetHeight(32)
+		t:SetPoint("CENTER", self.frames.leftbutton, "CENTER")
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		self.frames.leftbutton:SetNormalTexture(t)
+
+		t = self.frames.leftbutton:CreateTexture(nil, "BACKGROUND")
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		t:SetAllPoints(self.frames.leftbutton)
+		self.frames.leftbutton:SetPushedTexture(t)
+		
+		t = self.frames.leftbutton:CreateTexture()
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		t:SetAllPoints(self.frames.leftbutton)
+		t:SetBlendMode("ADD")
+		self.frames.leftbutton:SetHighlightTexture(t)
+		self.frames.leftbuttontext = self.frames.leftbutton:CreateFontString(nil,"OVERLAY")
+		self.frames.leftbuttontext:SetFontObject(GameFontHighlight)
+		self.frames.leftbuttontext:SetText("left")
+		self.frames.leftbuttontext:SetAllPoints(self.frames.leftbutton)
+
+		self.frames.rightbutton = CreateFrame("Button", nil, self.frames.check)
+		self.frames.rightbutton.owner = self
+		self.frames.rightbutton:SetWidth(125)
+		self.frames.rightbutton:SetHeight(32)
+		self.frames.rightbutton:SetPoint("LEFT", self.frames.check, "CENTER", 10, -20)
+		
+		t = self.frames.rightbutton:CreateTexture()
+		t:SetWidth(125)
+		t:SetHeight(32)
+		t:SetPoint("CENTER", self.frames.rightbutton, "CENTER")
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		self.frames.rightbutton:SetNormalTexture(t)
+
+		t = self.frames.rightbutton:CreateTexture(nil, "BACKGROUND")
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Down")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		t:SetAllPoints(self.frames.rightbutton)
+		self.frames.rightbutton:SetPushedTexture(t)
+		
+		t = self.frames.rightbutton:CreateTexture()
+		t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
+		t:SetTexCoord(0, 0.625, 0, 0.6875)
+		t:SetAllPoints(self.frames.rightbutton)
+		t:SetBlendMode("ADD")
+		self.frames.rightbutton:SetHighlightTexture(t)
+		self.frames.rightbuttontext = self.frames.rightbutton:CreateFontString(nil,"OVERLAY")
+		self.frames.rightbuttontext:SetFontObject(GameFontHighlight)
+		self.frames.rightbuttontext:SetText("right")
+		self.frames.rightbuttontext:SetAllPoints(self.frames.rightbutton)
+
+	end
 end

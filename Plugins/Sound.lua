@@ -33,7 +33,8 @@ local sounds = {
     Pain = "Sound\\Creature\\Thaddius\\THAD_NAXX_ELECT.wav",
 	
 	Warning = "Sound\\Doodad\\BellTollNightElf.wav",
-	Special = "Sound\\Spells\\PVPFlagTaken.wav"
+	Special = "Sound\\Spells\\PVPFlagTaken.wav",
+	RaidAlert = "Sound\\interface\\levelup2.wav"
 }
 
 local isImportantDay = false
