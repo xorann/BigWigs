@@ -74,6 +74,10 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		self:Sync(syncName.phase2)
 	elseif msg == L["trigger_destroyEgg1"] or msg == L["trigger_destroyEgg2"] or msg == L["trigger_destoryEgg3"] then
 		self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
+		
+		if self.eggs == 30 then
+			self:Sync(syncName.phase2)
+		end
 	end
 end
 
@@ -83,6 +87,7 @@ function module:CHAT_MSG_SPELL_FRIENDLYPLAYER_BUFF(msg)
 	end
 end
 
+-- does not work on nefarian
 function module:CHAT_MSG_MONSTER_EMOTE(msg)
 	if string.find(msg, "Razorgore the Untamed casts Destroy Egg") then
 		-- as of now, this does also fire on finished 'Destroy Egg' cast.
