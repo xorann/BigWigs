@@ -1,14 +1,18 @@
 r20016
 New:
 	- Venom Stalker: Added a new boss module for Venom Stalkers in Naxxramas (Created by Vnm-Kronos - https://github.com/Vnm-Kronos)
+	- Living Monstrosity: Added a new boss module for Living Monstrosities in Naxxramas (Created by Vnm-Kronos - https://github.com/Vnm-Kronos)
+	- Onyxias Cloak plugin: Added a new plugin which automatically equips Onyxias Scale Cloak in Nefarian's Lair and switches back when you leave the zone again.
 	- Autoreply plugin: Added options to disable the plugin and to hide the automatically generated outgoing whispers
 	- Pulltimer: Added the possiblity to abort a pull timer. Just type /pull (without a duration) to abort the current pull timer.
 	- ReadyCheck Participant plugin: Added the ReadyCheck Participant plugin of oRA2. This allows you to participate in ready checks and votes initiated by oRA2.
 	
 Fixes:
 	- Fixed lua errors in the default implementation of Gluth and the The Four Horsemen
-	- Using the translated name for the Onyxia module (fixes an error for the zhCN (and probably other) Client)
+	- Fixed the Onyxia and Twin Emps modules for the zhCN (and probably other) Client
 	- Fixed the Frostblast Plugin
+	- Bug Family: Fear Bar should not trigger anymore on the trash beforehand
+	- Viscidus: Messages for Toxin Cloud should show the name of player again
 
 
 r20015

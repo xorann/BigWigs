@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Zone-2.2"
-local MINOR_VERSION = tonumber(string.sub("$Revision: 17779 $", 12, -3))
+local MINOR_VERSION = tonumber(string.sub("$Revision: 17780 $", 12, -3))
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -173,6 +173,8 @@ BabbleZone:RegisterTranslations("enUS", function()
 		["Karazhan"] = true,
 		["Caverns of Time"] = true,
 		["Zul'Aman"] = true,
+		
+		["Nefarian's Lair"] = true,
 	}
 end)
 
@@ -323,6 +325,8 @@ BabbleZone:RegisterTranslations("ruRU", function()
 		["Karazhan"] = "Каражан",
 		["Caverns of Time"] = "Пещеры Времени",
 		["Zul'Aman"] = "Зул'Аман",
+		
+		-- ["Nefarian's Lair"] = true,
 	}
 end)
 
@@ -472,6 +476,8 @@ BabbleZone:RegisterTranslations("deDE", function()
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Die H\195\182hlen der Zeit",
 		["Zul'Aman"] = "Zul'Aman",
+		
+		["Nefarian's Lair"] = "Nefarians Unterschlupf",
 	}
 end)
 
@@ -620,6 +626,8 @@ BabbleZone:RegisterTranslations("frFR", function()
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Grottes du temps",
 		["Zul'Aman"] = "Zul'Aman",
+		
+		-- ["Nefarian's Lair"] = true,
 	}
 end)
 
@@ -772,6 +780,8 @@ BabbleZone:RegisterTranslations("zhCN", function()
 		["Karazhan"] = "卡拉赞",
 		["Caverns of Time"] = "时光之穴",
 --		["Zul'Aman"] = true,
+
+		-- ["Nefarian's Lair"] = true,
 	}
 end)
 
@@ -924,6 +934,8 @@ BabbleZone:RegisterTranslations("zhTW", function()
 		["Karazhan"] = "卡拉贊",
 		["Caverns of Time"] = "時光洞穴",
 --		["Zul'Aman"] = true,
+
+		-- ["Nefarian's Lair"] = true,
 	}
 end)
 
@@ -1072,6 +1084,8 @@ BabbleZone:RegisterTranslations("koKR", function()
 		["Karazhan"] = "카라잔",
 		["Caverns of Time"] = "시간의 동굴",
 		["Zul'Aman"] = "줄아만",
+		
+		-- ["Nefarian's Lair"] = true,
 	}
 end)
 
