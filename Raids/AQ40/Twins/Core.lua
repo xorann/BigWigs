@@ -50,7 +50,7 @@ local syncName = module.syncName
 ------------------------------
 
 function module:BigWigs_RecvSync(sync, rest, nick)
-	local mod = BigWigs:GetModule(BigWigs.bossmods.aq40.twins)
+	local mod = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[BigWigs.bossmods.aq40.twins])
 	
 	if sync == syncName.teleport then
         --self:Teleport()
@@ -161,5 +161,8 @@ function module:TestModuleCore()
 	module:BlizzardGain()
 	module:BlizzardGone()
 	module:BugExplosion()
+	
+	module:BigWigs_RecvSync(syncName.teleport)
+	module:BigWigs_RecvSync(syncName.heal)
 end
 
