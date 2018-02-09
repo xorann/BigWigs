@@ -138,7 +138,7 @@ end
 
 function module:Spells(msg)
 	local _,_,toxicvaporsother,_ = string.find(msg, L["trigger_toxicVaporsOther"])
-	if string.find(msg, L["trigger_panic"]) or string.find(msg, L["trigger_panicResist"]) or string.find(msg, L["trigger_panicImmune"]) then
+	if self.engaged and (string.find(msg, L["trigger_panic"]) or string.find(msg, L["trigger_panicResist"]) or string.find(msg, L["trigger_panicImmune"])) then
 		self:Sync(syncName.panic)
 	elseif string.find(msg, L["trigger_toxicVolleyHit"]) or string.find(msg, L["trigger_toxicVolleyAfflicted"]) or string.find(msg, L["trigger_toxicVolleyResist"]) or string.find(msg, L["trigger_toxicVolleyImmune"]) then
 		self:Sync(syncName.volley)
