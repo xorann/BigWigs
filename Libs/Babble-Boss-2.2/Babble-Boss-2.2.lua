@@ -713,14 +713,14 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		["Atiesh"] = "Атиеш";
 		["Stratholme Courier"] = "Стратхольмский курьер";
 		
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
-		["Ancient Core Hound"] = true;
-		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
+        --["Elder Mottled Boar"] = true; -- test module
+        --["Stoneskin Gargoyle"] = true;
+		--["Ancient Core Hound"] = true;
+		--["Gurubashi Berserker"] = true;
+		--["Anubisath Warder"] = true;
+		--["Venom Stalker"] = true;
+		--["Necro Stalker"] = true;
+		--["Living Monstrosity"] = true;
 	}
 end)
 
@@ -1164,14 +1164,14 @@ BabbleBoss:RegisterTranslations("frFR", function()
 		["Wolf Master Nandos"] = "Ma\195\174tre-loup Nandos",
 		["Kurinnaxx"] = "Kurinnaxx",		
 		
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
-		["Ancient Core Hound"] = true;
-		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
+        --["Elder Mottled Boar"] = true; -- test module
+        --["Stoneskin Gargoyle"] = true;
+		--["Ancient Core Hound"] = true;
+		--["Gurubashi Berserker"] = true;
+		--["Anubisath Warder"] = true;
+		--["Venom Stalker"] = true;
+		--["Necro Stalker"] = true;
+		--["Living Monstrosity"] = true;
 	}
 end)
 
@@ -1387,14 +1387,14 @@ BabbleBoss:RegisterTranslations("zhCN", function()
 		["Rend Blackhand"] = "雷德·黑手", 
 		["Kurinnaxx"] = "库林纳克斯",
 		
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
-		["Ancient Core Hound"] = true;
-		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
+        --["Elder Mottled Boar"] = true; -- test module
+        --["Stoneskin Gargoyle"] = true;
+		--["Ancient Core Hound"] = true;
+		--["Gurubashi Berserker"] = true;
+		--["Anubisath Warder"] = true;
+		--["Venom Stalker"] = true;
+		--["Necro Stalker"] = true;
+		--["Living Monstrosity"] = true;
 	}
 end)
 
@@ -1609,14 +1609,14 @@ BabbleBoss:RegisterTranslations("zhTW", function()
 		["Rend Blackhand"] = "大酋長雷德‧黑手",
 		["Kurinnaxx"] = "庫林納克斯",
                 
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
-		["Ancient Core Hound"] = true;
-		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
+        --["Elder Mottled Boar"] = true; -- test module
+        --["Stoneskin Gargoyle"] = true;
+		--["Ancient Core Hound"] = true;
+		--["Gurubashi Berserker"] = true;
+		--["Anubisath Warder"] = true;
+		--["Venom Stalker"] = true;
+		--["Necro Stalker"] = true;
+		--["Living Monstrosity"] = true;
 	}
 end)
 
@@ -1833,14 +1833,14 @@ BabbleBoss:RegisterTranslations("koKR", function()
 		["Rend Blackhand"] = "대족장 렌드 블랙핸드",
 		["Kurinnaxx"] = "쿠린낙스",
 		
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
-		["Ancient Core Hound"] = true;
-		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
+        --["Elder Mottled Boar"] = true; -- test module
+        --["Stoneskin Gargoyle"] = true;
+		--["Ancient Core Hound"] = true;
+		--["Gurubashi Berserker"] = true;
+		--["Anubisath Warder"] = true;
+		--["Venom Stalker"] = true;
+		--["Necro Stalker"] = true;
+		--["Living Monstrosity"] = true;
 	}
 end)
 
