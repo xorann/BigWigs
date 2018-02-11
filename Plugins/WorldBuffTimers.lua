@@ -167,21 +167,22 @@ function BigWigsWorldBuffs:CHAT_MSG_MONSTER_YELL(msg)
 end
 
 function BigWigsWorldBuffs:ZgEvent(event, msg)
-	BigWigs:Print("ZgEvent")
-	BigWigs:Print(event)
-	BigWigs:Print(msg)
+	BigWigs:DebugMessage("ZgEvent")
+	BigWigs:DebugMessage(event)
+	BigWigs:DebugMessage(msg)
 end
 
 function BigWigsWorldBuffs:ZgEvent2(event, msg)
-	BigWigs:Print("ZgEvent2")
-	BigWigs:Print(event)
-	BigWigs:Print(msg)
+	BigWigs:DebugMessage("ZgEvent2")
+	BigWigs:DebugMessage(event)
+	BigWigs:DebugMessage(msg)
+	self:Sync(syncName.zgHeart2)
 end
 
 function BigWigsWorldBuffs:OnyEvent(event, msg)
-	BigWigs:Print("OnyEvent")
-	BigWigs:Print(event)
-	BigWigs:Print(msg)
+	BigWigs:DebugMessage("OnyEvent")
+	BigWigs:DebugMessage(event)
+	BigWigs:DebugMessage(msg)
 end
 
 ------------------------------
@@ -198,6 +199,8 @@ function BigWigsWorldBuffs:BigWigs_RecvSync( sync, rest, nick )
 		self:Dragonslayer(timer.nefHeadAlliance)
 	elseif sync == syncName.zgHeart then
 		self:Hakkar(timer.zgHeart)
+	elseif sync == syncName.zgHeart2 then
+		self:Hakkar(timer.zgHeart2)
 	elseif sync == syncName.rendHead then
 		self:Warchief(timer.rendHead)
 	end
