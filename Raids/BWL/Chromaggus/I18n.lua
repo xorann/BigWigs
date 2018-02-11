@@ -31,7 +31,8 @@ L:RegisterTranslations("enUS", function() return {
 	
 	-- triggers
 	trigger_breath = "Chromaggus begins to cast (.+)\.",
-	trigger_vulnerability_direct = "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)", -- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
+	trigger_vulnerability_direct_crit = "^[%w]+[%s's]* ([%w%s:]+) crits Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)", -- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
+	trigger_vulnerability_direct_hit = "^[%w]+[%s's]* ([%w%s:]+) hits Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)", -- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
 	trigger_vulnerability_dot = "^Chromaggus suffers ([%d]+) ([%w]+) damage from [%w]+[%s's]* ([%w%s:]+)%.[%s%(]*([%d]*)",
 	trigger_frenzy = "goes into a killing frenzy",
 	trigger_frenzyGone = "Frenzy fades from Chromaggus\.",
@@ -104,7 +105,8 @@ L:RegisterTranslations("deDE", function() return {
 	
 	-- triggers
 	trigger_breath = "^Chromaggus beginnt (.+) zu wirken\.",
-	trigger_vulnerability_direct = "^(.+) trifft Chromaggus(.+) ([%d]+) ([%w]+)%.[%s%(]*([%d]*)",
+	trigger_vulnerability_direct_crit = "^(.+) trifft Chromaggus kritisch für ([%d]+) ([%w]+)schaden+%.[%s%(]*([%d]*)", --<name> hits <enemy> critically for <x> damage.
+	trigger_vulnerability_direct_hit = "^(.+) trifft Chromaggus für ([%d]+) ([%w]+)schaden+%.[%s%(]*([%d]*)",
 	trigger_vulnerability_dot = "^Chromaggus erleidet ([%d]+) ([%w]+)schaden[%svon]*[%s%w]* %(durch ([%w%s:]+)%)%.[%s%(]*([%d]*)",
 	trigger_frenzy = "Chromaggus wird mörderisch wahnsinnig!",
 	trigger_frenzyGone = "Raserei schwindet von Chromaggus\.",

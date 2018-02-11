@@ -160,8 +160,8 @@ end
 
 function module:IdentifyVulnerability(school)
     if not self.db.profile.vulnerability or not type(school) == "string" then return end
-    if (module.lastVuln + 5) > GetTime() then return end -- 5 seconds delay
-    
+    if (module.lastVuln + 3) > GetTime() then return end -- 5 seconds delay
+	
     module.vulnerability = school
     self:Message(format(L["msg_vulnerability"], school), "Positive")
     if module.lastVuln then

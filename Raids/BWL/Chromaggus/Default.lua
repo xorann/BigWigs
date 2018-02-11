@@ -176,7 +176,12 @@ function module:PlayerDamageEvents(msg)
 	end
 	
 	if not module.vulnerability then
-		local _, _, userspell, stype, dmg, school, partial = string.find(msg, L["trigger_vulnerability_direct"]) 
+		local stype = "hit"
+		local _, _, userspell, dmg, school, partial = string.find(msg, L["trigger_vulnerability_direct_hit"])
+		if not userspell then
+			stype = "crit"
+			_, _, userspell, dmg, school, partial = string.find(msg, L["trigger_vulnerability_direct_crit"])
+		end
 		-- "^[%w]+[%s's]* ([%w%s:]+) ([%w]+) Chromaggus for ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)"
 		-- [Fashu's] [Firebolt] [hits] Battleguard Sartura for [44] [Fire] damage. ([14] resisted)
 		-- [Fashu's] [Feuerblitz] [trifft] Schlachtwache Sartura für [44] [Feuerschaden]. ([14] widerstanden)
@@ -187,86 +192,77 @@ function module:PlayerDamageEvents(msg)
 		
         
 		if stype and dmg and school then
-			-- german combat log entries for a crit are a bit special (<name> hits <enemy> critically for <x> damage.)
-			if GetLocale() == "deDE" then
-				if string.find(msg, L["crit"]) then 
-					stype = L["crit"] 
-				else 
-					stype = L["hit"] 
-				end
-				school = string.gsub(school, "schaden", "") -- turn "Feuerschaden" into "Feuer"
-			end
 			if school == L["arcane"] then
 				if string.find(userspell, L["starfire"]) then
 					if partial and partial ~= "" then
-						if (tonumber(dmg)+tonumber(partial) >= 800 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg)+tonumber(partial) >= 800 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					else
-						if (tonumber(dmg) >= 800 and stype == L["hit"]) or (tonumber(dmg) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg) >= 800 and stype == "hit") or (tonumber(dmg) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					end
 				else
 					if partial and partial ~= "" then
-						if (tonumber(dmg)+tonumber(partial) >= 600 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg)+tonumber(partial) >= 600 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					else
-						if (tonumber(dmg) >= 600 and stype == L["hit"]) or (tonumber(dmg) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg) >= 600 and stype == "hit") or (tonumber(dmg) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					end
 				end
 			elseif school == L["fire"] then
 				if partial and partial ~= "" then
-					if (tonumber(dmg)+tonumber(partial) >= 1300 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 2600 and stype == L["crit"]) then
+					if (tonumber(dmg)+tonumber(partial) >= 1300 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 2600 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				else
-					if (tonumber(dmg) >= 1300 and stype == L["hit"]) or (tonumber(dmg) >= 2600 and stype == L["crit"]) then
+					if (tonumber(dmg) >= 1300 and stype == "hit") or (tonumber(dmg) >= 2600 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				end
 			elseif school == L["frost"] then
 				if partial and partial ~= "" then
-					if (tonumber(dmg)+tonumber(partial) >= 800 and stype == L["hit"])	or (tonumber(dmg)+tonumber(partial) >= 1600 and stype == L["crit"]) then
+					if (tonumber(dmg)+tonumber(partial) >= 800 and stype == "hit")	or (tonumber(dmg)+tonumber(partial) >= 1600 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				else
-					if (tonumber(dmg) >= 800 and stype == L["hit"]) or (tonumber(dmg) >= 1600 and stype == L["crit"]) then
+					if (tonumber(dmg) >= 800 and stype == "hit") or (tonumber(dmg) >= 1600 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				end
 			elseif school == L["nature"] then
 				if string.find(userspell, L["thunderfury"]) then
 					if partial and partial ~= "" then
-						if (tonumber(dmg)+tonumber(partial) >= 800 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg)+tonumber(partial) >= 800 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					else
-						if (tonumber(dmg) >= 800 and stype == L["hit"]) or (tonumber(dmg) >= 1200 and stype == L["crit"]) then
+						if (tonumber(dmg) >= 800 and stype == "hit") or (tonumber(dmg) >= 1200 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					end
 				else
 					if partial and partial ~= "" then
-						if (tonumber(dmg)+tonumber(partial) >= 900 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 1800 and stype == L["crit"]) then
+						if (tonumber(dmg)+tonumber(partial) >= 900 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 1800 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					else
-						if (tonumber(dmg) >= 900 and stype == L["hit"]) or (tonumber(dmg)>= 1800 and stype == L["crit"]) then
+						if (tonumber(dmg) >= 900 and stype == "hit") or (tonumber(dmg)>= 1800 and stype == "crit") then
 							self:IdentifyVulnerability(school)
 						end
 					end
 				end
 			elseif school == L["shadow"] then
 				if partial and partial ~= "" then
-					if (tonumber(dmg)+tonumber(partial) >= 1700 and stype == L["hit"]) or (tonumber(dmg)+tonumber(partial) >= 3400 and stype == L["crit"]) then
+					if (tonumber(dmg)+tonumber(partial) >= 1700 and stype == "hit") or (tonumber(dmg)+tonumber(partial) >= 3400 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				else
-					if (tonumber(dmg) >= 1700 and stype == L["hit"]) or (tonumber(dmg) >= 3400 and stype == L["crit"]) then
+					if (tonumber(dmg) >= 1700 and stype == "hit") or (tonumber(dmg) >= 3400 and stype == "crit") then
 						self:IdentifyVulnerability(school)
 					end
 				end
@@ -289,7 +285,8 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:PlayerDamageEvents(L["trigger_vulnerability_direct"])
+	module:PlayerDamageEvents(L["trigger_vulnerability_direct_crit"])
+	module:PlayerDamageEvents(L["trigger_vulnerability_direct_hit"])
 	module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(L["trigger_vulnerability_dot"])
 	module:CHAT_MSG_SPELL_AURA_GONE_OTHER(L["trigger_frenzyGone"])
 	module:CHAT_MSG_MONSTER_EMOTE(L["trigger_frenzy"])
