@@ -54,14 +54,15 @@ L:RegisterTranslations("deDE", function() return {
 	worldbuffs_desc = "Zeigt Timer für Worldbuffs.",
 	
 	-- triggers
-	trigger_onyHeadHorde = "People of the Horde, citizens of Orgrimmar, come, gather round and celebrate a hero of the Horde. On this day",
+	trigger_onyHeadHorde = "Bewohner von Orgrimmar, kommt versammelt euch und feiert unsere Helden, die gemeinsam gegen den schwarzen Drachenschwarm einen Sieg erringen konnten!",
 	trigger_nefHeadHorde = "NEFARIAN IS SLAIN! People of Orgrimmar, bow down before the might of",
 
 	trigger_onyHeadAlliance = "Citizens and allies of Stormwind, on this day, history has been made.",
 	trigger_nefHeadAlliance = "Citizens of the Alliance, the Lord of Blackrock is slain! Nefarian has been subdued by the combined might of",
 
 	trigger_zgHeart = "Now, only one step remains to rid us of the Soulflayer's threat...",
-	trigger_rendHead = "Honor your heroes! On this day, they have dealt a great blow against one of our most hated enemies! The false Warchief, Rend Blackhand, has fallen!",
+	trigger_zgHeart2 = "Beginnt mit dem Ritual. Wir müssen das Herz von Hakkar zurück in die Leere verbannen!",
+	trigger_rendHead = "Ehret Eure Helden! Heute haben sie einem unserer verhasstesten Feinde einen schweren Schlag beigebracht! Rend Blackhand, der falsche Kriegshäuptling, ist gefallen!",
 
 	-- bars
 	bar_dragonslayer = "Schlachtruf der Drachentöter",
@@ -109,6 +110,7 @@ local timer = {
 	onyHeadAlliance = 18.4, 
 	nefHeadAlliance = 18.4, -- ??
 	zgHeart = 59, -- ??
+	zgHeart2 = 34,
 	rendHead = 16, -- test
 }
 local icon = {
