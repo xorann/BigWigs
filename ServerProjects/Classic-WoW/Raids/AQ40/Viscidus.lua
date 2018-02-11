@@ -68,7 +68,7 @@ function module:CheckVis(arg1)
 		end
 
 		if player then
-			self:Sync(syncName.toxin, player)
+			self:Sync(syncName.toxin .. " " .. player)
 		end
 	end
 end
