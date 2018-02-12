@@ -1,5 +1,6 @@
 
 local revision = 20015
+local forkName = "Classic-WoW" -- please change this name if you forked this addon. must not contain spaces
 local isDeveloperVersion = false
 
 ------------------------------
@@ -189,6 +190,7 @@ waterfall:Register('BigWigs', 'aceOptions',BigWigs.cmdtable, 'title','BigWigs', 
 
 BigWigs.debugFrame = ChatFrame1
 BigWigs.revision = revision
+BigWigs.forkName = forkName
 BigWigs.isDeveloperVersion = isDeveloperVersion
 
 

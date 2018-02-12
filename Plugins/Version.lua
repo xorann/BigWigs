@@ -52,6 +52,7 @@ L:RegisterTranslations("enUS", function() return {
 	["<BigWigs> Players without BigWigs Classic-WoW:"] = true,
 	["<BigWigs> no one"] = true,
 	["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"] = true,
+	["<BigWigs> Players using a version of BigWigs intended for a different server:"] = true,
 	["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"] = true,
     ["Notify old versions"] = true,
 	["Lists players with an old version in raid chat."] = true,
@@ -94,6 +95,7 @@ L:RegisterTranslations("deDE", function() return {
 	["<BigWigs> Players without BigWigs Classic-WoW:"] = "<BigWigs> Spieler ohne BigWigs Classic-WoW:",
 	["<BigWigs> no one"] = "<BigWigs> Niemand",
 	["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"] = "<BigWigs> Spieler mit einer veralteten Version von BigWigs Classic-WoW:",
+	["<BigWigs> Players using a version of BigWigs intended for a different server:"] = "<BigWigs> Spieler welche eine Version von BigWigs verwenden, welche für einen anderen Server gedacht ist:",
 	["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"] = "<BigWig> Bitte downloade die neuste Version von BigWigs Classic-WoW von https://github.com/xorann/BigWigs/releases",
 	["Notify old versions"] = "Alte Versionen abfragen",
 	["Lists players with an old version in raid chat."] = "Liste alle Spieler mit einer alten Version im Raidchat auf.",
@@ -231,11 +233,12 @@ function BigWigsVersionQuery:UpdateTablet()
 	end
 end
 function BigWigsVersionQuery:UpdateVersions()
-    for name, version in pairs(self.responseTable) do
-        if not self.zoneRevisions then return end
-        if self.zoneRevisions[self.currentZone] and version > self.zoneRevisions[self.currentZone] then
-            self:IsOutOfDate()
-        end
+    -- only check if this version is outdated if it is the same fork
+	for name, data in pairs(self.responseTable) do
+		if not self.zoneRevisions then return end
+		if data.forkName and data.forkName == self.core.forkName and self.zoneRevisions[self.currentZone] and data.rev > self.zoneRevisions[self.currentZone] then
+			self:IsOutOfDate()
+		end
 	end
     
 	if not isInitialQuery then
@@ -287,6 +290,7 @@ local function Blame()
 	-- no BigWigs at all
 	local noBigWigs = nil
 	local outdated = nil
+	local differentFork = nil
 	
 	if not BigWigsVersionQuery.responseTable then
 		BigWigs:Print("that didn't work...")		
@@ -295,17 +299,25 @@ local function Blame()
 
 	for i = 1, GetNumRaidMembers(), 1 do
 		local name = UnitName("Raid" .. i)
-		local version = BigWigsVersionQuery.responseTable[name]
+		local data = BigWigsVersionQuery.responseTable[name]
 
-		if version then
+		
+		if data and data.rev and (data.forkName and data.forkName == BigWigs.forkName or not data.forkName) then
 			-- has bigwigs
-			if BigWigs.revision and version < BigWigs.revision then
+			if BigWigs.revision and data.rev < BigWigs.revision then
 				-- bigwigs is out of date
 				if not outdated then
 					outdated = name
 				else
 					outdated = outdated .. ", " .. name
 				end
+			end
+		elseif data and data.forkName and data.forkName ~= BigWigs.forkName then
+			-- different fork
+			if not differentFork then
+				differentFork = name
+			else
+				differentFork = differentFork .. ", " .. name
 			end
 		else
 			-- does not have bigwigs
@@ -318,21 +330,22 @@ local function Blame()
 	end
 	
 	-- inform raid
-	if not noBigWigs and not outdated then
+	if not noBigWigs and not outdated and not differentFork then
 		SendChatMessage(L["<BigWigs> Everyone has the current version of BigWigs Classic-WoW. I'm proud of you!"], "RAID")
 	else
-		SendChatMessage(L["<BigWigs> Players without BigWigs Classic-WoW:"], "RAID")
-		if not noBigWigs then
-			SendChatMessage(L["<BigWigs> no one"], "RAID")
-		else
+		if noBigWigs then
+			SendChatMessage(L["<BigWigs> Players without BigWigs Classic-WoW:"], "RAID")
 			SendChatMessage("<BigWigs> " .. noBigWigs, "RAID")
 		end
 		
-		SendChatMessage(L["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"], "RAID")
-		if not outdated then
-			SendChatMessage(L["<BigWigs> no one"], "RAID")
-		else
+		if outdated then
+			SendChatMessage(L["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"], "RAID")
 			SendChatMessage("<BigWigs> " .. outdated, "RAID")
+		end
+		
+		if differentFork then
+			SendChatMessage(L["<BigWigs> Players using a version of BigWigs intended for a different server:"], "RAID")
+			SendChatMessage("<BigWigs> " .. differentFork, "RAID")
 		end
 		
 		SendChatMessage(L["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"], "RAID")
@@ -365,19 +378,26 @@ function BigWigsVersionQuery:OnTooltipUpdate()
 		"child_justify1", "LEFT",
 		"child_justify2", "RIGHT"
 	)
-	for name, version in pairs(self.responseTable) do
-		if version == -1 then
+	for name, data in pairs(self.responseTable) do
+		if data.rev == -1 then -- bigwigs installed but module not found
 			cat:AddLine("text", name, "text2", "|cff"..COLOR_RED..L["N/A"].."|r")
-		else
-			if not self.zoneRevisions then self:PopulateRevisions() end
+		elseif data.forkName and data.forkName ~= self.core.forkName then -- different fork
+			cat:AddLine("text", name, "text2", "|cff" .. COLOR_WHITE .. data.rev .. " (" .. data.forkName .. ")|r")
+		else -- out of date or different fork
+			if not self.zoneRevisions then 
+				self:PopulateRevisions() 
+			end
+			
 			local color = COLOR_WHITE
-			if self.zoneRevisions[self.currentZone] and version > self.zoneRevisions[self.currentZone] then
-				color = COLOR_GREEN
-				self:IsOutOfDate()
-			elseif self.zoneRevisions[self.currentZone] and version < self.zoneRevisions[self.currentZone] then
+			if self.zoneRevisions[self.currentZone] and data.rev > self.zoneRevisions[self.currentZone] then
+				if data.forkName == self.core.forkName then
+					color = COLOR_GREEN
+					self:IsOutOfDate()
+				end
+			elseif self.zoneRevisions[self.currentZone] and data.rev < self.zoneRevisions[self.currentZone] then
 				color = COLOR_RED
 			end
-			cat:AddLine("text", name, "text2", "|cff"..color..version.."|r")
+			cat:AddLine("text", name, "text2", "|cff"..color..data.rev.."|r")
 		end
 	end
 
@@ -435,12 +455,23 @@ function BigWigsVersionQuery:QueryVersion(zone)
 
 	if not self.zoneRevisions then self:PopulateRevisions() end
 	if not self.zoneRevisions[zone] then
-		self.responseTable[UnitName("player")] = -1
+		self.responseTable[UnitName("player")] = { rev = -1, forkName = self.core.forkName }
 	else
-		self.responseTable[UnitName("player")] = self.zoneRevisions[zone]
+		self.responseTable[UnitName("player")] = { rev = self.zoneRevisions[zone], forkName = self.core.forkName }
 	end
 	self.responses = 1
-	self:TriggerEvent("BigWigs_SendSync", "BWVQ "..zone)
+	self:TriggerEvent("BigWigs_SendSync", "BWVQ " .. zone)
+end
+
+--[[ Parses the newest style reply, which is "<rev> <nick> <forkName>" ]]
+function BigWigsVersionQuery:ParseReply3(reply)
+	-- If there's no space, it's just a version number we got.
+	local _, _, rev, nick, fork = string.find(reply, "(.+) (.+) (.+)")
+	if not rev or not nick or not fork then 
+		return reply, nil, nil
+	end
+
+	return tonumber(rev), nick, fork
 end
 
 --[[ Parses the new style reply, which is "1111 <nick>" ]]
@@ -483,28 +514,45 @@ end
 --]]
 
 function BigWigsVersionQuery:BigWigs_RecvSync(sync, rest, nick)
-	if sync == "BWVQ" and nick ~= UnitName("player") and rest then
+	if sync == "BWVR2" and self.queryRunning and nick and rest then
+		-- reply received
+		local revision, queryNick, fork = self:ParseReply3(rest)
+		if queryNick == UnitName("player") then
+			if not self.responseTable[nick] then
+				self.responses = self.responses + 1
+			end
+			self.responseTable[nick] = { rev = tonumber(revision), forkName = fork }
+			self:UpdateVersions()
+		end
+	elseif sync == "BWVQ" and nick ~= UnitName("player") and rest then
+		-- query, send reply
 		if not self.zoneRevisions then 
             self:PopulateRevisions() 
         end
 		if not self.zoneRevisions[rest] then
-			self:TriggerEvent("BigWigs_SendSync", "BWVR -1 "..nick)
+			self:TriggerEvent("BigWigs_SendSync", "BWVR2 -1 ".. nick .. " " .. self.core.forkName)
+			self:TriggerEvent("BigWigs_SendSync", "BWVR -1 ".. nick)
 		else
+			self:TriggerEvent("BigWigs_SendSync", "BWVR2 " .. self.zoneRevisions[rest] .. " " .. nick .. " " .. self.core.forkName)
 			self:TriggerEvent("BigWigs_SendSync", "BWVR " .. self.zoneRevisions[rest] .. " " .. nick)
 		end
 	elseif sync == "BWVR" and self.queryRunning and nick and rest then
+		-- reply received
+		
 		-- Means it's either a old style or new style reply.
 		-- The "working style" is just the number, which was the second type of
 		-- version reply we had.
-		local revision, queryNick = nil, nil
+		local revision, queryNick = nil, nil, nil
 		if tonumber(rest) == nil then
 			revision, queryNick = self:ParseReply2(rest)
 		else
 			revision = tonumber(rest)
 		end
 		if queryNick == nil or queryNick == UnitName("player") then
-			self.responseTable[nick] = tonumber(revision)
-			self.responses = self.responses + 1
+			if not self.responseTable[nick] then
+				self.responseTable[nick] = { rev = tonumber(revision), forkName = nil }
+				self.responses = self.responses + 1
+			end
 			self:UpdateVersions()
 		end
 	end
