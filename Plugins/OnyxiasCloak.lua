@@ -204,11 +204,15 @@ function BigWigsOnyxiaCloak:ZONE_CHANGED_INDOORS()
 		then
             BigWigs:DebugMessage("Nefarians Lair")
 			self.db.profile.defaultCloak = GetNameOfCurrentCloak()
-            EquipItem(L["Onyxia Scale Cloak"])
+			if GetNameOfCurrentCloak() ~= L["Onyxia Scale Cloak"] then
+				EquipItem(L["Onyxia Scale Cloak"])
+			end
         else
 			BigWigs:DebugMessage("not Nefarians Lair")
             if GetNameOfCurrentCloak() == L["Onyxia Scale Cloak"] then
-                EquipItem(self.db.profile.defaultCloak)
+                if GetNameOfCurrentCloak() ~= self.db.profile.defaultCloak then
+					EquipItem(self.db.profile.defaultCloak)
+				end
             end
         end
     end
