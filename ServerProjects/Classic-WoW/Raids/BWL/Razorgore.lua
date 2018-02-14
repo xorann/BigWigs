@@ -74,10 +74,6 @@ function module:CHAT_MSG_MONSTER_YELL(msg)
 		self:Sync(syncName.phase2)
 	elseif msg == L["trigger_destroyEgg1"] or msg == L["trigger_destroyEgg2"] or msg == L["trigger_destoryEgg3"] then
 		self:Sync(syncName.egg .. " " .. tostring(self.eggs + 1))
-		
-		if self.eggs == 30 then
-			self:Sync(syncName.phase2)
-		end
 	end
 end
 
