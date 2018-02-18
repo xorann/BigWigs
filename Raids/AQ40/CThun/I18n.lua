@@ -103,8 +103,6 @@ L:RegisterTranslations("deDE", function() return {
 	trigger_giantEyeSpawn = "Riesiges Augententakel(.+) Erdriss", -- "Giant Eye Tentacle 's Ground Rupture",
 	trigger_tentacleParty = "^Augententakel Erdriss (.+)$", -- "Eye Tentacle's Ground Rupture hits Galo for 884.",
 	trigger_weakened = "ist geschwächt", -- "is weakened!",
-	trigger_vulnerabilityDirectTest = "^[%w]+[%ss]* ([%w%s:]+) ([%w]+) C'Thun für ([%d]+) ([%w]+) damage%.[%s%(]*([%d]*)",
-	trigger_vulnerabilityDotsTest = "^C'Thun suffers ([%d]+) ([%w]+) damage from [%w]+[%s's]* ([%w%s:]+)%.[%s%(]*([%d]*)",
 	trigger_digestiveAcid = "Ihr seid von Magensäure [%s%(]*([%d]*)", -- "You are afflicted by Digestive Acid (5).",
 
 	-- messages
