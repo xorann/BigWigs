@@ -1,6 +1,6 @@
 --[[
     by Dorann
-    Equips Onyxias Cloak when you enter Nefarians Lair and switches back when you leave the area again
+    Equips Onyxia Scale Cloak when you enter Nefarians Lair and switches back when you leave the area again
 --]]
 
 
@@ -16,33 +16,35 @@ local L = AceLibrary("AceLocale-2.2"):new("BigWigsOnyxiaCloak")
 ----------------------------
 
 L:RegisterTranslations("enUS", function() return {
-    ["Onyxias Cloak"] = true, -- plugin name
+    ["Onyxia Scale Cloak"] = true, -- plugin name
     ["onyxiaCloak"] = true, -- console command
-    ["Equips Onyxias Cloak when you enter Nefarians Lair and switches back when you leave the area again."] = true,
+    ["Equips Onyxia Scale Cloak when you enter Nefarians Lair and switches back when you leave the area again."] = true,
     ["Active"] = true, -- option name
     ["Activate the plugin."] = true, -- option description
 	["Onyxia Scale Cloak"] = true, -- item name
 	["Could not find %s"] = true,
 	["Equipping %s"] = true, 
 	trigger_engage = "In this world where time is your enemy, it is my greatest ally.", -- nefarian yell before the fight starts
+	["Nefarians Lair"] = true,
 } end)
 
 L:RegisterTranslations("deDE", function() return {
-    ["Onyxias Cloak"] = "Onyxiaschuppenumhang", -- plugin name
+    ["Onyxia Scale Cloak"] = "Onyxiaschuppenumhang", -- plugin name
     --["onyxiaCloak"] = true, -- console command
-    ["Equips Onyxias Cloak when you enter Nefarians Lair and switches back when you leave the area again."] = "Zieht automatisch den Onyxiaschuppenumhang an sobald Nefarians Lair betreten wird und wechselt wieder zurück wenn das Gebiet verlassen wird.",
+    ["Equips Onyxia Scale Cloak when you enter Nefarians Lair and switches back when you leave the area again."] = "Zieht automatisch den Onyxiaschuppenumhang an sobald Nefarians Unterschlupf betreten wird und wechselt wieder zurück wenn das Gebiet verlassen wird.",
     ["Active"] = "Aktiv", -- option name
     ["Activate the plugin."] = "Aktiviert das Plugin.", -- option description
 	["Onyxia Scale Cloak"] = "Onyxiaschuppenumhang", -- item name
 	["Could not find %s"] = "Konnte %s nicht finden",
 	["Equipping %s"] = "Ziehe %s an", 
 	trigger_engage = "In dieser Welt, in der die Zeit Euer Feind ist", -- nefarian yell before the fight starts
+	["Nefarians Lair"] = "Nefarians Unterschlupf",
 } end)
 
 ----------------------------------
 --      Module Declaration      --
 ----------------------------------
-BigWigsOnyxiaCloak = BigWigs:NewModule(L["Onyxias Cloak"])
+BigWigsOnyxiaCloak = BigWigs:NewModule(L["Onyxia Scale Cloak"])
 BigWigsOnyxiaCloak.revision = 20015
 BigWigsOnyxiaCloak.external = true
 
@@ -54,8 +56,8 @@ BigWigsOnyxiaCloak.consoleCmd = L["onyxiaCloak"]
 
 BigWigsOnyxiaCloak.consoleOptions = {
 	type = "group",
-	name = L["Onyxias Cloak"],
-	desc = L["Equips Onyxias Cloak when you enter Nefarians Lair and switches back when you leave the area again."],
+	name = L["Onyxia Scale Cloak"],
+	desc = L["Equips Onyxia Scale Cloak when you enter Nefarians Lair and switches back when you leave the area again."],
 	args   = {
         active = {
 			type = "toggle",
@@ -200,7 +202,7 @@ function BigWigsOnyxiaCloak:ZONE_CHANGED_INDOORS()
 	if self.db.profile.active then
         --if AceLibrary("Babble-Zone-2.2")["Nefarians Lair"] == GetSubZoneText() then -- some wierd bug??
 		if (GetLocale() == "enUS" and string.find(GetSubZoneText(), "Nefarian.*Lair")) 
-			or (AceLibrary("Babble-Zone-2.2")["Nefarians Lair"] == GetSubZoneText())
+			or (L["Nefarians Lair"] == GetSubZoneText())
 		then
             BigWigs:DebugMessage("Nefarians Lair")
 			self.db.profile.defaultCloak = GetNameOfCurrentCloak()

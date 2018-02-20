@@ -172,9 +172,7 @@ BabbleZone:RegisterTranslations("enUS", function()
 		["Shattrath City"] = true,
 		["Karazhan"] = true,
 		["Caverns of Time"] = true,
-		["Zul'Aman"] = true,
-		
-		["Nefarians Lair"] = true,
+		["Zul'Aman"] = true,		
 	}
 end)
 
@@ -325,8 +323,6 @@ BabbleZone:RegisterTranslations("ruRU", function()
 		["Karazhan"] = "Каражан",
 		["Caverns of Time"] = "Пещеры Времени",
 		["Zul'Aman"] = "Зул'Аман",
-		
-		-- ["Nefarians Lair"] = true,
 	}
 end)
 
@@ -476,8 +472,6 @@ BabbleZone:RegisterTranslations("deDE", function()
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Die H\195\182hlen der Zeit",
 		["Zul'Aman"] = "Zul'Aman",
-		
-		["Nefarians Lair"] = "Nefarians Unterschlupf",
 	}
 end)
 
@@ -626,8 +620,6 @@ BabbleZone:RegisterTranslations("frFR", function()
 		["Karazhan"] = "Karazhan",
 		["Caverns of Time"] = "Grottes du temps",
 		["Zul'Aman"] = "Zul'Aman",
-		
-		-- ["Nefarians Lair"] = true,
 	}
 end)
 
@@ -780,8 +772,6 @@ BabbleZone:RegisterTranslations("zhCN", function()
 		["Karazhan"] = "卡拉赞",
 		["Caverns of Time"] = "时光之穴",
 --		["Zul'Aman"] = true,
-
-		-- ["Nefarians Lair"] = true,
 	}
 end)
 
@@ -934,8 +924,6 @@ BabbleZone:RegisterTranslations("zhTW", function()
 		["Karazhan"] = "卡拉贊",
 		["Caverns of Time"] = "時光洞穴",
 --		["Zul'Aman"] = true,
-
-		-- ["Nefarians Lair"] = true,
 	}
 end)
 
@@ -1084,8 +1072,6 @@ BabbleZone:RegisterTranslations("koKR", function()
 		["Karazhan"] = "카라잔",
 		["Caverns of Time"] = "시간의 동굴",
 		["Zul'Aman"] = "줄아만",
-		
-		-- ["Nefarians Lair"] = true,
 	}
 end)
 

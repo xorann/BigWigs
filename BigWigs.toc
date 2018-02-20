@@ -86,7 +86,7 @@ Plugins\CombatlogFilter.lua
 Plugins\WorldBuffTimers.lua
 Plugins\FrostBlast.lua
 Plugins\Pulltimer.lua
-Plugins\OnyxiasCloak.lua
+Plugins\OnyxiaCloak.lua
 
 # ###################################
 # Boss modules
