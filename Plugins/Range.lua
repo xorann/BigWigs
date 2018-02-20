@@ -33,6 +33,30 @@ L:RegisterTranslations("enUS", function() return {
 	["Deaths"] = true,
 	["Death message range."] = true,
 
+	["party"] = true,
+	["Party"] = true,
+	["Party message range."] = true,
+				
+	["partypet"] = true,
+	["Party pet"] = true,
+	["Party pet message range."] = true,
+				
+	["friendlyplayer"] = true,
+	["Friendly Player"] = true,
+	["Friendly Player message range."] = true,
+
+	["friendlypet"] = true,
+	["Friendly pet"] = true,
+	["Friendly pet message range."] = true,
+
+	["hostileplayer"] = true,
+	["Hostile Player"] = true,
+	["Hostile Player message range."] = true,
+
+	["hostilepet"] = true,
+	["Hostile pet"] = true,
+	["Hostile pet message range."] = true,
+	
 	["reset"] = true,
 	["Reset to defaults"] = true,
 	["Resets all ranges to defaults."] = true,
@@ -209,6 +233,72 @@ BigWigsRange.consoleOptions = {
 			get = function() return GetCVar("CombatDeathLogRange") end,
 			set = function(v) SetCVar("CombatDeathLogRange", v) end,
 		},
+		[L["party"]] = {
+			type = "range",
+			name = L["Party"],
+			desc = L["Party message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangeParty") end,
+			set = function(v) SetCVar("CombatLogRangeParty", v) end,
+		},
+		[L["partypet"]] = {
+			type = "range",
+			name = L["Party pet"],
+			desc = L["Party pet message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangePartyPet") end,
+			set = function(v) SetCVar("CombatLogRangePartyPet", v) end,
+		},
+		[L["friendlyplayer"]] = {
+			type = "range",
+			name = L["Friendly Player"],
+			desc = L["Friendly Player message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangeFriendlyPlayers") end,
+			set = function(v) SetCVar("CombatLogRangeFriendlyPlayers", v) end,
+		},
+		[L["friendlypet"]] = {
+			type = "range",
+			name = L["Friendly pet"],
+			desc = L["Friendly pet message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangeFriendlyPlayersPets") end,
+			set = function(v) SetCVar("CombatLogRangeFriendlyPlayersPets", v) end,
+		},
+		[L["hostileplayer"]] = {
+			type = "range",
+			name = L["Hostile Player"],
+			desc = L["Hostile Player message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangeHostilePlayers") end,
+			set = function(v) SetCVar("CombatLogRangeHostilePlayers", v) end,
+		},
+		[L["hostilepet"]] = {
+			type = "range",
+			name = L["Hostile pet"],
+			desc = L["Hostile pet message range."],
+			order = 4,
+			min = 5,
+			max = 200,
+			step = 5,
+			get = function() return GetCVar("CombatLogRangeHostilePlayersPets") end,
+			set = function(v) SetCVar("CombatLogRangeHostilePlayersPets", v) end,
+		},
 		[L["reset"]] = {
 			type = "execute",
 			name = L["Reset to defaults"],
@@ -219,8 +309,15 @@ BigWigsRange.consoleOptions = {
 --~~ 				SetCVar("CombatLogRangePartyPet", 50)
 --~~ 				SetCVar("CombatLogRangeFriendlyPlayers", 50)
 --~~ 				SetCVar("CombatLogRangeFriendlyPlayersPets", 50)
-				SetCVar("CombatLogRangeCreature", 200)
-				SetCVar("CombatDeathLogRange", 200)
+				local default = 200
+				SetCVar("CombatLogRangeCreature", default)
+				SetCVar("CombatDeathLogRange", default)
+				SetCVar("CombatLogRangeParty", default)
+				SetCVar("CombatLogRangePartyPet", default)
+				SetCVar("CombatLogRangeFriendlyPlayers", default)
+				SetCVar("CombatLogRangeFriendlyPlayersPets", default)
+				SetCVar("CombatLogRangeHostilePlayers", default)
+				SetCVar("CombatLogRangeHostilePlayersPets", default)
 			end,
 		},
 	},
