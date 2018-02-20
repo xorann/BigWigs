@@ -22,10 +22,6 @@ module.revision = 20013 -- To be overridden by the module!
 
 -- timers should be overridden
 timer.berserk = 300
-timer.sting = {
-	min = 15,
-	max = 20
-}
 timer.frenzy = 10
 
 module.berserkannounced = false

@@ -17,8 +17,8 @@ module.toggleoptions = { "wyvern", "frenzy", "berserk", "bosskill" }
 module.timer = {
 	berserk = 300,
 	sting = {
-		min = 15,
-		max = 20
+		min = 20,
+		max = 30
 	},
 	frenzy = 10,
 }
