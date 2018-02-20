@@ -187,12 +187,13 @@ if not oRA then
 		sound = true,
 	}
 	BigWigsPReady.participant = true
+	BigWigsPReady.external = true
 	BigWigsPReady.name = L["Participant/Ready"]
 	BigWigsPReady.consoleCmd = L["ready"]
 	BigWigsPReady.consoleOptions = {
 		type = "group",
 		desc = L["Options for ready checks and votes."],
-		name = L["Ready"],
+		name = L["Ready Check"],
 		args = {
 			[L["sound"]] = {
 				name = L["Sound"], type = "toggle",
