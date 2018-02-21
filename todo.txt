@@ -19,3 +19,5 @@ Nice to have:
 - RaidIcon Plugin: 
 	- improve icon restore
 	     
+- proximity: 
+	- option to lock the frame

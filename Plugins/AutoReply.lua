@@ -217,6 +217,21 @@ function BigWigsAutoReply:ChatFrame_OnEvent(event)
 	end
 	
 	if event then
+		--[[if strsub(event, 1, 8) == "CHAT_MSG" and not arg4 then
+			BigWigs:Print("buggy event: " .. event)
+			if arg1 then BigWigs:Print("arg1 " .. arg1) end
+			if arg2 then BigWigs:Print("arg2 " .. arg2) end
+			if arg3 then BigWigs:Print("arg3 " .. arg3) end
+			if arg4 then BigWigs:Print("arg4 " .. arg4) end
+			if arg5 then BigWigs:Print("arg5 " .. arg5) end
+			if arg6 then BigWigs:Print("arg6 " .. arg6) end
+			if arg7 then BigWigs:Print("arg7 " .. arg7) end
+			if arg8 then BigWigs:Print("arg8 " .. arg8) end
+			if arg9 then BigWigs:Print("arg9 " .. arg9) end
+			if arg10 then BigWigs:Print("arg10 " .. arg10) end
+			if arg11 then BigWigs:Print("arg11 " .. arg11) end			
+		end]]
+		
 		if type(self.hooks["ChatFrame_OnEvent"]) == "function" then
 			--BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
 			self.hooks["ChatFrame_OnEvent"](event)
