@@ -23,6 +23,14 @@ module.revision = 20014 -- To be overridden by the module!
 -- override timers if necessary
 --timer.berserk = 300
 
+timer.firstLocustSwarm = {
+	min = 90, -- week1: 96s
+	max = 120
+}
+timer.locustSwarmInterval = {
+	min = 90, -- week1: 103,112,105,102
+	max = 120
+}
 
 ------------------------------
 --      Initialization      --
