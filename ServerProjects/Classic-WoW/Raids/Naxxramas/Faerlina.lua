@@ -22,7 +22,8 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-
+timer.firstEnrage = 58.5
+timer.enrage = 61
 
 ------------------------------
 --      Initialization      --
@@ -60,8 +61,8 @@ end
 function module:OnEngage()
 	self:Message(L["msg_engage"], "Orange")
 	if self.db.profile.enrage then
-		self:DelayedMessage(timer.enrage - 15, L["msg_enrage15"], "Important")
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.firstEnrage - 15, L["msg_enrage15"], "Important")
+		self:Bar(L["bar_enrage"], timer.firstEnrage, icon.enrage)
 	end
 	module.timeEnrageStarted = GetTime()
 end
@@ -86,7 +87,6 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	end
 end
 
--- untested
 function module:CheckRain(msg)
     if string.find(msg, L["trigger_rainDamage"]) then
         if self.db.profile.rain then

@@ -59,8 +59,8 @@ end
 function module:OnEngage()
 	self:Message(L["msg_engage"], "Orange")
 	if self.db.profile.enrage then
-		self:DelayedMessage(timer.enrage - 15, L["msg_enrage15"], "Important")
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.firstEnrage - 15, L["msg_enrage15"], "Important")
+		self:Bar(L["bar_enrage"], timer.firstEnrage, icon.enrage)
 	end
 	module.timeEnrageStarted = GetTime()
 end
