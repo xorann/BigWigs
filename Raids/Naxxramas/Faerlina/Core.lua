@@ -33,7 +33,6 @@ local icon = module.icon
 
 module.syncName = {
 	enrage = "FaerlinaEnrage",
-	enrageFade = "FaerlinaEnrageFade",
 	silence = "FaerlinaSilence",
 }
 local syncName = module.syncName
@@ -49,8 +48,6 @@ module.isEnraged = nil
 function module:BigWigs_RecvSync(sync, rest, nick)
     if sync == syncName.enrage then
 		self:Enrage()
-	elseif sync == syncName.enrageFade then
-		self:EnrageFade()
 	elseif sync == syncName.silence then
 		self:Silence()
 	end

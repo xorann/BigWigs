@@ -28,6 +28,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_engage4 = "Run while you still can!",
 
 	trigger_silence = "Grand Widow Faerlina is afflicted by Widow's Embrace.", -- EDITED it affects her too.
+	trigger_enrageFade = "Enrage fades from Grand Widow Faerlina.",
 	trigger_enrage = "Grand Widow Faerlina gains Enrage.",
 	trigger_rainGain = "You are afflicted by Rain of Fire",
 	trigger_rainGone = "Rain of Fire",
