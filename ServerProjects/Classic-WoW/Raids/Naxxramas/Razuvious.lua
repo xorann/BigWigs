@@ -22,6 +22,8 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+timer.firstShout = 25.4
+timer.shout = 25.4
 
 
 ------------------------------
@@ -64,7 +66,7 @@ function module:OnEngage()
 		self:DelayedMessage(timer.firstShout - 3, L["msg_shout3"], "Urgent")
 		self:Bar(L["bar_shout"], timer.firstShout, icon.shout)
 	end
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self) -- praeda first no shout fix
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout, self) -- praeda first no shout fix
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -90,6 +92,23 @@ end
 function module:CheckForUnbalance(msg)
 	if string.find(msg, L["trigger_unbalance"]) then
 		self:Sync(syncName.unbalance)
+	end
+end
+
+
+------------------------------
+-- Utility	Functions   	--
+------------------------------
+-- you only see disrupting shout if someone gets hit
+function module:NoShout()	
+	self:CancelScheduledEvent("bwrazuviousnoshout")
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout, self)
+	
+	if self.db.profile.shout then
+		--self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
+		self:Bar(L["bar_shout"], timer.shout, icon.shout)
+		self:DelayedMessage(timer.shout - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.shout - 3, L["msg_shout3"], "Urgent")
 	end
 end
 

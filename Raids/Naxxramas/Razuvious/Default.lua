@@ -93,6 +93,23 @@ function module:CheckForUnbalance(msg)
 end
 
 
+------------------------------
+-- Utility	Functions   	--
+------------------------------
+-- 5s after expected shout
+function module:NoShout()	
+	self:CancelScheduledEvent("bwrazuviousnoshout")
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)
+	
+	if self.db.profile.shout then
+		self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
+		self:Bar(L["bar_shout"], timer.shout - timer.noShoutDelay, icon.shout)
+		self:DelayedMessage(timer.shout - timer.noShoutDelay - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.shout - timer.noShoutDelay - 3, L["msg_shout3"], "Urgent")
+	end
+end
+
+
 ----------------------------------
 -- Module Test Function    		--
 ----------------------------------
