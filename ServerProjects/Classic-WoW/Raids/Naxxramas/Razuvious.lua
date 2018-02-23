@@ -25,6 +25,7 @@ module.revision = 20014 -- To be overridden by the module!
 timer.firstShout = 25.4
 timer.shout = 25.4
 
+module.toggleoptions = {"shout", "shieldwall", "bosskill"} -- removed unbalance, doesn't make sense on nefarian
 
 ------------------------------
 --      Initialization      --
@@ -40,10 +41,10 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckForShout")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckForShout")
 
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForUnbalance")
+	--[[self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForUnbalance")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForUnbalance")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForUnbalance")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "CheckForUnbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "CheckForUnbalance")]]
 
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS", "CheckForShieldwall")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS", "CheckForShieldwall")
@@ -89,11 +90,11 @@ function module:CheckForShout(msg)
 	end
 end
 
-function module:CheckForUnbalance(msg)
+--[[function module:CheckForUnbalance(msg)
 	if string.find(msg, L["trigger_unbalance"]) then
 		self:Sync(syncName.unbalance)
 	end
-end
+end]]
 
 
 ------------------------------
@@ -137,4 +138,39 @@ end
 -- visual test
 function module:TestVisual()
 	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	
+	
+	-- /run local m=BigWigs:GetModule("Instructor Razuvious");m:TestVisual()
+	local function unbalance()
+		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
+		module:Sync(syncName.unbalance)
+		BigWigs:Print("unbalance")
+	end 
+	
+	local function shout()
+		module:CheckForShout("Instructor Razuvious's Disrupting Shout hits Anthem for 1216.")
+		BigWigs:Print("shout")
+	end
+	
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+		--[[self:DebugMessage("deactivate ")
+		if self.phase then
+			self:DebugMessage("deactivate module "..self:ToString())
+			--BigWigs:ToggleModuleActive(self, false)
+			self.core:ToggleModuleActive(self, false)
+			self.phase = nil
+		end]]
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- sweep after 5s
+	self:ScheduleEvent(self:ToString() .. "Test_unbalance", unbalance, 2, self)
+	self:ScheduleEvent(self:ToString() .. "Test_shout", shout, 3, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 5, self)
 end
