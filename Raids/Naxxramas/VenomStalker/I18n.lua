@@ -19,7 +19,7 @@ L:RegisterTranslations("enUS", function() return {
 	charge_desc = "Displays a cooldown for Poison Charge.",
 	
 	-- triggers
-	trigger_charge = "(.+) (.+) afflicted by Poison Charge",
+	trigger_charge = "(.+) (.+) afflicted by Poison Charge.",
 	--trigger_chargeGone = "Poison Charge fades from (.+)",
 	
 	-- messages
