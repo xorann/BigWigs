@@ -68,10 +68,14 @@ function module:OnEngage()
 		self:Bar(L["bar_shout"], timer.firstShout, icon.shout)
 	end
 	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout, self) -- praeda first no shout fix
+	
+	self:ScheduleRepeatingEvent("bwRazuviousCheckUnderstudyHP", self.UpdateUnderstudyHP, 0.5, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:TriggerEvent("BigWigs_StopHPBar", self, "Understudy")
+	self:CancelScheduledEvent("bwRazuviousCheckUnderstudyHP")
 end
 
 
@@ -113,6 +117,38 @@ function module:NoShout()
 	end
 end
 
+-- workaround for the broken hp display of mind controlled npc's
+function module:UpdateUnderstudyHP()
+	local health = 0
+	local maxHP = 91124
+	local razuvious = AceLibrary("Babble-Boss-2.2")["Instructor Razuvious"]
+	local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+	
+	--[[local razuvious = "Coyra"
+	local maxHP = 100
+	local understudy = "Ragged Young Wolf"]]
+	
+	if UnitName("playertarget") == razuvious and UnitName("playertargettarget") == understudy then
+		--if UnitName("playertarget") == "Ragged Timber Wolf" then
+		health = UnitHealth("playertargettarget")
+	else
+		for i=1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid" .. i .. "target") == razuvious and UnitName("Raid" .. i .. "targettarget") == understudy then
+				health = UnitHealth("Raid" .. i .. "targettarget")
+				break
+			end
+		end
+	end
+	
+	if health > 0 then
+		health = health / maxHP * 100
+		BigWigs:DebugMessage(health)
+		self:TriggerEvent("BigWigs_StartHPBar", self, "Understudy", maxHP)
+		self:TriggerEvent("BigWigs_SetHPBar", self, "Understudy", maxHP - health)
+	else
+		self:TriggerEvent("BigWigs_StopHPBar", self, "Understudy")
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--
@@ -137,7 +173,7 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	--BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
 	
 	
 	-- /run local m=BigWigs:GetModule("Instructor Razuvious");m:TestVisual()
