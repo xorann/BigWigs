@@ -163,7 +163,7 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CheckForUnbalance(L["trigger_unbalance"])
+	--module:CheckForUnbalance(L["trigger_unbalance"])
 	module:CheckForShout(L["trigger_shout"])
 	module:CheckForShieldwall(L["trigger_shieldWall"]) 
 	

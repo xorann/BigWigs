@@ -63,9 +63,9 @@ end
 ------------------------------
 function module:ChargeEvent(msg)
 	local _,_, name, verb = string.find(msg, L["trigger_charge"])
-	BigWigs:Print("charge: " .. msg)
+	BigWigs:DebugMessage("charge: " .. msg)
 	if verb == L["misc_are"] or verb == L["misc_is"] then
-		BigWigs:Print("charge found. syncing it")
+		BigWigs:DebugMessage("charge found. syncing it")
 		self:Sync(syncName.charge)
 	end
 end
