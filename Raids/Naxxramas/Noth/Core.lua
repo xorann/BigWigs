@@ -23,24 +23,25 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstRoom = 88,
+	firstRoom = 91,
 	secondRoom = 108,
 	thirdRoom = 178,
 	room = 0, -- will be changed during the encounter
     
-	firstBalcony = 70,
-	secondBalcony = 90,
+	firstBalcony = 72,
+	secondBalcony = 92,
 	thirdBalcony = 120, -- ??
 	balcony = 0, -- will be changed during the encounter
     
 	firstCurse = 10,
     secondCurse = 10,
-    thirdCurse = 35,
+    thirdCurse = 29,
     curseAfterTeleport = 0, -- will be changed during the encounter
     curse = 44.5,
     
-	wave1 = 13,
-	wave2 = 44,
+	wave1 = 13.5,
+	wave2 = 43.2,
+	wave2_2 = 59,
 	--wave3 = 80,
 }
 local timer = module.timer
@@ -106,6 +107,7 @@ function module:TeleportToBalcony()
 		timer.room = timer.secondRoom
 		timer.blinkAfterTeleport = timer.secondBlink
         timer.curseAfterTeleport = timer.secondCurse
+		timer.wave2 = timer.wave2_2
 	elseif timer.room == timer.secondRoom then
 		timer.room = timer.thirdRoom
 		timer.blinkAfterTeleport = timer.thirdBlink -- 2nd teleport to balcony

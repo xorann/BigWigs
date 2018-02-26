@@ -23,7 +23,6 @@ module.revision = 20014 -- To be overridden by the module!
 -- override timers if necessary
 --timer.berserk = 300
 
-
 ------------------------------
 --      Initialization      --
 ------------------------------
@@ -40,7 +39,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForCurse")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForCurse")
     
-    self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Teleport")
+	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.Teleport)
+	self:CombatlogFilter(L["trigger_teleportToRoom"], self.Teleport)
 	
 	self:ThrottleSync(5, syncName.blink)
 	self:ThrottleSync(5, syncName.curse)
