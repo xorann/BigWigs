@@ -45,5 +45,5 @@ L:RegisterTranslations("enUS", function() return {
 	bar_shieldWall       = "Shield Wall",
 	
 	-- misc
-	
+	misc_understudy = "Death Knight Understudy"
 } end )

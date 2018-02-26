@@ -5,7 +5,8 @@
 local bossName = BigWigs.bossmods.naxx.razuvious
 local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
-local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+--local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+local understudy = L["misc_understudy"]
 
 
 -- module variables

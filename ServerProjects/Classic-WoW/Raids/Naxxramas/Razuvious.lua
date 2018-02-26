@@ -119,10 +119,11 @@ end
 
 -- workaround for the broken hp display of mind controlled npc's
 function module:UpdateUnderstudyHP()
+	BigWigs:DebugMessage("update")
 	local health = 0
 	local maxHP = 91124
 	local razuvious = AceLibrary("Babble-Boss-2.2")["Instructor Razuvious"]
-	local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+	local understudy = L["misc_understudy"]
 	
 	--[[local razuvious = "Coyra"
 	local maxHP = 100
