@@ -240,6 +240,8 @@ Raids\Naxxramas\Gluth\I18n.lua
 Raids\Naxxramas\Gluth\Core.lua
 Raids\Naxxramas\Thaddius\I18n.lua
 Raids\Naxxramas\Thaddius\Core.lua
+Raids\Naxxramas\DeathKnightCaptain\I18n.lua
+Raids\Naxxramas\DeathKnightCaptain\Core.lua
 Raids\Naxxramas\Razuvious\I18n.lua
 Raids\Naxxramas\Razuvious\Core.lua
 Raids\Naxxramas\Gothik\I18n.lua
@@ -431,6 +433,7 @@ Raids\Naxxramas\Patchwerk\Default.lua
 Raids\Naxxramas\Grobbulus\Default.lua
 Raids\Naxxramas\Gluth\Default.lua
 Raids\Naxxramas\Thaddius\Default.lua
+Raids\Naxxramas\DeathKnightCaptain\Default.lua
 Raids\Naxxramas\Razuvious\Default.lua
 Raids\Naxxramas\Gothik\Default.lua
 Raids\Naxxramas\Horsemen\Default.lua

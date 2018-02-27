@@ -17,6 +17,7 @@ BigWigs.bossmods.naxx.patchwerk = "Patchwerk"
 BigWigs.bossmods.naxx.grobbulus = "Grobbulus"
 BigWigs.bossmods.naxx.gluth = "Gluth"
 BigWigs.bossmods.naxx.thaddius = "Thaddius"
+BigWigs.bossmods.naxx.deathKnightCaptain = "Death Knight Captain"
 BigWigs.bossmods.naxx.razuvious = "Instructor Razuvious"
 BigWigs.bossmods.naxx.gothik = "Gothik the Harvester"
 BigWigs.bossmods.naxx.horsemen = "The Four Horsemen"
@@ -35,6 +36,7 @@ BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.patchwerk, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.grobbulus, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.gluth, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.thaddius, "Naxxramas")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.deathKnightCaptain, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.razuvious, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.gothik, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.horsemen, "Naxxramas")
