@@ -79,19 +79,19 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CurseEvent(msg)
+function module:CurseEvent(event, msg)
 	if string.find(msg, L["trigger_curse"]) then
 		self:Sync(syncName.curse)
 	end
 end
 
-function module:BlinkEvent(msg)
+function module:BlinkEvent(event, msg)
 	if msg == L["trigger_blink"] then
 		self:Sync(syncName.blink)
 	end
 end
 
-function module:TeleportEvent(msg)
+function module:TeleportEvent(event, msg)
     if msg == L["trigger_teleportToBalcony"] then
         self:Sync(syncName.teleportToBalcony)
     elseif msg == L["trigger_teleportToRoom"] then
@@ -113,10 +113,10 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:TeleportEvent(L["trigger_teleportToBalcony"])
-	module:TeleportEvent(L["trigger_teleportToRoom"])
-	module:BlinkEvent(L["trigger_blink"])
-	module:CurseEvent(L["trigger_curse"])
+	module:TeleportEvent("", L["trigger_teleportToBalcony"])
+	module:TeleportEvent("", L["trigger_teleportToRoom"])
+	module:BlinkEvent("", L["trigger_blink"])
+	module:CurseEvent("", L["trigger_curse"])
 	
 	module:OnDisengage()
 	module:TestDisable()

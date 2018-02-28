@@ -55,13 +55,13 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:LightningTotemCastEvent(msg)
+function module:LightningTotemCastEvent(event, msg)
 	if string.find(msg, L["trigger_lightningtotemCast"]) then
 		self:Sync(syncName.lightningTotemCast)
 	end
 end
 
-function module:LightningTotemSummonEvent(msg)
+function module:LightningTotemSummonEvent(event, msg)
 	if string.find(msg, L["trigger_lightningtotemSummon"]) then
 		self:Sync(syncName.lightningTotemSummon)
 	end
@@ -88,8 +88,8 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:LightningTotemCastEvent(L["trigger_lightningtotemCast"])
-	module:LightningTotemSummonEvent(L["trigger_lightningtotemSummon"])
+	module:LightningTotemCastEvent("", L["trigger_lightningtotemCast"])
+	module:LightningTotemSummonEvent("", L["trigger_lightningtotemSummon"])
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(UNITDIESOTHER, L["misc_lightningTotem"]))
 	
 	module:OnDisengage()
