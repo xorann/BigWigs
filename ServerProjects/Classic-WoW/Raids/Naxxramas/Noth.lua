@@ -39,6 +39,8 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.TeleportEvent, true)
 	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
 	
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "TeleportEvent")
+	
 	self:ThrottleSync(5, syncName.blink)
 	self:ThrottleSync(5, syncName.curse)
 end
@@ -92,9 +94,9 @@ function module:BlinkEvent(event, msg)
 end
 
 function module:TeleportEvent(event, msg)
-    if msg == L["trigger_teleportToBalcony"] then
+    if string.find(msg, L["trigger_teleportToBalcony"]) then
         self:Sync(syncName.teleportToBalcony)
-    elseif msg == L["trigger_teleportToRoom"] then
+    elseif string.find(msg, L["trigger_teleportToRoom"]) then
         self:Sync(syncName.teleportToRoom)
     end
 end
@@ -124,5 +126,24 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	-- /run local m=BigWigs:GetModule("Noth");m:TestVisual()
+	local function balcony()
+		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
+		module:TeleportEvent("", L["trigger_teleportToBalcony"])
+		BigWigs:Print("balcony")
+	end 
+	
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- sweep after 5s
+	self:ScheduleEvent(self:ToString() .. "Test_balcony", balcony, 2, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 5, self)
 end
