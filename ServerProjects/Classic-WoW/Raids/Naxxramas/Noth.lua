@@ -33,14 +33,11 @@ module:RegisterYellEngage(L["trigger_engage3"])
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckForBlink")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForCurse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForCurse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForCurse")
-    
-	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.Teleport)
-	self:CombatlogFilter(L["trigger_teleportToRoom"], self.Teleport)
+    self:CombatlogFilter(L["trigger_curse"], self.CurseEvent, true)
+    self:CombatlogFilter(L["trigger_blink"], self.BlinkEvent, true)
+	
+	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.TeleportEvent, true)
+	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
 	
 	self:ThrottleSync(5, syncName.blink)
 	self:ThrottleSync(5, syncName.curse)
@@ -71,7 +68,7 @@ function module:OnEngage()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
 
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
+	--self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -82,19 +79,19 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CheckForCurse(msg)
+function module:CurseEvent(msg)
 	if string.find(msg, L["trigger_curse"]) then
 		self:Sync(syncName.curse)
 	end
 end
 
-function module:CheckForBlink(msg)
+function module:BlinkEvent(msg)
 	if msg == L["trigger_blink"] then
 		self:Sync(syncName.blink)
 	end
 end
 
-function module:Teleport(msg)
+function module:TeleportEvent(msg)
     if msg == L["trigger_teleportToBalcony"] then
         self:Sync(syncName.teleportToBalcony)
     elseif msg == L["trigger_teleportToRoom"] then
