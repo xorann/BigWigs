@@ -113,10 +113,10 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:Teleport(L["trigger_teleportToBalcony"])
-	module:Teleport(L["trigger_teleportToRoom"])
-	module:CheckForBlink(L["trigger_blink"])
-	module:CheckForCurse(L["trigger_curse"])
+	module:TeleportEvent(L["trigger_teleportToBalcony"])
+	module:TeleportEvent(L["trigger_teleportToRoom"])
+	module:BlinkEvent(L["trigger_blink"])
+	module:CurseEvent(L["trigger_curse"])
 	
 	module:OnDisengage()
 	module:TestDisable()

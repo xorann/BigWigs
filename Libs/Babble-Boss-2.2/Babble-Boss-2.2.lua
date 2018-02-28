@@ -953,6 +953,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Venom Stalker"] = "Giftpirscher";
 		["Necro Stalker"] = "Nekropirscher";
 		["Living Monstrosity"] = "Lebende Monströsität";
+		["Death Knight Captain"] = "Hauptmann der Todesritter";
 	}
 end)
 
