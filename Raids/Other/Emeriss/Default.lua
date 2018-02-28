@@ -37,11 +37,11 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	module.announceTime = 0
 end
 
 -- called after boss is engaged
 function module:OnEngage()
-	module.announceTime = 0
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
