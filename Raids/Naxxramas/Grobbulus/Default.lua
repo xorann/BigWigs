@@ -28,12 +28,9 @@ module.revision = 20014 -- To be overridden by the module!
 ------------------------------
 
 -- called after module is enabled
-function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "InjectEvent")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "InjectEvent")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "InjectEvent")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+function module:OnEnable()
+	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
+	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
 	
 	self:ThrottleSync(3, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -64,8 +61,8 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
-	if string.find( msg, L["trigger_cloud"]) then
+function module:CloudEvent(msg)
+	if string.find(msg, L["trigger_cloud"]) then
 		self:Sync(syncName.cloud)
 	end
 end
@@ -94,7 +91,7 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["trigger_cloud"])
+	module:CloudEvent(L["trigger_cloud"])
 	module:InjectEvent(L["trigger_inject"])
 	
 	module:OnDisengage()

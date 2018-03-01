@@ -52,5 +52,6 @@ L:RegisterTranslations("enUS", function() return {
 	-- misc
 	misc_you = "You",
 	misc_are = "are",
+	misc_bombSay = "I am injected",
 
 } end )

@@ -89,7 +89,7 @@ function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	end
 end
 
-function module:EnrageFadeEvent(event, msg)
+function module:EnrageFadeEvent(msg, event)
 	if msg == L["trigger_enrageFade"] then
 		self:Sync(syncName.silence)
 	end
@@ -137,7 +137,7 @@ function module:TestModule()
 	module:CheckRain(L["trigger_rainDamage"])
 	module:CheckRain(L["trigger_rainGain"])
 	module:CHAT_MSG_SPELL_AURA_GONE_SELF(L["trigger_rainGone"])
-	module:EnrageFadeEvent("", L["trigger_enrageFade"])
+	module:EnrageFadeEvent(L["trigger_enrageFade"])
 	
 	module:OnDisengage()
 	module:TestDisable()

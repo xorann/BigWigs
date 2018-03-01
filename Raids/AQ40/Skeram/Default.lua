@@ -148,7 +148,7 @@ function module:UNIT_HEALTH(arg1)
 	end
 end
 
-function module:ArcaneExplosionEvent(event, msg)
+function module:ArcaneExplosionEvent(msg, event)
 	BigWigs:DebugMessage("Arcane Explosion Event: " .. event)
 	self:Sync(syncName.arcaneExplosion)
 end

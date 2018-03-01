@@ -61,7 +61,7 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:ChargeEvent(event, msg)
+function module:ChargeEvent(msg, event)
 	local _,_, name, verb = string.find(msg, L["trigger_charge"])
 	BigWigs:DebugMessage("charge: " .. msg)
 	if verb == L["misc_are"] or verb == L["misc_is"] then
@@ -101,8 +101,8 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:ChargeEvent("", string.format(L["trigger_charge"], L["misc_You"], L["misc_are"]))
-	module:ChargeEvent("", string.format(L["trigger_charge"], "Someone", L["misc_is"]))
+	module:ChargeEvent(string.format(L["trigger_charge"], L["misc_You"], L["misc_are"]))
+	module:ChargeEvent(string.format(L["trigger_charge"], "Someone", L["misc_is"]))
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(UNITDIESOTHER, venomstalker))
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(UNITDIESOTHER, necrostalker))
 	

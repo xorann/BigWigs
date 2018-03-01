@@ -59,6 +59,8 @@ function module:Inject(player)
 			
 			self:Message(string.format(L["msg_bombOther"], player), "Attention", nil, nil, true)
 			self:Bar(string.format(L["bar_bomb"], player), timer.inject, icon.inject)
+			
+			self:Say(L["misc_bombSay"])
 		elseif self.db.profile.otherinjected then
 			self:Message(string.format(L["msg_bombOther"], player), "Attention")
 			--self:TriggerEvent("BigWigs_SendTell", player, L["msg_bombYou"]) -- can cause whisper bug on nefarian

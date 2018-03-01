@@ -54,7 +54,7 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:WhirlwindEvent(event, msg)
+function module:WhirlwindEvent(msg, event)
 	BigWigs:DebugMessage("whirlwind: " .. msg)
 	if string.find(msg, L["trigger_whirlwind"]) then
 		BigWigs:DebugMessage("whirlwind found. syncing it")
@@ -76,7 +76,7 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:WhirlwindEvent("",  L["trigger_whirlwind"])
+	module:WhirlwindEvent(L["trigger_whirlwind"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -87,7 +87,7 @@ function module:TestVisual(long)
 	-- /run local m=BigWigs:GetModule("Death Knight Captain");m:TestVisual()
 	local function whirlwind()
 		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
-		module:WhirlwindEvent("", L["trigger_whirlwind"])
+		module:WhirlwindEvent(L["trigger_whirlwind"])
 		BigWigs:Print("whirlwind")
 	end 
 	

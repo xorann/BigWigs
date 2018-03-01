@@ -34,12 +34,10 @@ module:RegisterYellEngage(L["trigger_engage3"])
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE")
-    self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Teleport")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForDisease")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForDisease")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForDisease")
+	self:CombatlogFilter(L["trigger_bossDeath"], self.BossDeathEvent)
+	self:CombatlogFilter(L["trigger_toPlatform"], self.TeleportEvent, true)
+	self:CombatlogFilter(L["trigger_toFloor"], self.TeleportEvent, true)
+	self:CombatlogFilter(L["trigger_decrepitFever"], self.DiseaseEvent, true)
 	
 	self:ThrottleSync(10, syncName.toPlatform)
     self:ThrottleSync(10, syncName.toFloor)
@@ -73,13 +71,13 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CHAT_MSG_MONSTER_EMOTE(msg)
+function module:BossDeathEvent(msg)
 	if string.find(msg, L["trigger_bossDeath"]) then
 		self:SendBossDeathSync()
 	end
 end
 
-function module:Teleport(msg)
+function module:TeleportEvent(msg)
     if string.find(msg, L["trigger_toPlatform"]) then
         self:Sync(syncName.toPlatform)
     elseif string.find(msg, L["trigger_toFloor"]) then
@@ -87,7 +85,7 @@ function module:Teleport(msg)
     end
 end
 
-function module:CheckForDisease(msg)
+function module:DiseaseEvent(msg)
 	if string.find(msg, L["trigger_decrepitFever"]) then
 		if self.db.profile.disease then 
 			self:Sync(syncName.disease)
@@ -109,10 +107,10 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CheckForDisease(L["trigger_decrepitFever"])
-	module:Teleport(L["trigger_toPlatform"])
-	module:Teleport(L["trigger_toFloor"])
-	module:CHAT_MSG_MONSTER_EMOTE(L["trigger_bossDeath"])
+	module:DiseaseEvent(L["trigger_decrepitFever"])
+	module:TeleportEvent(L["trigger_toPlatform"])
+	module:TeleportEvent(L["trigger_toFloor"])
+	module:BossDeathEvent(L["trigger_bossDeath"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -123,13 +121,13 @@ function module:TestVisual()
     -- /run local m=BigWigs:GetModule("Heigan the Unclean");m:Test()
     
     local function fever()
-        module:CheckForDisease(L["trigger_decrepitFever"])
+        module:DiseaseEvent(L["trigger_decrepitFever"])
     end
     local function toPlatform()
-        module:Teleport(L["trigger_toPlatform"])
+        module:TeleportEvent(L["trigger_toPlatform"])
     end
     local function toFloor()
-        module:Teleport(L["trigger_toFloor"])
+        module:TeleportEvent(L["trigger_toFloor"])
     end
 
     local function deactivate()

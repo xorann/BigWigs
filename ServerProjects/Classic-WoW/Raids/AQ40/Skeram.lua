@@ -119,7 +119,7 @@ function module:Event(msg)
 	end
 end
 
-function module:ArcaneExplosionEvent(event, msg)
+function module:ArcaneExplosionEvent(msg, event)
 	BigWigs:DebugMessage("Arcane Explosion Event: " .. event)
 	self:Sync(syncName.arcaneExplosion)
 end
@@ -145,7 +145,7 @@ function module:TestModule()
 	module:Event(L["trigger_mcGainPlayer"])
 	module:Event(L["trigger_mcPlayerGone"])
 	module:Event(L["trigger_deathPlayer"])
-	module:ArcaneExplosionEvent("test", "test")
+	module:ArcaneExplosionEvent("test", "")
 	
 	module:OnDisengage()
 	module:TestDisable()
