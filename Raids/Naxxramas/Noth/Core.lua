@@ -134,7 +134,8 @@ function module:TeleportToBalcony()
 		--self:DelayedMessage(timer.wave2 - 10, L["msg_wave2Soon"], "Urgent")
 		--self:DelayedMessage(timer.wave2, L["msg_wave2Now"], "Urgent")
 	end
-	--self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.balcony, self)
+	
+	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.balcony, self) -- fallback
 end
 
 function module:TeleportToRoom()

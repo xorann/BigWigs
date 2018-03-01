@@ -24,7 +24,7 @@ module.timer = {
     firstDanceErruption = 5,
     erruption = 0, -- will be changed during the encounter
     erruptionSlow = 10,
-    erruptionFast = 3.2,
+    erruptionFast = 3,
     dancing = 10,
 }
 local timer = module.timer
