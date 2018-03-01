@@ -70,7 +70,7 @@ function module:OnEngage()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
 
-	--self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self) -- fallback
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
