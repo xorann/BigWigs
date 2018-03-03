@@ -604,6 +604,10 @@ function BigWigsBars:GetBarId(module, text)
 	return "BigWigsBar " .. text
 end
 
+function BigWigsBars:GetCandyBarLibrary()
+	return candybar
+end
+
 -- /run BigWigsBars:StartIrregularBar(BigWigs, "test", 1, 6)
 function BigWigsBars:StartIrregularBar(module, text, minTime, maxTime, icon, otherc, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10)
 	-- star normal bar for the minimum timer

@@ -55,11 +55,16 @@ function module:OnEngage()
     if self.db.profile.disease then
         self:Bar(L["bar_decrepitFever"], timer.firstDisease, icon.disease)
     end
-    if self.db.profile.erruption then
+    --[[if self.db.profile.erruption then
         timer.erruption = timer.erruptionSlow
         self:Bar(L["bar_erruption"], timer.firstErruption, icon.erruption)
         self:ScheduleEvent("HeiganErruption", self.Erruption, timer.firstErruption, self)
-    end
+    end]]
+	
+	if self.db.profile.dance then
+		self:DelayedBar(timer.toPlatform - timer.dancingStart, L["bar_dancingShoes"], timer.dancingPrepare, icon.dancing)
+		self:DelayedSound(timer.toPlatform - timer.dancingStart, "Beware")
+	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -117,7 +122,7 @@ end
 
 -- visual test
 function module:TestVisual()
-    -- /run local m=BigWigs:GetModule("Heigan the Unclean");m:Test()
+    -- /run local m=BigWigs:GetModule("Heigan the Unclean");m:TestVisual()
     
     local function fever()
         module:DiseaseEvent(L["trigger_decrepitFever"])
