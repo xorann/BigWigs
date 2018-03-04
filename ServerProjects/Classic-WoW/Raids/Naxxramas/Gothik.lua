@@ -59,9 +59,17 @@ function module:OnEngage()
 	end
 
 	if self.db.profile.add then
+		timer.trainee = timer.firstTrainee
+		timer.deathknight = timer.firstDeathknight
+		timer.rider = timer.firstRider
+	
 		self:Trainee()
 		self:DeathKnight()
 		self:Rider()
+		
+		timer.trainee = timer.traineeInterval
+		timer.deathknight = timer.deathknightInterval
+		timer.rider = timer.riderInterval
 	end
 end
 

@@ -19,15 +19,15 @@ module.toggleoptions = {"room", -1, "add", "adddeath", "teleport", "bosskill"}
 module.timer = {
 	inroom = 273,
 	
-	firstTrainee = 27,
+	firstTrainee = 25,
 	traineeInterval = 20.3, -- its 20.5 seconds not 21
 	trainee = 0,
 	
-	firstDeathknight = 77,
+	firstDeathknight = 75,
 	deathknightInterval = 25,
 	deathknight = 0,
 	
-	firstRider = 137,
+	firstRider = 135,
 	riderInterval = 30,
 	rider = 0,
 	
