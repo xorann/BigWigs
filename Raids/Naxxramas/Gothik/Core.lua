@@ -12,16 +12,38 @@ module.revision = 20014 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = { L["misc_riderName"], L["misc_deathKnightName"], L["misc_traineeName"],
 	L["misc_spectralRiderName"], L["misc_spectralDeathKnightName"], L["misc_spectralTraineeName"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"room", -1, "add", "adddeath", "bosskill"}
+module.toggleoptions = {"room", -1, "add", "adddeath", "teleport", "bosskill"}
 
 
 -- locals
 module.timer = {
 	inroom = 273,
-	trainee = 20.3, -- its 20.5 seconds not 21
+	
+	firstTrainee = 27,
+	traineeInterval = 20.3, -- its 20.5 seconds not 21
+	trainee = 0,
+	
+	firstDeathknight = 77,
+	deathknightInterval = 25,
+	deathknight = 0,
+	
+	firstRider = 137,
+	riderInterval = 30,
+	rider = 0,
+	
+	teleport = 15,
+}
+--[[
+local timer = {
+	inroom = 274,
+	firstTrainee = 24,
+	trainee = 20,
+	firstDeathknight = 74,
 	deathknight = 25,
+	firstRider = 134,
 	rider = 30,
 }
+]]
 local timer = module.timer
 
 module.icon = {
@@ -29,13 +51,11 @@ module.icon = {
 	trainee = "Ability_Seal",
 	deathknight = "INV_Boots_Plate_08",
 	rider = "Spell_Shadow_DeathPact",
+	teleport = "spell_arcane_blink",
 }
 local icon = module.icon
 
-module.syncName = {
-	teleport = "TwinsTeleport",
-	berserk = "TestbossBerserk"
-}
+module.syncName = {}
 local syncName = module.syncName
 
 
@@ -74,14 +94,12 @@ function module:Trainee()
 	self:ScheduleEvent("bwgothiktrawarn", self.WaveWarn, timer.trainee - 3, self, L["msg_trainee"], L, "Attention")
 	self:ScheduleRepeatingEvent("bwgothiktrarepop", self.Trainee, timer.trainee, self)
 	
-
 	if module.numTrainees >= 13 then  -- cancels bar after wave 11
 		self:RemoveBar(string.format(L["bar_trainee"], module.numTrainees - 1))
 		self:CancelScheduledEvent("bwgothiktrawarn")
 		self:CancelScheduledEvent("bwgothiktrarepop")
 		module.numTrainees = 0
 	end
-	
 end
 
 function module:DeathKnight()
@@ -92,7 +110,6 @@ function module:DeathKnight()
 	end
 	self:ScheduleEvent("bwgothikdkwarn", self.WaveWarn, timer.deathknight - 3, self, L["msg_deathKnight"], L, "Urgent")
 	self:ScheduleRepeatingEvent("bwgothikdkrepop", self.DeathKnight, timer.deathknight, self)
-	
 
 	if module.numDeathknights >= 9 then  -- cancels bar after wave 7
 		self:RemoveBar(string.format(L["bar_deathKnight"], module.numDeathknights - 1))
@@ -143,8 +160,16 @@ function module:StopRoom()
 	module.numTrainees = 0
 	module.numDeathknights = 0
 	module.numRiders = 0
+	
 end
 
+function module:Teleport()
+	self:KTM_Reset()
+	
+	if self.db.profile.teleport then
+		self:Bar(L["bar_teleport"], timer.teleport, icon.teleport)
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--
@@ -153,4 +178,9 @@ end
 -- automated test
 function module:TestModuleCore()
 	-- check core functions	
+	module:StopRoom()
+	module:Rider()
+	module:DeathKnight()
+	module:Trainee()
+	module:WaveWarn(L["msg_trainee"], L, "Attention")
 end

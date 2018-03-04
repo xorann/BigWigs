@@ -94,7 +94,7 @@ end
 function module:SlimeSpray()	
 	if self.db.profile.slimespray then
 		self:RemoveBar(L["bar_slimeSpray"])
-		self:IntervalBar(L["bar_slimeSpray"], timer.slimeSpray, icon.slimeSpray)
+		self:Bar(L["bar_slimeSpray"], timer.slimeSpray, icon.slimeSpray)
 	end
 end
 

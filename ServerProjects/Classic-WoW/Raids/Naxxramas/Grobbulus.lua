@@ -84,7 +84,7 @@ function module:InjectEvent(msg)
 end
 
 function module:SlimeSprayEvent(msg)
-	if string.find(msg, L["slimeSpray_trigger"]) then
+	if string.find(msg, L["trigger_slimeSpray"]) then
 		self:Sync(syncName.slimeSpray)
 	end
 end
@@ -105,7 +105,7 @@ function module:TestModule()
 	-- check event handlers
 	module:CloudEvent(L["trigger_cloud"])
 	module:InjectEvent(L["trigger_inject"])
-	module:SlimeSprayEvent(L["slimeSpray_trigger"])
+	module:SlimeSprayEvent(L["trigger_slimeSpray"])
 	
 	module:OnDisengage()
 	module:TestDisable()
