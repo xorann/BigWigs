@@ -32,6 +32,7 @@ module.revision = 20014 -- To be overridden by the module!
 function module:OnEnable()
 	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent, true)
 	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent, true)
+	self:CombatlogFilter(L["trigger_slimeSpray"], self.CloudEvent, true)
 	
 	self:ThrottleSync(3, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -51,6 +52,10 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 1 * 50, L["msg_enrage1m"], "Important")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+	end
+	
+	if self.db.profile.slimespray then
+		self:Bar(L["bar_slimeSpray"], timer.firstSlimeSpray, icon.slimeSpray)
 	end
 end
 
@@ -78,6 +83,12 @@ function module:InjectEvent(msg)
 	end
 end
 
+function module:SlimeSprayEvent(msg)
+	if string.find(msg, L["slimeSpray_trigger"]) then
+		self:Sync(syncName.slimeSpray)
+	end
+end
+
 
 ----------------------------------
 -- Module Test Function    		--
@@ -94,6 +105,7 @@ function module:TestModule()
 	-- check event handlers
 	module:CloudEvent(L["trigger_cloud"])
 	module:InjectEvent(L["trigger_inject"])
+	module:SlimeSprayEvent(L["slimeSpray_trigger"])
 	
 	module:OnDisengage()
 	module:TestDisable()

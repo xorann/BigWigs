@@ -31,6 +31,7 @@ module.revision = 20014 -- To be overridden by the module!
 function module:OnEnable()
 	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
 	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
+	self:CombatlogFilter(L["trigger_slimeSpray"], self.CloudEvent)
 	
 	self:ThrottleSync(3, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -50,6 +51,10 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 1 * 50, L["msg_enrage1m"], "Important")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+	end
+	
+	if self.db.profile.slimespray then
+		self:Bar(L["bar_slimeSpray"], timer.firstSlimeSpray, icon.slimeSpray)
 	end
 end
 
@@ -74,6 +79,12 @@ function module:InjectEvent(msg)
 			eplayer = UnitName("player")
 		end
 		self:Sync(syncName.inject .. " " .. eplayer)
+	end
+end
+
+function module:SlimeSprayEvent(msg)
+	if string.find(msg, L["slimeSpray_trigger"]) then
+		self:Sync(syncName.slimeSpray)
 	end
 end
 
