@@ -22,8 +22,9 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-timer.firstEnrage = 58.5
-timer.enrage = 61
+module.timer.firstEnrage = 61
+module.timer.enrage = 61
+
 
 ------------------------------
 --      Initialization      --
