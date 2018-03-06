@@ -24,11 +24,11 @@ module.timer = {
 	trainee = 0,
 	
 	firstDeathknight = 75,
-	deathknightInterval = 25.7,
+	deathknightInterval = 25.75,
 	deathknight = 0,
 	
-	firstRider = 137,
-	riderInterval = 30.7,
+	firstRider = 136.75,
+	riderInterval = 30.75,
 	rider = 0,
 	
 	teleport = {
