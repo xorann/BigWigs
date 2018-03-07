@@ -775,6 +775,7 @@ function BigWigsBars:BigWigs_StartHPBar(module, text, max, bar, icon, c1, c2, c3
 		if exists then
 			local text = self:GetCandyBarText(id)
 			local remainingHP = totalHP - lostHP
+			remainingHP = floor(remainingHP + 0.5)
 			SendChatMessage(text .. ": " .. remainingHP .. "%", "RAID")
 		end
 	end
