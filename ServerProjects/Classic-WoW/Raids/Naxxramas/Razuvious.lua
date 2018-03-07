@@ -22,8 +22,8 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-timer.firstShout = 25.4
-timer.shout = 25.4
+module.timer.firstShout = 25.6
+module.timer.shout = 25.6
 
 module.toggleoptions = {"shout", "shieldwall", "bosskill"} -- removed unbalance, doesn't make sense on nefarian
 
@@ -209,5 +209,5 @@ function module:TestVisual()
 	-- sweep after 5s
 	self:ScheduleEvent(self:ToString() .. "Test_unbalance", unbalance, 2, self)
 	self:ScheduleEvent(self:ToString() .. "Test_shout", shout, 3, self)
-	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 5, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 10, self)
 end
