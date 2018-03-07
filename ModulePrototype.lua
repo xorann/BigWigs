@@ -86,7 +86,9 @@ function BigWigs.modulePrototype:Engage()
 		BigWigs:GetModule("CombatlogFilter"):OnEngage(self:ToString())
 
 		self:OnEngage()
+--		Stopwatch_Command("play")
 	end
+	
 end
 
 function BigWigs.modulePrototype:Disengage()
@@ -105,8 +107,11 @@ function BigWigs.modulePrototype:Disengage()
 		BigWigsBars:BigWigs_HideCounterBars()
 
 		self:RemoveProximity()
-
+		BigWigsEnrage:Stop()
+		
 		self:OnDisengage()
+		
+--		Stopwatch_Command("reset")
 	end
 end
 

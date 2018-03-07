@@ -126,13 +126,7 @@ end
 
 -- visual test
 function module:TestVisual()
-	-- /run local m=BigWigs:GetModule("Noth");m:TestVisual()
-	local function balcony()
-		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
-		module:TeleportEvent("", L["trigger_teleportToBalcony"])
-		BigWigs:Print("balcony")
-	end 
-	
+	-- /run local m=BigWigs:GetModule("Noth the Plaguebringer");m:TestVisual()
 	local function deactivate()
 		self:DebugMessage("deactivate")
 		self:Disable()
@@ -143,7 +137,6 @@ function module:TestVisual()
 	-- immitate CheckForEngage
 	self:SendEngageSync()
 
-	-- sweep after 5s
-	self:ScheduleEvent(self:ToString() .. "Test_balcony", balcony, 2, self)
-	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 5, self)
+	-- deactivate
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 500, self)
 end
