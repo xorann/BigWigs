@@ -30,9 +30,10 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- called after module is enabled
 function module:OnEnable()
-	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent, true)
-	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent, true)
-	self:CombatlogFilter(L["trigger_slimeSpray"], self.CloudEvent, true)
+	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
+	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
+	self:CombatlogFilter(L["trigger_slimeSpray"], self.SlimeSprayEvent, true)
+	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
 	self:ThrottleSync(3, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -68,6 +69,7 @@ end
 --      Event Handlers      --
 ------------------------------
 function module:CloudEvent(msg)
+	BigWigs:DebugMessage(msg)
 	if string.find(msg, L["trigger_cloud"]) then
 		self:Sync(syncName.cloud)
 	end
@@ -78,6 +80,15 @@ function module:InjectEvent(msg)
 	if eplayer and etype then
 		if eplayer == L["misc_you"] and etype == L["misc_are"] then
 			eplayer = UnitName("player")
+			--self:Bar("injected", timer.inject, icon.inject)
+			
+			self:Message(L["msg_bombYou"], "Personal", true, "RunAway")
+			self:WarningSign(icon.inject, timer.inject)
+			
+			--self:Message(string.format(L["msg_bombOther"], player), "Attention", nil, nil, true)
+			self:Bar(L["msg_bombYou"], timer.inject, icon.inject)
+			
+			self:Say(L["misc_bombSay"])
 		end
 		self:Sync(syncName.inject .. " " .. eplayer)
 	end

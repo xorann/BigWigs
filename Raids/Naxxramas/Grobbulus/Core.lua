@@ -24,8 +24,8 @@ module.timer = {
 		max = 30
 	},
 	slimeSpray = {
-		min = 30, 
-		max = 35
+		min = 25, 
+		max = 40
 	},
 }
 local timer = module.timer
@@ -51,7 +51,7 @@ local syncName = module.syncName
 ------------------------------
 function module:BigWigs_RecvSync( sync, rest, nick )
 	if sync == syncName.inject and rest then
-		self:Inject(rest)
+		--self:Inject(rest)
 	elseif sync == syncName.cloud then
 		self:Cloud()
 	elseif sync == syncName.slimeSpray then
