@@ -39,6 +39,15 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.TeleportEvent, true)
 	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
 	
+	self:CombatlogFilter("Noth the Plaguebringer teleports", self.TeleportEvent, true)
+	self:CombatlogFilter("to the balcony above", self.TeleportEvent, true)
+	self:CombatlogFilter("into the battle", self.TeleportEvent, true)
+	
+	self:CombatlogFilter("Noth the Plaguebringer raises more skeletons!", self.WaveEvent, true)
+	self:CombatlogFilter("raises more skeletons", self.WaveEvent, true)
+	
+	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
+	
 	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "TeleportEvent")
 	
 	self:ThrottleSync(5, syncName.blink)
@@ -81,19 +90,20 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CurseEvent(event, msg)
+function module:CurseEvent(msg, event)
 	if string.find(msg, L["trigger_curse"]) then
 		self:Sync(syncName.curse)
 	end
 end
 
-function module:BlinkEvent(event, msg)
+function module:BlinkEvent(msg, event)
 	if msg == L["trigger_blink"] then
 		self:Sync(syncName.blink)
 	end
 end
 
-function module:TeleportEvent(event, msg)
+function module:TeleportEvent(msg, event)
+	BigWigs:DebugMessage("Teleport " .. msg)
     if string.find(msg, L["trigger_teleportToBalcony"]) then
         self:Sync(syncName.teleportToBalcony)
     elseif string.find(msg, L["trigger_teleportToRoom"]) then
@@ -101,6 +111,9 @@ function module:TeleportEvent(event, msg)
     end
 end
 
+function module:WaveEvent(msg, event)
+	BigWigs:DebugMessage("WaveEvent " .. msg)
+end
 
 ----------------------------------
 -- Module Test Function    		--
