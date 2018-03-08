@@ -23,13 +23,13 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstRoom = 89.5,
-	secondRoom = 108,
-	thirdRoom = 178,
+	firstRoom = 90,
+	secondRoom = 110, -- 109?
+	thirdRoom = 180,
 	room = 0, -- will be changed during the encounter
     
 	firstBalcony = 70,
-	secondBalcony = 92,
+	secondBalcony = 90,
 	thirdBalcony = 120, -- ??
 	balcony = 0, -- will be changed during the encounter
     
@@ -40,8 +40,8 @@ module.timer = {
     curse = 44.5,
     
 	wave1 = 12,
-	wave2 = 43.2,
-	wave2_2 = 59,
+	wave2 = 42,
+	wave2_2 = 58,
 	--wave3 = 80,
 }
 local timer = module.timer
