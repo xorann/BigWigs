@@ -51,11 +51,14 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+		
+		BigWigsEnrage:Start(timer.enrage, self.translatedName)
 	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	--BigWigsEnrage:Stop()
 end
 
 
