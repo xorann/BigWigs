@@ -48,7 +48,7 @@ function module:OnEngage()
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
 		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention")
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Urgent")
-		self:DelayedMessage(timer.enrage - 1 * 50, L["msg_enrage1m"], "Important")
+		self:DelayedMessage(timer.enrage - 1 * 60, L["msg_enrage1m"], "Important")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
 	end

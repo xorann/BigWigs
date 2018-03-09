@@ -18,7 +18,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20015 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -33,9 +33,9 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
 	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
 	self:CombatlogFilter(L["trigger_slimeSpray"], self.SlimeSprayEvent, true)
-	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
+	--self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
-	self:ThrottleSync(3, syncName.inject)
+	self:ThrottleSync(2, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
 end
 
@@ -50,7 +50,7 @@ function module:OnEngage()
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
 		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention")
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Urgent")
-		self:DelayedMessage(timer.enrage - 1 * 50, L["msg_enrage1m"], "Important")
+		self:DelayedMessage(timer.enrage - 1 * 60, L["msg_enrage1m"], "Important")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
 	end
@@ -69,7 +69,6 @@ end
 --      Event Handlers      --
 ------------------------------
 function module:CloudEvent(msg)
-	BigWigs:DebugMessage(msg)
 	if string.find(msg, L["trigger_cloud"]) then
 		self:Sync(syncName.cloud)
 	end
@@ -80,15 +79,6 @@ function module:InjectEvent(msg)
 	if eplayer and etype then
 		if eplayer == L["misc_you"] and etype == L["misc_are"] then
 			eplayer = UnitName("player")
-			--self:Bar("injected", timer.inject, icon.inject)
-			
-			self:Message(L["msg_bombYou"], "Personal", true, "RunAway")
-			self:WarningSign(icon.inject, timer.inject)
-			
-			--self:Message(string.format(L["msg_bombOther"], player), "Attention", nil, nil, true)
-			self:Bar(L["msg_bombYou"], timer.inject, icon.inject)
-			
-			self:Say(L["misc_bombSay"])
 		end
 		self:Sync(syncName.inject .. " " .. eplayer)
 	end
@@ -116,6 +106,7 @@ function module:TestModule()
 	-- check event handlers
 	module:CloudEvent(L["trigger_cloud"])
 	module:InjectEvent(L["trigger_inject"])
+	module:InjectEvent(string.format(L["trigger_inject"], L["misc_you"], L["misc_are"]))
 	module:SlimeSprayEvent(L["trigger_slimeSpray"])
 	
 	module:OnDisengage()

@@ -24,8 +24,8 @@ module.timer = {
 		max = 30
 	},
 	slimeSpray = {
-		min = 25, 
-		max = 40
+		min = 25, -- 26.500
+		max = 45 -- 43.334
 	},
 }
 local timer = module.timer
@@ -51,7 +51,7 @@ local syncName = module.syncName
 ------------------------------
 function module:BigWigs_RecvSync( sync, rest, nick )
 	if sync == syncName.inject and rest then
-		--self:Inject(rest)
+		self:Inject(rest)
 	elseif sync == syncName.cloud then
 		self:Cloud()
 	elseif sync == syncName.slimeSpray then
@@ -65,19 +65,17 @@ end
 ------------------------------
 function module:Inject(player)
 	if player then
-		if self.db.profile.youinjected and player == UnitName("player") then
+		if self.db.profile.youinjected and player == UnitName("player") then			
 			self:Message(L["msg_bombYou"], "Personal", true, "RunAway")
 			self:WarningSign(icon.inject, timer.inject)
-			
-			self:Message(string.format(L["msg_bombOther"], player), "Attention", nil, nil, true)
-			self:Bar(string.format(L["bar_bomb"], player), timer.inject, icon.inject)
-			
+			self:Bar(L["msg_bombYou"], timer.inject, icon.inject)
 			self:Say(L["misc_bombSay"])
 		elseif self.db.profile.otherinjected then
-			self:Message(string.format(L["msg_bombOther"], player), "Attention")
-			--self:TriggerEvent("BigWigs_SendTell", player, L["msg_bombYou"]) -- can cause whisper bug on nefarian
-			self:Bar(string.format(L["bar_bomb"], player), timer.inject, icon.inject)
+			self:Message(string.format(L["msg_bombOther"], player), "Attention", false, false)
+			self:Whisper(L["msg_bombYou"], player)
+			--self:Bar(string.format(L["bar_bomb"], player), timer.inject, icon.inject)
 		end
+		
 		if self.db.profile.icon then
 			self:Icon(player, -1, timer.inject)
 		end

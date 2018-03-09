@@ -106,7 +106,7 @@ end
 
 -- visual test
 function module:TestVisual(long)
-	-- /run local m=BigWigs:GetModule("Anub'Rekhan");m:Test()
+	-- /run local m=BigWigs:GetModule("Anub'Rekhan");m:TestVisual()
     
 	local function testLocustSwarmCast()
 		module:CheckForLocustCast(L["trigger_locustSwarmCast"])
