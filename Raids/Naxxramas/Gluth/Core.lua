@@ -16,7 +16,8 @@ module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill", "zom
 
 -- locals
 module.timer = {
-	decimateInterval = 107,
+	decimateInterval = 106.5,
+	firstZombie = 15,
 	zombie = 10,
 	enrage = 331,
 	fear = 20,
@@ -40,6 +41,7 @@ module.syncName = {
     frenzyOver = "GluthFrenzyEnd",
 	enrage = "GluthEnrage",
 	fear = "GluthFear",
+	decimate = "GluthDecimate",
 }
 local syncName = module.syncName
 
@@ -62,6 +64,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Fear()
 	elseif sync == syncName.enrage then
 		self:Enrage()
+	elseif sync == syncName.decimate then
+		self:Decimate()
     end
 end
 
@@ -132,9 +136,11 @@ function module:Decimate()
 end
 
 function module:Zombies()	
-	self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)	
-
-	if self.zomnum <= 10 then
+	if self.zomnum == 1 then
+		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.firstZombie, icon.zombie)
+		self.zomnum = self.zomnum + 1
+	elseif self.zomnum <= 10 then
+		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)
 		self.zomnum = self.zomnum + 1
 	elseif self.zomnum > 10 then		
 		self:CancelScheduledEvent("bwgluthzbrepop")	

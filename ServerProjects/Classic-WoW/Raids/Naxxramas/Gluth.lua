@@ -40,6 +40,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "FearCheck")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "FearCheck")
 	
+	self:CombatlogFilter(L["trigger_decimate"], self.DecimateEvent, true)
+	
     self:ThrottleSync(5, syncName.frenzy)
 end
 
@@ -58,8 +60,6 @@ function module:OnEngage()
 	end
 	if self.db.profile.zombies then
 		self.zomnum = 1
-		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)
-		self.zomnum = self.zomnum + 1
 		self:Zombies()
 	end
 	if self.db.profile.enrage then
@@ -102,6 +102,11 @@ function module:EnrageCheck(msg)
 	end
 end
 
+function module:DecimateEvent(msg)
+	if string.find(msg, L["trigger_decimate"]) then
+		self:Sync(syncName.decimate)
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--

@@ -57,8 +57,6 @@ function module:OnEngage()
 	end
 	if self.db.profile.zombies then
 		self.zomnum = 1
-		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)
-		self.zomnum = self.zomnum + 1
 		self:Zombies()
 	end
 	if self.db.profile.enrage then
