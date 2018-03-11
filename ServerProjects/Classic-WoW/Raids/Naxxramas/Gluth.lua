@@ -71,6 +71,7 @@ function module:OnEngage()
     if self.db.profile.frenzy then
 		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
+	module:Fear()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)

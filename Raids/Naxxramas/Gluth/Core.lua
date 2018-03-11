@@ -16,9 +16,9 @@ module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill", "zom
 
 -- locals
 module.timer = {
-	decimateInterval = 104,
+	decimateInterval = 107,
 	zombie = 10,
-	enrage = 324,
+	enrage = 331,
 	fear = 20,
 	frenzy = 10,
 	firstFrenzy = 10,
