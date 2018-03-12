@@ -86,7 +86,10 @@ function BigWigs.modulePrototype:Engage()
 		BigWigs:GetModule("CombatlogFilter"):OnEngage(self:ToString())
 
 		self:OnEngage()
---		Stopwatch_Command("play")
+		if Stopwatch_Command then
+			Stopwatch_Command("reset")
+			Stopwatch_Command("play")
+		end
 	end
 	
 end
@@ -111,7 +114,9 @@ function BigWigs.modulePrototype:Disengage()
 		
 		self:OnDisengage()
 		
---		Stopwatch_Command("reset")
+		if Stopwatch_Command then
+			Stopwatch_Command("pause")
+		end
 	end
 end
 
@@ -273,7 +278,8 @@ function BigWigs.modulePrototype:TestDisable()
 	BigWigsBars:Disable(self)
 	BigWigsBars:BigWigs_HideCounterBars()
 	self:RemoveProximity()
-
+	BigWigsEnrage:Stop()
+	
 	BigWigs:TriggerEvent("BigWigs_RebootModule", self:ToString())
 	BigWigs:DisableModule(self:ToString())
 end
@@ -322,7 +328,7 @@ function BigWigs.modulePrototype:CancelDelayedMessage(text)
 end
 
 function BigWigs.modulePrototype:Whisper(text, name)
-	self:TriggerEvent("BigWigs_SendTell", text, name)
+	self:TriggerEvent("BigWigs_SendTell", name, text)
 end
 
 --[[
