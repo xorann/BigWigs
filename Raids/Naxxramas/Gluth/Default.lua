@@ -44,7 +44,6 @@ end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-	module.zomnum = 1
     module.lastFrenzy = 0
 end
 
@@ -54,10 +53,6 @@ function module:OnEngage()
 		self:Message(L["msg_engage"], "Attention")
 		self:Decimate()
 		self:ScheduleRepeatingEvent( "bwgluthdecimate", self.Decimate, timer.decimateInterval, self )
-	end
-	if self.db.profile.zombies then
-		self.zomnum = 1
-		self:Zombies()
 	end
 	if self.db.profile.enrage then
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
