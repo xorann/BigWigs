@@ -59,6 +59,8 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Attention")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Urgent")
+		
+		BigWigsEnrage:Start(timer.enrage, self.translatedName)
 	end
     if self.db.profile.frenzy then
 		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
