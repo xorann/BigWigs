@@ -155,8 +155,8 @@ end
 
 -- visual test
 function module:TestVisual(long)
-	-- /run local m=BigWigs:GetModule("Thaddius");m:Test()
-    
+	-- /run local m=BigWigs:GetModule("Thaddius");m:TestVisual(true)
+	
 	local function testPhase2()
 		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
         BigWigs:Print("  testPhase2")

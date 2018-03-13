@@ -346,7 +346,7 @@ ServerProjects\Classic-WoW\Raids\Naxxramas\Loatheb.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Patchwerk.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Grobbulus.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Gluth.lua
-ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddiust.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddius.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Razuvious.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Gothik.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Horsemen.lua

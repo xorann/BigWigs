@@ -1,4 +1,4 @@
-local bossName = BigWigs.bossmods.naxxramas.thaddius
+local bossName = BigWigs.bossmods.naxx.thaddius
 local serverProjectName = "Classic-WoW"
 if not BigWigs:IsServerRegisteredForServerProject(serverProjectName) or not BigWigs:IsBossSupportedByServerProject(bossName, serverProjectName) then
 	return
@@ -156,16 +156,19 @@ end
 
 -- visual test
 function module:TestVisual(long)
-	-- /run local m=BigWigs:GetModule("Thaddius");m:Test()
-    
+	-- /run local m=BigWigs:GetModule("Thaddius");m:TestVisual(true)
+    BigWigs:Print("test")
+	
 	local function testPhase2()
 		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
         BigWigs:Print("  testPhase2")
     end
 	local function testPolarityShiftPositive()
+		module:PolarityShift()
 		module:NewPolarity(L["misc_positiveCharge"])
 	end
     local function testPolarityShiftNegative()
+		module:PolarityShift()
 		module:NewPolarity(L["misc_negativeCharge"])
 	end
 	local function testDisable()
