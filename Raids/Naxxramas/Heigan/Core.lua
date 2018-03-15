@@ -25,8 +25,8 @@ module.timer = {
     --erruption = 0, -- will be changed during the encounter
     --erruptionSlow = 10,
     --erruptionFast = 3,
-	dancingStart = 9, -- seconds before the teleport
-    dancingPrepare = 14,
+	dancingStart = 7, -- seconds before the teleport
+    dancingPrepare = 12,
 }
 local timer = module.timer
 
