@@ -168,21 +168,33 @@ function BigWigsWorldBuffs:CHAT_MSG_MONSTER_YELL(msg)
 	end
 end
 
-function BigWigsWorldBuffs:ZgEvent(event, msg)
+function BigWigsWorldBuffs:ZgEvent(msg, event)
 	BigWigs:DebugMessage("ZgEvent")
 	BigWigs:DebugMessage(event)
 	BigWigs:DebugMessage(msg)
 end
 
-function BigWigsWorldBuffs:ZgEvent2(event, msg)
+function BigWigsWorldBuffs:ZgEvent2(msg, event)
 	BigWigs:DebugMessage("ZgEvent2")
 	BigWigs:DebugMessage(event)
 	BigWigs:DebugMessage(msg)
 	self:Sync(syncName.zgHeart2)
 end
 
-function BigWigsWorldBuffs:OnyEvent(event, msg)
+function BigWigsWorldBuffs:OnyEvent(msg, event)
 	BigWigs:DebugMessage("OnyEvent")
+	BigWigs:DebugMessage(event)
+	BigWigs:DebugMessage(msg)
+end
+
+function BigWigsWorldBuffs:NefEvent(msg, event)
+	BigWigs:DebugMessage("NefEvent")
+	BigWigs:DebugMessage(event)
+	BigWigs:DebugMessage(msg)
+end
+
+function BigWigsWorldBuffs:RendEvent(msg, event)
+	BigWigs:DebugMessage("RendEvent")
 	BigWigs:DebugMessage(event)
 	BigWigs:DebugMessage(msg)
 end

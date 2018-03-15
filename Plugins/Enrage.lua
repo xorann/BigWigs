@@ -76,7 +76,7 @@ BigWigsEnrage.consoleOptions = {
 			name = L["Reset position"],
 			desc = L["Reset the anchor position, moving it to the original position."],
 			order = 2,
-			func = function() BigWigsEnrage:RestorePosition() end,
+			func = function() BigWigsEnrage:ResetAnchor() end,
 		},
 		scale = {
 			type = "range",
@@ -301,7 +301,8 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.anchor:SetBackdropBorderColor(.5, .5, .5)
 	self.frames.anchor:SetBackdropColor(0,0,0)
 	self.frames.anchor:ClearAllPoints()
-	self.frames.anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	--self.frames.anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, 100)
 	self.frames.anchor:EnableMouse(true)
 	self.frames.anchor:RegisterForDrag("LeftButton")
 	self.frames.anchor:SetMovable(true)
@@ -396,6 +397,16 @@ function BigWigsEnrage:SetupFrames()
 	self:RestorePosition()
 end
 
+function BigWigsEnrage:ResetAnchor()
+	if not self.frames.anchor then 
+		self:SetupFrames()
+	end
+	
+	self.frames.anchor:ClearAllPoints()
+	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, 100)
+	self.db.profile.posx = nil
+	self.db.profile.posy = nil
+end
 
 function BigWigsEnrage:SavePosition()
 	local f = self.frames.anchor
@@ -404,7 +415,6 @@ function BigWigsEnrage:SavePosition()
 	self.db.profile.posx = f:GetLeft() * s
 	self.db.profile.posy = f:GetTop() * s	
 end
-
 
 function BigWigsEnrage:RestorePosition()
 	local x = self.db.profile.posx
@@ -416,5 +426,7 @@ function BigWigsEnrage:RestorePosition()
 	local s = f:GetEffectiveScale()
 
 	f:ClearAllPoints()
+	--f:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+	--f:SetPoint("TOP", UIParent, "TOP", x / s, y / s)
 	f:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
 end

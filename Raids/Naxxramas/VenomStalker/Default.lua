@@ -61,10 +61,11 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:ChargeEvent(msg)
+function module:ChargeEvent(msg, event)
 	local _,_, name, verb = string.find(msg, L["trigger_charge"])
-	BigWigs:Print("charge: " .. msg .. " " .. verb)
+	BigWigs:DebugMessage("charge: " .. msg)
 	if verb == L["misc_are"] or verb == L["misc_is"] then
+		BigWigs:DebugMessage("charge found. syncing it")
 		self:Sync(syncName.charge)
 	end
 end
@@ -112,4 +113,6 @@ end
 -- visual test
 function module:TestVisual(long)
 	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	
+	-- /run local m=BigWigs:GetModule("Venom Stalker"); m:ChargeEvent("Ghostheal is afflicted by Poison Charge.")
 end

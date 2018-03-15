@@ -21,9 +21,13 @@ L:RegisterTranslations("enUS", function() return {
 	disease_name = "Decrepit Fever Alert",
 	disease_desc = "Warn for Decrepit Fever",
 
-    erruption_cmd = "erruption",
-    erruption_name = "Erruption Alert",
-    erruption_desc = "Warn for Erruption",
+	dance_cmd = "dance",
+	dance_name = "Dancing Alert",
+	dance_desc = "Warn for Dancing",
+	
+    --erruption_cmd = "erruption",
+    --erruption_name = "Erruption Alert",
+    --erruption_desc = "Warn for Erruption",
           
 	-- triggers
 	trigger_engage1 = "You are mine now!",
@@ -45,7 +49,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_toPlatform = "Teleport!",
 	bar_toFloor = "Back on the floor!",
 	bar_decrepitFever = "Decrepit Fever",
-    bar_erruption = "Erruption",
+    --bar_erruption = "Erruption",
     bar_dancingShoes = "Put on your dancing shoes!",
 
 	-- misc

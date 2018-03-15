@@ -5,7 +5,8 @@
 local bossName = BigWigs.bossmods.naxx.razuvious
 local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
-local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+--local understudy = AceLibrary("Babble-Boss-2.2")["Deathknight Understudy"]
+local understudy = L["misc_understudy"]
 
 
 -- module variables
@@ -80,23 +81,6 @@ function module:Unbalance()
 		self:Message(L["msg_unbalanceNow"], "Urgent")
 		self:DelayedMessage(timer.unbalance - 5, L["msg_unbalanceSoon"], "Urgent")
 		self:Bar(L["bar_unbalance"], timer.unbalance, icon.unbalance)
-	end
-end
-
-
-------------------------------
--- Utility	Functions   	--
-------------------------------
--- 5s after expected shout
-function module:NoShout()	
-	self:CancelScheduledEvent("bwrazuviousnoshout")
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)
-	
-	if self.db.profile.shout then
-		self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
-		self:Bar(L["bar_shout"], timer.shout - timer.noShoutDelay, icon.shout)
-		self:DelayedMessage(timer.shout - timer.noShoutDelay - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.shout - timer.noShoutDelay - 3, L["msg_shout3"], "Urgent")
 	end
 end
 

@@ -55,13 +55,13 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:LightningTotemCastEvent(msg)
+function module:LightningTotemCastEvent(msg, event)
 	if string.find(msg, L["trigger_lightningtotemCast"]) then
 		self:Sync(syncName.lightningTotemCast)
 	end
 end
 
-function module:LightningTotemSummonEvent(msg)
+function module:LightningTotemSummonEvent(msg, event)
 	if string.find(msg, L["trigger_lightningtotemSummon"]) then
 		self:Sync(syncName.lightningTotemSummon)
 	end

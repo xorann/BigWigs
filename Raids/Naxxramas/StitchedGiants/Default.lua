@@ -1,4 +1,8 @@
-local bossName = BigWigs.bossmods.naxx.patchwerk
+--[[
+    Created by Dorann
+--]]
+
+local bossName = BigWigs.bossmods.naxx.stitchedGiant
 if BigWigs:IsBossSupportedByAnyServerProject(bossName) then
 	return
 end
@@ -12,12 +16,13 @@ end
 
 local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
+
 local timer = module.timer
 local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20015 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -27,12 +32,9 @@ module.revision = 20014 -- To be overridden by the module!
 --      Initialization      --
 ------------------------------
 
-module:RegisterYellEngage(L["trigger_engage1"])
-module:RegisterYellEngage(L["trigger_engage2"])
-
 -- called after module is enabled
 function module:OnEnable()
-	self:ThrottleSync(10, syncName.enrage)
+	self:CombatlogFilter(L["trigger_whirlwind"], self.WhirlwindEvent)
 end
 
 -- called after module is enabled and after each wipe
@@ -41,18 +43,7 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
-	if self.db.profile.enrage then
-		self:Message(L["msg_engage"], "Important")
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
-		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Attention")
-		self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention")
-		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Urgent")
-		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
-		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
-		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
-		
-		BigWigsEnrage:Start(timer.enrage, self.translatedName)
-	end
+	self:Bar(L["bar_whirlwindNext"], timer.whirlwindFirst, icon.whirlwind)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -63,9 +54,11 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CHAT_MSG_MONSTER_EMOTE(msg)
-	if msg == L["trigger_enrage"] then
-		self:Sync(syncName.enrage)
+function module:WhirlwindEvent(msg, event)
+	BigWigs:DebugMessage("whirlwind: " .. msg)
+	if string.find(msg, L["trigger_whirlwind"]) then
+		BigWigs:DebugMessage("whirlwind found. syncing it")
+		self:Sync(syncName.whirlwind)
 	end
 end
 
@@ -83,13 +76,32 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CHAT_MSG_MONSTER_EMOTE(L["trigger_enrage"])
+	module:WhirlwindEvent(L["trigger_whirlwind"])
 	
 	module:OnDisengage()
 	module:TestDisable()
 end
 
 -- visual test
-function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+function module:TestVisual(long)	
+	-- /run local m=BigWigs:GetModule("Death Knight Captain");m:TestVisual()
+	local function whirlwind()
+		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
+		module:WhirlwindEvent(L["trigger_whirlwind"])
+		BigWigs:Print("whirlwind")
+	end 
+	
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- sweep after 5s
+	self:ScheduleEvent(self:ToString() .. "Test_whirlwind", whirlwind, 6, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 10, self)
 end

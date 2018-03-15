@@ -51,11 +51,14 @@ function module:OnEngage()
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+		
+		BigWigsEnrage:Start(timer.enrage, self.translatedName)
 	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	--BigWigsEnrage:Stop()
 end
 
 
@@ -90,5 +93,17 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	-- /run local m=BigWigs:GetModule("Patchwerk");m:TestVisual()
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- deactivate
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 500, self)
 end

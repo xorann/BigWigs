@@ -29,9 +29,15 @@ L:RegisterTranslations("enUS", function() return {
 	cloud_name = "Poison Cloud",
 	cloud_desc = "Warn for Poison Clouds",
 
+	slimespray_cmd = "slimespray",
+	slimespray_name = "Slime Spray",
+	slimespray_desc = "Show timer for Slime Spray",
+	
 	-- triggers
 	trigger_inject = "^([^%s]+) ([^%s]+) afflicted by Mutating Injection",
 	trigger_cloud = "Grobbulus casts Poison Cloud.",
+	trigger_slimeSpray = "Slime Spray",
+	trigger_slimeSpray2 = "sprays slime across the room!",
 	
 	-- messages
 	msg_engage = "Grobbulus engaged, 12min to enrage!",
@@ -48,9 +54,11 @@ L:RegisterTranslations("enUS", function() return {
 	bar_enrage = "Enrage",
 	bar_bomb = "%s injected",
 	bar_cloud = "Poison Cloud",
+	bar_slimeSpray = "Possible Slime Spray",
 	
 	-- misc
 	misc_you = "You",
 	misc_are = "are",
+	misc_bombSay = "I am injected",
 
 } end )

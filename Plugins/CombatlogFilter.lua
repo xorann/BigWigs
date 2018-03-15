@@ -204,7 +204,7 @@ function module:CombatlogFilter()
 			-- iterate filters
 			for aFilter, callback in moduleFilters do
 				if string.find(arg1, aFilter) then
-					callback(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+					callback(self, arg1, event, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
 					module:MeassureTime(aModuleName, aFilter)
 				end
 			end
@@ -252,8 +252,12 @@ function module:MeassureTime(aModuleName, aFilter)
 	if stopwatch[aModuleName] and stopwatch[aModuleName][aFilter] then
 		local past = stopwatch[aModuleName][aFilter]
 		local present = GetTime()
+		local difference = present - past
 		
-		BigWigs:DebugMessage("Stopwatch - " .. aFilter .. ": " .. present - past)
-		stopwatch[aModuleName][aFilter] = present
+		-- throttle
+		if difference > 0.5 then 
+			BigWigs:DebugMessage("Stopwatch - " .. aFilter .. ": " .. difference)
+			stopwatch[aModuleName][aFilter] = present
+		end
 	end
 end

@@ -20,6 +20,10 @@ L:RegisterTranslations("enUS", function() return {
 	adddeath_cmd = "adddeath",
 	adddeath_name = "Add Death Alert",
 	adddeath_desc = "Alerts when an add dies.",
+	
+	teleport_cmd = "teleport",
+	teleport_name = "Teleport Alert",
+	teleport_desc = "Alerts when Gothik teleports.",
 
 	-- triggers
 	trigger_victory = "I... am... undone.",
@@ -47,6 +51,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_deathKnight = "Deathknight - %d",
 	bar_rider = "Rider - %d",
 	bar_inRoom = "In Room",
+	bar_teleport = "Teleport",
 	
 	-- misc
 	misc_riderName = "Unrelenting Rider",

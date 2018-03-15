@@ -59,11 +59,11 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:FearEvent(event, msg)
+function module:FearEvent(msg, event)
 	self:Sync(syncName.fear)
 end
 
-function module:KnockbackEvent(event, msg)
+function module:KnockbackEvent(msg, event)
 	self:Sync(syncName.knockback)
 end
 

@@ -240,6 +240,8 @@ Raids\Naxxramas\Gluth\I18n.lua
 Raids\Naxxramas\Gluth\Core.lua
 Raids\Naxxramas\Thaddius\I18n.lua
 Raids\Naxxramas\Thaddius\Core.lua
+Raids\Naxxramas\DeathKnightCaptain\I18n.lua
+Raids\Naxxramas\DeathKnightCaptain\Core.lua
 Raids\Naxxramas\Razuvious\I18n.lua
 Raids\Naxxramas\Razuvious\Core.lua
 Raids\Naxxramas\Gothik\I18n.lua
@@ -344,7 +346,7 @@ ServerProjects\Classic-WoW\Raids\Naxxramas\Loatheb.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Patchwerk.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Grobbulus.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Gluth.lua
-ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddiust.lua
+ServerProjects\Classic-WoW\Raids\Naxxramas\Thaddius.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Razuvious.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Gothik.lua
 ServerProjects\Classic-WoW\Raids\Naxxramas\Horsemen.lua
@@ -431,6 +433,7 @@ Raids\Naxxramas\Patchwerk\Default.lua
 Raids\Naxxramas\Grobbulus\Default.lua
 Raids\Naxxramas\Gluth\Default.lua
 Raids\Naxxramas\Thaddius\Default.lua
+Raids\Naxxramas\DeathKnightCaptain\Default.lua
 Raids\Naxxramas\Razuvious\Default.lua
 Raids\Naxxramas\Gothik\Default.lua
 Raids\Naxxramas\Horsemen\Default.lua

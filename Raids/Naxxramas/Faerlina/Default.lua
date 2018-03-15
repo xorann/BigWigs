@@ -45,6 +45,8 @@ function module:OnEnable()
     self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE",               "CheckRain")
     self:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 	
+	self:CombatlogFilter(L["trigger_enrageFade"], self.EnrageFadeEvent)
+	
 	self:ThrottleSync(5, syncName.enrage)
 	self:ThrottleSync(5, syncName.silence)
 end
@@ -59,8 +61,8 @@ end
 function module:OnEngage()
 	self:Message(L["msg_engage"], "Orange")
 	if self.db.profile.enrage then
-		self:DelayedMessage(timer.enrage - 15, L["msg_enrage15"], "Important")
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
+		self:DelayedMessage(timer.firstEnrage - 15, L["msg_enrage15"], "Important")
+		self:Bar(L["bar_enrage"], timer.firstEnrage, icon.enrage)
 	end
 	module.timeEnrageStarted = GetTime()
 end
@@ -81,6 +83,12 @@ end
 
 function module:CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE(msg)
 	if msg == L["trigger_silence"] then
+		self:Sync(syncName.silence)
+	end
+end
+
+function module:EnrageFadeEvent(msg)
+	if msg == L["trigger_enrageFade"] then
 		self:Sync(syncName.silence)
 	end
 end

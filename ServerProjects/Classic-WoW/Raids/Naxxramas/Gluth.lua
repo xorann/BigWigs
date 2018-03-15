@@ -40,12 +40,13 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "FearCheck")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "FearCheck")
 	
+	self:CombatlogFilter(L["trigger_decimate"], self.DecimateEvent, true)
+	
     self:ThrottleSync(5, syncName.frenzy)
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
-	module.zomnum = 1
     module.lastFrenzy = 0
 end
 
@@ -56,21 +57,18 @@ function module:OnEngage()
 		self:Decimate()
 		self:ScheduleRepeatingEvent( "bwgluthdecimate", self.Decimate, timer.decimateInterval, self )
 	end
-	if self.db.profile.zombies then
-		self.zomnum = 1
-		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)
-		self.zomnum = self.zomnum + 1
-		self:Zombies()
-	end
 	if self.db.profile.enrage then
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
 		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Attention")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Urgent")
+		
+		BigWigsEnrage:Start(timer.enrage, self.translatedName)
 	end
     if self.db.profile.frenzy then
 		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
+	module:Fear()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -101,6 +99,11 @@ function module:EnrageCheck(msg)
 	end
 end
 
+function module:DecimateEvent(msg)
+	if string.find(msg, L["trigger_decimate"]) then
+		self:Sync(syncName.decimate)
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--

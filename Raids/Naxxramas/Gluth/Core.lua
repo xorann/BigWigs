@@ -11,14 +11,13 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20014 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill", "zombies"}
+module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill"}
 
 
 -- locals
 module.timer = {
-	decimateInterval = 104,
-	zombie = 10,
-	enrage = 324,
+	decimateInterval = 106.5,
+	enrage = 331,
 	fear = 20,
 	frenzy = 10,
 	firstFrenzy = 10,
@@ -26,7 +25,6 @@ module.timer = {
 local timer = module.timer
 
 module.icon = {
-	zombie = "Ability_Seal",
 	enrage = "Spell_Shadow_UnholyFrenzy",
 	fear = "Spell_Shadow_PsychicScream",
 	decimate = "INV_Shield_01",
@@ -40,6 +38,7 @@ module.syncName = {
     frenzyOver = "GluthFrenzyEnd",
 	enrage = "GluthEnrage",
 	fear = "GluthFear",
+	decimate = "GluthDecimate",
 }
 local syncName = module.syncName
 
@@ -47,7 +46,6 @@ local syncName = module.syncName
 module.lastFrenzy = nil
 local _, playerClass = UnitClass("player")
 module.playerClass = playerClass
-module.zomnum = nil
 
 
 ------------------------------
@@ -62,6 +60,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Fear()
 	elseif sync == syncName.enrage then
 		self:Enrage()
+	elseif sync == syncName.decimate then
+		self:Decimate()
     end
 end
 
@@ -121,25 +121,6 @@ function module:Decimate()
 	if self.db.profile.decimate then
 		self:Bar(L["bar_decimate"], timer.decimateInterval, icon.decimate)
 		self:DelayedMessage(timer.decimateInterval - 5, L["msg_decimateSoon"], "Urgent")
-	end
-	
-	if self.db.profile.zombies then
-		self.zomnum = 1
-		self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)
-		self.zomnum = self.zomnum + 1
-		self:ScheduleRepeatingEvent("bwgluthzbrepop", self.Zombies, timer.zombie, self)
-	end
-end
-
-function module:Zombies()	
-	self:Bar(string.format(L["bar_zombie"],self.zomnum), timer.zombie, icon.zombie)	
-
-	if self.zomnum <= 10 then
-		self.zomnum = self.zomnum + 1
-	elseif self.zomnum > 10 then		
-		self:CancelScheduledEvent("bwgluthzbrepop")	
-		self:RemoveBar(string.format(L["bar_zombie"], self.zomnum ))
-		self.zomnum = 1
 	end
 end
 

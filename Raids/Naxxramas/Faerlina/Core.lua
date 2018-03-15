@@ -16,6 +16,7 @@ module.toggleoptions = {"silence", "enrage", "rain", "bosskill"}
 
 -- locals
 module.timer = {
+	firstEnrage = 60,
 	enrage = 60,
 	silence = 30,
 	rainTick = 2,
@@ -57,26 +58,24 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Enrage()
-	if self.db.profile.enrage then
-		self:Message(L["msg_enrageNow"], "Urgent")
-	end
 	self:RemoveBar(L["bar_enrage"])
-	self:CancelDelayedMessage(L["msg_enrage15"]) 
+	self:CancelDelayedMessage(L["msg_enrage15"])
 	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
-		self:DelayedMessage(timer.enrage - 15, L["msg_enrage15"], "Important")
+		--self:WarningSign(icon.enrage, 5) -- would override the rain of fire warning sign
+		self:Message(L["msg_enrageNow"], "Urgent", true, "Beware")
 	end
+	
 	module.timeEnrageStarted = GetTime()
 	module.isEnraged = true
 end
 
 function module:Silence()
+	local currentTime = GetTime()
+	
 	if not module.isEnraged then -- preemptive, 30s silence
 		--[[ The enrage timer should only be reset if it's less than 30sec
 		to her next enrage, because if you silence her when there's 30+
 		sec to the enrage, it won't actually stop her from enraging. ]]
-
-		local currentTime = GetTime()
 
 		if self.db.profile.silence then
 			if (module.timeEnrageStarted + 30) < currentTime then
@@ -100,13 +99,19 @@ function module:Silence()
 		end
 
 	else -- Reactive enrage removed
+		module.timeEnrageStarted = currentTime
+		
 		if self.db.profile.enrage then
 			self:Message(string.format(L["msg_enrageRemoved"], timer.enrage), "Urgent")
+			self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
+			self:DelayedMessage(timer.enrage - 15, L["msg_enrage15"], "Important")	
 		end
+		
 		if self.db.profile.silence then
 			self:Bar(L["bar_silence"], timer.silence, icon.silence)
 			self:DelayedMessage(timer.silence -5, L["msg_silence5"], "Urgent")
 		end
+		
 		module.isEnraged = nil
 	end
 end

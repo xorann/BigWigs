@@ -24,10 +24,6 @@ L:RegisterTranslations("enUS", function() return {
 	decimate_cmd = "decimate",
 	decimate_name = "Decimate Alert",
 	decimate_desc = "Warn for Decimate",
-
-	zombies_cmd = "zombies",
-	zombies_name = "Zombie Spawn",
-	zombies_desc = "Shows timer for zombies",
 	
 	-- triggers
 	trigger_berserk = "gains Berserk",
@@ -36,6 +32,7 @@ L:RegisterTranslations("enUS", function() return {
     trigger_frenzyGain1 = "Gluth gains Frenzy.",
 	trigger_frenzyGain2 = "Gluth goes into a frenzy!",
 	trigger_frenzyGone = "Frenzy fades from Gluth.",
+	trigger_decimate = "Gluth decimates all nearby flesh!",
 	
 	-- messages
 	msg_fearSoon = "5 second until AoE Fear!",
@@ -51,8 +48,6 @@ L:RegisterTranslations("enUS", function() return {
 	
 	-- bars
 	bar_decimate = "Decimate Zombies",
-	bar_zombie = "Next Zombie - %d",
-
 	bar_fear = "AoE Fear",
 	bar_frenzy = "Frenzy",
     bar_frenzyNext = "Next Frenzy",

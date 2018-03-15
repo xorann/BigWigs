@@ -38,6 +38,7 @@ local sounds = {
 }
 
 local isImportantDay = false
+local announced = false
 
 ----------------------------
 --      Localization      --
@@ -54,6 +55,8 @@ L:RegisterTranslations("enUS", function() return {
 	["default"] = true,
 	["Default only"] = true,
 	["Use only the default sound."] = true,
+	
+	importantMessage = "Aaaaaughibbrgubugbugrguburgle! The Murlocs seize power. Type /murlocswin to acknowledge your new overlords.",
 } end)
 
 L:RegisterTranslations("koKR", function() return {
@@ -73,6 +76,8 @@ L:RegisterTranslations("deDE", function() return {
 	["Toggle sounds on or off."] = "Sound aktivieren/deaktivieren.",
 	["Default only"] = "Nur Standard",
 	["Use only the default sound."] = "Nur Standard Sound.",
+	
+	importantMessage = "Aaaaaughibbrgubugbugrguburgle! Die Murlocs übernehmen die Macht. Tippe /murlocswin um deine neuen Herrscher anzuerkennen.",
 } end)
 
 ----------------------------------
@@ -121,9 +126,26 @@ function BigWigsSound:OnEnable()
 	if string.find(date(), "04/01/") then
 		isImportantDay = true
 	end
+	self:RegisterShortHand()
 end
 function BigWigsSound:OnDisable()
     BigWigs:DebugMessage("OnDisable")
+end
+
+local function Sound(sound)
+	if sounds[sound] and not BigWigsSound.db.profile.defaultonly then 
+		if isImportantDay then
+			PlaySoundFile(sounds["Murloc"])
+			if not announced then
+				announced = true
+				BigWigs:Print(L["importantMessage"])
+			end
+		else
+			PlaySoundFile(sounds[sound])
+		end
+	else 
+		PlaySound("RaidWarning") 
+	end
 end
 
 function BigWigsSound:BigWigs_Message(text, color, noraidsay, sound, broadcastonly)
@@ -131,29 +153,20 @@ function BigWigsSound:BigWigs_Message(text, color, noraidsay, sound, broadcaston
 		return 
 	end
 
-	if sounds[sound] and not self.db.profile.defaultonly then 
-		if isImportantDay then
-			PlaySoundFile(sounds["Murloc"])
-		else
-			PlaySoundFile(sounds[sound])
-		end
-	else 
-		PlaySound("RaidWarning") 
-	end
+	Sound(sound)
 end
 
-function BigWigsSound:BigWigs_Sound( sound )
-	if sounds[sound] and not self.db.profile.defaultonly then 
-		if isImportantDay then
-			PlaySoundFile(sounds["Murloc"])
-		else
-			PlaySoundFile(sounds[sound])
-		end
-	else 
-		PlaySound("RaidWarning") 
-	end
+function BigWigsSound:BigWigs_Sound(sound)
+	Sound(sound)
 end
 
-function BigWigsSound:IDontLikeMurlocs()
+local function IDontLikeMurlocs()
 	isImportantDay = false
+	SendChatMessage("Aaaaaughibbrgubugbugrguburgle!", "YELL")
+end
+function BigWigsSound:RegisterShortHand()
+	if SlashCmdList then
+		SlashCmdList["BWS_SHORTHAND"] = IDontLikeMurlocs
+		setglobal("SLASH_BWS_SHORTHAND1", "/murlocswin")
+	end
 end

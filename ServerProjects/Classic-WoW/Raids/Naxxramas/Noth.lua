@@ -22,6 +22,8 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.firstRoom = 91
+module.timer.thirdBalcony = 124
 
 
 ------------------------------
@@ -34,13 +36,22 @@ module:RegisterYellEngage(L["trigger_engage3"])
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckForBlink")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForCurse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForCurse")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForCurse")
-    
-    self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "Teleport")
+    self:CombatlogFilter(L["trigger_curse"], self.CurseEvent, true)
+    self:CombatlogFilter(L["trigger_blink"], self.BlinkEvent, true)
+	
+	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.TeleportEvent, true)
+	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
+	
+	--self:CombatlogFilter("Noth the Plaguebringer teleports", self.TeleportEvent, true)
+	--self:CombatlogFilter("to the balcony above", self.TeleportEvent, true)
+	--self:CombatlogFilter("into the battle", self.TeleportEvent, true)
+	
+	--self:CombatlogFilter("Noth the Plaguebringer raises more skeletons!", self.WaveEvent, true)
+	--self:CombatlogFilter("raises more skeletons", self.WaveEvent, true)
+	
+	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
+	
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "TeleportEvent")
 	
 	self:ThrottleSync(5, syncName.blink)
 	self:ThrottleSync(5, syncName.curse)
@@ -71,7 +82,7 @@ function module:OnEngage()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
 
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self) -- fallback
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -82,26 +93,30 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CheckForCurse(msg)
+function module:CurseEvent(msg, event)
 	if string.find(msg, L["trigger_curse"]) then
 		self:Sync(syncName.curse)
 	end
 end
 
-function module:CheckForBlink(msg)
+function module:BlinkEvent(msg, event)
 	if msg == L["trigger_blink"] then
 		self:Sync(syncName.blink)
 	end
 end
 
-function module:Teleport(msg)
-    if msg == L["trigger_teleportToBalcony"] then
+function module:TeleportEvent(msg, event)
+	BigWigs:DebugMessage("Teleport " .. msg)
+    if string.find(msg, L["trigger_teleportToBalcony"]) then
         self:Sync(syncName.teleportToBalcony)
-    elseif msg == L["trigger_teleportToRoom"] then
+    elseif string.find(msg, L["trigger_teleportToRoom"]) then
         self:Sync(syncName.teleportToRoom)
     end
 end
 
+function module:WaveEvent(msg, event)
+	BigWigs:DebugMessage("WaveEvent " .. msg)
+end
 
 ----------------------------------
 -- Module Test Function    		--
@@ -116,10 +131,10 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:Teleport(L["trigger_teleportToBalcony"])
-	module:Teleport(L["trigger_teleportToRoom"])
-	module:CheckForBlink(L["trigger_blink"])
-	module:CheckForCurse(L["trigger_curse"])
+	module:TeleportEvent("", L["trigger_teleportToBalcony"])
+	module:TeleportEvent("", L["trigger_teleportToRoom"])
+	module:BlinkEvent("", L["trigger_blink"])
+	module:CurseEvent("", L["trigger_curse"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -127,5 +142,17 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	-- /run local m=BigWigs:GetModule("Noth the Plaguebringer");m:TestVisual()
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- deactivate
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 500, self)
 end

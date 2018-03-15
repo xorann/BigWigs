@@ -28,12 +28,11 @@ module.revision = 20014 -- To be overridden by the module!
 ------------------------------
 
 -- called after module is enabled
-function module:OnEnable()	
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "InjectEvent")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "InjectEvent")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "InjectEvent")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF")
+function module:OnEnable()
+	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
+	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
+	self:CombatlogFilter(L["trigger_slimeSpray"], self.CloudEvent)
+	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
 	self:ThrottleSync(3, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -50,9 +49,13 @@ function module:OnEngage()
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
 		self:DelayedMessage(timer.enrage - 10 * 60, L["msg_enrage10m"], "Attention")
 		self:DelayedMessage(timer.enrage - 5 * 60, L["msg_enrage5m"], "Urgent")
-		self:DelayedMessage(timer.enrage - 1 * 50, L["msg_enrage1m"], "Important")
+		self:DelayedMessage(timer.enrage - 1 * 60, L["msg_enrage1m"], "Important")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+	end
+	
+	if self.db.profile.slimespray then
+		self:Bar(L["bar_slimeSpray"], timer.firstSlimeSpray, icon.slimeSpray)
 	end
 end
 
@@ -64,8 +67,8 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(msg)
-	if string.find( msg, L["trigger_cloud"]) then
+function module:CloudEvent(msg)
+	if string.find(msg, L["trigger_cloud"]) then
 		self:Sync(syncName.cloud)
 	end
 end
@@ -77,6 +80,12 @@ function module:InjectEvent(msg)
 			eplayer = UnitName("player")
 		end
 		self:Sync(syncName.inject .. " " .. eplayer)
+	end
+end
+
+function module:SlimeSprayEvent(msg)
+	if string.find(msg, L["trigger_slimeSpray"]) or string.find(msg, L["trigger_slimeSpray2"]) then
+		self:Sync(syncName.slimeSpray)
 	end
 end
 
@@ -94,7 +103,7 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF(L["trigger_cloud"])
+	module:CloudEvent(L["trigger_cloud"])
 	module:InjectEvent(L["trigger_inject"])
 	
 	module:OnDisengage()

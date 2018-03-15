@@ -80,7 +80,7 @@ end
 --      Event Handlers      --
 ------------------------------
 
-function module:EventHandlerTest(event, msg)
+function module:EventHandlerTest(msg, event)
 	--BigWigs:Print("event: " .. event)
 	--BigWigs:Print("msg: " .. msg)
 end
