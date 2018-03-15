@@ -22,6 +22,9 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.firstRoom = 91
+module.timer.thirdBalcony = 124
+
 
 ------------------------------
 --      Initialization      --
@@ -39,12 +42,12 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_teleportToBalcony"], self.TeleportEvent, true)
 	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
 	
-	self:CombatlogFilter("Noth the Plaguebringer teleports", self.TeleportEvent, true)
-	self:CombatlogFilter("to the balcony above", self.TeleportEvent, true)
-	self:CombatlogFilter("into the battle", self.TeleportEvent, true)
+	--self:CombatlogFilter("Noth the Plaguebringer teleports", self.TeleportEvent, true)
+	--self:CombatlogFilter("to the balcony above", self.TeleportEvent, true)
+	--self:CombatlogFilter("into the battle", self.TeleportEvent, true)
 	
-	self:CombatlogFilter("Noth the Plaguebringer raises more skeletons!", self.WaveEvent, true)
-	self:CombatlogFilter("raises more skeletons", self.WaveEvent, true)
+	--self:CombatlogFilter("Noth the Plaguebringer raises more skeletons!", self.WaveEvent, true)
+	--self:CombatlogFilter("raises more skeletons", self.WaveEvent, true)
 	
 	self:CombatlogFilter(L["trigger_teleportToRoom"], self.TeleportEvent, true)
 	

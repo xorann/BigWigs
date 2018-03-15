@@ -30,8 +30,8 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_engage2 = "Glory to the master!",
 	trigger_engage3 = "Your life is forfeit!",
 	trigger_blink = "Noth the Plaguebringer gains Blink.",
-    trigger_teleportToBalcony = "Noth the Plaguebringer teleports to the balcony above!",
-    trigger_teleportToRoom = "Noth the Plaguebringer teleports back into the battle!",
+    trigger_teleportToBalcony = "teleports to the balcony above!",
+    trigger_teleportToRoom = "teleports back into the battle!",
 	trigger_curse = "afflicted by Curse of the Plaguebringer",
 	
 	-- messages
