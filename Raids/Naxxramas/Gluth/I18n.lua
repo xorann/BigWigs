@@ -32,7 +32,7 @@ L:RegisterTranslations("enUS", function() return {
     trigger_frenzyGain1 = "Gluth gains Frenzy.",
 	trigger_frenzyGain2 = "Gluth goes into a frenzy!",
 	trigger_frenzyGone = "Frenzy fades from Gluth.",
-	trigger_decimate = "Gluth decimates all nearby flesh!",
+	trigger_decimate = "decimates all nearby flesh!",
 	
 	-- messages
 	msg_fearSoon = "5 second until AoE Fear!",
