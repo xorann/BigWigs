@@ -37,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_inject = "^([^%s]+) ([^%s]+) afflicted by Mutating Injection",
 	trigger_cloud = "Grobbulus casts Poison Cloud.",
 	trigger_slimeSpray = "Slime Spray",
-	trigger_slimeSpray2 = "Grobbulus sprays slime across the room!",
+	trigger_slimeSpray2 = "sprays slime across the room!",
 	
 	-- messages
 	msg_engage = "Grobbulus engaged, 12min to enrage!",

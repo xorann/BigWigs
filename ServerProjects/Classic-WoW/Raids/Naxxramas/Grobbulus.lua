@@ -33,7 +33,7 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_inject"], self.InjectEvent)
 	self:CombatlogFilter(L["trigger_cloud"], self.CloudEvent)
 	self:CombatlogFilter(L["trigger_slimeSpray"], self.SlimeSprayEvent, true)
-	--self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
+	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
 	self:ThrottleSync(2, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -85,7 +85,7 @@ function module:InjectEvent(msg)
 end
 
 function module:SlimeSprayEvent(msg)
-	if string.find(msg, L["trigger_slimeSpray"]) then
+	if string.find(msg, L["trigger_slimeSpray"]) or string.find(msg, L["trigger_slimeSpray2"]) then
 		self:Sync(syncName.slimeSpray)
 	end
 end
