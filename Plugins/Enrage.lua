@@ -302,7 +302,7 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.anchor:SetBackdropColor(0,0,0)
 	self.frames.anchor:ClearAllPoints()
 	--self.frames.anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, 100)
+	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, -100)
 	self.frames.anchor:EnableMouse(true)
 	self.frames.anchor:RegisterForDrag("LeftButton")
 	self.frames.anchor:SetMovable(true)
@@ -403,7 +403,7 @@ function BigWigsEnrage:ResetAnchor()
 	end
 	
 	self.frames.anchor:ClearAllPoints()
-	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, 100)
+	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, -100)
 	self.db.profile.posx = nil
 	self.db.profile.posy = nil
 end
