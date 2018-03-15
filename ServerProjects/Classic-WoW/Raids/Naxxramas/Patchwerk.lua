@@ -93,5 +93,17 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	-- /run local m=BigWigs:GetModule("Patchwerk");m:TestVisual()
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+	end
+
+	BigWigs:Print("module Test started")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- deactivate
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 500, self)
 end
