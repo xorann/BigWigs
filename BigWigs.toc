@@ -234,6 +234,8 @@ Raids\Naxxramas\LivingMonstrosity\I18n.lua
 Raids\Naxxramas\LivingMonstrosity\Core.lua
 Raids\Naxxramas\Patchwerk\I18n.lua
 Raids\Naxxramas\Patchwerk\Core.lua
+Raids\Naxxramas\StitchedGiants\I18n.lua
+Raids\Naxxramas\StitchedGiants\Core.lua
 Raids\Naxxramas\Grobbulus\I18n.lua
 Raids\Naxxramas\Grobbulus\Core.lua
 Raids\Naxxramas\Gluth\I18n.lua
@@ -430,6 +432,7 @@ Raids\Naxxramas\Heigan\Default.lua
 Raids\Naxxramas\Loatheb\Default.lua
 Raids\Naxxramas\LivingMonstrosity\Default.lua
 Raids\Naxxramas\Patchwerk\Default.lua
+Raids\Naxxramas\StitchedGiants\Default.lua
 Raids\Naxxramas\Grobbulus\Default.lua
 Raids\Naxxramas\Gluth\Default.lua
 Raids\Naxxramas\Thaddius\Default.lua
