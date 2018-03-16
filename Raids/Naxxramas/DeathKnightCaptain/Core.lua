@@ -37,9 +37,13 @@ module.icon = {
 local icon = module.icon
 
 module.syncName = {
-	whirlwind = "DeathKnightCaptainWhirlwind"
+	whirlwind = "DeathKnightCaptainWhirlwind",
+	death = "DeathKnightCaptainDeath"
 }
 local syncName = module.syncName
+
+
+module.deathCount = nil
 
 
 ------------------------------
@@ -48,6 +52,8 @@ local syncName = module.syncName
 function module:BigWigs_RecvSync(sync, rest, nick)
     if sync == syncName.whirlwind then
 		self:Whirlwind()
+	elseif sync == syncName.death then
+		self:Death()
 	end
 end
 
@@ -59,6 +65,13 @@ function module:Whirlwind()
 	if self.db.profile.whirlwind then		
 		self:Bar(L["bar_whirlwind"], timer.whirlwindCast, icon.whirlwind, true, BigWigsColors.db.profile.significant)
 		self:Bar(L["bar_whirlwindNext"], timer.whirlwindInterval, icon.whirlwind)
+	end
+end
+
+function module:Death(msg)
+	module.deathCount = module.deathCount + 1
+	if module.deathCount == 2 then
+		BigWigs:CheckForBossDeath(msg, self)
 	end
 end
 
