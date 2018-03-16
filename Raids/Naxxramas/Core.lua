@@ -14,6 +14,7 @@ BigWigs.bossmods.naxx.heigan = "Heigan the Unclean"
 BigWigs.bossmods.naxx.loatheb = "Loatheb"
 BigWigs.bossmods.naxx.livingmonstrosity = "Living Monstrosity"
 BigWigs.bossmods.naxx.patchwerk = "Patchwerk"
+BigWigs.bossmods.naxx.stitchedGiant = "Stitched Giant"
 BigWigs.bossmods.naxx.grobbulus = "Grobbulus"
 BigWigs.bossmods.naxx.gluth = "Gluth"
 BigWigs.bossmods.naxx.thaddius = "Thaddius"
@@ -33,6 +34,7 @@ BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.heigan, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.loatheb, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.livingmonstrosity, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.patchwerk, "Naxxramas")
+BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.stitchedGiant, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.grobbulus, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.gluth, "Naxxramas")
 BigWigs:ModuleDeclaration(BigWigs.bossmods.naxx.thaddius, "Naxxramas")
