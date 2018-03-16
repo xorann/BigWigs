@@ -14,53 +14,42 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20015 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"slime"}
+module.toggleoptions = {"slimeBolt"}
 module.trashMod = true
 
 -- locals
 module.timer = {
-	slimeFirst = {
-		min = 5,
-		max = 10,
-	},
-	slimeCast = 2,
-	slimeInterval = {
-		min = 20,
-		max = 25
-	}
+	slimeFirst = 5,
+	slimeCast = 0.3,
+	slimeInterval = 6
 }
 local timer = module.timer
 
 module.icon = {
-	slime = "ability_whirlwind"
+	slimeBolt = "spell_nature_corrosivebreath"
 }
 local icon = module.icon
 
 module.syncName = {
-	slime = "StitchedGiantSlime"
+	slimeBolt = "StitchedGiantSlimeBolt"
 }
 local syncName = module.syncName
 
+
+module.boltNumber = nil
+module.lastBolt = nil
+	
 
 ------------------------------
 --      Synchronization	    --
 ------------------------------
 function module:BigWigs_RecvSync(sync, rest, nick)
-    if sync == syncName.slime then
-		self:Slime()
-	end
 end
 
 
 ------------------------------
 -- Sync Handlers	    	--
 ------------------------------
-function module:Slime()
-	if self.db.profile.slime then		
-		self:Bar(L["bar_slime"], timer.slimeCast, icon.slime, true, BigWigsColors.db.profile.significant)
-		self:Bar(L["bar_slimeNext"], timer.slimeInterval, icon.slime)
-	end
-end
 
 
 ----------------------------------
@@ -69,8 +58,5 @@ end
 
 -- automated test
 function module:TestModuleCore()
-	-- check core functions	
-	module:Slime()
-	
-	module:BigWigs_RecvSync(syncName.slime)
+	-- check core functions
 end

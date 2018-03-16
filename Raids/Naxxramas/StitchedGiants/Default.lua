@@ -22,7 +22,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20015 -- To be overridden by the module!
+module.revision = 20016 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -34,16 +34,18 @@ module.revision = 20015 -- To be overridden by the module!
 
 -- called after module is enabled
 function module:OnEnable()
-	self:CombatlogFilter(L["trigger_whirlwind"], self.WhirlwindEvent)
+	self:CombatlogFilter(L["trigger_slimeBolt"], self.SlimeBoltEvent)
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	module.boltNumber = 1
+	module.lastBolt = nil
 end
 
 -- called after boss is engaged
 function module:OnEngage()
-	self:Bar(L["bar_whirlwindNext"], timer.whirlwindFirst, icon.whirlwind)
+	self:Bar(L["bar_slimeBoltNext"], timer.slimeFirst, icon.slimeBolt)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -54,14 +56,40 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:WhirlwindEvent(msg, event)
-	BigWigs:DebugMessage("whirlwind: " .. msg)
-	if string.find(msg, L["trigger_whirlwind"]) then
-		BigWigs:DebugMessage("whirlwind found. syncing it")
-		self:Sync(syncName.whirlwind)
+function module:SlimeBoltEvent(msg, event)
+	BigWigs:DebugMessage("slimeBolt: " .. msg)
+	if string.find(msg, L["trigger_slimeBolt"]) then
+		BigWigs:DebugMessage("slimeBolt found.")
+		self:SlimeBolt()
 	end
 end
 
+-- not synchronized since it's not relevant if you are not in range and we don't have any problems with delayed synchronization
+function module:SlimeBolt()
+	if self.db.profile.slimeBolt then
+		if not module.lastBolt then
+			module.boltNumber = 1
+		else
+			local elapsed = GetTime() - module.lastBolt
+			
+			if elapsed < timer.slimeInterval then
+				if module.boltNumber == 2 then
+					module.boltNumber = 3
+				elseif module.boltNumber == 1 then
+					module.boltNumber = 2
+				else
+					module.boltNumber = 1
+				end
+			else
+				module.boltNumber = 1
+			end
+		end			
+			
+		self:Bar(L["bar_slimeBoltCast"], timer.slimeCast, icon.slimeBolt, true, BigWigsColors.db.profile.interrupt)
+		self:Bar(string.format(L["bar_slimeBoltNext"], module.boltNumber), timer.slimeInterval, icon.slimeBolt)
+		module.lastBolt = GetTime()
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--
@@ -76,7 +104,7 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:WhirlwindEvent(L["trigger_whirlwind"])
+	module:SlimeBoltEvent(L["trigger_slimeBolt"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -84,11 +112,10 @@ end
 
 -- visual test
 function module:TestVisual(long)	
-	-- /run local m=BigWigs:GetModule("Death Knight Captain");m:TestVisual()
-	local function whirlwind()
-		--module:CheckForUnbalance("Instructor Razuvious's Unbalancing Strike hits Death Knight Understudy for 10724.")
-		module:WhirlwindEvent(L["trigger_whirlwind"])
-		BigWigs:Print("whirlwind")
+	-- /run local m=BigWigs:GetModule("Stiched Giant");m:TestVisual()
+	local function slimeBolt()
+		module:SlimeBoltEvent(L["trigger_slimeBolt"])
+		BigWigs:Print("slimeBolt")
 	end 
 	
 	local function deactivate()
@@ -102,6 +129,9 @@ function module:TestVisual(long)
 	self:SendEngageSync()
 
 	-- sweep after 5s
-	self:ScheduleEvent(self:ToString() .. "Test_whirlwind", whirlwind, 6, self)
-	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 10, self)
+	self:ScheduleEvent(self:ToString() .. "Test_slimeBolt1", slimeBolt, 6, self)
+	self:ScheduleEvent(self:ToString() .. "Test_slimeBolt2", slimeBolt, 7, self)
+	self:ScheduleEvent(self:ToString() .. "Test_slimeBolt3", slimeBolt, 12, self)
+	
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 15, self)
 end
