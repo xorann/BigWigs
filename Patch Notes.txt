@@ -12,6 +12,7 @@ New:
 	- Proximity plugin: The background color changes to red if someone is too close to you
 	- Range plugin: Additional settings to increase the combatlog range (Party, Party pets, Friendly Player, Friendly pet, Hostile Player, Hostile pet)
 	- Version plugin: Shows which fork of BigWigs is used by the player (if available) and does not warn for newer releases anymore if someone else uses a different fork with a higher revision number
+	- Added Enrage Plugin to several bosses
 	
 Fixes:
 	- Fixed lua errors in the default implementation of Gluth, The Four Horsemen, and Emeriss
@@ -23,8 +24,19 @@ Fixes:
 	- Anub'Rekhan, Faerlina, Noth, Heigan, Gothik: Tweaked Timers
 	- Heigan: Removed Erruption Timer
 	- Huhuran: Wyvern Sting timer
+	- Gluth: Decimate Timer, Enrage Timer, removed Zombie Timer
+	- Grobbulus: Slime Spray
+	- Heigan: Removed Erruption Timer and improved Dance Timer
+	- Noth: Teleport Timer
+	- Thaddius: Fixed a LUA error
+	- Instructor Razuvious: Disrupting Shout Timer
+	- Gothik: Wave Timers
+	- Faerlina: Enrage Timer
+	- Emeriss: Fixed a LUA error
 	- Farclip plugin: Farclip (Viewing Distance) should now properly reset if you relog/disconnect in Naxxramas
 	- WorldBuffTimer plugin: Possible fix for the Zul'Gurub Buff
+	- Twin Emperors: Teleport Timer
+	
 
 r20015
 New:
