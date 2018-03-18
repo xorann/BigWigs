@@ -76,6 +76,7 @@ function module:PowerSurge()
 end
 
 function module:AddDied()
+	BigWigs:DebugMessage("add died")
 	self.addsdead = self.addsdead + 1
 	if self.addsdead == 2 then
 		if self.db.profile.phase then 
@@ -102,6 +103,8 @@ function module:Phase2()
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
 	end
+	
+	self:KTM_Reset()
 end
 
 function module:PolarityShift()
@@ -144,15 +147,19 @@ function module:Throw()
 end
 
 function module:NewPolarity(chargetype)
+	if self.previousCharge then BigWigs:DebugMessage("old: " .. self.previousCharge) end
+	BigWigs:DebugMessage("new: " .. chargetype)
     if self.db.profile.charge then
-		if self.previousCharge and self.previousCharge == chargetype then
+		if not self.previousCharge or self.previousCharge == "" or self.previousCharge ~= chargetype then
+			if chargetype == L["misc_positiveCharge"] then
+				self:Message(L["msg_positiveCharge"], "Positive", true, "RunAway")
+				self:WarningSign(chargetype, 5)	
+			else
+				self:Message(L["msg_negativeCharge"], "Important", true, "RunAway")
+				self:WarningSign(chargetype, 5)
+			end
+		elseif self.previousCharge and self.previousCharge == chargetype then
 			self:Message(L["msg_noChange"], "Urgent", true, "Long")
-		elseif chargetype == L["misc_positiveCharge"] then
-			self:Message(L["msg_positiveCharge"], "Positive", true, "RunAway")
-			self:WarningSign(chargetype, 5)
-		elseif chargetype == L["misc_negativeCharge"] then
-			self:Message(L["msg_negativeCharge"], "Important", true, "RunAway")
-			self:WarningSign(chargetype, 5)
 		end
 		self:Bar(L["bar_polarityTick"], timer.polarityTick, chargetype, "Important")
 	end
