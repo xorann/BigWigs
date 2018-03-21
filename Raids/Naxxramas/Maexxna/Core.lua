@@ -45,6 +45,7 @@ local syncName = module.syncName
 
 module.times = nil
 module.enrageannounced = nil
+module.firstWebspray = nil
 
 
 ------------------------------
@@ -69,10 +70,15 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Webspray()
-	self:Message(L["msg_webSpray"], "Important")
-	self:Bar(L["bar_cocoon"], timer.cocoon, icon.cocoon)
-	self:Bar(L["bar_spider"], timer.spider, icon.spider)
-	self:Bar(L["bar_webSpray"], timer.webspray, icon.webspray)
+	if self.db.profile.spray then
+		if not module.firstWebspray then
+			module.firstWebspray = true
+			self:Message(L["msg_webSpray"], "Important")
+		end
+		self:Bar(L["bar_cocoon"], timer.cocoon, icon.cocoon)
+		self:Bar(L["bar_spider"], timer.spider, icon.spider)
+		self:Bar(L["bar_webSpray"], timer.webspray, icon.webspray)
+	end
 end
 
 function module:Poison()
