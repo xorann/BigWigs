@@ -10,7 +10,7 @@ local stalagg = AceLibrary("Babble-Boss-2.2")["Stalagg"]
 
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20016 -- To be overridden by the module!
 module.enabletrigger = {module.translatedName, feugen, stalagg} -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"enrage", "charge", "polarity", -1, "power", "throw", "phase", "bosskill"}
@@ -19,10 +19,16 @@ module.toggleoptions = {"enrage", "charge", "polarity", -1, "power", "throw", "p
 -- locals
 module.timer = {
 	throw = 21,
-	powerSurge = 10,
+	powerSurge = {
+		min = 10,
+		max = 15
+	},
 	enrage = 300,
 	polarityTick = 6,
-	polarityShift = 30,
+	polarityShift = {
+		min = 30,
+		max = 32
+	}
 }
 local timer = module.timer
 
@@ -37,12 +43,17 @@ local icon = module.icon
 module.syncName = {
 	powerSurge = "StalaggPower",
 	phase2 = "ThaddiusPhaseTwo",
-	adddied = "ThaddiusAddDeath",
+	adddiedFeugen = "ThaddiusAddDeathFeugen",
+	adddiedStalagg = "ThaddiusAddDeathStalagg",
 	polarity = "ThaddiusPolarity",
 	polarityShiftCast = "ThaddiusPolarityShiftCast",
 	enrage = "ThaddiusEnrage",
 }
 local syncName = module.syncName
+
+
+module.feugenDead = nil
+module.stalaggDead = nil
 
 
 ------------------------------
@@ -51,8 +62,10 @@ local syncName = module.syncName
 function module:BigWigs_RecvSync(sync, rest, nick)
 	if sync == syncName.powerSurge then
 		self:PowerSurge()
-	elseif sync == syncName.adddied then
-		self:AddDied()
+	elseif sync == syncName.adddiedFeugen then
+		self:AddDied(feugen)
+	elseif sync == syncName.adddiedStalagg then
+		self:AddDied(stalagg)
 	elseif sync == syncName.phase2 then
 		self:Phase2()
 	elseif sync == syncName.polarity then
@@ -75,10 +88,16 @@ function module:PowerSurge()
 	end
 end
 
-function module:AddDied()
+function module:AddDied(add)
 	BigWigs:DebugMessage("add died")
-	self.addsdead = self.addsdead + 1
-	if self.addsdead == 2 then
+	
+	if add == feugen then
+		module.feugenDead = true
+	elseif add == stalagg then
+		module.stalaggDead = true
+	end
+	
+	if module.feugenDead and module.stalaggDead then
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
 		end
@@ -110,7 +129,7 @@ end
 function module:PolarityShift()
 	if self.db.profile.polarity then
 		self:RegisterEvent("PLAYER_AURAS_CHANGED")
-		self:DelayedMessage(timer.polarityShift - 3, L["msg_polarityShift3"], "Important", nil, "Beware")
+		self:DelayedMessage(timer.polarityShift.min - 3, L["msg_polarityShift3"], "Important", nil, "Beware")
 		self:Bar(L["bar_polarityShift"], timer.polarityShift, icon.polarityShift)
 	end
 end
@@ -167,6 +186,34 @@ function module:NewPolarity(chargetype)
 	self.previousCharge = chargetype
 end
 
+
+function module:PLAYER_AURAS_CHANGED(msg)
+	local chargetype = nil
+	local iIterator = 1
+	while UnitDebuff("player", iIterator) do
+		local texture, applications = UnitDebuff("player", iIterator)
+		if texture == L["misc_positiveCharge"] or texture == L["misc_negativeCharge"] then
+			-- If we have a debuff with this texture that has more
+			-- than one application, it means we still have the
+			-- counter debuff, and thus nothing has changed yet.
+			-- (we got a PW:S or Renew or whatever after he casted
+			--  PS, but before we got the new debuff)
+			if applications > 1 then 
+				return 
+			end
+			chargetype = texture
+			-- Note that we do not break out of the while loop when
+			-- we found a debuff, since we still have to check for
+			-- debuffs with more than 1 application.
+		end
+		iIterator = iIterator + 1
+	end
+	if not chargetype then return end
+
+	self:UnregisterEvent("PLAYER_AURAS_CHANGED")
+
+	self:NewPolarity(chargetype)
+end
 
 ----------------------------------
 -- Module Test Function    		--

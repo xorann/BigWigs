@@ -17,7 +17,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20016 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -32,11 +32,15 @@ module:RegisterYellEngage(L["trigger_engage2"])
 
 -- called after module is enabled
 function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckStalagg")
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE", "PolarityCastEvent")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_BUFF", "PolarityCastEvent")
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "CheckForEnrage")
+	self:CombatlogFilter(L["trigger_stalagg"], self.PowerSurgeEvent, true)
+	self:CombatlogFilter(L["trigger_polarityShiftCast"], self.PolarityCastEvent, true)
+	self:CombatlogFilter(L["trigger_enrage"], self.EnrageEvent)
+	self:CombatlogFilter(L["trigger_polarityShift"], self.PolarityShiftEvent, true)
+	self:CombatlogFilter(L["trigger_addDeathFeugen"], self.AddDeathEvent)
+	self:CombatlogFilter(L["trigger_addDeathStalagg"], self.AddDeathEvent)
+	self:CombatlogFilter(L["trigger_phase2_1"], self.PhaseTwoEvent)
+	self:CombatlogFilter(L["trigger_phase2_2"], self.PhaseTwoEvent)
+	self:CombatlogFilter(L["trigger_phase2_3"], self.PhaseTwoEvent)
 	
 	self:ThrottleSync(10, syncName.polarity)
 	self:ThrottleSync(4, syncName.powerSurge)
@@ -45,10 +49,12 @@ end
 -- called after module is enabled and after each wipe
 function module:OnSetup()
 	self.enrageStarted = nil
-	self.addsdead = 0
 	self.teslawarn = nil
 	self.stage1warn = nil
 	self.previousCharge = ""
+	
+	module.feugenDead = false
+	module.stalaggDead = false
 end
 
 -- called after boss is engaged
@@ -69,25 +75,23 @@ end
 ------------------------------
 --      Event Handlers      --
 ------------------------------
-function module:CheckStalagg(msg)
-	if msg == L["trigger_stalagg"] then
+function module:PowerSurgeEvent(msg)
+	if string.find(msg, L["trigger_stalagg"]) then
 		self:Sync(syncName.powerSurge)
 	end
 end
 
-function module:CHAT_MSG_MONSTER_YELL(msg)
-	if string.find(msg, L["trigger_polarityShift"]) then
-		self:Sync(syncName.polarity)	
-	elseif msg == L["trigger_addDeath1"] or msg == L["trigger_addDeath2"] then
-		self:Sync(syncName.adddied)
-	elseif string.find(msg, L["trigger_phase2_1"]) or string.find(msg, L["trigger_phase2_2"]) or string.find(msg, L["trigger_phase2_3"]) then
-		self:Sync(syncName.phase2)
+function module:AddDeathEvent(msg)
+	if string.find(msg, L["trigger_addDeathFeugen"]) then
+		self:Sync(syncName.adddiedFeugen)
+	elseif string.find(msg, L["trigger_addDeathStalagg"]) then
+		self:Sync(syncName.adddiedStalagg)
 	end
 end
 
-function module:CheckForEnrage(msg)
-	if msg == L["trigger_enrage"] then
-		self:Sync(syncName.enrage)
+function module:PhaseTwoEvent(msg)
+	if string.find(msg, L["trigger_phase2_1"]) or string.find(msg, L["trigger_phase2_2"]) or string.find(msg, L["trigger_phase2_3"]) then
+		self:Sync(syncName.phase2)
 	end
 end
 
@@ -97,32 +101,16 @@ function module:PolarityCastEvent(msg)
 	end
 end
 
-function module:PLAYER_AURAS_CHANGED(msg)
-	local chargetype = nil
-	local iIterator = 1
-	while UnitDebuff("player", iIterator) do
-		local texture, applications = UnitDebuff("player", iIterator)
-		if texture == L["misc_positiveCharge"] or texture == L["misc_negativeCharge"] then
-			-- If we have a debuff with this texture that has more
-			-- than one application, it means we still have the
-			-- counter debuff, and thus nothing has changed yet.
-			-- (we got a PW:S or Renew or whatever after he casted
-			--  PS, but before we got the new debuff)
-			if applications > 1 then 
-				return 
-			end
-			chargetype = texture
-			-- Note that we do not break out of the while loop when
-			-- we found a debuff, since we still have to check for
-			-- debuffs with more than 1 application.
-		end
-		iIterator = iIterator + 1
+function module:PolarityShiftEvent(msg)
+	if string.find(msg, L["trigger_polarityShift"]) then
+		self:Sync(syncName.polarity)
 	end
-	if not chargetype then return end
+end
 
-	self:UnregisterEvent("PLAYER_AURAS_CHANGED")
-
-	self:NewPolarity(chargetype)
+function module:EnrageEvent(msg)
+	if string.find(msg, L["trigger_enrage"]) then
+		self:Sync(syncName.enrage)
+	end
 end
 
 
@@ -139,15 +127,15 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
+	module:PowerSurgeEvent(L["trigger_stalagg"])
+	module:AddDeathEvent(L["trigger_addDeathFeugen"])
+	module:AddDeathEvent(L["trigger_addDeathStalagg"])
+	module:PhaseTwoEvent(L["trigger_phase2_1"])
+	module:PhaseTwoEvent(L["trigger_phase2_2"])
+	module:PhaseTwoEvent(L["trigger_phase2_3"])
 	module:PolarityCastEvent(L["trigger_polarityShiftCast"])
-	module:CheckForEnrage(L["trigger_enrage"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_polarityShift"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_addDeath1"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_addDeath2"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_2"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_3"])
-	module:CheckStalagg(L["trigger_stalagg"])
+	module:PolarityShiftEvent(L["trigger_polarityShift"])
+	module:EnrageEvent(L["trigger_enrage"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -158,13 +146,15 @@ function module:TestVisual(long)
 	-- /run local m=BigWigs:GetModule("Thaddius");m:TestVisual(true)
 	
 	local function testPhase2()
-		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
+		module:PhaseTwoEvent(L["trigger_phase2_1"])
         BigWigs:Print("  testPhase2")
     end
 	local function testPolarityShiftPositive()
+		module:PolarityShift()
 		module:NewPolarity(L["misc_positiveCharge"])
 	end
     local function testPolarityShiftNegative()
+		module:PolarityShift()
 		module:NewPolarity(L["misc_negativeCharge"])
 	end
 	local function testDisable()
