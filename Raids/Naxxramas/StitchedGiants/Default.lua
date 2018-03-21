@@ -45,24 +45,13 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
-	self:Bar(L["bar_slimeBoltNext"], timer.slimeFirst, icon.slimeBolt)
+	self:Bar(string.format(L["bar_slimeBoltNext"], 1), timer.slimeFirst, icon.slimeBolt)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
 end
 
-
-------------------------------
---      Event Handlers      --
-------------------------------
-function module:SlimeBoltEvent(msg, event)
-	BigWigs:DebugMessage("slimeBolt: " .. msg)
-	if string.find(msg, L["trigger_slimeBolt"]) then
-		BigWigs:DebugMessage("slimeBolt found.")
-		self:SlimeBolt()
-	end
-end
 
 -- not synchronized since it's not relevant if you are not in range and we don't have any problems with delayed synchronization
 function module:SlimeBolt()
@@ -90,6 +79,18 @@ function module:SlimeBolt()
 		module.lastBolt = GetTime()
 	end
 end
+
+------------------------------
+--      Event Handlers      --
+------------------------------
+function module:SlimeBoltEvent(msg, event)
+	BigWigs:DebugMessage("slimeBolt: " .. msg)
+	if string.find(msg, L["trigger_slimeBolt"]) then
+		BigWigs:DebugMessage("slimeBolt found.")
+		module:SlimeBolt()
+	end
+end
+
 
 ----------------------------------
 -- Module Test Function    		--
