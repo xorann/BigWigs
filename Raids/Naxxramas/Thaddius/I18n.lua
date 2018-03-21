@@ -77,7 +77,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_polarityShift = "Polarity Shift",
 	
 	-- misc
-	misc_positiveCharge = "Interface\\Icons\\Spell_ChargePositive",--"Spell_ChargePositive",
-	misc_negativeCharge = "Interface\\Icons\\Spell_ChargePositive", --"Spell_ChargeNegative",
+	misc_positiveCharge = "Spell_ChargePositive",--"Interface\\Icons\\Spell_ChargePositive",--
+	misc_negativeCharge = "Spell_ChargeNegative",--"Interface\\Icons\\Spell_ChargeNegative", --
 
 } end )

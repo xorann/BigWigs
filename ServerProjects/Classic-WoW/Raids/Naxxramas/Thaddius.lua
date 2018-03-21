@@ -153,11 +153,11 @@ function module:TestVisual(long)
     end
 	local function testPolarityShiftPositive()
 		module:PolarityShift()
-		module:NewPolarity(L["misc_positiveCharge"])
+		module:NewPolarity("Interface\\Icons\\Spell_ChargePositive")
 	end
     local function testPolarityShiftNegative()
 		module:PolarityShift()
-		module:NewPolarity(L["misc_negativeCharge"])
+		module:NewPolarity("Interface\\Icons\\Spell_ChargeNegative")
 	end
 	local function testDisable()
 		--module:SendWipeSync()

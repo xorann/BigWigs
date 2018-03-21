@@ -28,7 +28,8 @@ module.timer = {
 	polarityShift = {
 		min = 30,
 		max = 32
-	}
+	},
+	firstPolarityShift = 16
 }
 local timer = module.timer
 
@@ -121,6 +122,9 @@ function module:Phase2()
 		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
 		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+		
+		self:Bar(L["bar_polarityShift"], timer.firstPolarityShift, icon.polarityShift)
+		BigWigsEnrage:Start(timer.enrage, self.translatedName)
 	end
 	
 	self:KTM_Reset()
@@ -170,17 +174,23 @@ function module:NewPolarity(chargetype)
 	BigWigs:DebugMessage("new: " .. chargetype)
     if self.db.profile.charge then
 		if not self.previousCharge or self.previousCharge == "" or self.previousCharge ~= chargetype then
-			if chargetype == L["misc_positiveCharge"] then
-				self:Message(L["msg_positiveCharge"], "Positive", true, "RunAway")
-				self:WarningSign(chargetype, 5)	
+			if string.find(chargetype, L["misc_positiveCharge"]) then
+				self:Message(L["msg_positiveCharge"], "Important", true, "RunAway")
+				self:WarningSign(L["misc_positiveCharge"], timer.polarityTick)	
 			else
 				self:Message(L["msg_negativeCharge"], "Important", true, "RunAway")
-				self:WarningSign(chargetype, 5)
+				self:WarningSign(L["misc_negativeCharge"], timer.polarityTick)
 			end
 		elseif self.previousCharge and self.previousCharge == chargetype then
-			self:Message(L["msg_noChange"], "Urgent", true, "Long")
+			self:Message(L["msg_noChange"], "Positive", true, "Long")
 		end
-		self:Bar(L["bar_polarityTick"], timer.polarityTick, chargetype, "Important")
+		
+		if string.find(chargetype, L["misc_positiveCharge"]) then
+			self:Bar(L["bar_polarityTick"], timer.polarityTick, L["misc_positiveCharge"], "Important")	
+		else
+			self:Bar(L["bar_polarityTick"], timer.polarityTick, L["misc_negativeCharge"], "Important")
+		end
+		
 	end
 	
 	self.previousCharge = chargetype
@@ -192,7 +202,7 @@ function module:PLAYER_AURAS_CHANGED(msg)
 	local iIterator = 1
 	while UnitDebuff("player", iIterator) do
 		local texture, applications = UnitDebuff("player", iIterator)
-		if texture == L["misc_positiveCharge"] or texture == L["misc_negativeCharge"] then
+		if string.find(texture, L["misc_positiveCharge"]) or string.find(texture, L["misc_negativeCharge"]) then
 			-- If we have a debuff with this texture that has more
 			-- than one application, it means we still have the
 			-- counter debuff, and thus nothing has changed yet.
@@ -222,8 +232,8 @@ end
 -- automated test
 function module:TestModuleCore()
 	-- check core functions	
-	module:NewPolarity(L["misc_positiveCharge"])
-	module:NewPolarity(L["misc_negativeCharge"])
+	module:NewPolarity("Interface\\Icons\\Spell_ChargePositive")
+	module:NewPolarity("Interface\\Icons\\Spell_ChargePositive")
 	module:Throw()
 	module:Enrage()
 	module:PolarityShiftCast()

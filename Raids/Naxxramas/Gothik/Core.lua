@@ -17,7 +17,7 @@ module.toggleoptions = {"room", -1, "add", "adddeath", "teleport", "bosskill"}
 
 -- locals
 module.timer = {
-	inroom = 273,
+	inroom = 277,
 	
 	firstTrainee = 24,
 	traineeInterval = 20.5, -- its 20.5 seconds not 21
@@ -97,7 +97,7 @@ function module:Trainee()
 	self:ScheduleEvent("bwgothiktrawarn", self.WaveWarn, timer.trainee - 3, self, L["msg_trainee"], L, "Attention")
 	self:ScheduleRepeatingEvent("bwgothiktrarepop", self.Trainee, timer.trainee, self)
 	
-	if module.numTrainees >= 13 then  -- cancels bar after wave 11
+	if module.numTrainees >= 11 then  -- cancels bar after wave 11
 		self:RemoveBar(string.format(L["bar_trainee"], module.numTrainees - 1))
 		self:CancelScheduledEvent("bwgothiktrawarn")
 		self:CancelScheduledEvent("bwgothiktrarepop")
@@ -114,7 +114,7 @@ function module:DeathKnight()
 	self:ScheduleEvent("bwgothikdkwarn", self.WaveWarn, timer.deathknight - 3, self, L["msg_deathKnight"], L, "Urgent")
 	self:ScheduleRepeatingEvent("bwgothikdkrepop", self.DeathKnight, timer.deathknight, self)
 
-	if module.numDeathknights >= 9 then  -- cancels bar after wave 7
+	if module.numDeathknights >= 7 then  -- cancels bar after wave 7
 		self:RemoveBar(string.format(L["bar_deathKnight"], module.numDeathknights - 1))
 		self:CancelScheduledEvent("bwgothikdkwarn")
 		self:CancelScheduledEvent("bwgothikdkrepop")
@@ -131,7 +131,7 @@ function module:Rider()
 	self:ScheduleEvent("bwgothikriderwarn", self.WaveWarn, timer.rider - 3, self, L["msg_rider"], L, "Important")
 	self:ScheduleRepeatingEvent("bwgothikriderrepop", self.Rider, timer.rider, self)
 	
-	if module.numRiders >= 6 then  -- cancels bar after wave 4
+	if module.numRiders >= 4 then  -- cancels bar after wave 4
 		self:RemoveBar(string.format(L["bar_rider"], module.numRiders - 1)) 
 		self:CancelScheduledEvent("bwgothikriderwarn")
 		self:CancelScheduledEvent("bwgothikriderrepop")
