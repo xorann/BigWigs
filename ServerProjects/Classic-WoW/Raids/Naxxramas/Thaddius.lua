@@ -66,10 +66,13 @@ function module:OnEngage()
 	self.stage1warn = true
 	self:Throw()
 	self:ScheduleRepeatingEvent("bwthaddiusthrow", self.Throw, timer.throw, self)
+	
+	self:SetupAddsHealthBar()
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:RemoveAddsHealthBar()
 end
 
 

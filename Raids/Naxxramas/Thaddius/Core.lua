@@ -101,6 +101,7 @@ function module:AddDied(add)
 	if module.feugenDead and module.stalaggDead then
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
+			self:Bar("boss active", 20, icon.enrage)
 		end
 		self:CancelScheduledEvent("bwthaddiusthrow")
 		self:CancelDelayedMessage(L["msg_throw"])
@@ -111,6 +112,7 @@ function module:Phase2()
     self:RemoveBar(L["bar_throw"])
     self:CancelDelayedMessage(L["msg_throw"])
     self:CancelScheduledEvent("bwthaddiusthrow")
+	self:RemoveAddsHealthBar()
     
 	if self.db.profile.phase then 
 		self:Message(L["msg_phase2"], "Important") 
@@ -224,6 +226,40 @@ function module:PLAYER_AURAS_CHANGED(msg)
 
 	self:NewPolarity(chargetype)
 end
+
+
+
+
+function module:SetupAddsHealthBar()
+	self:TriggerEvent("BigWigs_StartHPBar", self, feugen, 100)
+	self:TriggerEvent("BigWigs_SetHPBar", self, feugen, 0)
+	self:TriggerEvent("BigWigs_StartHPBar", self, stalagg, 100)
+	self:TriggerEvent("BigWigs_SetHPBar", self, stalagg, 0)
+
+	self:ScheduleRepeatingEvent("bwthaddiusaddhealthbarupdate", self.UpdateAddsHealthBar, 1, self)
+end
+
+function module:UpdateAddsHealthBar()
+	function getHealth(target)
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid" .. i .. "target") == target then
+				return UnitHealth("Raid" .. i .. "target") / UnitHealthMax("Raid" .. i .. "target") * 100
+			end
+		end
+		
+		return 0
+	end
+
+	self:TriggerEvent("BigWigs_SetHPBar", self, feugen, 100 - getHealth(feugen))
+	self:TriggerEvent("BigWigs_SetHPBar", self, stalagg, 100 - getHealth(stalagg))
+end
+
+function module:RemoveAddsHealthBar()
+	self:TriggerEvent("BigWigs_StopHPBar", self, feugen)
+	self:TriggerEvent("BigWigs_StopHPBar", self, stalagg)
+	self:CancelScheduledEvent("bwthaddiusaddhealthbarupdate")
+end
+
 
 ----------------------------------
 -- Module Test Function    		--
