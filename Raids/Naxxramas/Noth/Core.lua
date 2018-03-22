@@ -23,15 +23,15 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstRoom = 90,
-	secondRoom = 110, -- 109?
-	thirdRoom = 180,
-	room = 0, -- will be changed during the encounter
+	firstToRoom = 90,
+	secondToRoom = 110, -- 109?
+	thirdToRoom = 180,
+	toRoom = 0, -- will be changed during the encounter
     
-	firstBalcony = 70,
-	secondBalcony = 90,
-	thirdBalcony = 120, -- ??
-	balcony = 0, -- will be changed during the encounter
+	firstToBalcony = 70,
+	secondToBalcony = 90,
+	thirdToBalcony = 120, -- ??
+	toBalcony = 0, -- will be changed during the encounter
     
 	firstCurse = 10,
     secondCurse = 10,
@@ -47,7 +47,8 @@ module.timer = {
 local timer = module.timer
 
 module.icon = {
-	balcony = "Spell_Magic_LesserInvisibilty",
+	toBalcony = "Spell_Magic_LesserInvisibilty",
+	toRoom = "Spell_Magic_LesserInvisibilty",
 	blink = "Spell_Arcane_Blink",
 	wave = "Spell_ChargePositive",
 	curse = "Spell_Shadow_AnimateDead",
@@ -107,14 +108,16 @@ function module:TeleportToBalcony()
 	--self:CancelDelayedMessage(L["msg_teleport30"])
 	--self:CancelDelayedMessage(L["msg_curse10"])
 	
+	self:CancelScheduledEvent("bwnothtobalcony")
+	self:RemoveBar(L["bar_teleport"])
 	self:RemoveBar(L["bar_blink"])
 	self:RemoveBar(L["bar_curse"])
 
 	if self.db.profile.teleport then 
 		self:Message(L["msg_teleportNow"], "Important")
-		self:Bar(L["bar_back"], timer.balcony, icon.balcony)
-		--self:DelayedMessage(timer.balcony - 30, L["msg_back30"], "Urgent")
-		--self:DelayedMessage(timer.balcony - 10, L["msg_back10"], "Urgent")
+		self:Bar(L["bar_back"], timer.toBalcony, icon.toBalcony)
+		--self:DelayedMessage(timer.toBalcony - 30, L["msg_back30"], "Urgent")
+		--self:DelayedMessage(timer.toBalcony - 10, L["msg_back10"], "Urgent")
 	end
 	if self.db.profile.wave then
 		self:Bar(L["bar_wave1"], timer.wave1, icon.wave )
@@ -125,42 +128,47 @@ function module:TeleportToBalcony()
 	end
 	
 	-- setup timers for the next round
-	if timer.room == timer.firstRoom then
-		timer.room = timer.secondRoom
+	if timer.toRoom == timer.firstToRoom then
+		timer.toRoom = timer.secondToRoom
 		timer.blinkAfterTeleport = timer.secondBlink
         timer.curseAfterTeleport = timer.secondCurse
 		timer.wave2 = timer.wave2_2
-	elseif timer.room == timer.secondRoom then
-		timer.room = timer.thirdRoom
+	elseif timer.toRoom == timer.secondToRoom then
+		timer.toRoom = timer.thirdToRoom
 		timer.blinkAfterTeleport = timer.thirdBlink -- 2nd teleport to balcony
         timer.curseAfterTeleport = timer.thirdCurse
 	end
 	
-	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.balcony, self) -- fallback
+	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.toBalcony, self) -- fallback
 end
 
 function module:TeleportToRoom()
-	if timer.balcony == timer.firstBalcony then
-		timer.balcony = timer.secondBalcony
-	elseif timer.balcony == timer.secondBalcony then
-		timer.balcony = timer.thirdBalcony
+	if timer.toBalcony == timer.firstToBalcony then
+		timer.toBalcony = timer.secondToBalcony
+	elseif timer.toBalcony == timer.secondToBalcony then
+		timer.toBalcony = timer.thirdToBalcony
 	end
 
+	self:CancelScheduledEvent("bwnothtoroom")
+	self:RemoveBar(L["bar_back"])
+	self:RemoveBar(L["bar_wave1"])
+	self:RemoveBar(L["bar_wave2"])
+	
 	if self.db.profile.teleport then
-		self:Message(string.format(L["msg_backNow"], timer.room), "Important")
+		self:Message(string.format(L["msg_backNow"], timer.toRoom), "Important")
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink, true, BigWigsColors.db.profile.significant)
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention") -- praeda
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention") -- praeda
 		
-		self:Bar(L["bar_teleport"], timer.room, icon.balcony)
-		--self:DelayedMessage(timer.room - 30, L["msg_teleport30"], "Urgent")
-		--self:DelayedMessage(timer.room - 10, L["msg_teleport10"], "Urgent")
+		self:Bar(L["bar_teleport"], timer.toRoom, icon.balcony)
+		--self:DelayedMessage(timer.toRoom - 30, L["msg_teleport30"], "Urgent")
+		--self:DelayedMessage(timer.toRoom - 10, L["msg_teleport10"], "Urgent")
 	end
     if self.db.profile.curse then
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
     
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toRoom, self)
     
     self:KTM_Reset()
 end

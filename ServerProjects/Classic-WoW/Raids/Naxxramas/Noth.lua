@@ -22,8 +22,8 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-module.timer.firstRoom = 91
-module.timer.thirdBalcony = 124
+module.timer.firstToRoom = 91
+module.timer.thirdToBalcony = 124
 
 
 ------------------------------
@@ -61,17 +61,17 @@ end
 function module:OnSetup()
 	timer.blinkAfterTeleport = timer.firstBlink -- sets timer for first blink after first balcony
     timer.curseAfterTeleport = timer.firstCurse
-	timer.room = timer.firstRoom
-	timer.balcony = timer.firstBalcony
+	timer.toRoom = timer.firstToRoom
+	timer.toBalcony = timer.firstToBalcony
 end
 
 -- called after boss is engaged
 function module:OnEngage()
 	if self.db.profile.teleport then
 		self:Message(L["msg_engage"], "Important")
-		self:Bar(L["bar_teleport"], timer.room, icon.balcony)
-		--self:DelayedMessage(timer.room - 30, L["msg_teleport30"], "Urgent")
-		--self:DelayedMessage(timer.room - 10, L["msg_teleport10"], "Urgent")
+		self:Bar(L["bar_teleport"], timer.toRoom, icon.toRoom)
+		--self:DelayedMessage(timer.toRoom - 30, L["msg_teleport30"], "Urgent")
+		--self:DelayedMessage(timer.toRoom - 10, L["msg_teleport10"], "Urgent")
 	end
 	if self.db.profile.blink then
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink)
@@ -82,7 +82,7 @@ function module:OnEngage()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
 
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.room, self) -- fallback
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toRoom, self) -- fallback
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
