@@ -23,14 +23,14 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstToRoom = 90,
-	secondToRoom = 110, -- 109?
-	thirdToRoom = 180,
+	firstToRoom = 79, --78 --70
+	secondToRoom = 94, --93 --90 
+	thirdToRoom = 124, --124 --120,
 	toRoom = 0, -- will be changed during the encounter
     
-	firstToBalcony = 70,
-	secondToBalcony = 90,
-	thirdToBalcony = 120, -- ??
+	firstToBalcony = 91,
+	secondToBalcony = 113, --112 --110
+	thirdToBalcony = 185, --185 --180, -- ??
 	toBalcony = 0, -- will be changed during the encounter
     
 	firstCurse = 10,
@@ -40,7 +40,7 @@ module.timer = {
     curse = 44.5,
     
 	wave1 = 12,
-	wave2 = 42,
+	wave2 = 46,
 	wave2_2 = 58,
 	--wave3 = 80,
 }
@@ -128,25 +128,25 @@ function module:TeleportToBalcony()
 	end
 	
 	-- setup timers for the next round
-	if timer.toRoom == timer.firstToRoom then
-		timer.toRoom = timer.secondToRoom
+	if timer.toBalcony == timer.firstToBalcony then
+		timer.toBalcony = timer.secondToBalcony
 		timer.blinkAfterTeleport = timer.secondBlink
         timer.curseAfterTeleport = timer.secondCurse
 		timer.wave2 = timer.wave2_2
-	elseif timer.toRoom == timer.secondToRoom then
-		timer.toRoom = timer.thirdToRoom
+	elseif timer.toBalcony == timer.secondToBalcony then
+		timer.toBalcony = timer.thirdToBalcony
 		timer.blinkAfterTeleport = timer.thirdBlink -- 2nd teleport to balcony
         timer.curseAfterTeleport = timer.thirdCurse
 	end
 	
-	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.toBalcony, self) -- fallback
+	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.toRoom, self) -- fallback
 end
 
 function module:TeleportToRoom()
-	if timer.toBalcony == timer.firstToBalcony then
-		timer.toBalcony = timer.secondToBalcony
-	elseif timer.toBalcony == timer.secondToBalcony then
-		timer.toBalcony = timer.thirdToBalcony
+	if timer.toRoom == timer.firstToRoom then
+		timer.toRoom = timer.secondToRoom
+	elseif timer.toRoom == timer.secondToRoom then
+		timer.toRoom = timer.thirdToRoom
 	end
 
 	self:CancelScheduledEvent("bwnothtoroom")
@@ -160,7 +160,7 @@ function module:TeleportToRoom()
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention") -- praeda
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention") -- praeda
 		
-		self:Bar(L["bar_teleport"], timer.toRoom, icon.balcony)
+		self:Bar(L["bar_teleport"], timer.toRoom, icon.toBalcony)
 		--self:DelayedMessage(timer.toRoom - 30, L["msg_teleport30"], "Urgent")
 		--self:DelayedMessage(timer.toRoom - 10, L["msg_teleport10"], "Urgent")
 	end
@@ -168,7 +168,7 @@ function module:TeleportToRoom()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
     
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toRoom, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toBalcony, self)
     
     self:KTM_Reset()
 end

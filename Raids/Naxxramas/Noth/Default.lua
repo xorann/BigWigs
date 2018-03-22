@@ -57,9 +57,9 @@ end
 function module:OnEngage()
 	if self.db.profile.teleport then
 		self:Message(L["msg_engage"], "Important")
-		self:Bar(L["bar_teleport"], timer.toRoom, icon.toRoom)
-		--self:DelayedMessage(timer.toRoom - 30, L["msg_teleport30"], "Urgent")
-		--self:DelayedMessage(timer.toRoom - 10, L["msg_teleport10"], "Urgent")
+		self:Bar(L["bar_teleport"], timer.toBalcony, icon.toBalcony)
+		--self:DelayedMessage(timer.toBalcony - 30, L["msg_teleport30"], "Urgent")
+		--self:DelayedMessage(timer.toBalcony - 10, L["msg_teleport10"], "Urgent")
 	end
 	if self.db.profile.blink then
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink)
@@ -70,7 +70,7 @@ function module:OnEngage()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
 
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toRoom, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toBalcony, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
