@@ -35,6 +35,8 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_slimeSpray"], self.SlimeSprayEvent, true)
 	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
+	self:RegisterEvent("CHAT_MSG_MONSTER_WHISPER", "MonsterWhisper")
+	
 	self:ThrottleSync(2, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
 end
@@ -90,6 +92,12 @@ function module:SlimeSprayEvent(msg)
 	end
 end
 
+function module:MonsterWhisper(msg)
+	BigWigs:Print("Please report this to Dorann: " .. msg)
+	if msg == "%s injects you with a mutagen!" then
+		arg1 = "You are injected with a mutagen!"
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--
