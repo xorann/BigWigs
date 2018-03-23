@@ -231,7 +231,7 @@ function module:OnEngage(aModuleName)
 			local present = GetTime()
 			--stopwatch[aModuleName]["EngageTime"] = present
 			
-			for aFilter, v in stopwatch do
+			for aFilter, v in stopwatch[aModuleName] do
 				stopwatch[aModuleName][aFilter] = present
 			end
 		end
