@@ -40,7 +40,7 @@ L:RegisterTranslations("enUS", function() return {
 	msg_unbalanceNow = "Unbalancing Strike! Next in ~30sec",
 	
 	-- bars
-	bar_shout = "Disrupting Shout",
+	bar_shout = "Possible Disrupting Shout",
 	bar_unbalance = "Unbalancing Strike",
 	bar_shieldWall       = "Shield Wall",
 	

@@ -18,8 +18,18 @@ module.toggleoptions = {"shout", "unbalance", "shieldwall", "bosskill"}
 
 -- locals
 module.timer = {
-	firstShout = 20,
-	shout = 25,
+	firstShout = {
+		min = 25 -2,
+		max = 25 +2
+	},
+	shout = {
+		min = 25 -2,
+		max = 25 +2
+	},
+	noShout = {
+		min = 25 -2 -2,
+		max = 25 -2 +2
+	},
 	noShoutDelay = 5,
 	unbalance = 30,
 	shieldwall = 20,
@@ -60,12 +70,12 @@ end
 ------------------------------
 function module:Shout()
 	self:CancelScheduledEvent("bwrazuviousnoshout")
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)		
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout.max, self)		
 	
 	if self.db.profile.shout then
 		self:Message(L["msg_shoutNow"], "Attention", nil, "Alarm")
-		self:DelayedMessage(timer.shout - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.shout - 3, L["msg_shout3"], "Urgent")
+		self:DelayedMessage(timer.shout.min - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.shout.min - 3, L["msg_shout3"], "Urgent")
 		self:Bar(L["bar_shout"], timer.shout, icon.shout)
 	end
 end

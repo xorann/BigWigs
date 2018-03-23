@@ -22,8 +22,14 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-module.timer.firstShout = 25.6
-module.timer.shout = 25.6
+module.timer.firstShout = {
+	min = 25 -2,
+	max = 25 +2
+}
+module.timer.shout = {
+	min = 25 -2,
+	max = 25 +2
+}
 
 module.toggleoptions = {"shout", "shieldwall", "bosskill"} -- removed unbalance, doesn't make sense on nefarian
 
@@ -63,11 +69,11 @@ end
 function module:OnEngage()
 	if self.db.profile.shout then
 		self:Message(L["msg_engage"], "Attention", nil, "Urgent")
-		self:DelayedMessage(timer.firstShout - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.firstShout - 3, L["msg_shout3"], "Urgent")
+		self:DelayedMessage(timer.firstShout.min - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.firstShout.min - 3, L["msg_shout3"], "Urgent")
 		self:Bar(L["bar_shout"], timer.firstShout, icon.shout)
 	end
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout, self) -- praeda first no shout fix
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.firstShout.max, self) -- praeda first no shout fix
 	
 	self:ScheduleRepeatingEvent("bwRazuviousCheckUnderstudyHP", self.UpdateUnderstudyHP, 0.5, self)
 end
@@ -107,13 +113,13 @@ end]]
 -- you only see disrupting shout if someone gets hit
 function module:NoShout()	
 	self:CancelScheduledEvent("bwrazuviousnoshout")
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout, self)
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.noShout.max, self)
 	
 	if self.db.profile.shout then
 		--self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
-		self:Bar(L["bar_shout"], timer.shout, icon.shout)
-		self:DelayedMessage(timer.shout - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.shout - 3, L["msg_shout3"], "Urgent")
+		self:Bar(L["bar_shout"], timer.noShout, icon.shout)
+		self:DelayedMessage(timer.noShout.min - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.noShout.min - 3, L["msg_shout3"], "Urgent")
 	end
 end
 
@@ -209,5 +215,5 @@ function module:TestVisual()
 	-- sweep after 5s
 	self:ScheduleEvent(self:ToString() .. "Test_unbalance", unbalance, 2, self)
 	self:ScheduleEvent(self:ToString() .. "Test_shout", shout, 3, self)
-	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 10, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 50, self)
 end
