@@ -80,9 +80,9 @@ function BigWigs.modulePrototype:Engage()
 			self:Message(string.format(L["%s engaged!"], self.translatedName), "Positive")
 			BigWigsAutoReply:StartBossfight(self)
 			BigWigsBossRecords:StartBossfight(self)
+			self:KTM_SetTarget(self:ToString())
 		end
 		
-		self:KTM_SetTarget(self:ToString())
 		BigWigs:GetModule("CombatlogFilter"):OnEngage(self:ToString())
 
 		self:OnEngage()
