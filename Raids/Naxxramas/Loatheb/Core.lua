@@ -21,6 +21,7 @@ module.timer = {
 	doomLong = 30,
 	doomShort = 15,
 	doom = 0, -- this variable will be changed during the encounter
+	doomDamage = 10,
 	spore = 13,
 	firstCurse = 10,
 	curse = 30,
@@ -64,16 +65,14 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Doom(syncNumDoom)
-	syncNumDoom = tonumber(syncNumDoom)
 	if syncNumDoom then
+		syncNumDoom = tonumber(syncNumDoom)
 		if syncNumDoom == (module.numDoom + 1) then
 			module.numDoom = module.numDoom + 1
 			if self.db.profile.doom then
-				self:Message(string.format(L["msg_doomSoon"], module.numDoom, timer.doom), "Important")
-			end
-			if self.db.profile.doom then
-				self:Bar(string.format(L["bar_doom"], module.numDoom + 1), timer.doom, icon.doom)
-				self:DelayedMessage(timer.doom - 5, string.format(L["msg_doomSoon"], module.numDoom + 1), "Urgent")
+				self:Bar(string.format(L["bar_nextDoom"], module.numDoom + 1), timer.doom, icon.doom)
+				--self:DelayedMessage(timer.doom - 5, string.format(L["msg_doomSoon"], module.numDoom + 1), "Urgent")
+				self:Bar(L["bar_doom"], timer.doomDamage, icon.doom, true, BigWigsColors.db.profile.significant)
 			end
 		end
 	end

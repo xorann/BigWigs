@@ -29,13 +29,14 @@ L:RegisterTranslations("enUS", function() return {
 	-- messages	doomwarn = "Inevitable Doom %d! %d sec to next!",
 	msg_doomSoon = "Inevitable Doom %d in 5 sec!",
 	msg_curse = "Curses removed! RENEW CURSES",    
-	msg_doomChangeSoon = "Doom timerchange in %s seconds!",
+	msg_doomChangeSoon = "Doom timer change in %s seconds!",
 	msg_doomChangeNow = "Inevitable Doom now happens every 15sec!",
 	msg_engage = "Loatheb engaged, 2 min to Inevitable Doom!",
 	--msg_spore = "Spore spawned",
 	
 	-- bars
-	bar_doom = "Inevitable Doom %d",
+	bar_nextDoom = "Inevitable Doom %d",
+	bar_doom = "Doom",
 	bar_curse = "Remove Curse",
 	bar_softEnrage = "Doom every 15sec",
 	bar_spore = "Next Spore",
