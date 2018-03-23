@@ -16,7 +16,7 @@ module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill"}
 
 -- locals
 module.timer = {
-	decimateInterval = 105.5,
+	decimateInterval = 104.5,
 	enrage = 331,
 	fear = 20,
 	frenzy = 10,
