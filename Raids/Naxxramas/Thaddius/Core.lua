@@ -18,13 +18,13 @@ module.toggleoptions = {"enrage", "charge", "polarity", -1, "power", "throw", "p
 
 -- locals
 module.timer = {
-	throw = 21,
+	throw = 20,
 	powerSurge = {
 		min = 10,
 		max = 15
 	},
 	enrage = 300,
-	polarityTick = 6,
+	polarityTick = 5.3,
 	polarityShift = {
 		min = 30,
 		max = 32
@@ -101,7 +101,7 @@ function module:AddDied(add)
 	if module.feugenDead and module.stalaggDead then
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
-			self:Bar("boss active", 20, icon.enrage)
+			self:Bar(L["bar_bossActive"], 20, icon.enrage)
 		end
 		self:CancelScheduledEvent("bwthaddiusthrow")
 		self:CancelDelayedMessage(L["msg_throw"])

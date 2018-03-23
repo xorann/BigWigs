@@ -75,6 +75,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_powerSurge = "Power Surge",
 	bar_throw = "Throw",
 	bar_polarityShift = "Polarity Shift",
+	bar_bossActive = "Boss active",
 	
 	-- misc
 	misc_positiveCharge = "Spell_ChargePositive",--"Interface\\Icons\\Spell_ChargePositive",--
