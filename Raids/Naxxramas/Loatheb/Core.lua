@@ -22,7 +22,9 @@ module.timer = {
 	doomShort = 15,
 	doom = 0, -- this variable will be changed during the encounter
 	doomDamage = 10,
-	spore = 13,
+	spore = 0, -- this variable will be changed during the encounter
+	sporeInterval = 13.35,
+	firstSpore = 11,
 	firstCurse = 10,
 	curse = 30,
 }
@@ -103,6 +105,9 @@ function module:Spore()
 		--self:Message(string.format(L["msg_spore"], module.numSpore), "Important")
 		self:Bar(string.format(L["bar_spore"], module.numSpore), timer.spore, icon.spore)
 	end
+	
+	self:ScheduleEvent("bwloathebspore", self.Spore, timer.spore, self)
+	timer.spore = timer.sporeInterval
 end
 
 

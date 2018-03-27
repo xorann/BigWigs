@@ -48,6 +48,7 @@ function module:OnSetup()
 	module.numSpore = 0 -- how many spores have been spawned
 	module.numDoom = 0 -- how many dooms have been casted
 	timer.doom = timer.firstDoom
+	timer.spore = timer.firstSpore
 end
 
 -- called after boss is engaged
@@ -72,11 +73,11 @@ function module:OnEngage()
 	end
 	
 	self:Spore()
-	self:ScheduleRepeatingEvent("bwloathebspore", self.Spore, timer.spore, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("bwloathebspore")
 end
 
 
