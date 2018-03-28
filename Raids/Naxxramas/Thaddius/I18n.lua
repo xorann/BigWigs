@@ -78,7 +78,12 @@ L:RegisterTranslations("enUS", function() return {
 	bar_bossActive = "Boss active",
 	
 	-- misc
+<<<<<<< HEAD
 	misc_positiveCharge = "Spell_ChargePositive",--"Interface\\Icons\\Spell_ChargePositive",--
 	misc_negativeCharge = "Spell_ChargeNegative",--"Interface\\Icons\\Spell_ChargeNegative", --
+=======
+	misc_positiveCharge = "Spell_ChargePositive", -- Interface\\Icons\\Spell_ChargePositive
+	misc_negativeCharge = "Spell_ChargeNegative", -- Interface\\Icons\\Spell_ChargeNegative
+>>>>>>> development
 
 } end )

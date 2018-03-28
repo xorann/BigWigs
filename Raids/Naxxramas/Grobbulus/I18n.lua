@@ -33,11 +33,16 @@ L:RegisterTranslations("enUS", function() return {
 	slimespray_name = "Slime Spray",
 	slimespray_desc = "Show timer for Slime Spray",
 	
+	bombardSlime_cmd = "bombardSlime",
+	bombardSlime_name = "Bombard Slime",
+	bombardSlime_desc = "Trash Respawn Timer for the three Sewage Slimes",
+	
 	-- triggers
 	trigger_inject = "^([^%s]+) ([^%s]+) afflicted by Mutating Injection",
 	trigger_cloud = "Grobbulus casts Poison Cloud.",
 	trigger_slimeSpray = "Slime Spray",
 	trigger_slimeSpray2 = "sprays slime across the room!",
+	trigger_bombardSlime = "begins to cast Bombard Slime.", -- slime trash respawn
 	
 	-- messages
 	msg_engage = "Grobbulus engaged, 12min to enrage!",
@@ -55,6 +60,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_bomb = "%s injected",
 	bar_cloud = "Poison Cloud",
 	bar_slimeSpray = "Possible Slime Spray",
+	bar_bombardSlime = "Sewage Slime Respawn",
 	
 	-- misc
 	misc_you = "You",

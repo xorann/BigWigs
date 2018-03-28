@@ -34,11 +34,13 @@ module.revision = 20015 -- To be overridden by the module!
 
 -- called after module is enabled
 function module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_COMBAT_HOSTILE_DEATH")
 	self:CombatlogFilter(L["trigger_whirlwind"], self.WhirlwindEvent)
 end
 
 -- called after module is enabled and after each wipe
 function module:OnSetup()
+	module.deathCount = 0
 end
 
 -- called after boss is engaged
@@ -62,6 +64,11 @@ function module:WhirlwindEvent(msg, event)
 	end
 end
 
+function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
+	if msg == string.format(UNITDIESOTHER, module.translatedName) then
+		self:Sync(syncName.death, msg)
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--

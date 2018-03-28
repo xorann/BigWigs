@@ -11,8 +11,11 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20015 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"youinjected", "otherinjected", "icon", "cloud", "slimespray", -1, "enrage", "bosskill"}
+module.toggleoptions = {"youinjected", "otherinjected", "icon", "cloud", "slimespray", -1, "bombardSlime", -1, "enrage", "bosskill"}
 
+module.defaultDB = {
+    bombardSlime = false,
+}
 
 -- locals
 module.timer = {
@@ -27,6 +30,7 @@ module.timer = {
 		min = 25, -- 26.500
 		max = 45 -- 43.334
 	},
+	bombardSlime = 270
 }
 local timer = module.timer
 
@@ -35,6 +39,7 @@ module.icon = {
 	inject = "Spell_Shadow_CallofBone",
 	cloud = "Ability_Creature_Disease_02",
 	slimeSpray = "INV_Misc_Slime_01",
+	bombardSlime = "INV_Misc_Slime_01",
 }
 local icon = module.icon
 
@@ -42,6 +47,7 @@ module.syncName = {
 	inject = "GrobbulusInject",
 	cloud = "GrobbulusCloud",
 	slimeSpray = "GrobbulusSlimeSpray",
+	bombardSlime = "GrobbulusBombardSlime"
 }
 local syncName = module.syncName
 
@@ -56,6 +62,8 @@ function module:BigWigs_RecvSync( sync, rest, nick )
 		self:Cloud()
 	elseif sync == syncName.slimeSpray then
 		self:SlimeSpray()
+	elseif sync == syncName.bombardSlime then
+		self:BombardSlime()
 	end
 end
 
@@ -93,6 +101,14 @@ function module:SlimeSpray()
 	if self.db.profile.slimespray then
 		self:RemoveBar(L["bar_slimeSpray"])
 		self:Bar(L["bar_slimeSpray"], timer.slimeSpray, icon.slimeSpray)
+	end
+end
+
+-- three sewage slimes respawn timer
+function module:BombardSlime()	
+	if self.db.profile.bombardSlime then
+		self:RemoveBar(L["bar_bombardSlime"])
+		self:Bar(L["bar_bombardSlime"], timer.bombardSlime, icon.bombardSlime)
 	end
 end
 

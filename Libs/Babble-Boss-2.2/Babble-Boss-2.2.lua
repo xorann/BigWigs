@@ -374,6 +374,7 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Necro Stalker"] = true;
 		["Living Monstrosity"] = true;
 		["Death Knight Captain"] = true;
+		["Stitched Giant"] = true;
 	}
 end)
 
@@ -954,6 +955,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Necro Stalker"] = "Nekropirscher";
 		["Living Monstrosity"] = "Lebende Monströsität";
 		["Death Knight Captain"] = "Hauptmann der Todesritter";
+		["Stitched Giant"] = "Narbenspeier";
 	}
 end)
 

@@ -6,25 +6,25 @@
 -- Localization      		--
 ------------------------------
 
-local bossName = BigWigs.bossmods.naxx.deathKnightCaptain
+local bossName = BigWigs.bossmods.naxx.stitchedGiant
 local L = BigWigs.i18n[bossName]
 
 L:RegisterTranslations("enUS", function() return {
-	cmd = "DeathKnightCaptain",
+	cmd = "StitchedGiant",
 	
 	-- commands
-	whirlwind_cmd = "whirlwind",
-	whirlwind_name = "Whirlwind",
-	whirlwind_desc = "Whirlwind timer and cooldown.",
+	slimeBolt_cmd = "slimeBolt",
+	slimeBolt_name = "Slime Bolt",
+	slimeBolt_desc = "Slime Bolt timer and cooldown.",
 	
 	-- triggers
-	trigger_whirlwind = "Death Knight Captain gains Whirlwind.",
+	trigger_slimeBolt = "Stitched Giant begins to perform Slime Bolt.",
 	
 	-- messages
 	
 	-- bars
-	bar_whirlwind = "Whirlwind",
-	bar_whirlwindNext = "Possible Whirlwind",
+	bar_slimeBoltCast = "Slime Bolt",
+	bar_slimeBoltNext = "Next Slime Bolt %s",
 	
 	-- misc
 	

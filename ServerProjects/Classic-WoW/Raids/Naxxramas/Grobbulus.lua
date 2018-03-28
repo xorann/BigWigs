@@ -36,9 +36,12 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
 	self:RegisterEvent("CHAT_MSG_MONSTER_WHISPER", "MonsterWhisper")
+	self:CombatlogFilter(L["trigger_bombardSlime"], self.BombardSlimeEvent, true) -- slime trash respawn
+	
 	
 	self:ThrottleSync(2, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
+	self:ThrottleSync(15, syncName.bombardSlime)
 end
 
 -- called after module is enabled and after each wipe
@@ -60,6 +63,8 @@ function module:OnEngage()
 	if self.db.profile.slimespray then
 		self:Bar(L["bar_slimeSpray"], timer.firstSlimeSpray, icon.slimeSpray)
 	end
+	
+	self:RemoveBar(L["bar_bombardSlime"]) -- trash respawn
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -92,11 +97,18 @@ function module:SlimeSprayEvent(msg)
 	end
 end
 
+
 function module:MonsterWhisper(msg)
 	BigWigs:Print("Please report this to Dorann: " .. msg)
 	if msg == "%s injects you with a mutagen!" then
 		arg1 = "You are injected with a mutagen!"
 	end
+end
+
+function module:BombardSlimeEvent(msg)
+	if string.find(msg, L["trigger_bombardSlime"]) then
+		self:Sync(syncName.bombardSlime)
+	end	
 end
 
 ----------------------------------
