@@ -22,8 +22,6 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-module.timer.firstToRoom = 91
-module.timer.thirdToBalcony = 124
 
 
 ------------------------------
@@ -63,6 +61,7 @@ function module:OnSetup()
     timer.curseAfterTeleport = timer.firstCurse
 	timer.toRoom = timer.firstToRoom
 	timer.toBalcony = timer.firstToBalcony
+	timer.wave2 = timer.wave2_1
 end
 
 -- called after boss is engaged
@@ -77,6 +76,10 @@ function module:OnEngage()
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink)
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention")
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention")
+		self:DelayedSound(timer.regularBlink - 5, "Five") 
+		self:DelayedSound(timer.regularBlink - 3, "Three") 
+		self:DelayedSound(timer.regularBlink - 2, "Two") 
+		self:DelayedSound(timer.regularBlink - 1, "One") 
 	end
     if self.db.profile.curse then
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
