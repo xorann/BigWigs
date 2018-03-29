@@ -99,16 +99,24 @@ end
 
 
 function module:MonsterWhisper(msg)
-	BigWigs:Print("Please report this to Dorann: " .. msg)
-	if msg == "%s injects you with a mutagen!" then
-		arg1 = "You are injected with a mutagen!"
+	if msg == L["%s injects you with a mutagen!"] then
+		arg1 = L["You are injected with a mutagen!"]
+	else
+		BigWigs:Print("Please report this to Dorann: " .. msg)	
 	end
 end
 
 function module:BombardSlimeEvent(msg)
-	if string.find(msg, L["trigger_bombardSlime"]) then
-		self:Sync(syncName.bombardSlime)
-	end	
+	if BigWigs:IsModuleActive(BigWigs.bossmods.naxx.livingmonstrosity) or 
+		BigWigs:IsModuleActive(BigWigs.bossmods.naxx.patchwerk) or 
+		BigWigs:IsModuleActive(BigWigs.bossmods.naxx.stitchedGiant) then
+		
+		return
+	else
+		if string.find(msg, L["trigger_bombardSlime"]) then
+			self:Sync(syncName.bombardSlime)
+		end
+	end
 end
 
 ----------------------------------
