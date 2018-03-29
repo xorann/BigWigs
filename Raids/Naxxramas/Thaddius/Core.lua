@@ -29,7 +29,8 @@ module.timer = {
 		min = 30,
 		max = 32
 	},
-	firstPolarityShift = 16
+	firstPolarityShift = 16,
+	phaseTransition = 20,
 }
 local timer = module.timer
 
@@ -101,10 +102,12 @@ function module:AddDied(add)
 	if module.feugenDead and module.stalaggDead then
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
-			self:Bar(L["bar_bossActive"], 20, icon.enrage)
+			self:Bar(L["bar_bossActive"], timer.phaseTransition, icon.enrage)
 		end
 		self:CancelScheduledEvent("bwthaddiusthrow")
 		self:CancelDelayedMessage(L["msg_throw"])
+		self:RemoveBar(L["bar_throw"])		
+		self:RemoveAddsHealthBar()
 	end
 end
 

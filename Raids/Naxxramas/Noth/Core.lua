@@ -40,7 +40,7 @@ module.timer = {
     curse = 44.5,
     
 	wave1 = 12,
-	wave2 = 0
+	wave2 = 0,
 	wave2_1 = 46,
 	wave2_2 = 58,
 	wave2_3 = 46,

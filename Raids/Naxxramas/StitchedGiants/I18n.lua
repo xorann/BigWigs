@@ -29,3 +29,24 @@ L:RegisterTranslations("enUS", function() return {
 	-- misc
 	
 } end )
+
+L:RegisterTranslations("deDE", function() return {
+	--cmd = "StitchedGiant",
+	
+	-- commands
+	--slimeBolt_cmd = "slimeBolt",
+	slimeBolt_name = "Schleimblitz",
+	slimeBolt_desc = "Schleimblitz Timer und Cooldown.",
+	
+	-- triggers
+	trigger_slimeBolt = "Narbenspeier beginnt Schleimblitz auszuführen.",
+	
+	-- messages
+	
+	-- bars
+	bar_slimeBoltCast = "Schleimblitz",
+	bar_slimeBoltNext = "Nächster Schleimblitz %s",
+	
+	-- misc
+	
+} end )

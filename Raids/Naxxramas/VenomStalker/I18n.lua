@@ -33,3 +33,27 @@ L:RegisterTranslations("enUS", function() return {
 	misc_are = "are",
 	misc_is = "is",
 } end )
+
+L:RegisterTranslations("deDE", function() return {
+	--cmd = "SpiderTrash",
+	
+	-- commands
+	--charge_cmd = "charge",
+	charge_name = "Giftangriff",
+	charge_desc = "Zeigt Cooldown von Giftangriff an.",
+	
+	-- triggers
+	trigger_charge = "(.+) (.+) von Giftangriff betroffen.",
+	--trigger_chargeGone = "Poison Charge fades from (.+)",
+	
+	-- messages
+	
+	-- bars
+	bar_charge = "Giftangriff Cooldown %s",
+	
+	-- misc
+	misc_You = "Ihr",
+	misc_you = "ihr",
+	misc_are = "seid",
+	misc_is = "ist",
+} end )

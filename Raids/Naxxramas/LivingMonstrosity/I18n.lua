@@ -32,3 +32,27 @@ L:RegisterTranslations("enUS", function() return {
 	misc_lightningTotem = "Lightning Totem",
 	
 } end )
+
+
+L:RegisterTranslations("deDE", function() return {
+	--cmd = "Monstrosity",
+	
+	-- commands
+	--lightningtotem_cmd = "lightningtotem",
+	lightningtotem_name = "Blitzschlagtotem Alarm",
+	lightningtotem_desc = "Warnung für Blitzschlagtotem",
+	
+	-- triggers
+	trigger_lightningtotemCast = "Living Monstrosity begins to cast Lightning Totem",
+	trigger_lightningtotemSummon = "Living Monstrosity casts Lightning Totem.",
+	
+	-- messages
+	message_lightningtotem = "LIGHTNING TOTEM INC",
+	
+	-- bars
+	bar_lightningtotem = "SUMMON LIGHTNING TOTEM",
+	
+	-- misc
+	misc_lightningTotem = "Lightning Totem",
+	
+} end )

@@ -41,3 +41,40 @@ L:RegisterTranslations("enUS", function() return {
 	-- misc
 
 } end )
+
+L:RegisterTranslations("deDE", function() return {
+	--cmd = "Anubrekhan",
+
+	-- commands
+	--locust_cmd = "locust",
+	locust_name = "Heuschreckenschwarm Alarm",
+	locust_desc = "Warnung vor Heuschreckenschwarm",
+
+	--enrage_cmd = "enrage",
+	enrage_name = "Gruftwache Wutanfall Alarm",
+	enrage_desc = "Warnung für Wutanfall",
+		
+	-- triggers
+	trigger_engage1 = "Just a little taste...",
+	trigger_engage2 = "Yes, run! It makes the blood pump faster!",
+	trigger_engage3 = "There is no way out.",
+	
+	trigger_enrage = "Gruftwache bekommt 'Wutanfall'.",
+	trigger_locustSwarm = "Anub'Rekhan bekommt 'Heuschreckenschwarm'.",
+	trigger_locustSwarmCast = "Anub'Rekhan beginnt Heuschreckenschwarm zu wirken.",
+	
+	-- messages
+	msg_enrage = "Gruftwache Wutanfall!",
+	msg_locustSwarmGone = "Heuschreckenschwarm beendet!",
+	msg_locustSwarmNext = "Nächster Heuschreckenschwarm in 90 sek",
+	msg_locustSwarmSoon = "10 Sekunden bis Heuschreckenschwarm",
+	msg_locustSwarmNow = "Heuschreckenschwarm!",
+	
+	-- bars
+	bar_locustSwarmNext = "Möglicher Heuschreckenschwarm",
+	bar_locustSwarmDuration = "Heuschreckenschwarm",
+	bar_locustSwarmCast = "Heuschreckenschwarm!",
+	
+	-- misc
+
+} end )

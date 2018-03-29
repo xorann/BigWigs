@@ -19,7 +19,7 @@ L:RegisterTranslations("enUS", function() return {
 
 	otherinjected_cmd = "otherinjected",
 	otherinjected_name = "Others injected Alert",
-	otherinjected_desc = "Warn when others are injected",
+	otherinjected_desc = "Warn when others are injected (Whisper)",
 
 	icon_cmd = "icon",
 	icon_name = "Place Icon",
@@ -53,7 +53,7 @@ L:RegisterTranslations("enUS", function() return {
 	msg_enrage10 = "Enrage in 10sec",
 	msg_bombYou = "You are injected!",
 	msg_bombOther = "%s is injected!",
-	msg_cloud = "Poison Cloud next in ~15 seconds!",
+	msg_cloud = "Poison Cloud. Next in ~15 seconds!",
 	
 	-- bars
 	bar_enrage = "Enrage",
@@ -66,5 +66,75 @@ L:RegisterTranslations("enUS", function() return {
 	misc_you = "You",
 	misc_are = "are",
 	misc_bombSay = "I am injected",
+	
+	["%s injects you with a mutagen!"] = true, -- broken msg
+	["You are injected with a mutagen!"] = true, -- workaround for broken msg
+
+} end )
+
+L:RegisterTranslations("deDE", function() return {
+	--cmd = "Grobbulus",
+
+	-- commands
+	--enrage_cmd = "enrage",
+	enrage_name = "Wutanfall Alarm",
+	enrage_desc = "Warnung für Wutanfall",
+
+	--youinjected_cmd = "youinjected",
+	youinjected_name = "Du wurdest injiziert Alarm",
+	youinjected_desc = "Warnung wenn du injiziert wirst",
+
+	--otherinjected_cmd = "otherinjected",
+	otherinjected_name = "Andere injiziert Alarm",
+	otherinjected_desc = "Warnung wenn andere injiziert werden (Flüstern)",
+
+	--icon_cmd = "icon",
+	icon_name = "Icon platzieren",
+	icon_desc = "Platziert ein Skull Icon auf der injizierten Person. (Erfordert Assistent oder höher)",
+
+	--cloud_cmd = "cloud",
+	cloud_name = "Giftwolke",
+	cloud_desc = "Warnung für Giftwolke",
+
+	--slimespray_cmd = "slimespray",
+	slimespray_name = "Schleimnebel",
+	slimespray_desc = "Zeigt Timer für Schleimnebel",
+	
+	--bombardSlime_cmd = "bombardSlime",
+	bombardSlime_name = "Bombard Slime",
+	bombardSlime_desc = "Trash Respawn Timer for the three Sewage Slimes",
+	
+	-- triggers
+	trigger_inject = "^([^%s]+) ([^%s]+) von Mutagene Injektion betroffen.", 
+	trigger_cloud = "Grobbulus wirkt Giftwolke.",
+	trigger_slimeSpray = "Schleimnebel",
+	trigger_slimeSpray2 = "sprays slime across the room!",
+	trigger_bombardSlime = "begins to cast Bombard Slime.", -- slime trash respawn
+	
+	-- messages
+	msg_engage = "Grobbulus angegriffen, 12min bis zum Wutanfall!",
+	msg_enrage10m = "Wutanfall in 10min",
+	msg_enrage5m = "Wutanfall in 5min",
+	msg_enrage1m = "Wutanfall in 1min",
+	msg_enrage30 = "Wutanfall in 30sek",
+	msg_enrage10 = "Wutanfall in 10sek",
+	msg_bombYou = "Du bist injiziert!",
+	msg_bombOther = "%s ist injiziert!",
+	msg_cloud = "Giftwolke. Nächste in ~15 Sekunden!",
+	
+	-- bars
+	bar_enrage = "Wutanfall",
+	bar_bomb = "%s injiziert",
+	bar_cloud = "Giftwolke",
+	bar_slimeSpray = "Möglicher Schleimnebel",
+	bar_bombardSlime = "Sewage Slime Respawn",
+	
+	-- misc
+	misc_you = "Ihr",
+	misc_are = "seid",
+	misc_bombSay = "Ich wurde injiziert",
+	
+	--["%s injects you with a mutagen!"] = true, -- broken msg
+	["Ihr wurdet mit einem Mutagen injiziert!"] = true, -- workaround for broken msg
 
 } end )
