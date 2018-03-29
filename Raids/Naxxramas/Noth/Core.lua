@@ -23,8 +23,8 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstToRoom = 79, --78 --70
-	secondToRoom = 94, --93 --90 
+	firstToRoom = 78, --78 --70
+	secondToRoom = 93, --93 --90 
 	thirdToRoom = 124, --124 --120,
 	toRoom = 0, -- will be changed during the encounter
     
@@ -121,9 +121,9 @@ function module:TeleportToBalcony()
 
 	if self.db.profile.teleport then 
 		self:Message(L["msg_teleportNow"], "Important")
-		self:Bar(L["bar_back"], timer.toBalcony, icon.toBalcony)
-		--self:DelayedMessage(timer.toBalcony - 30, L["msg_back30"], "Urgent")
-		--self:DelayedMessage(timer.toBalcony - 10, L["msg_back10"], "Urgent")
+		self:Bar(L["bar_back"], timer.toRoom, icon.toRoom)
+		--self:DelayedMessage(timer.toRoom - 30, L["msg_back30"], "Urgent")
+		--self:DelayedMessage(timer.toRoom - 10, L["msg_back10"], "Urgent")
 	end
 	if self.db.profile.wave then
 		self:Bar(L["bar_wave1"], timer.wave1, icon.wave )
@@ -161,14 +161,14 @@ function module:TeleportToRoom()
 	self:RemoveBar(L["bar_wave2"])
 	
 	if self.db.profile.teleport then
-		self:Message(string.format(L["msg_backNow"], timer.toRoom), "Important")
+		self:Message(string.format(L["msg_backNow"], timer.toBalcony), "Important")
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink, true, BigWigsColors.db.profile.significant)
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention") -- praeda
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention") -- praeda
 		
-		self:Bar(L["bar_teleport"], timer.toRoom, icon.toBalcony)
-		--self:DelayedMessage(timer.toRoom - 30, L["msg_teleport30"], "Urgent")
-		--self:DelayedMessage(timer.toRoom - 10, L["msg_teleport10"], "Urgent")
+		self:Bar(L["bar_teleport"], timer.toBalcony, icon.toBalcony)
+		--self:DelayedMessage(timer.toBalcony - 30, L["msg_teleport30"], "Urgent")
+		--self:DelayedMessage(timer.toBalcony - 10, L["msg_teleport10"], "Urgent")
 	end
     if self.db.profile.curse then
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)

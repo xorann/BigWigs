@@ -134,10 +134,10 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:TeleportEvent("", L["trigger_teleportToBalcony"])
-	module:TeleportEvent("", L["trigger_teleportToRoom"])
-	module:BlinkEvent("", L["trigger_blink"])
-	module:CurseEvent("", L["trigger_curse"])
+	module:TeleportEvent(L["trigger_teleportToBalcony"])
+	module:TeleportEvent(L["trigger_teleportToRoom"])
+	module:BlinkEvent(L["trigger_blink"])
+	module:CurseEvent(L["trigger_curse"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -151,11 +151,28 @@ function module:TestVisual()
 		self:Disable()
 	end
 
+	local function toBalcony()
+		BigWigs:Print("to balcony")
+		module:TeleportEvent(L["trigger_teleportToBalcony"])
+	end
+	
+	local function toRoom()
+		BigWigs:Print("to room")
+		module:TeleportEvent(L["trigger_teleportToRoom"])
+	end
+	
 	BigWigs:Print("module Test started")
 
 	-- immitate CheckForEngage
 	self:SendEngageSync()
 
+	self:ScheduleEvent(self:ToString() .. "Test_toBalcony1", toBalcony, 5, self)
+	self:ScheduleEvent(self:ToString() .. "Test_toRoom1", toRoom, 10, self)
+	self:ScheduleEvent(self:ToString() .. "Test_toBalcony2", toBalcony, 15, self)
+	self:ScheduleEvent(self:ToString() .. "Test_toRoom2", toRoom, 20, self)
+	self:ScheduleEvent(self:ToString() .. "Test_toBalcony3", toBalcony, 25, self)
+	self:ScheduleEvent(self:ToString() .. "Test_toRoom3", toRoom, 30, self)
+	
 	-- deactivate
 	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 500, self)
 end
