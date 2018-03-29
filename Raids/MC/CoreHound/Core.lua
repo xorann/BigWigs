@@ -10,7 +10,7 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20014
 module.enabletrigger = module.translatedName
 module.toggleoptions = {"bars" --[[, "bosskill"]]}
-
+module.trashMod = true
 
 -- locals
 module.timer = {
