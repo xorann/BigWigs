@@ -65,6 +65,10 @@ function module:OnEngage()
 		self:Bar(L["bar_blink"], timer.blinkAfterTeleport, icon.blink)
 		--self:DelayedMessage(timer.blinkAfterTeleport - 10, L["msg_blink10"], "Attention")
 		--self:DelayedMessage(timer.blinkAfterTeleport - 5, L["msg_blink5"], "Attention")
+		self:DelayedSound(timer.regularBlink - 5, "Five") 
+		self:DelayedSound(timer.regularBlink - 3, "Three") 
+		self:DelayedSound(timer.regularBlink - 2, "Two") 
+		self:DelayedSound(timer.regularBlink - 1, "One") 
 	end
     if self.db.profile.curse then
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)

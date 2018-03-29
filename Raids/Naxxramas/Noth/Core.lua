@@ -40,8 +40,10 @@ module.timer = {
     curse = 44.5,
     
 	wave1 = 12,
-	wave2 = 46,
+	wave2 = 0
+	wave2_1 = 46,
 	wave2_2 = 58,
+	wave2_3 = 46,
 	--wave3 = 80,
 }
 local timer = module.timer
@@ -93,10 +95,14 @@ end
 
 function module:Blink()
 	if self.db.profile.blink then
-		self:Message(L["msg_blinkNow"], "Important")
+		self:Message(L["msg_blinkNow"], "Important", false, "Beware")
 		--self:DelayedMessage(timer.regularBlink - 10, L["msg_blink10"], "Attention")
 		--self:DelayedMessage(timer.regularBlink - 5, L["msg_blink5"], "Attention")
 		self:Bar(L["bar_blink"], timer.regularBlink, icon.blink, true, BigWigsColors.db.profile.significant)
+		self:DelayedSound(timer.regularBlink - 5, "Five") 
+		self:DelayedSound(timer.regularBlink - 3, "Three") 
+		self:DelayedSound(timer.regularBlink - 2, "Two") 
+		self:DelayedSound(timer.regularBlink - 1, "One") 
 	end
 	
 	-- aggro reset?
@@ -168,7 +174,7 @@ function module:TeleportToRoom()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
     
-	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toBalcony, self)
+	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toBalcony, self) -- fallback
     
     self:KTM_Reset()
 end
