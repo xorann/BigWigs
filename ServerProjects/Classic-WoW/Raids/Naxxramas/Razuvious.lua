@@ -82,6 +82,7 @@ end
 function module:OnDisengage()
 	self:TriggerEvent("BigWigs_StopHPBar", self, "Understudy")
 	self:CancelScheduledEvent("bwRazuviousCheckUnderstudyHP")
+	self:CancelScheduledEvent("bwrazuviousnoshout")
 end
 
 

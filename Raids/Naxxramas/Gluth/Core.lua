@@ -16,8 +16,12 @@ module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill"}
 
 -- locals
 module.timer = {
-	decimateInterval = 104.5,
-	enrage = 331,
+	--[[decimateInterval = {
+		min = 107,
+		max = 110
+	},]]
+	decimateInterval = 109,
+	enrage = 335,
 	fear = 20,
 	frenzy = 10,
 	firstFrenzy = 10,
@@ -126,6 +130,8 @@ function module:Decimate()
 		self:DelayedSound(timer.decimateInterval - 2, "Two")
 		self:DelayedSound(timer.decimateInterval - 1, "One")
 	end
+	
+	self:ScheduleEvent("bwgluthdecimate", self.Decimate, timer.decimateInterval, self) -- fallback
 end
 
 

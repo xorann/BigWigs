@@ -55,7 +55,7 @@ function module:OnEngage()
 	if self.db.profile.decimate then
 		self:Message(L["msg_engage"], "Attention")
 		self:Decimate()
-		self:ScheduleRepeatingEvent( "bwgluthdecimate", self.Decimate, timer.decimateInterval, self )
+		self:ScheduleEvent("bwgluthdecimate", self.Decimate, timer.decimateInterval, self)
 	end
 	if self.db.profile.enrage then
 		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage)
@@ -73,6 +73,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("bwgluthdecimate")
 end
 
 

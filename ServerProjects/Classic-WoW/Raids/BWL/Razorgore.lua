@@ -63,6 +63,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("orbcontrol_check")
 end
 
 

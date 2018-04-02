@@ -54,6 +54,8 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("renatakivanishcheck")
+	self:CancelScheduledEvent("renatakiunvanishcheck")
 end
 
 

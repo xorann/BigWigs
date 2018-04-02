@@ -74,6 +74,12 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("bwgothiktrawarn")
+	self:CancelScheduledEvent("bwgothikdkwarn")
+	self:CancelScheduledEvent("bwgothikriderwarn")
+	self:CancelScheduledEvent("bwgothiktrarepop")
+	self:CancelScheduledEvent("bwgothikdkrepop")
+	self:CancelScheduledEvent("bwgothikriderrepop")
 end
 
 
