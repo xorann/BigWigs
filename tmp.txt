@@ -1,0 +1,72 @@
+r20017
+
+Gothik:
+	- Add Timers stop after the last wave
+
+Gluth:
+	- Tweaked Decimate Timer and marked as slightly irregular (107-110s)
+
+Grobbulus:
+	- Possible workaround for the broken monster whisper event
+	- Experimental: Bombard Slime Timer (three sewage slimes on the way to patchwerk)
+
+Loatheb:
+	- Event Handling
+	- Spore Timer
+
+Maexxna:
+	- Event Handling
+	
+Noth:
+	- Fixed teleport Timers
+	- Countdown for Blink
+	- Fixed third balcony teleport timer
+
+Razuvious:
+	- Fixed Disrupting Shout Timer
+	- Made it clearer that the disrupting shout timer is not accurate
+	- Fixed Understudy health bar
+	
+Thaddius:
+	- Healthbars for Stalagg and Feugen
+	- Added timer for phase transition
+	- KTM Reset on start of Phase 2
+	- Fixed Polarity shift warning
+	- Fixed power surge timer
+	- Fixed throw timer
+
+Trash Mobs:
+	- KTM master target will not be set on trash mobs anymore
+	
+New Trash Module: Stitched Giants
+	- Slime Bolt interval timer
+	- Slime Bolt cast timer
+	
+Core Hound:
+	- Marked as trash module
+	
+Improved reset of modules after a wipe for the following modules:
+	- Ouro
+	- Ragnaros
+	- Gluth
+	- Gothik
+	- Loatheb
+	- Noth
+	- Razuvious
+	- Thaddius
+	- Arlokk
+	- Renataki
+	- Razorgore
+	- Grilek
+	
+German Translations (thanks Callias!):
+Translated everything I could find in the combatlog. There are still some Events/Messages not translated. For those I would need a video.
+	- Anub'Rekhan
+	- Gluth
+	- Grobbulus
+	- Living Monstrosity
+	- Noth
+	- Patchwerk
+	- Stitched Giants
+	- Thaddius
+	- Venom Stalker

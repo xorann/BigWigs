@@ -46,12 +46,6 @@ local listOfRaidZones   = {
 local unsupportedRaids  = {
     -- this is a list of unsupported raids in this version
     -- needs to be updated on future content and AddOn releases
-    "Molten Core",
-    "Onyxia's Lair",
-    "Blackwing Lair",
-    "Zul'Gurub",
-    "Ruins of Ahn'Qiraj",
-    "Ahn'Qiraj",
     "Naxxramas"
 }
 local footageRequested  	= false
