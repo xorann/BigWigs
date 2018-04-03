@@ -47,7 +47,7 @@ L:RegisterTranslations("enUS", function() return {
     msg_frenzy = "Frenzy! Tranq now!",
 	
 	-- bars
-	bar_decimate = "Decimate Zombies",
+	bar_decimate = "Possible Decimate Zombies",
 	bar_fear = "AoE Fear",
 	bar_frenzy = "Frenzy",
     bar_frenzyNext = "Next Frenzy",
