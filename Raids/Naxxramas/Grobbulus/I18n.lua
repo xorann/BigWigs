@@ -134,7 +134,7 @@ L:RegisterTranslations("deDE", function() return {
 	misc_are = "seid",
 	misc_bombSay = "Ich wurde injiziert",
 	
-	--["%s injects you with a mutagen!"] = true, -- broken msg
-	["Ihr wurdet mit einem Mutagen injiziert!"] = true, -- workaround for broken msg
+	--["%s injects you with a mutagen!"] = "", -- broken msg -- translation needed
+	["You are injected with a mutagen!"] = "Ihr wurdet mit einem Mutagen injiziert!", -- workaround for broken msg
 
 } end )
