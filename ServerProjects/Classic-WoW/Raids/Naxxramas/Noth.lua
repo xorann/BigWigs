@@ -62,6 +62,8 @@ function module:OnSetup()
 	timer.toRoom = timer.firstToRoom
 	timer.toBalcony = timer.firstToBalcony
 	timer.wave2 = timer.wave2_1
+	
+	module.phase = module.phases.firstRoom
 end
 
 -- called after boss is engaged

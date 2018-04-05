@@ -51,6 +51,8 @@ function module:OnSetup()
     timer.curseAfterTeleport = timer.firstCurse
 	timer.toRoom = timer.firstToRoom
 	timer.toBalcony = timer.firstToBalcony
+	
+	module.phase = module.phases.firstRoom
 end
 
 -- called after boss is engaged

@@ -23,12 +23,12 @@ module.timer = {
     
 	blinkAfterTeleport = 0, -- will be changed during the encounter
 	
-	firstToRoom = 78, --78 --70
+	firstToRoom = 72, --78 --70
 	secondToRoom = 93, --93 --90 
 	thirdToRoom = 124, --124 --120,
 	toRoom = 0, -- will be changed during the encounter
     
-	firstToBalcony = 91,
+	firstToBalcony = 92,
 	secondToBalcony = 113, --112 --110
 	thirdToBalcony = 185, --185 --180, -- ??
 	toBalcony = 0, -- will be changed during the encounter
@@ -65,6 +65,16 @@ module.syncName = {
 }
 local syncName = module.syncName
 
+
+module.phase = nil
+module.phases = {
+	firstRoom = "firstRoom",
+	firstBalcony = "firstBalcony",
+	secondRoom = "secondRoom",
+	secondBalcony = "secondBalcony",
+	thirdRoom = "thirdRoom",
+	thirdBalcony = "thirdBalcony"
+}
 
 ------------------------------
 --      Synchronization	    --
@@ -134,25 +144,37 @@ function module:TeleportToBalcony()
 	end
 	
 	-- setup timers for the next round
-	if timer.toBalcony == timer.firstToBalcony then
+	if module.phase == module.phases.firstRoom then
 		timer.toBalcony = timer.secondToBalcony
 		timer.blinkAfterTeleport = timer.secondBlink
         timer.curseAfterTeleport = timer.secondCurse
 		timer.wave2 = timer.wave2_2
-	elseif timer.toBalcony == timer.secondToBalcony then
+		
+		module.phase = module.phases.firstBalcony
+	elseif module.phase == module.phases.secondRoom then
 		timer.toBalcony = timer.thirdToBalcony
 		timer.blinkAfterTeleport = timer.thirdBlink -- 2nd teleport to balcony
         timer.curseAfterTeleport = timer.thirdCurse
+		
+		module.phase = module.phases.secondBalcony
+	elseif module.phase == module.phases.thirdRoom then
+		-- ???
+		module.phase = module.phases.thirdBalcony
 	end
 	
+	self:CancelScheduledEvent("bwnothtoroom")
 	self:ScheduleEvent("bwnothtoroom", self.TeleportToRoom, timer.toRoom, self) -- fallback
 end
 
 function module:TeleportToRoom()
-	if timer.toRoom == timer.firstToRoom then
+	if module.phase == module.phases.firstBalcony then
 		timer.toRoom = timer.secondToRoom
-	elseif timer.toRoom == timer.secondToRoom then
+		
+		module.phase = module.phases.secondRoom
+	elseif module.phase == module.phases.secondBalcony then
 		timer.toRoom = timer.thirdToRoom
+		
+		module.phase = module.phases.thirdRoom
 	end
 
 	self:CancelScheduledEvent("bwnothtoroom")
@@ -174,6 +196,7 @@ function module:TeleportToRoom()
         self:Bar(L["bar_curse"], timer.curseAfterTeleport, icon.curse)
     end
     
+	self:CancelScheduledEvent("bwnothtobalcony")
 	self:ScheduleEvent("bwnothtobalcony", self.TeleportToBalcony, timer.toBalcony, self) -- fallback
     
     self:KTM_Reset()
