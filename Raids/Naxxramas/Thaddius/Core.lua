@@ -25,10 +25,8 @@ module.timer = {
 	},
 	enrage = 300,
 	polarityTick = 5.3,
-	polarityShift = {
-		min = 30,
-		max = 32
-	},
+	polarityShift = 33,
+	polarityShiftCast = 3,
 	firstPolarityShift = 16,
 	phaseTransition = 20,
 }
@@ -102,7 +100,7 @@ function module:AddDied(add)
 	if module.feugenDead and module.stalaggDead then
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
-			self:Bar(L["bar_bossActive"], timer.phaseTransition, icon.enrage)
+			self:Bar(L["bar_bossActive"], timer.phaseTransition, icon.enrage, true, BigWigsColors.db.profile.start)
 		end
 		self:CancelScheduledEvent("bwthaddiusthrow")
 		self:CancelDelayedMessage(L["msg_throw"])
@@ -138,14 +136,14 @@ end
 function module:PolarityShift()
 	if self.db.profile.polarity then
 		self:RegisterEvent("PLAYER_AURAS_CHANGED")
-		self:DelayedMessage(timer.polarityShift.min - 3, L["msg_polarityShift3"], "Important", nil, "Beware")
 		self:Bar(L["bar_polarityShift"], timer.polarityShift, icon.polarityShift)
 	end
 end
 
 function module:PolarityShiftCast()
 	if self.db.profile.polarity then
-		self:Message(L["msg_polarityShiftNow"], "Important")
+		self:Message(L["msg_polarityShiftNow"], "Important", nil, "Beware")
+		self:Bar(L["bar_polarityShift"], timer.polarityShiftCast, icon.polarityShift, true, BigWigsColors.db.profile.significant)
 	end
 end
 
