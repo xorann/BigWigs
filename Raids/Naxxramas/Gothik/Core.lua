@@ -17,7 +17,7 @@ module.toggleoptions = {"room", -1, "add", "adddeath", "teleport", "bosskill"}
 
 -- locals
 module.timer = {
-	inroom = 277,
+	inroom = 282,
 	
 	firstTrainee = 24,
 	traineeInterval = 20.5, -- its 20.5 seconds not 21

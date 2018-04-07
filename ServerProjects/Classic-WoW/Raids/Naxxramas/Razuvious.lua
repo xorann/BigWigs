@@ -152,7 +152,7 @@ function module:UpdateUnderstudyHP()
 		health = health / maxHP * 100
 		BigWigs:DebugMessage(health)
 		self:TriggerEvent("BigWigs_StartHPBar", self, "Understudy", 100)
-		self:TriggerEvent("BigWigs_SetHPBar", self, "Understudy", maxHP - health)
+		self:TriggerEvent("BigWigs_SetHPBar", self, "Understudy", 100 - health)
 	else
 		self:TriggerEvent("BigWigs_StopHPBar", self, "Understudy")
 	end
