@@ -22,6 +22,7 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.toFloor = 46
 
 ------------------------------
 --      Initialization      --
