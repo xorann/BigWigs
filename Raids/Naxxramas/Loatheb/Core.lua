@@ -23,8 +23,8 @@ module.timer = {
 	doom = 0, -- this variable will be changed during the encounter
 	doomDamage = 10,
 	spore = 0, -- this variable will be changed during the encounter
-	sporeInterval = 13.35,
-	firstSpore = 11,
+	sporeInterval = 13.4,
+	firstSpore = 10.8,
 	firstCurse = 10,
 	curse = 30,
 }
