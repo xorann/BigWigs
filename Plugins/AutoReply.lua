@@ -185,8 +185,11 @@ function BigWigsAutoReply:Victory(mod)
 end
 
 function BigWigsAutoReply:Wipe(mod)
-    --local boss = L["misc_unknown"]
-	local boss = cache.currentBoss:ToString()
+    local boss = L["misc_unknown"]
+	
+	if cache and cache.currentBoss then
+		boss = cache.currentBoss:ToString()
+	end
 	local msg = L["msg_prefix"] .. string.format(L["msg_wipe"], boss)
 	
 	self:EndBossfight(msg)
