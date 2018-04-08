@@ -29,7 +29,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_cocoon = "(.*) (.*) afflicted by Web Wrap.",
 	trigger_webSpray = "afflicted by Web Spray",
 	trigger_poison = "afflicted by Necrotic Poison.",
-	trigger_enrage = "gains Enrage",
+	trigger_enrage = "Maexxna gains Enrage",
 	
 	-- messages
 	msg_cocoon = "%s Cocooned!",
