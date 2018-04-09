@@ -18,10 +18,11 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20016 -- To be overridden by the module!
+module.revision = 20017 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.webspray = 41
 
 
 ------------------------------

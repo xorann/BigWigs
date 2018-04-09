@@ -8,7 +8,7 @@ local L = BigWigs.i18n[bossName]
 
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20017 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"spray", "poison", "cocoon", "enrage", "bosskill"}
@@ -88,11 +88,24 @@ function module:Poison()
 	end
 end
 
+local mark = 0
 function module:Cocoon(player)
 	local t = GetTime()
 	if (not module.times[player]) or (module.times[player] and (module.times[player] + 10) < t) then
 		if self.db.profile.cocoon then 
 			self:Message(string.format(L["msg_cocoon"], player), "Urgent") 
+			
+			if mark == 0 then
+				mark = 1
+			elseif mark == 1 then
+				mark = 2
+			elseif mark == 2 then
+				mark = 3
+			elseif mark == 3 then
+				mark = 1
+			end
+			
+			self:Icon(player, mark, 10)			
 		end
 		module.times[player] = t
 	end
