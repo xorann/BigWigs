@@ -16,13 +16,13 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20013 -- To be overridden by the module!
+module.revision = 20017 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
 
 
-local d, r, f, s = nil, nil, nil, nil
+local d, r, f, s = 0, 0, 0, 0
 
 ------------------------------
 -- Initialization      		--
@@ -66,7 +66,7 @@ end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
-	d, r, f, s = nil, nil, nil, nil
+	d, r, f, s = 0, 0, 0, 0
 end
 
 
