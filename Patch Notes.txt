@@ -1,3 +1,38 @@
+r20017 Test3
+This is just a pre-release!
+
+Noth:
+	- Fix for phase changes
+	
+Grobbulus:
+	- Different solution for monster whisper event
+	
+Thaddius:
+	- improved polarity shift warning
+	
+Razuvious:
+	- possible fix for the Understudy health bar
+	
+Gothik:
+	- fixed phase 2 timer
+	
+Heigan:
+	- Tweaked dance phase timer
+	
+Loatheb:
+	- Tweaked spore timer
+	
+Maexxna:
+	- enrage trigger
+	- tweaked web spray timer
+	- Experimental: mark cocooned players with raid icons
+	
+Anubisath Warder (AQ40):
+	- possible fix for a LUA error
+	
+Autoreply Plugin:
+	- Possible fix for a LUA error
+
 r20017 Test2
 This is just a pre-release!
 

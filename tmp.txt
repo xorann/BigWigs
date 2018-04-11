@@ -2,12 +2,13 @@ r20017
 
 Gothik:
 	- Add Timers stop after the last wave
+	- fixed phase 2 timer
 
 Gluth:
 	- Tweaked Decimate Timer and marked as slightly irregular (107-110s)
 
 Grobbulus:
-	- Possible workaround for the broken monster whisper event
+	- workaround for the broken monster whisper event
 	- Experimental: Bombard Slime Timer (three sewage slimes on the way to patchwerk)
 
 Loatheb:
@@ -16,12 +17,19 @@ Loatheb:
 
 Maexxna:
 	- Event Handling
+	- enrage trigger
+	- tweaked web spray timer
+	- Experimental: mark cocooned players with raid icons
 	
 Noth:
 	- Fixed teleport Timers
 	- Countdown for Blink
 	- Fixed third balcony teleport timer
+	- Fix for phase changes
 
+Heigan:
+	- Tweaked dance phase timer
+	
 Razuvious:
 	- Fixed Disrupting Shout Timer
 	- Made it clearer that the disrupting shout timer is not accurate
@@ -44,6 +52,12 @@ New Trash Module: Stitched Giants
 	
 Core Hound:
 	- Marked as trash module
+
+Anubisath Warder (AQ40):
+	- possible fix for a LUA error
+
+Autoreply Plugin:
+	- Possible fix for a LUA error
 	
 Improved reset of modules after a wipe for the following modules:
 	- Ouro
