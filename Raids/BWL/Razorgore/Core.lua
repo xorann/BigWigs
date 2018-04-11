@@ -41,8 +41,8 @@ local icon = module.icon
 module.syncName = {
 	egg = "RazorgoreEgg",
 	eggStart = "RazorgoreEggStart",
-	orb = "RazorgoreOrbStart_", -- 19 characters
-	orbOver = "RazorgoreOrbStop_",
+	orb = "RazorgoreOrbStart2_", -- 20 characters
+	orbOver = "RazorgoreOrbStop2_",
 	volley = "RazorgoreVolleyCast",
 	phase2 = "RazorgorePhaseTwo",
 }
@@ -70,7 +70,7 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == syncName.eggStart then
 		self:DestroyingEgg()
 	elseif string.find(sync, syncName.orb) then
-		local name = string.sub(sync, 19)
+		local name = string.sub(sync, 20)
 		self:OrbStart(name)
 	elseif string.find(sync, syncName.orbOver) then
 		self:OrbEnd()
