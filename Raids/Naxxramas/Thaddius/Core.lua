@@ -25,7 +25,7 @@ module.timer = {
 	},
 	enrage = 300,
 	polarityTick = 5.3,
-	polarityShift = 33,
+	polarityShift = 30,
 	polarityShiftCast = 3,
 	firstPolarityShift = 16,
 	phaseTransition = 20,
@@ -46,7 +46,6 @@ module.syncName = {
 	adddiedFeugen = "ThaddiusAddDeathFeugen",
 	adddiedStalagg = "ThaddiusAddDeathStalagg",
 	polarity = "ThaddiusPolarity",
-	polarityShiftCast = "ThaddiusPolarityShiftCast",
 	enrage = "ThaddiusEnrage",
 }
 local syncName = module.syncName
@@ -55,6 +54,12 @@ local syncName = module.syncName
 module.feugenDead = nil
 module.stalaggDead = nil
 
+module.phase = nil
+module.phases = {
+	phase1 = "phase1",
+	intermediate = "intermediate",
+	phase2 = "phase2",
+}
 
 ------------------------------
 --      Synchronization	    --
@@ -70,8 +75,6 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Phase2()
 	elseif sync == syncName.polarity then
 		self:PolarityShift()
-	elseif sync == syncName.polarityShiftCast then
-		self:PolarityShiftCast()
 	elseif sync == syncName.enrage then
 		self:Enrage()
 	end
@@ -97,7 +100,9 @@ function module:AddDied(add)
 		module.stalaggDead = true
 	end
 	
-	if module.feugenDead and module.stalaggDead then
+	if module.feugenDead and module.stalaggDead and self.phase == self.phases.phase1 then
+		self.phase = self.phases.intermediate
+		
 		if self.db.profile.phase then 
 			self:Message(L["msg_bossActive"], "Attention") 
 			self:Bar(L["bar_bossActive"], timer.phaseTransition, icon.enrage, true, BigWigsColors.db.profile.start)
@@ -110,39 +115,38 @@ function module:AddDied(add)
 end
 
 function module:Phase2()
-    self:RemoveBar(L["bar_throw"])
-    self:CancelDelayedMessage(L["msg_throw"])
-    self:CancelScheduledEvent("bwthaddiusthrow")
-	self:RemoveAddsHealthBar()
-    
-	if self.db.profile.phase then 
-		self:Message(L["msg_phase2"], "Important") 
-	end
-	if self.db.profile.enrage then
-		self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, BigWigsColors.db.profile.enrage)
-		self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention")
-		self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention")
-		self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
-		self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
-		self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+	if self.phase == self.phases.intermediate then
+		self.phase = self.phases.phase2
+
+		self:RemoveBar(L["bar_throw"])
+		self:CancelDelayedMessage(L["msg_throw"])
+		self:CancelScheduledEvent("bwthaddiusthrow")
+		self:RemoveAddsHealthBar()
 		
-		self:Bar(L["bar_polarityShift"], timer.firstPolarityShift, icon.polarityShift)
-		BigWigsEnrage:Start(timer.enrage, self.translatedName)
+		if self.db.profile.phase then 
+			self:Message(L["msg_phase2"], "Important") 
+		end
+		if self.db.profile.enrage then
+			self:Bar(L["bar_enrage"], timer.enrage, icon.enrage, true, BigWigsColors.db.profile.enrage)
+			self:DelayedMessage(timer.enrage - 3 * 60, L["msg_enrage3m"], "Attention")
+			self:DelayedMessage(timer.enrage - 90, L["msg_enrage90"], "Attention")
+			self:DelayedMessage(timer.enrage - 60, L["msg_enrage60"], "Urgent")
+			self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
+			self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
+			
+			self:Bar(L["bar_polarityShift"], timer.firstPolarityShift, icon.polarityShift)
+			BigWigsEnrage:Start(timer.enrage, self.translatedName)
+		end
+		
+		self:KTM_Reset()
 	end
-	
-	self:KTM_Reset()
 end
 
 function module:PolarityShift()
 	if self.db.profile.polarity then
 		self:RegisterEvent("PLAYER_AURAS_CHANGED")
-		self:Bar(L["bar_polarityShift"], timer.polarityShift, icon.polarityShift)
-	end
-end
-
-function module:PolarityShiftCast()
-	if self.db.profile.polarity then
 		self:Message(L["msg_polarityShiftNow"], "Important", nil, "Beware")
+		self:Bar(L["bar_polarityShift"], timer.polarityShift, icon.polarityShift)
 		self:Bar(L["bar_polarityShift"], timer.polarityShiftCast, icon.polarityShift, true, BigWigsColors.db.profile.significant)
 	end
 end
@@ -273,7 +277,6 @@ function module:TestModuleCore()
 	module:NewPolarity("Interface\\Icons\\Spell_ChargePositive")
 	module:Throw()
 	module:Enrage()
-	module:PolarityShiftCast()
 	module:PolarityShift()
 	module:Phase2()
 	module:AddDied()

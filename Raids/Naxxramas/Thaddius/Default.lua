@@ -59,6 +59,8 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
+	self.phase = self.phases.phase1
+	
 	if self.db.profile.phase and not self.stage1warn then
 		self:Message(L["msg_phase1"], "Important")
 	end
@@ -99,7 +101,7 @@ end
 
 function module:PolarityCastEvent(msg)
 	if string.find(msg, L["trigger_polarityShiftCast"]) then
-		self:Sync(syncName.polarityShiftCast)
+		self:Sync(syncName.polarity)
 	end
 end
 
