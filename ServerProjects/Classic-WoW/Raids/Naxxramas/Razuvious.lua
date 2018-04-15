@@ -73,16 +73,16 @@ function module:OnEngage()
 		self:DelayedMessage(timer.firstShout.min - 3, L["msg_shout3"], "Urgent")
 		self:Bar(L["bar_shout"], timer.firstShout, icon.shout)
 	end
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.firstShout.max, self) -- praeda first no shout fix
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.firstShout.max, self)
 	
 	self:ScheduleRepeatingEvent("bwRazuviousCheckUnderstudyHP", self.UpdateUnderstudyHP, 0.5, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
+	self:CancelScheduledEvent("bwrazuviousnoshout")
 	self:TriggerEvent("BigWigs_StopHPBar", self, "Understudy")
 	self:CancelScheduledEvent("bwRazuviousCheckUnderstudyHP")
-	self:CancelScheduledEvent("bwrazuviousnoshout")
 end
 
 

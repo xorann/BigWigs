@@ -21,6 +21,14 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.firstShout = {
+	min = 25 -2,
+	max = 25 +2
+}
+module.timer.shout = {
+	min = 25 -2,
+	max = 25 +2
+}
 
 
 ------------------------------
@@ -37,10 +45,10 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckForShout")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_PARTY_DAMAGE", "CheckForShout")
 
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForUnbalance")
+	--[[self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForUnbalance")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForUnbalance")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForUnbalance")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "CheckForUnbalance")
+	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_DAMAGE", "CheckForUnbalance")]]
 
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_BUFFS", "CheckForShieldwall")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS", "CheckForShieldwall")
@@ -59,16 +67,16 @@ end
 function module:OnEngage()
 	if self.db.profile.shout then
 		self:Message(L["msg_engage"], "Attention", nil, "Urgent")
-		self:DelayedMessage(timer.firstShout - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.firstShout - 3, L["msg_shout3"], "Urgent")
+		self:DelayedMessage(timer.firstShout.min - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.firstShout.min - 3, L["msg_shout3"], "Urgent")
 		self:Bar(L["bar_shout"], timer.firstShout, icon.shout)
 	end
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self) -- praeda first no shout fix
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.firstShout.max, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
-	self:CancelScheduledEvent("bwrazuviousnoshout") -- praeda first no shout fix
+	self:CancelScheduledEvent("bwrazuviousnoshout")
 end
 
 
@@ -100,13 +108,13 @@ end
 -- 5s after expected shout
 function module:NoShout()	
 	self:CancelScheduledEvent("bwrazuviousnoshout")
-	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.shout + timer.noShoutDelay, self)
+	self:ScheduleEvent("bwrazuviousnoshout", self.NoShout, timer.noShout.max, self)
 	
 	if self.db.profile.shout then
-		self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
-		self:Bar(L["bar_shout"], timer.shout - timer.noShoutDelay, icon.shout)
-		self:DelayedMessage(timer.shout - timer.noShoutDelay - 7, L["msg_shout7"], "Urgent")
-		self:DelayedMessage(timer.shout - timer.noShoutDelay - 3, L["msg_shout3"], "Urgent")
+		--self:Message(L["msg_noShout"], "Attention") -- is this message useful?		
+		self:Bar(L["bar_shout"], timer.noShout, icon.shout)
+		self:DelayedMessage(timer.noShout.min - 7, L["msg_shout7"], "Urgent")
+		self:DelayedMessage(timer.noShout.min - 3, L["msg_shout3"], "Urgent")
 	end
 end
 
