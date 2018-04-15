@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Boss-2.2"
-local MINOR_VERSION = 20007
+local MINOR_VERSION = 20008
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -762,7 +762,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Grand Widow Faerlina"] = "Gro\195\159witwe Faerlina",
 		["Maexxna"] = "Maexxna",
 		["Instructor Razuvious"] = "Instrukteur Razuvious",
-		["Deathknight Understudy"] = "Deathknight Understudy",
+		["Deathknight Understudy"] = "Reservist der Todesritter",
 		["Gothik the Harvester"] = "Gothik der Seelenjäger",
 		["Highlord Mograine"] = "Hochlord Mograine",
 		["Thane Korth'azz"] = "Thane Korth'azz",

@@ -47,3 +47,10 @@ L:RegisterTranslations("enUS", function() return {
 	-- misc
 	misc_understudy = "Death Knight Understudy"
 } end )
+
+L:RegisterTranslations("deDE", function() return {
+	cmd = "Razuvious",
+	
+	-- misc
+	misc_understudy = "Reservist der Todesritter"
+} end )
