@@ -99,13 +99,17 @@ end
 
 
 function module:MonsterWhisper(msg)
+	BigWigs:DebugMessage("monster whisper")
 	if string.find(arg1, "%%s") then
+		BigWigs:DebugMessage("replacements found")
 		if arg2 and type(arg2) == "string" then
-			arg1 = string.gsub(arg1, "%%s", arg2)
+			arg1 = string.format(arg1, arg2)
 		else
-			arg1 = string.gsub(arg1, "%%s", "")
+			arg1 = string.format(arg1, "")
 		end
 	end
+	
+	BigWigs:DebugMessage(arg1)
 	
 	--[[if msg == L["%s injects you with a mutagen!"] and  then
 		arg1 = L["You are injected with a mutagen!"]
@@ -144,6 +148,10 @@ function module:TestModule()
 	module:InjectEvent(L["trigger_inject"])
 	module:InjectEvent(string.format(L["trigger_inject"], L["misc_you"], L["misc_are"]))
 	module:SlimeSprayEvent(L["trigger_slimeSpray"])
+	
+	arg1 = "%s injects you with a mutagen!"
+	arg2 = "Grobbulus"
+	module:MonsterWhisper(arg1)
 	
 	module:OnDisengage()
 	module:TestDisable()
