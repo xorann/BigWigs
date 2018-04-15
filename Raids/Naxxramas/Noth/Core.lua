@@ -124,6 +124,11 @@ function module:TeleportToBalcony()
 	--self:CancelDelayedMessage(L["msg_teleport30"])
 	--self:CancelDelayedMessage(L["msg_curse10"])
 	
+	self:CancelDelayedSound("Five") 
+	self:CancelDelayedSound("Three") 
+	self:CancelDelayedSound("Two") 
+	self:CancelDelayedSound("One") 
+	
 	self:CancelScheduledEvent("bwnothtobalcony")
 	self:RemoveBar(L["bar_teleport"])
 	self:RemoveBar(L["bar_blink"])
