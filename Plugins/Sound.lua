@@ -17,6 +17,7 @@ local sounds = {
 	
 	Beware = "Interface\\AddOns\\BigWigs\\Sounds\\Beware.wav",
     RunAway = "Interface\\AddOns\\BigWigs\\Sounds\\RunAway.wav",
+    Curse = "Interface\\AddOns\\BigWigs\\Sounds\\curse.mp3",
     
     One = "Interface\\AddOns\\BigWigs\\Sounds\\1.ogg",
     Two = "Interface\\AddOns\\BigWigs\\Sounds\\2.ogg",

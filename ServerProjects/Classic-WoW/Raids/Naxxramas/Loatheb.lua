@@ -120,7 +120,9 @@ function module:TestModule()
 end
 
 -- visual test
-function module:TestVisual()
+
+function module:TestVisual(long)
+	-- /run BigWigs:GetModule("Loatheb"):TestVisual(true)
 	local function doom()
 		module:DoomEvent(L["trigger_doom"])
 		BigWigs:Print("Doom Event")
@@ -141,9 +143,37 @@ function module:TestVisual()
     -- immitate CheckForEngage
     self:SendEngageSync()
     
-    self:ScheduleEvent(self:ToString() .. "Test_doom1", doom, 5, self)
-    self:ScheduleEvent(self:ToString() .. "Test_curse1", curse, 7, self)
-	
-    -- reset after 50s
-    self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 50, self)
+	if not long then
+		self:ScheduleEvent(self:ToString() .. "Test_doom1", doom, 5, self)
+		self:ScheduleEvent(self:ToString() .. "Test_curse1", curse, 7, self)
+		
+		-- reset after 50s
+		self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 50, self)
+	else 
+		self:ScheduleEvent(self:ToString() .. "Test_doom1", doom, 120, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom2", doom, 150, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom3", doom, 180, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom4", doom, 210, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom5", doom, 240, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom6", doom, 270, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom7", doom, 300, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom8", doom, 315, self)
+		self:ScheduleEvent(self:ToString() .. "Test_doom9", doom, 330, self)
+		
+		self:ScheduleEvent(self:ToString() .. "Test_curse1", curse, 10, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse2", curse, 40, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse3", curse, 70, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse4", curse, 100, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse5", curse, 130, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse6", curse, 160, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse7", curse, 190, self)		
+		self:ScheduleEvent(self:ToString() .. "Test_curse8", curse, 220, self)
+		self:ScheduleEvent(self:ToString() .. "Test_curse9", curse, 250, self)
+		self:ScheduleEvent(self:ToString() .. "Test_curse10", curse, 280, self)
+		self:ScheduleEvent(self:ToString() .. "Test_curse11", curse, 310, self)
+		self:ScheduleEvent(self:ToString() .. "Test_curse12", curse, 340, self)
+		
+		-- reset after 50s
+		self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 350, self)
+	end
 end

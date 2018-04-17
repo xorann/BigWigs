@@ -86,6 +86,13 @@ function module:Curse()
 			module.timeCurseWarning = GetTime()
 			self:Message(L["msg_curse"], "Important")
 			self:Bar(L["bar_curse"], timer.curse, icon.curse)
+			
+			local _, class = UnitClass("player")
+			-- /run for i=1, 16 do BigWigs:Print(i .. " " .. GetTalentInfo(3,i)); end
+			local talentName, _, _, _, currentRank, _, _, _ = GetTalentInfo(3, 13) -- vampiric embrace
+			if class == "WARLOCK" or (class == "PRIEST" and currentRank == 1) then
+				self:Sound("Curse")
+			end
 		end
 	end
 end
