@@ -1,3 +1,24 @@
+r20017 Test4
+This is just a pre-release!
+
+Grobbulus:
+	- Monster whisper event fix
+
+Thaddius:
+	- prevent phase 2 from triggering after a wipe
+
+Razuvious:
+	- Fix for default implementation
+	- added german translation for death knight understudy
+	- added taunt timer
+	
+Noth:
+	- Reset delayed sound warnings on phase change
+	
+Loatheb:
+	- Audio warning on curse removal (warlocks and shadow priests only)
+	
+
 r20017 Test3
 This is just a pre-release!
 

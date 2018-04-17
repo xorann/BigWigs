@@ -14,6 +14,7 @@ Grobbulus:
 Loatheb:
 	- Event Handling
 	- Spore Timer
+	- Audio warning on curse removal (warlocks and shadow priests only)
 
 Maexxna:
 	- Event Handling
@@ -31,9 +32,12 @@ Heigan:
 	- Tweaked dance phase timer
 	
 Razuvious:
+	- Fix for default implementation
 	- Fixed Disrupting Shout Timer
 	- Made it clearer that the disrupting shout timer is not accurate
 	- Fixed Understudy health bar
+	- added german translation for death knight understudy
+	- added taunt timer
 	
 Thaddius:
 	- Healthbars for Stalagg and Feugen
@@ -42,6 +46,7 @@ Thaddius:
 	- Fixed Polarity shift warning
 	- Fixed power surge timer
 	- Fixed throw timer
+	- prevent phase 2 from triggering after a wipe
 
 Trash Mobs:
 	- KTM master target will not be set on trash mobs anymore

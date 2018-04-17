@@ -69,7 +69,7 @@ Plugins\Test.lua
 Plugins\CustomBar.lua
 Plugins\Tranq.lua
 Plugins\ZombieFood.lua
-Plugins\LoathebTactical.lua
+#Plugins\LoathebTactical.lua
 Plugins\RespawnTimers.lua
 Plugins\WarningSign.lua
 Plugins\BossRecords.lua
