@@ -31,7 +31,7 @@ module.timer.shout = {
 	max = 25 +2
 }
 
-module.toggleoptions = {"shout", "shieldwall", "bosskill"} -- removed unbalance, doesn't make sense on nefarian
+module.toggleoptions = {"shout", "shieldwall", "taunt", "bosskill"} -- removed unbalance, doesn't make sense on nefarian
 
 ------------------------------
 --      Initialization      --
@@ -56,6 +56,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS", "CheckForShieldwall")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_BUFFS", "CheckForShieldwall")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_CREATURE_BUFFS", "CheckForShieldwall")
+	
+	self:CombatlogFilter(L["trigger_taunt"], self.TauntEvent)
 
 	self:ThrottleSync(5, syncName.shout)
 	self:ThrottleSync(5, syncName.shieldwall)
@@ -107,6 +109,11 @@ end
 	end
 end]]
 
+function module:TauntEvent(msg)
+	if string.find(msg, L["trigger_taunt"]) then
+		self:Sync(syncName.taunt)
+	end
+end
 
 ------------------------------
 -- Utility	Functions   	--
@@ -174,6 +181,7 @@ function module:TestModule()
 	--module:CheckForUnbalance(L["trigger_unbalance"])
 	module:CheckForShout(L["trigger_shout"])
 	module:CheckForShieldwall(L["trigger_shieldWall"]) 
+	module:TauntEvent(L["trigger_taunt"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -207,6 +215,11 @@ function module:TestVisual()
 			self.phase = nil
 		end]]
 	end
+	
+	local function taunt()
+		module:TauntEvent(L["trigger_taunt"])
+		BigWigs:Print("taunt")
+	end
 
 	BigWigs:Print("module Test started")
 
@@ -216,5 +229,6 @@ function module:TestVisual()
 	-- sweep after 5s
 	self:ScheduleEvent(self:ToString() .. "Test_unbalance", unbalance, 2, self)
 	self:ScheduleEvent(self:ToString() .. "Test_shout", shout, 3, self)
+	self:ScheduleEvent(self:ToString() .. "Test_taunt", taunt, 5, self)
 	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 50, self)
 end

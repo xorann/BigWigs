@@ -10,10 +10,10 @@ local understudy = L["misc_understudy"]
 
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20017 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 module.wipemobs = {understudy} -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"shout", "unbalance", "shieldwall", "bosskill"}
+module.toggleoptions = {"shout", "unbalance", "shieldwall", "taunt", "bosskill"}
 
 
 -- locals
@@ -33,6 +33,7 @@ module.timer = {
 	noShoutDelay = 5,
 	unbalance = 30,
 	shieldwall = 20,
+	taunt = 5,
 }
 local timer = module.timer
 
@@ -40,13 +41,15 @@ module.icon = {
 	shout = "Ability_Warrior_WarCry",
 	unbalance = "Ability_Warrior_DecisiveStrike",
 	shieldwall = "Ability_Warrior_ShieldWall",
+	taunt = "Spell_Nature_Reincarnation"
 }
 local icon = module.icon
 
 module.syncName = {
 	shout = "RazuviousShout",
 	shieldwall = "RazuviousShieldwall",
-	unbalance = "RazuviousUnbalance"
+	unbalance = "RazuviousUnbalance",
+	taunt = "RazuviousTaunt",
 }
 local syncName = module.syncName
 
@@ -61,6 +64,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Shieldwall()
 	elseif sync == syncName.unbalance then
 		self:Unbalance()
+	elseif sync == syncName.taunt then
+		self:Taunt()
 	end
 end
 
@@ -94,6 +99,12 @@ function module:Unbalance()
 	end
 end
 
+function module:Taunt()
+	if self.db.profile.taunt then
+		self:Message(L["msg_taunt"], "Attention", nil, "Alert")
+		self:Bar(L["bar_taunt"], timer.taunt, icon.taunt)
+	end
+end
 
 ----------------------------------
 -- Module Test Function    		--
@@ -106,6 +117,7 @@ function module:TestModuleCore()
 	module:Unbalance()
 	module:Shieldwall()
 	module:Shout()
+	module:Taunt()
 	
 	module:BigWigs_RecvSync(syncName.shout)
 	module:BigWigs_RecvSync(syncName.shieldwall)

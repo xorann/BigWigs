@@ -20,6 +20,10 @@ L:RegisterTranslations("enUS", function() return {
 	shieldwall_cmd = "shieldwall",
 	shieldwall_name = "Shield Wall Timer",
 	shieldwall_desc = "Show timer for Shield Wall",
+	
+	taunt_cmd = "taunt",
+	taunt_name = "Taunt Timer",
+	taunt_desc = "Show timer for Taunt",
 
 	-- triggers
 	trigger_engage1 = "Stand and fight!",
@@ -29,6 +33,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_shout = "Disrupting Shout",
     trigger_unbalance = "afflicted by Unbalancing Strike",
 	trigger_shieldWall   = "Death Knight Understudy gains Shield Wall.",
+	trigger_taunt = "Razuvious is afflicted by Taunt.",
 	
 	-- messages
 	msg_engage = "Instructor Razuvious engaged! 20sec to Shout, 30sec to Unbalancing Strike!",
@@ -38,11 +43,13 @@ L:RegisterTranslations("enUS", function() return {
 	msg_noShout = "No shout! Next in 20secs",
 	msg_unbalanceSoon = "Unbalancing Strike coming soon!",
 	msg_unbalanceNow = "Unbalancing Strike! Next in ~30sec",
+	msg_taunt = "Taunt!",
 	
 	-- bars
 	bar_shout = "Possible Disrupting Shout",
 	bar_unbalance = "Unbalancing Strike",
 	bar_shieldWall       = "Shield Wall",
+	bar_taunt = "Taunt",
 	
 	-- misc
 	misc_understudy = "Death Knight Understudy"
