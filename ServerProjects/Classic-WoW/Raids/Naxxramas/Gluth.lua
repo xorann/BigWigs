@@ -22,6 +22,12 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+--module.timer.firstDecimate = 104.5 --104.3, 104.6, 106.4, 105.6, 107.0
+module.timer.decimateInterval = { -- 105.6, 107.0, 105.6, 107.3, 108.3, 110.6, 106.4
+	min = 105,
+	max = 110.6
+}
+module.timer.enrage = 332.5
 
 
 ------------------------------
@@ -69,6 +75,12 @@ function module:OnEngage()
 		self:Bar(L["bar_frenzyNext"], timer.firstFrenzy, icon.frenzy, true, BigWigsColors.db.profile.frenzyNext) 
 	end
 	module:Fear()
+	
+	
+	local function setKTM()
+		self:KTM_SetTarget(self:ToString())
+	end
+	self:ScheduleEvent("GluthKtmSetTarget", setKTM, 5, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)

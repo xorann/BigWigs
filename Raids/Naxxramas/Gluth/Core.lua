@@ -17,11 +17,11 @@ module.toggleoptions = {"frenzy", "fear", "decimate", "enrage", "bosskill"}
 -- locals
 module.timer = {
 	decimateInterval = {
-		min = 107,
+		min = 110,
 		max = 110
-	},
+	}, -- 105.6, 107.0, 105.6
 	--decimateInterval = 109,
-	enrage = 335,
+	enrage = 332.5,
 	fear = 20,
 	frenzy = 10,
 	firstFrenzy = 10,
@@ -124,11 +124,9 @@ end
 function module:Decimate()
 	if self.db.profile.decimate then
 		self:Bar(L["bar_decimate"], timer.decimateInterval, icon.decimate)
-		self:DelayedMessage(timer.decimateInterval.max - 5, L["msg_decimateSoon"], "Urgent")
-		self:DelayedSound(timer.decimateInterval.max - 10, "Ten")
-		self:DelayedSound(timer.decimateInterval.max - 3, "Three")
-		self:DelayedSound(timer.decimateInterval.max - 2, "Two")
-		self:DelayedSound(timer.decimateInterval.max - 1, "One")
+		self:DelayedMessage(timer.decimateInterval.min - 5, L["msg_decimateSoon"], "Urgent")
+		self:DelayedSound(timer.decimateInterval.min - 10, "Ten")
+		self:DelayedSound(timer.decimateInterval.min - 5, "Five")
 	end
 	
 	self:ScheduleEvent("bwgluthdecimate", self.Decimate, timer.decimateInterval.max, self) -- fallback
