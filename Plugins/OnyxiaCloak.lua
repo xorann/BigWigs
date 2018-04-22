@@ -71,6 +71,7 @@ BigWigsOnyxiaCloak.consoleOptions = {
 	}
 }
 
+BigWigsOnyxiaCloak.automaticallyEquipped = false
 
 ------------------------------
 --      Initialization      --
@@ -188,14 +189,44 @@ local function EquipItem(itemName)
 		BigWigs:Print(string.format(L["Equipping %s"], itemName))
 	end
 end
+
+function BigWigsOnyxiaCloak:EquipOnyCloak()
+	self.db.profile.defaultCloak = GetNameOfCurrentCloak()
+	if GetNameOfCurrentCloak() ~= L["Onyxia Scale Cloak"] then
+		EquipItem(L["Onyxia Scale Cloak"])
+		BigWigsOnyxiaCloak.automaticallyEquipped = true
+	end
+end
+
+function BigWigsOnyxiaCloak:UnequipOnyCloak()
+	if GetNameOfCurrentCloak() == L["Onyxia Scale Cloak"] then
+		if GetNameOfCurrentCloak() ~= self.db.profile.defaultCloak and BigWigsOnyxiaCloak.automaticallyEquipped then
+			EquipItem(self.db.profile.defaultCloak)
+			BigWigsOnyxiaCloak.automaticallyEquipped = false
+		end
+	end
+end
+
 ------------------------------
 --      Event Handlers      --
 ------------------------------
 function BigWigsOnyxiaCloak:ZONE_CHANGED_NEW_AREA()
 	BigWigs:DebugMessage("ZONE_CHANGED_NEW_AREA")
+	if self.db.profile.active then
+		if AceLibrary("Babble-Zone-2.2")["Blackwing Lair"] ~= GetZoneText() then
+			BigWigs:DebugMessage("not Blackwing Lair")
+			BigWigsOnyxiaCloak:UnequipOnyCloak()
+		end
+	end
 end
 function BigWigsOnyxiaCloak:ZONE_CHANGED()
 	BigWigs:DebugMessage("ZONE_CHANGED")
+	if self.db.profile.active then
+		if AceLibrary("Babble-Zone-2.2")["Blackwing Lair"] ~= GetZoneText() then
+			BigWigs:DebugMessage("not Blackwing Lair")
+			BigWigsOnyxiaCloak:UnequipOnyCloak()
+		end
+	end
 end
 function BigWigsOnyxiaCloak:ZONE_CHANGED_INDOORS()
 	BigWigs:DebugMessage("ZONE_CHANGED_INDOORS [" .. GetSubZoneText() .. "]")
@@ -205,27 +236,16 @@ function BigWigsOnyxiaCloak:ZONE_CHANGED_INDOORS()
 			or (L["Nefarians Lair"] == GetSubZoneText())
 		then
             BigWigs:DebugMessage("Nefarians Lair")
-			self.db.profile.defaultCloak = GetNameOfCurrentCloak()
-			if GetNameOfCurrentCloak() ~= L["Onyxia Scale Cloak"] then
-				EquipItem(L["Onyxia Scale Cloak"])
-			end
+			BigWigsOnyxiaCloak:EquipOnyCloak()
         else
 			BigWigs:DebugMessage("not Nefarians Lair")
-            if GetNameOfCurrentCloak() == L["Onyxia Scale Cloak"] then
-                if GetNameOfCurrentCloak() ~= self.db.profile.defaultCloak then
-					EquipItem(self.db.profile.defaultCloak)
-				end
-            end
+            BigWigsOnyxiaCloak:UnequipOnyCloak()
         end
     end
 end
 
 function BigWigsOnyxiaCloak:CHAT_MSG_MONSTER_YELL(msg)
 	if self.db.profile.active and string.find(msg, L["trigger_engage"]) then
-		local currentCloak = GetNameOfCurrentCloak()
-		if currentCloak ~= L["Onyxia Scale Cloak"] then
-			self.db.profile.defaultCloak = currentCloak
-			EquipItem(L["Onyxia Scale Cloak"])
-		end
+		BigWigsOnyxiaCloak:EquipOnyCloak()
 	end
 end
