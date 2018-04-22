@@ -100,22 +100,21 @@ end
 
 function module:MonsterWhisper(msg)
 	BigWigs:DebugMessage("monster whisper")
-	if string.find(arg1, "%%s") then
+	if string.find(arg1, "%s") then
 		BigWigs:DebugMessage("replacements found")
 		if arg2 and type(arg2) == "string" then
 			arg1 = string.format(arg1, arg2)
 		else
 			arg1 = string.format(arg1, "")
 		end
-	end
-	
-	BigWigs:DebugMessage(arg1)
-	
-	--[[if msg == L["%s injects you with a mutagen!"] and  then
+	elseif arg1 == L["%s injects you with a mutagen!"] then
+		BigWigs:DebugMessage("old solution")
 		arg1 = L["You are injected with a mutagen!"]
 	else
 		BigWigs:Print("Please report this to Dorann: " .. msg)	
-	end]]
+	end	
+	
+	BigWigs:DebugMessage(arg1)
 end
 
 function module:BombardSlimeEvent(msg)
