@@ -1,3 +1,21 @@
+r20017 Test5
+This is just a pre-release!
+
+Grobbulus:
+	- Another try to fix the monster whisper event
+	
+Noth:
+	- Added the missing number four of the blink countdown
+
+Gluth:
+	- Changed the countdown since decimate is too irregular
+	- Set KTM target 5s after pull
+
+Onyxia Cloak Plugin:
+	- The onyxia cloak will only be unequipped if it was equipped by the plugin
+	- Unequipping should now work when you teleport out of Blackwind Lair
+	
+	
 r20017 Test4
 This is just a pre-release!
 
