@@ -630,7 +630,12 @@ function BigWigsBars:StartIrregularBar(module, text, minTime, maxTime, icon, oth
 		-- set time to the remaining time
 		self:SetCandyBarTime(id, time)
 		self:SetCandyBarTimeLeft(id, time)
-
+		
+		--local registered, totalTime, elapsedTime, running, paused = self:CandyBarStatus(id)
+		--if paused then
+			self:StartCandyBar(id)
+		--end
+			
 		-- unregister bar after the maximum time
 		self:ScheduleEvent("BigWigsBarsIrregularBarEnd" .. text, "BigWigs_StopBar", time, self, text)
 	end
