@@ -5,7 +5,8 @@ Gothik:
 	- fixed phase 2 timer
 
 Gluth:
-	- Tweaked Decimate Timer and marked as slightly irregular (107-110s)
+	- Tweaked Decimate Timer and marked as slightly irregular (105-110s)
+	- Set KTM target 5s after pull
 
 Grobbulus:
 	- workaround for the broken monster whisper event
@@ -63,6 +64,10 @@ Anubisath Warder (AQ40):
 
 Autoreply Plugin:
 	- Possible fix for a LUA error
+	
+Onyxia Cloak Plugin:
+	- The onyxia cloak will only be unequipped if it was equipped by the plugin
+	- Unequipping should now work when you teleport out of Blackwind Lair
 	
 Improved reset of modules after a wipe for the following modules:
 	- Ouro

@@ -154,6 +154,8 @@ function module:TestVisual(long)
     BigWigs:Print("test")
 	
 	local function testPhase2()
+		module:AddDeathEvent(L["trigger_addDeathFeugen"])
+		module:AddDeathEvent(L["trigger_addDeathStalagg"])
 		module:PhaseTwoEvent(L["trigger_phase2_1"])
         BigWigs:Print("  testPhase2")
     end
@@ -187,12 +189,12 @@ function module:TestVisual(long)
         BigWigs:Print(" testPolarityShiftPositive1 in " .. testTimer)
 
         -- polarity shift 2
-        testTimer = testTimer + 30
+        testTimer = testTimer + 31
         self:ScheduleEvent(self:ToString() .. "testPolarityShiftPositive2", testPolarityShiftPositive, testTimer, self)
         BigWigs:Print(" testPolarityShiftPositive2 in " .. testTimer)
 
         -- polarity shift 3
-        testTimer = testTimer + 30
+        testTimer = testTimer + 31
         self:ScheduleEvent(self:ToString() .. "testPolarityShiftNegative", testPolarityShiftNegative, testTimer, self)
         BigWigs:Print(" testPolarityShiftNegative in " .. testTimer)
 

@@ -74,7 +74,8 @@ L:RegisterTranslations("enUS", function() return {
 	bar_enrage = "Enrage",
 	bar_powerSurge = "Power Surge",
 	bar_throw = "Throw",
-	bar_polarityShift = "Polarity Shift",
+	bar_polarityShiftCast = "Polarity Shift",
+	bar_polarityShiftNext = "Next Polarity Shift",
 	bar_bossActive = "Boss active",
 	
 	-- misc

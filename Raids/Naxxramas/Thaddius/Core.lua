@@ -134,7 +134,7 @@ function module:Phase2()
 			self:DelayedMessage(timer.enrage - 30, L["msg_enrage30"], "Important")
 			self:DelayedMessage(timer.enrage - 10, L["msg_enrage10"], "Important")
 			
-			self:Bar(L["bar_polarityShift"], timer.firstPolarityShift, icon.polarityShift)
+			self:Bar(L["bar_polarityShiftNext"], timer.firstPolarityShift, icon.polarityShift)
 			BigWigsEnrage:Start(timer.enrage, self.translatedName)
 		end
 		
@@ -146,8 +146,8 @@ function module:PolarityShift()
 	if self.db.profile.polarity then
 		self:RegisterEvent("PLAYER_AURAS_CHANGED")
 		self:Message(L["msg_polarityShiftNow"], "Important", nil, "Beware")
-		self:Bar(L["bar_polarityShift"], timer.polarityShift, icon.polarityShift)
-		self:Bar(L["bar_polarityShift"], timer.polarityShiftCast, icon.polarityShift, true, BigWigsColors.db.profile.significant)
+		self:Bar(L["bar_polarityShiftNext"], timer.polarityShift, icon.polarityShift)
+		self:Bar(L["bar_polarityShiftCast"], timer.polarityShiftCast, icon.polarityShift, true, BigWigsColors.db.profile.significant)
 	end
 end
 
