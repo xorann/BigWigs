@@ -210,17 +210,21 @@ BigWigsPReady.consoleOptions = {
 ------------------------------
 
 function BigWigsPReady:OnEnable()
-	--self:RegisterCheck("CHECKREADY", "oRA_ReadyCheck")
-	--self:RegisterCheck("VOTE", "oRA_Vote")
-	self:RegisterEvent("oRA_ReadyCheck")
-	self:RegisterEvent("oRA_Vote")
-	
-	
-	self:RegisterEvent("CHAT_MSG_ADDON")
-	
-	self:RegisterEvent( "oRA_BarTexture" )
+	if oRA then
+		BigWigs:ToggleModuleActive(BigWigsPReady, false)
+	else
+		--self:RegisterCheck("CHECKREADY", "oRA_ReadyCheck")
+		--self:RegisterCheck("VOTE", "oRA_Vote")
+		self:RegisterEvent("oRA_ReadyCheck")
+		self:RegisterEvent("oRA_Vote")
+		
+		
+		self:RegisterEvent("CHAT_MSG_ADDON")
+		
+		self:RegisterEvent( "oRA_BarTexture" )
 
-	self:SetupFrames()
+		self:SetupFrames()
+	end
 end
 
 function BigWigsPReady:OnDisable()
