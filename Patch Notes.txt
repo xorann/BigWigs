@@ -1,3 +1,16 @@
+r20017 Test6
+This is just a pre-release!
+
+Thaddius:
+	- Fixed bar for the next polarity shift
+	
+Bar Plugin:
+	- Possbile fix for irregular bars pausing after the minimum time elapsed
+	
+ReadyCheck Plugin:
+	- Disable the BigWigs ReadyCheck plugin if oRA is active (to prevent multiple ready check windows)
+
+	
 r20017 Test5
 This is just a pre-release!
 

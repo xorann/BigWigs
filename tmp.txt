@@ -62,6 +62,12 @@ Core Hound:
 Anubisath Warder (AQ40):
 	- possible fix for a LUA error
 
+Bar Plugin:
+	- Possbile fix for irregular bars pausing after the minimum time elapsed
+
+ReadyCheck Plugin:
+	- Disable the BigWigs ReadyCheck plugin if oRA is active (to prevent multiple ready check windows)
+
 Autoreply Plugin:
 	- Possible fix for a LUA error
 	

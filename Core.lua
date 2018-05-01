@@ -1,6 +1,6 @@
 
 local revision = 20017
-local forkName = "Classic-WoW-Test5" -- please change this name if you forked this addon. must not contain spaces
+local forkName = "Classic-WoW-Test6" -- please change this name if you forked this addon. must not contain spaces
 local isDeveloperVersion = false
 
 ------------------------------
