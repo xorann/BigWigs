@@ -153,7 +153,8 @@ L:RegisterTranslations("deDE", function() return {
 	bar_enrage = "Wutanfall",
 	bar_powerSurge = "Power Surge",
 	bar_throw = "Wurf",
-	bar_polarityShift = "Polaritätsveränderung",
+	bar_polarityShiftCast = "Polaritätsveränderung",
+	bar_polarityShiftNext = "Nächste Polaritätsveränderung",
 	bar_bossActive = "Boss aktiv",
 	
 	-- misc
