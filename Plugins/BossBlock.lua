@@ -365,12 +365,14 @@ function BigWigsBossBlock:OnEnable()
 	if CT_RAMessageFrame then self:Hook(CT_RAMessageFrame, "AddMessage", "CTRA_AddMessage") end
 end
 
-
 function BigWigsBossBlock:ChatFrame_OnEvent(event)
 	if self:IsChannelSuppressed(event) and self:IsSpam(arg1) then
 		--self:Debug(L["Suppressing Chatframe"], event, arg1)
 		return
 	end
+	
+	self:FixGrobbulus()
+	
 	if type(self.hooks["ChatFrame_OnEvent"]) == "function" and event then
         --BigWigs:DebugMessage("ChatFrame_OnEvent " .. event)
 		self.hooks["ChatFrame_OnEvent"](event)
@@ -410,4 +412,20 @@ function BigWigsBossBlock:IsChannelSuppressed(chan)
 	return self.db.profile[raidchans[chan]]
 end
 
-
+function BigWigsBossBlock:FixGrobbulus()
+	-- the server triggers the following event which leads to a LUA error since string.format expects two place holders but only receives one:
+	-- string.format("%s whispers: %s injects you with a mutagen!", "Grobbulus")
+	if event == "CHAT_MSG_MONSTER_WHISPER" then
+		-- fix arg1
+		BigWigs:DebugMessage("ChatFrame_OnEvent CHAT_MSG_MONSTER_WHISPER")
+		if string.find(arg1, "%s") then
+			BigWigs:DebugMessage("place holder found")
+			if arg2 and type(arg2) == "string" then
+				arg1 = string.format(arg1, arg2)
+			else
+				arg1 = string.format(arg1, "")
+			end	
+		end	
+		BigWigs:DebugMessage(arg1)
+	end
+end

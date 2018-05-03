@@ -35,9 +35,7 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_slimeSpray"], self.SlimeSprayEvent, true)
 	self:CombatlogFilter(L["trigger_slimeSpray2"], self.SlimeSprayEvent, true)
 	
-	self:RegisterEvent("CHAT_MSG_MONSTER_WHISPER", "MonsterWhisper")
 	self:CombatlogFilter(L["trigger_bombardSlime"], self.BombardSlimeEvent, true) -- slime trash respawn
-	
 	
 	self:ThrottleSync(2, syncName.inject)
 	self:ThrottleSync(5, syncName.cloud)
@@ -97,26 +95,6 @@ function module:SlimeSprayEvent(msg)
 	end
 end
 
-
-function module:MonsterWhisper(msg)
-	BigWigs:DebugMessage("monster whisper")
-	if string.find(arg1, "%s") then
-		BigWigs:DebugMessage("replacements found")
-		if arg2 and type(arg2) == "string" then
-			arg1 = string.format(arg1, arg2)
-		else
-			arg1 = string.format(arg1, "")
-		end
-	elseif arg1 == L["%s injects you with a mutagen!"] then
-		BigWigs:DebugMessage("old solution")
-		arg1 = L["You are injected with a mutagen!"]
-	else
-		BigWigs:Print("Please report this to Dorann: " .. msg)	
-	end	
-	
-	BigWigs:DebugMessage(arg1)
-end
-
 function module:BombardSlimeEvent(msg)
 	if BigWigs:IsModuleActive(BigWigs.bossmods.naxx.livingmonstrosity) or 
 		BigWigs:IsModuleActive(BigWigs.bossmods.naxx.patchwerk) or 
@@ -134,6 +112,8 @@ end
 -- Module Test Function    		--
 ----------------------------------
 
+-- /run BigWigs:GetModule("Grobbulus"):TestModule()
+
 -- automated test
 function module:TestModule()
 	module:OnEnable()
@@ -147,10 +127,6 @@ function module:TestModule()
 	module:InjectEvent(L["trigger_inject"])
 	module:InjectEvent(string.format(L["trigger_inject"], L["misc_you"], L["misc_are"]))
 	module:SlimeSprayEvent(L["trigger_slimeSpray"])
-	
-	arg1 = "%s injects you with a mutagen!"
-	arg2 = "Grobbulus"
-	module:MonsterWhisper(arg1)
 	
 	module:OnDisengage()
 	module:TestDisable()
