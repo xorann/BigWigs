@@ -32,10 +32,10 @@ L:RegisterTranslations("enUS", function() return {
 	-- triggers
 	trigger_mark = "is afflicted by Mark of ",
 	trigger_void = "Lady Blaumeux casts Void Zone.",
-	trigger_meteor = "Thane Korth'azz 's Meteor hits ",
+	trigger_meteor = "Thane Korth'azz's Meteor hits ",
 	trigger_wrath = "Sir Zeliek's Holy Wrath hits ",
 	trigger_shieldWall = "(.*) gains Shield Wall.",
-	
+	--trigger_voidHit = "Void Zone's Consumption hits you"
 	-- messages
 	msg_markNow = "Mark %d!",
 	msg_markSoon = "Mark %d in 5 sec",
