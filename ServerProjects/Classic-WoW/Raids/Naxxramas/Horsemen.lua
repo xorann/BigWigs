@@ -18,11 +18,12 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-
+module.timer.meteor = 13
+module.timer.firstMark = 20
 
 ------------------------------
 --      Initialization      --
@@ -127,7 +128,6 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 		end
 	end
 end
-
 
 ----------------------------------
 -- Module Test Function    		--
