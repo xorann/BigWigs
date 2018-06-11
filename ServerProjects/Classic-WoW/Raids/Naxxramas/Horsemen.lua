@@ -61,7 +61,7 @@ function module:OnEngage()
 	if self.db.profile.mark then
 		self:Message(L["msg_engage"], "Attention")
 		self:Bar(string.format( L["bar_mark"], self.marks + 1), timer.firstMark, icon.mark) -- 18,5 sec on feenix
-		self:DelayedMessage(timer.firstMark - 5, string.format( L["msg_markSoon"], self.marks + 1), "Urgent")
+		--self:DelayedMessage(timer.firstMark - 5, string.format( L["msg_markSoon"], self.marks + 1), "Urgent")
 	end
 end
 

@@ -22,8 +22,14 @@ module.toggleoptions = {"mark", "shieldwall", -1, "meteor", "void", "wrath", "bo
 module.timer = {
 	firstMark = 17,
 	mark = 12,
-	meteor = 12,
-	wrath = 12,
+	meteor = {
+		min = 12,
+		max = 14
+	},
+	wrath = {
+		min = 12,
+		max = 14
+	},
 	void = 12,
 	shieldwall = 20,
 }
@@ -83,28 +89,28 @@ function module:Mark(mark)
 		if self.db.profile.mark then
 			self:Message(string.format(L["msg_markNow"], self.marks), "Important")
 			self:Bar(string.format(L["bar_mark"], self.marks + 1), timer.mark, icon.mark)
-			self:DelayedMessage(timer.firstMark - 5, string.format( L["msg_markSoon"], self.marks + 1), "Urgent")
+			--self:DelayedMessage(timer.firstMark - 5, string.format( L["msg_markSoon"], self.marks + 1), "Urgent")
 		end
 	end
 end
 
 function module:Meteor()
 	if self.db.profile.meteor then
-		self:Message(L["msg_meteor"], "Important")
+		--self:Message(L["msg_meteor"], "Important")
 		self:Bar(L["bar_meteor"], timer.meteor, icon.meteor)
 	end
 end
 
 function module:Wrath()
 	if self.db.profile.wrath then
-		self:Message(L["msg_wrath"], "Important")
+		--self:Message(L["msg_wrath"], "Important")
 		self:Bar(L["bar_wrath"], timer.wrath, icon.wrath)
 	end
 end
 
 function module:Void()
 	if self.db.profile.void then
-		self:Message(L["msg_voidZone"], "Important")
+		--self:Message(L["msg_voidZone"], "Important")
 		self:Bar(L["bar_void"], timer.void, icon.void)
 	end
 end
