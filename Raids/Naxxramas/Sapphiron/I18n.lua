@@ -29,7 +29,8 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_lifeDrain1 = "afflicted by Life Drain",
 	trigger_lifeDrain2 = "Life Drain was resisted by",
 	trigger_icebolt = "You are afflicted by Icebolt",
-	trigger_deepBreath = "%s takes in a deep breath...",
+	trigger_deepBreath = "Sapphiron takes in a deep breath...",
+	trigger_flight = "Sapphiron lifts off into the air!",
 	
 	-- messages
 	msg_berserk10m = "10min to berserk!",
@@ -49,4 +50,8 @@ L:RegisterTranslations("enUS", function() return {
 	
 	-- misc
 	
+} end )
+
+L:RegisterTranslations("deDe", function() return {
+	trigger_icebolt = "Ihr seid von Eisblitz betroffen.",
 } end )

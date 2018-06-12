@@ -18,7 +18,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -38,6 +38,8 @@ function module:OnEnable()
 	end
 
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "CheckForDeepBreath")
+	self:CombatlogFilter(L["trigger_deepBreath"], self.DeepBreathEvent, true)
+	self:CombatlogFilter(L["trigger_flight"], self.FlightEvent, true)
 
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForLifeDrain")
@@ -72,6 +74,8 @@ function module:OnEngage()
 		-- start it.
 		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 5, self)
 	end
+	
+	self:ScheduleRepeatingEvent("bwsapphengagecheck", self.EngageCheck, 1, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -104,6 +108,46 @@ function module:CheckForDeepBreath(msg)
 		self:Sync(syncName.deepbreath)
 	end
 end
+function module:DeepBreathEvent(msg)
+	if string.find(msg, L["trigger_deepBreath"]) then
+		self:Sync(syncName.deepbreath)
+	end
+end
+
+function module:FlightEvent(msg)
+	if string.find(msg, L["trigger_flight"]) then
+		self:Sync(syncName.flight)
+	end
+end
+
+------------------------------
+-- Utility	Functions   	--
+------------------------------
+function module:EngageCheck()
+	if not self.engaged then
+		if self:IsSapphironVisible() then
+			module:CancelScheduledEvent("bwsapphengagecheck")
+
+			module:SendEngageSync()
+		end
+	else
+		module:CancelScheduledEvent("bwsapphengagecheck")
+	end
+end
+
+function module:IsSapphironVisible()
+	if UnitName("playertarget") == self:ToString() then
+		return true
+	else
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid" .. i .. "target") == self:ToString() then
+				return true
+			end
+		end
+	end
+
+	return false
+end
 
 
 ----------------------------------
@@ -122,6 +166,8 @@ function module:TestModule()
 	module:CheckForDeepBreath(L["trigger_deepBreath"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain1"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain2"])
+	module:DeepBreathEvent(L["trigger_deepBreath"])
+	module:FlightEvent(L["trigger_flight"])
 	
 	module:OnDisengage()
 	module:TestDisable()
