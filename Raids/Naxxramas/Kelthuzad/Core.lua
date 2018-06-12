@@ -124,10 +124,15 @@ function module:Phase2()
 	end
 	
 	-- master target should be automatically set, as soon as a raid assistant targets kel'thuzad
+	self:KTM_SetTarget(self:ToString())
 	self:KTM_Reset()
 	
 	-- proximity silent
 	self:Proximity()
+	
+	if BigWigsFrostBlast then
+		BigWigsFrostBlast:FBShow()
+	end
 end
 
 function module:Phase3()
@@ -217,6 +222,7 @@ function module:AbominationDies(name)
 			self:Bar(string.format(L["bar_add"], module.numAbominations, name), (module.timePhase1Start + timer.phase1 - GetTime()), icon.abomination) 
 		end	
 	end
+	self:KTM_Reset()
 end
 
 function module:WeaverDies(name)

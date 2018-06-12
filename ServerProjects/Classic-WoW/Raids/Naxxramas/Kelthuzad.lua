@@ -87,12 +87,16 @@ function module:OnEngage()
 		module.numWeavers = 0
 		self:Bar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"), timer.phase1, icon.abomination)
 		self:Bar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"), timer.phase1, icon.soulWeaver)
+		
+		self:KTM_SetTarget("Unstoppable Abomination")
 	end
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
 function module:OnDisengage()
     self:RemoveProximity()
+	
+	BigWigsFrostBlast:FBClose()
 end
 
 
