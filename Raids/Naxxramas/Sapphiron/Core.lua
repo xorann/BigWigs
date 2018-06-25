@@ -8,10 +8,10 @@ local L = BigWigs.i18n[bossName]
 
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"berserk", "lifedrain", "deepbreath", "icebolt", "proximity", "bosskill"}
+module.toggleoptions = {"berserk", "lifedrain", "deepbreath", "icebolt", "proximity", "blizzard", "bosskill"}
 
 -- Proximity Plugin
 module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
@@ -26,6 +26,7 @@ module.timer = {
 	lifedrainAfterFlight = 14,
 	lifedrain = 24,
 	groundPhase = 50,
+	blizzard = 5,
 }
 local timer = module.timer
 
@@ -34,6 +35,7 @@ module.icon = {
 	deepbreathInc = "Spell_Arcane_PortalIronForge",
 	lifedrain = "Spell_Shadow_LifeDrain02",
 	berserk = "INV_Shield_01",
+	blizzard = "Spell_Frost_IceStorm",
 }
 local icon = module.icon
 
@@ -84,6 +86,7 @@ function module:Flight()
 		end
 		self:Message(L["msg_deepBreathSoon"], "Urgent", true, "Beware")
 		self:Bar(L["bar_deepBreathCast"], timer.deepbreathInc, icon.deepbreathInc)
+		self:Bar("flight timer", 105, icon.deepbreathInc)
 		module.lastTarget = nil
 		module.cachedUnitId = nil
 		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, timer.groundPhase, self)
@@ -104,6 +107,23 @@ function module:DeepBreath()
 	end
 	
 	self:RemoveProximity()
+end
+
+
+------------------------------
+-- Utility	Functions   	--
+------------------------------
+function module:BlizzardGain()
+	if self.db.profile.blizzard then
+		self:Message(L["msg_blizzard"], "Personal", true, "Alarm")
+		self:WarningSign(icon.blizzard, timer.blizzard)
+		--self:Say(L["misc_blizzardSay"])
+		BigWigs:Print(L["misc_blizzardSay"])
+	end
+end
+
+function module:BlizzardGone()
+	self:RemoveWarningSign(icon.blizzard)
 end
 
 

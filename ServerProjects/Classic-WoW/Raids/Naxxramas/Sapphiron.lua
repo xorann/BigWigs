@@ -37,10 +37,12 @@ function module:OnEnable()
 		self:CancelScheduledEvent("bwsapphdelayed")
 	end
 
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "CheckForDeepBreath")
+	self:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "CheckForDeepBreath")
 	self:CombatlogFilter(L["trigger_deepBreath"], self.DeepBreathEvent, true)
 	self:CombatlogFilter(L["trigger_flight"], self.FlightEvent, true)
-
+	self:CombatlogFilter(L["trigger_blizzardGain"], self.BlizzardGainEvent)
+	self:CombatlogFilter(L["trigger_blizzardGone"], self.BlizzardGoneEvent)
+	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForLifeDrain")
@@ -74,6 +76,8 @@ function module:OnEngage()
 		-- start it.
 		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 5, self)
 	end
+	
+	self:Bar("first flight", 48, icon.berserk)
 	
 	self:ScheduleRepeatingEvent("bwsapphengagecheck", self.EngageCheck, 1, self)
 end
@@ -110,14 +114,28 @@ function module:CheckForDeepBreath(msg)
 	end
 end
 function module:DeepBreathEvent(msg)
+	BigWigs:Print("DeepBreathEvent: " .. msg)
 	if string.find(msg, L["trigger_deepBreath"]) then
 		self:Sync(syncName.deepbreath)
 	end
 end
 
 function module:FlightEvent(msg)
+	BigWigs:Print("flight: " .. msg)
 	if string.find(msg, L["trigger_flight"]) then
 		self:Sync(syncName.flight)
+	end
+end
+
+function module:BlizzardGainEvent(msg)
+	if string.find(msg, L["trigger_blizzardGain"]) then
+		module:BlizzardGain()
+	end
+end
+
+function module:BlizzardGoneEvent(msg)
+	if string.find(msg, L["trigger_blizzardGone"]) then
+		module:BlizzardGone()
 	end
 end
 
@@ -167,6 +185,10 @@ function module:TestModule()
 	module:CheckForDeepBreath(L["trigger_deepBreath"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain1"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain2"])
+	module:BlizzardGainEvent(L["trigger_blizzardGain"])
+	module:BlizzardGoneEvent(L["trigger_blizzardGone"])
+	module:FlightEvent(L["trigger_flight"])
+	module:DeepBreathEvent(L["trigger_deepBreath"])
 	module:CheckForLifeDrain(L["trigger_icebolt"])
 	
 	module:OnDisengage()
