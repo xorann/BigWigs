@@ -224,10 +224,10 @@ function BigWigsFrostBlast:FrostBlastEvent(msg)
 	if name and verb then
 		if name == L["misc_you"] and verb == L["misc_are"] then
 			--self:Sync(syncName.frostblast .. " " .. UnitName("player"))
-			self:AddFrostBlastTarget(UnitName("player"))
+			BigWigsFrostBlast:AddFrostBlastTarget(UnitName("player"))
 		else
 			--self:Sync(syncName.frostblast .. " " .. name)
-			self:AddFrostBlastTarget(name)
+			BigWigsFrostBlast:AddFrostBlastTarget(name)
 		end
 	end
 end

@@ -96,6 +96,9 @@ end
 function module:OnDisengage()
     self:RemoveProximity()
 	
+	self:RemoveBar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"))
+	self:RemoveBar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"))
+	
 	BigWigsFrostBlast:FBClose()
 end
 
