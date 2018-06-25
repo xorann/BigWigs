@@ -24,13 +24,17 @@ L:RegisterTranslations("enUS", function() return {
 	icebolt_cmd = "icebolt",
 	icebolt_name = "Announce Ice Block",
 	icebolt_desc = "Yell when you become an Ice Block.",
+	
+	proximity_cmd = "proximity",
+	proximity_name = "Proximity warning",
+	proximity_desc = "Warns when other players are too near to you",
 
 	-- triggers
 	trigger_lifeDrain1 = "afflicted by Life Drain",
 	trigger_lifeDrain2 = "Life Drain was resisted by",
 	trigger_icebolt = "You are afflicted by Icebolt",
-	trigger_deepBreath = "Sapphiron takes in a deep breath...",
-	trigger_flight = "Sapphiron lifts off into the air!",
+	trigger_deepBreath = " takes in a deep breath...",
+	trigger_flight = "Sapphiron gets airbourne", --???
 	
 	-- messages
 	msg_berserk10m = "10min to berserk!",

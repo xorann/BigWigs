@@ -100,6 +100,7 @@ function module:CheckForLifeDrain(msg)
 		end
 	elseif string.find(msg, L["trigger_icebolt"]) and self.db.profile.icebolt then
 		SendChatMessage(L["msg_IceBlockYell"], "YELL")
+		Minimap:PingLocation(CURSOR_OFFSET_X, CURSOR_OFFSET_Y);
 	end
 end
 
@@ -166,8 +167,7 @@ function module:TestModule()
 	module:CheckForDeepBreath(L["trigger_deepBreath"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain1"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain2"])
-	module:DeepBreathEvent(L["trigger_deepBreath"])
-	module:FlightEvent(L["trigger_flight"])
+	module:CheckForLifeDrain(L["trigger_icebolt"])
 	
 	module:OnDisengage()
 	module:TestDisable()

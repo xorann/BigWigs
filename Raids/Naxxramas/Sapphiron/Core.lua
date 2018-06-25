@@ -11,11 +11,11 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20014 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"berserk", "lifedrain", "deepbreath", "icebolt", "bosskill"}
+module.toggleoptions = {"berserk", "lifedrain", "deepbreath", "icebolt", "proximity", "bosskill"}
 
 -- Proximity Plugin
--- module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
--- module.proximitySilent = false
+module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
+module.proximitySilent = false
 
 
 -- locals
@@ -82,17 +82,19 @@ function module:Flight()
 		if self:IsEventScheduled("bwsapphdelayed") then
 			self:CancelScheduledEvent("bwsapphdelayed")
 		end
-		self:Message(L["msg_deepBreathSoon"], "Urgent")
+		self:Message(L["msg_deepBreathSoon"], "Urgent", true, "Beware")
 		self:Bar(L["bar_deepBreathCast"], timer.deepbreathInc, icon.deepbreathInc)
 		module.lastTarget = nil
 		module.cachedUnitId = nil
 		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, timer.groundPhase, self)
 	end
+	
+	self:Proximity()
 end
 
 function module:DeepBreath()
 	if self.db.profile.deepbreath then
-		self:Message(L["msg_deepBreathNow"], "Important")
+		self:Message(L["msg_deepBreathNow"], "Important", true, "RunAway")
 		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath)
 	end
 	
@@ -100,6 +102,8 @@ function module:DeepBreath()
 	if self.db.profile.lifedrain then
 		self:Bar(L["bar_lifeDrain"], timer.lifedrainAfterFlight, icon.lifedrain)
 	end
+	
+	self:RemoveProximity()
 end
 
 
