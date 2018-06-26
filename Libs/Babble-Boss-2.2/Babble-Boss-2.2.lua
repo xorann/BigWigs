@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Boss-2.2"
-local MINOR_VERSION = 20008
+local MINOR_VERSION = 20009
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -375,6 +375,8 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Living Monstrosity"] = true;
 		["Death Knight Captain"] = true;
 		["Stitched Giant"] = true;
+		["Unstoppable Abomination"] = true;
+		["Soul Weaver"] = true;
 	}
 end)
 

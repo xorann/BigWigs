@@ -8,7 +8,7 @@ local L = BigWigs.i18n[bossName]
 
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "proximity", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
@@ -37,13 +37,13 @@ module.timer = {
 local timer = module.timer
 
 module.icon = {
-	abomination = "",
-	soulWeaver = "",
+	abomination = "Ability_racial_cannibalize",
+	soulWeaver = "Spell_shadow_auraofdarkness",
 	frostboltVolley = "Spell_Frost_FrostWard",
 	mindcontrol = "Inv_Belt_18",
-	phase1 = "",
-	phase2 = "",
-	guardians = "",
+	phase1 = "Spell_shadow_impphaseshift",
+	phase2 = "Spell_frost_frostarmor",
+	guardians = "Spell_nature_ancestralguardian",
 	frostblast = "Spell_Frost_FreezingBreath",
 	detonate = "Spell_Nature_WispSplode",
 	frostbolt = "Spell_Frost_FrostBolt02",

@@ -399,7 +399,7 @@ function BigWigsFrostBlast:SetupFrames()
 	frame:SetBackdropBorderColor(1.0,1.0,1.0)
 	frame:SetBackdropColor(24/255, 24/255, 24/255)
 	frame:ClearAllPoints()
-	frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 300, 500)
+	frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 900, 500) -- todo
 	frame:EnableMouse(true)
 	frame:SetClampedToScreen(true)
 	frame:RegisterForDrag("LeftButton")
@@ -522,7 +522,7 @@ end
 function BigWigsFrostBlast:ResetAnchor()
 	if not anchor then self:SetupFrames() end
 	anchor:ClearAllPoints()
-	anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 300, 500)
+	anchor:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 900, 500) -- todo
 	self.db.profile.posx = nil
 	self.db.profile.posy = nil
 end

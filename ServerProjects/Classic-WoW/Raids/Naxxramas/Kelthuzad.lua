@@ -17,8 +17,10 @@ local timer = module.timer
 local icon = module.icon
 local syncName = module.syncName
 
+local BB = BigWigs.BabbleBoss
+
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -154,11 +156,11 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	BigWigs:CheckForBossDeath(msg, self)
 
 	local _,_, mob = string.find(msg, L["trigger_addDeath"])
-	if mob == "Unstoppable Abomination" then
+	if mob == BB["Unstoppable Abomination"] then
 		self:Sync(syncName.abomination .. " " .. mob)
-	elseif mob == "Soul Weaver" then
+	elseif mob == BB["Soul Weaver"] then
 		self:Sync(syncName.soulWeaver .. " " .. mob)
-	elseif mob == "Kel'Thuzad" then 
+	elseif mob == BB["Kel'Thuzad"] then 
 		self:SendBossDeathSync()
 	end
 end
@@ -245,6 +247,7 @@ function module:TestModule()
 	module:Event(L["trigger_shieldBash3"])
 	module:Event(L["trigger_earthShock1"])
 	module:Event(L["trigger_earthShock2"])
+	module:Event(L["trigger_fissure"])
 	module:Affliction(L["trigger_detonate"])
 	module:Affliction(L["trigger_frostboltVolley"])
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(L["trigger_addDeath"])
@@ -264,5 +267,113 @@ end
 
 -- visual test
 function module:TestVisual()
-	BigWigs:Print(self:ToString() .. " TestVisual not yet implemented")
+	-- /run local m=BigWigs:GetModule("Kel'Thuzad");m:TestVisual()
+	local function abominationDeath()
+		module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(L["trigger_addDeath"], BB["Unstoppable Abomination"]))
+	end
+	
+	local function weaverDeath()
+		module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(L["trigger_addDeath"], BB["Soul Weaver"]))
+	end
+	
+	local function phase2()
+		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
+	end
+	
+	local function frostbolt()
+		module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["trigger_frostbolt"])
+	end
+
+	local function interrupt()
+		module:Event(L["trigger_kick1"])
+	end
+
+	local function detonate()
+		module:Affliction(L["trigger_detonate"])
+	end
+
+	local function frostboltVolley()
+		module:Affliction(L["trigger_frostboltVolley"])
+	end
+	
+	local function frostblast()
+		module:CHAT_MSG_MONSTER_YELL(L["trigger_frostBlast"])
+	end
+	
+	local function fissure()
+		module:Event(L["trigger_fissure"])
+	end
+	
+	local function phase3()
+		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase3"])
+	end
+	
+	local function guardians()
+		module:CHAT_MSG_MONSTER_YELL(L["trigger_guardians"])
+	end
+
+	local function deactivate()
+		self:DebugMessage("deactivate")
+		self:Disable()
+		--[[self:DebugMessage("deactivate ")
+		if self.phase then
+			self:DebugMessage("deactivate module "..self:ToString())
+			--BigWigs:ToggleModuleActive(self, false)
+			self.core:ToggleModuleActive(self, false)
+			self.phase = nil
+		end]]
+	end
+
+	BigWigs:Print("module Test started")
+	BigWigs:Print("  Abomination Death after 3s")
+	BigWigs:Print("  Soul Weaver Death Test after 6s")
+	BigWigs:Print("  Phase 2 Test after 9s")
+	BigWigs:Print("  Frostbolt Test after 12s")
+	BigWigs:Print("  Interrupt Test after 13s")
+	BigWigs:Print("  Detonate Test after 16s")
+	BigWigs:Print("  Frostbolt Volley Test after 19s")
+	BigWigs:Print("  Frostblast Test after 22s")
+	BigWigs:Print("  Fissure Test after 25s")
+	BigWigs:Print("  Phase 3 Test after 28s")
+	BigWigs:Print("  Guardians Test after 31s")
+	BigWigs:Print("  Deactivate after 40s")
+
+	-- immitate CheckForEngage
+	self:SendEngageSync()
+
+	-- abomination death after 3s
+	self:ScheduleEvent(self:ToString() .. "Test_abominationDeath", abominationDeath, 3, self)
+
+	-- weaver death after 6s
+	self:ScheduleEvent(self:ToString() .. "Test_weaverDeath", weaverDeath, 6, self)
+
+	-- phase2 after 9s
+	self:ScheduleEvent(self:ToString() .. "Test_phase2", phase2, 9, self)
+
+	-- frostbolt after 12s
+	self:ScheduleEvent(self:ToString() .. "Test_frostbolt", frostbolt, 12, self)
+
+	-- interrupt after 13s
+	self:ScheduleEvent(self:ToString() .. "Test_interrupt", interrupt, 13, self)
+
+	-- detonate after 16s
+	self:ScheduleEvent(self:ToString() .. "Test_detonate", detonate, 16, self)
+
+	-- frostbolt volley after 19s
+	self:ScheduleEvent(self:ToString() .. "Test_frostboltVolley", frostboltVolley, 19, self)
+	
+	-- frost blast after 22s
+	self:ScheduleEvent(self:ToString() .. "Test_frostblast", frostblast, 22, self)
+	
+	-- fissure after 25s
+	self:ScheduleEvent(self:ToString() .. "Test_fissure", fissure, 25, self)
+	
+	-- phase3 after 28s
+	self:ScheduleEvent(self:ToString() .. "Test_phase3", phase3, 28, self)
+	
+	-- guardians after 31s
+	self:ScheduleEvent(self:ToString() .. "Test_guardians", guardians, 31, self)
+	
+	-- deactivate after 40s
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 40, self)
 end
