@@ -23,10 +23,12 @@ module.timer = {
 	berserk = 900,
 	deepbreathInc = 23,
 	deepbreath = 7,
-	lifedrainAfterFlight = 14,
+	lifedrainAfterFlight = 14, -- verify
 	lifedrain = 24,
 	groundPhase = 50,
 	blizzard = 5,
+	flight = 83.75, -- verify
+	firstFlight = 48, -- verify
 }
 local timer = module.timer
 
@@ -36,6 +38,7 @@ module.icon = {
 	lifedrain = "Spell_Shadow_LifeDrain02",
 	berserk = "INV_Shield_01",
 	blizzard = "Spell_Frost_IceStorm",
+	flight = "inv_misc_head_dragon_blue", -- todo
 }
 local icon = module.icon
 
@@ -77,31 +80,37 @@ function module:LifeDrain()
 end
 
 function module:Flight()
-	if  self.db.profile.deepbreath and self.engaged then
-		if self:IsEventScheduled("bwsapphtargetscanner") then
-			self:CancelScheduledEvent("bwsapphtargetscanner")
+	if self.engaged then
+		self:RemoveBar(L["bar_lifeDrain"])
+		
+		if  self.db.profile.deepbreath then
+			if self:IsEventScheduled("bwsapphtargetscanner") then
+				self:CancelScheduledEvent("bwsapphtargetscanner")
+			end
+			if self:IsEventScheduled("bwsapphdelayed") then
+				self:CancelScheduledEvent("bwsapphdelayed")
+			end
+			module.lastTarget = nil
+			module.cachedUnitId = nil
+			self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, timer.groundPhase, self)
+			
+			self:Message(L["msg_deepBreathSoon"], "Urgent", true, "Beware")
+			self:Bar(L["bar_deepBreathCast"], timer.deepbreathInc, icon.deepbreathInc)
 		end
-		if self:IsEventScheduled("bwsapphdelayed") then
-			self:CancelScheduledEvent("bwsapphdelayed")
-		end
-		self:Message(L["msg_deepBreathSoon"], "Urgent", true, "Beware")
-		self:Bar(L["bar_deepBreathCast"], timer.deepbreathInc, icon.deepbreathInc)
-		self:Bar("flight timer", 105, icon.deepbreathInc)
-		module.lastTarget = nil
-		module.cachedUnitId = nil
-		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, timer.groundPhase, self)
-	end
 	
-	self:Proximity()
+		if self.db.profile.proximity then
+			self:Proximity()
+		end
+	end
 end
 
 function module:DeepBreath()
 	if self.db.profile.deepbreath then
-		self:Message(L["msg_deepBreathNow"], "Important", true, "RunAway")
+		self:Message(L["msg_deepBreathNow"], "Important", true, "Beware")
 		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath)
+		self:Bar(L["bar_flight"], timer.flight, icon.flight)
 	end
 	
-	self:RemoveBar(L["bar_lifeDrain"])
 	if self.db.profile.lifedrain then
 		self:Bar(L["bar_lifeDrain"], timer.lifedrainAfterFlight, icon.lifedrain)
 	end
@@ -115,10 +124,9 @@ end
 ------------------------------
 function module:BlizzardGain()
 	if self.db.profile.blizzard then
-		self:Message(L["msg_blizzard"], "Personal", true, "Alarm")
+		self:Message(L["msg_blizzard"], "Personal", true, "RunAway")
 		self:WarningSign(icon.blizzard, timer.blizzard)
-		--self:Say(L["misc_blizzardSay"])
-		BigWigs:Print(L["misc_blizzardSay"])
+		self:Say(L["misc_blizzardSay"]) -- verify
 	end
 end
 
@@ -130,7 +138,6 @@ end
 ------------------------------
 -- Target Scanning     		--
 ------------------------------
-
 function module:StartTargetScanner()
 	if not self:IsEventScheduled("bwsapphtargetscanner") and self.engaged then 
 		-- Start a repeating event that scans the raid for targets every 1 second.
@@ -223,6 +230,8 @@ function module:TestModuleCore()
 	module:DeepBreath()
 	module:Flight()
 	module:LifeDrain()
+	module:BlizzardGain()
+	module:BlizzardGone()
 	
 	module:BigWigs_RecvSync(syncName.lifedrain)
 	module:BigWigs_RecvSync(syncName.flight)

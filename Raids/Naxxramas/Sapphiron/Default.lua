@@ -17,7 +17,7 @@ local icon = module.icon
 local syncName = module.syncName
 
 -- module variables
-module.revision = 20014 -- To be overridden by the module!
+module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
@@ -36,8 +36,11 @@ function module:OnEnable()
 		self:CancelScheduledEvent("bwsapphdelayed")
 	end
 
-	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "CheckForDeepBreath")
-
+	self:CombatlogFilter(L["trigger_deepBreath"], self.DeepBreathEvent, true)
+	self:CombatlogFilter(L["trigger_flight"], self.FlightEvent, true)
+	self:CombatlogFilter(L["trigger_blizzardGain"], self.BlizzardGainEvent)
+	self:CombatlogFilter(L["trigger_blizzardGone"], self.BlizzardGoneEvent)
+	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "CheckForLifeDrain")
@@ -71,6 +74,10 @@ function module:OnEngage()
 		-- start it.
 		self:ScheduleEvent("besapphdelayed", self.StartTargetScanner, 5, self)
 	end
+	
+	self:Bar(L["bar_flight"], timer.firstFlight, icon.flight)
+	
+	self:ScheduleRepeatingEvent("bwsapphengagecheck", self.EngageCheck, 1, self)
 end
 
 -- called after boss is disengaged (wipe(retreat) or victory)
@@ -95,13 +102,61 @@ function module:CheckForLifeDrain(msg)
 		end
 	elseif string.find(msg, L["trigger_icebolt"]) and self.db.profile.icebolt then
 		SendChatMessage(L["msg_IceBlockYell"], "YELL")
+		Minimap:PingLocation(CURSOR_OFFSET_X, CURSOR_OFFSET_Y)
 	end
 end
 
-function module:CheckForDeepBreath(msg)
-	if msg == L["trigger_deepBreath"] then
+function module:DeepBreathEvent(msg)
+	if string.find(msg, L["trigger_deepBreath"]) then
 		self:Sync(syncName.deepbreath)
 	end
+end
+
+function module:FlightEvent(msg)
+	if string.find(msg, L["trigger_flight"]) then
+		self:Sync(syncName.flight)
+	end
+end
+
+function module:BlizzardGainEvent(msg)
+	if string.find(msg, L["trigger_blizzardGain"]) then
+		module:BlizzardGain()
+	end
+end
+
+function module:BlizzardGoneEvent(msg)
+	if string.find(msg, L["trigger_blizzardGone"]) then
+		module:BlizzardGone()
+	end
+end
+
+------------------------------
+-- Utility	Functions   	--
+------------------------------
+function module:EngageCheck()
+	if not self.engaged then
+		if self:IsSapphironVisible() then
+			module:CancelScheduledEvent("bwsapphengagecheck")
+
+			module:SendEngageSync()
+		end
+	else
+		module:CancelScheduledEvent("bwsapphengagecheck")
+	end
+end
+
+function module:IsSapphironVisible()
+	if UnitName("playertarget") == self:ToString() then
+		return true
+	else
+		for i = 1, GetNumRaidMembers(), 1 do
+			if UnitName("Raid" .. i .. "target") == self:ToString() then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 
@@ -118,9 +173,16 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:CheckForDeepBreath(L["trigger_deepBreath"])
+	module:EngageCheck()
+	module:IsSapphironVisible()
+	
+	module:BlizzardGainEvent(L["trigger_blizzardGain"])
+	module:BlizzardGoneEvent(L["trigger_blizzardGone"])
+	module:FlightEvent(L["trigger_flight"])
+	module:DeepBreathEvent(L["trigger_deepBreath"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain1"])
 	module:CheckForLifeDrain(L["trigger_lifeDrain2"])
+	module:CheckForLifeDrain(L["trigger_icebolt"])
 	
 	module:OnDisengage()
 	module:TestDisable()

@@ -58,6 +58,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_lifeDrain = "Life Drain",
 	bar_deepBreathCast = "Ice Bomb Cast",
 	bar_deepBreath = "Ice Bomb Lands!",
+	bar_flight = "Flight",
 	
 	-- misc
 	misc_blizzardSay = "Blizzard on me",
