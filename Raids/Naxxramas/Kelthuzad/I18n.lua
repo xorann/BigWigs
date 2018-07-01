@@ -129,3 +129,6 @@ L:RegisterTranslations("enUS", function() return {
 	misc_are = "are",
 	
 } end )
+
+L:RegisterTranslations("deDe", function() return {
+} end )

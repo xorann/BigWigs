@@ -725,6 +725,9 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		--["Venom Stalker"] = true;
 		--["Necro Stalker"] = true;
 		--["Living Monstrosity"] = true;
+		
+		["Unstoppable Abomination"] = "";
+		["Soul Weaver"] = "";
 	}
 end)
 
@@ -957,7 +960,9 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Necro Stalker"] = "Nekropirscher";
 		["Living Monstrosity"] = "Lebende Monströsität";
 		["Death Knight Captain"] = "Hauptmann der Todesritter";
-		["Stitched Giant"] = "Narbenspeier";
+		["Stitched Giant"] = "Narbenspeier";		
+		["Unstoppable Abomination"] = "Unaufhaltsame Monströsität";
+		["Soul Weaver"] = "Seelenwirker";
 	}
 end)
 
@@ -1178,6 +1183,9 @@ BabbleBoss:RegisterTranslations("frFR", function()
 		--["Venom Stalker"] = true;
 		--["Necro Stalker"] = true;
 		--["Living Monstrosity"] = true;
+		
+		["Unstoppable Abomination"] = "";
+		["Soul Weaver"] = "";
 	}
 end)
 
@@ -1401,6 +1409,9 @@ BabbleBoss:RegisterTranslations("zhCN", function()
 		--["Venom Stalker"] = true;
 		--["Necro Stalker"] = true;
 		--["Living Monstrosity"] = true;
+		
+		["Unstoppable Abomination"] = "";
+		["Soul Weaver"] = "";
 	}
 end)
 
@@ -1623,6 +1634,9 @@ BabbleBoss:RegisterTranslations("zhTW", function()
 		--["Venom Stalker"] = true;
 		--["Necro Stalker"] = true;
 		--["Living Monstrosity"] = true;
+		
+		["Unstoppable Abomination"] = "";
+		["Soul Weaver"] = "";
 	}
 end)
 
@@ -1847,6 +1861,9 @@ BabbleBoss:RegisterTranslations("koKR", function()
 		--["Venom Stalker"] = true;
 		--["Necro Stalker"] = true;
 		--["Living Monstrosity"] = true;
+		
+		["Unstoppable Abomination"] = "";
+		["Soul Weaver"] = "";
 	}
 end)
 
