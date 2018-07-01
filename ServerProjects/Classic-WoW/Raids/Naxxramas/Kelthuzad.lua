@@ -24,6 +24,10 @@ module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.firstFrostboltVolley = 15
+module.timer.phase2 = 0
+module.timer.firstMindControl = 24
+module.timer.firstFrostblast = 33
 
 
 ------------------------------
@@ -57,6 +61,8 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Affliction")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Affliction")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Affliction")
+	
+	self:CombatlogFilter(L["trigger_detonate"], self.DetonateManaEvent, true)
 	
 	self:ThrottleSync(5, syncName.detonate)
 	self:ThrottleSync(5, syncName.frostblast)
@@ -170,6 +176,7 @@ end
 end]]
 function module:Affliction(msg)
 	if string.find(msg, L["trigger_detonate"]) then
+		BigWigs:DebugMessage("Affliction detonate")
 		local _,_, dplayer, dtype = string.find( msg, L["trigger_detonate"])
 		if dplayer and dtype then
 			if dplayer == L["misc_you"] and dtype == L["misc_are"] then
@@ -192,6 +199,19 @@ function module:Affliction(msg)
 		
 		if module.numFrostboltVolleyHits == 4 then 
 			self:Sync(syncName.frostboltVolley)
+		end
+	end
+end
+
+function module:DetonateManaEvent(msg)
+	if string.find(msg, L["trigger_detonate"]) then
+		BigWigs:DebugMessage("parser detonate")
+		local _,_, dplayer, dtype = string.find( msg, L["trigger_detonate"])
+		if dplayer and dtype then
+			if dplayer == L["misc_you"] and dtype == L["misc_are"] then
+				dplayer = UnitName("player")
+			end
+			self:Sync(syncName.detonate .. " ".. dplayer)
 		end
 	end
 end
@@ -248,6 +268,7 @@ function module:TestModule()
 	module:Event(L["trigger_earthShock1"])
 	module:Event(L["trigger_earthShock2"])
 	module:Event(L["trigger_fissure"])
+	module:DetonateManaEvent(L["trigger_detonate"])
 	module:Affliction(L["trigger_detonate"])
 	module:Affliction(L["trigger_frostboltVolley"])
 	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(L["trigger_addDeath"])
@@ -289,7 +310,7 @@ function module:TestVisual()
 	end
 
 	local function detonate()
-		module:Affliction(L["trigger_detonate"])
+		module:DetonateManaEvent(L["trigger_detonate"])
 	end
 
 	local function frostboltVolley()

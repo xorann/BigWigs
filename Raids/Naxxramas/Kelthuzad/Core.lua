@@ -28,6 +28,7 @@ module.timer = {
 	firstDetonate = 35,
 	detonate = 20,
 	firstFrostblast = 45,
+	firstMindControl = 60
 	mindcontrol = 60,
 	guardians = 16,
 	frostblast = 30,
@@ -114,10 +115,12 @@ end
 function module:Phase2()
 	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, BigWigsColors.db.profile.start)
 	self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
-	self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
-	self:DelayedMessage(timer.phase2, L["msg_phase2Now"], "Important")
-	self:DelayedMessage(timer.firstDetonate - 5, L["msg_detonateSoon"], "Important")
-	self:DelayedMessage(timer.firstFrostblast - 5, L["msg_mindControlAndfrostblastSoon"], "Important")
+	--self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
+	self:Bar(L["bar_mindControl"], timer.firstMindControl, icon.mindcontrol)
+	self:Bar(L["bar_frostBlast"], timer.firstFrostblast, icon.frostblast)
+	--self:DelayedMessage(timer.phase2, L["msg_phase2Now"], "Important")
+	--self:DelayedMessage(timer.firstDetonate - 5, L["msg_detonateSoon"], "Important")
+	--self:DelayedMessage(timer.firstFrostblast - 5, L["msg_mindControlAndfrostblastSoon"], "Important")
 	
 	if self.db.profile.fbvolley then
 		self:Bar(L["bar_frostboltVolley"], timer.firstFrostboltVolley, icon.frostboltVolley)
@@ -137,7 +140,7 @@ end
 
 function module:Phase3()
 	if self.db.profile.phase then
-		self:Message(L["msg_phase3Now"], "Attention", nil, "Beware")
+		self:Message(L["msg_phase3Now"], "Attention")
 	end
 end
 
@@ -157,7 +160,7 @@ end
 
 function module:FrostBlast()
 	self:Message(L["msg_frostblast"], "Attention")
-	self:DelayedMessage(timer.frostblast - 5, L["msg_frostblastSoon"])
+	--self:DelayedMessage(timer.frostblast - 5, L["msg_frostblastSoon"])
 	self:Bar(L["bar_frostBlast"], timer.frostblast, icon.frostblast)
 end
 

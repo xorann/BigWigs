@@ -82,8 +82,9 @@ end
 function module:Flight()
 	if self.engaged then
 		self:RemoveBar(L["bar_lifeDrain"])
+		self:RemoveBar(L["bar_flight"])
 		
-		if  self.db.profile.deepbreath then
+		if self.db.profile.deepbreath then
 			if self:IsEventScheduled("bwsapphtargetscanner") then
 				self:CancelScheduledEvent("bwsapphtargetscanner")
 			end
@@ -105,6 +106,8 @@ function module:Flight()
 end
 
 function module:DeepBreath()
+	self:RemoveBar(L["bar_deepBreathCast"])
+
 	if self.db.profile.deepbreath then
 		self:Message(L["msg_deepBreathNow"], "Important", true, "Beware")
 		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath)

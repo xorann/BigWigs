@@ -1,3 +1,142 @@
+r20018 Test2
+This is just a pre-release!
+
+Four Horsemen:
+	- Changed the timer bars to show the slight irregularity
+	- Removed most messages to reduce spam
+	
+Sapphiron:
+	- Improved engage trigger for the first pull (untested)
+	- Improved trigger for flight phase and deep breath
+	- Added "beware" sound to the flight phase and deep breath warnings
+	- Show proximity plugin during the flight phase
+	- Added timer bars for next flight phase and next deep breath (untested)
+	- Added blizzard warning (warning sign, "run away" sound, and say warning)
+	- Added Icebolt warning (yell and minimap ping)
+	
+Kel'Thuzad:
+	- Added icons for all timer bars
+	- Remove abomination and weaver counter bars after each wipe
+	- Set KTM master target to Kel'Thuzad at the beginning of phase 2
+	- Activate frost blast plugin at the beginning of phase 2
+	- Changed timers of the Classic-WoW implementation (untested)
+	
+FrostBlast plugin:
+	- Fixed an error when someone gets afflicted by frost blast
+	- Changed the default position of the frost blast plugin (was the same as the proximity plugin)
+
+
+r20018 Test1
+This is just a pre-release!
+
+Four Horsemen:
+	- Fixed Meteor Timer
+
+
+r20018
+
+Gothik:
+	- Add Timers stop after the last wave
+	- fixed phase 2 timer
+
+Gluth:
+	- Tweaked Decimate Timer and marked as slightly irregular (105-110s)
+	- Set KTM target 5s after pull
+
+Grobbulus:
+	- workaround for the broken monster whisper event
+	- Experimental: Bombard Slime Timer (three sewage slimes on the way to patchwerk)
+
+Loatheb:
+	- Event Handling
+	- Spore Timer
+	- Audio warning on curse removal (warlocks and shadow priests only)
+
+Maexxna:
+	- Event Handling
+	- enrage trigger
+	- tweaked web spray timer
+	- Experimental: mark cocooned players with raid icons
+
+Noth:
+	- Fixed teleport Timers
+	- Countdown for Blink
+	- Fixed third balcony teleport timer
+	- Fix for phase changes
+
+Heigan:
+	- Tweaked dance phase timer
+
+Razuvious:
+	- Fix for default implementation
+	- Fixed Disrupting Shout Timer
+	- Made it clearer that the disrupting shout timer is not accurate
+	- Fixed Understudy health bar
+	- added german translation for death knight understudy
+	- added taunt timer
+
+Thaddius:
+	- Healthbars for Stalagg and Feugen
+	- Added timer for phase transition
+	- KTM Reset on start of Phase 2
+	- Fixed Polarity shift warning
+	- Fixed power surge timer
+	- Fixed throw timer
+	- prevent phase 2 from triggering after a wipe
+
+Trash Mobs:
+	- KTM master target will not be set on trash mobs anymore
+
+New Trash Module: Stitched Giants
+	- Slime Bolt interval timer
+	- Slime Bolt cast timer
+
+Core Hound:
+	- Marked as trash module
+
+Anubisath Warder (AQ40):
+	- possible fix for a LUA error
+
+Bar Plugin:
+	- Possbile fix for irregular bars pausing after the minimum time elapsed
+
+ReadyCheck Plugin:
+	- Disable the BigWigs ReadyCheck plugin if oRA is active (to prevent multiple ready check windows)
+
+Autoreply Plugin:
+	- Possible fix for a LUA error
+
+Onyxia Cloak Plugin:
+	- The onyxia cloak will only be unequipped if it was equipped by the plugin
+	- Unequipping should now work when you teleport out of Blackwind Lair
+
+Improved reset of modules after a wipe for the following modules:
+	- Ouro
+	- Ragnaros
+	- Gluth
+	- Gothik
+	- Loatheb
+	- Noth
+	- Razuvious
+	- Thaddius
+	- Arlokk
+	- Renataki
+	- Razorgore
+	- Grilek
+
+German Translations (thanks Callias!):
+Translated everything I could find in the combatlog. There are still some Events/Messages not translated. For those I would need a video.
+	- Anub'Rekhan
+	- Gluth
+	- Grobbulus
+	- Living Monstrosity
+	- Noth
+	- Patchwerk
+	- Stitched Giants
+	- Thaddius
+	- Venom Stalker
+
+
 r20017 Test6
 This is just a pre-release!
 
