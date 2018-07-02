@@ -63,6 +63,9 @@ function module:OnEnable()
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Affliction")
 	
 	self:CombatlogFilter(L["trigger_detonate"], self.DetonateManaEvent, true)
+	self:CombatlogFilter(L["trigger_mindControl1"], self.MindControlEvent, true)
+	self:CombatlogFilter(L["trigger_mindControl2"], self.MindControlEvent, true)
+	
 	
 	self:ThrottleSync(5, syncName.detonate)
 	self:ThrottleSync(5, syncName.frostblast)
@@ -210,9 +213,17 @@ function module:DetonateManaEvent(msg)
 		if dplayer and dtype then
 			if dplayer == L["misc_you"] and dtype == L["misc_are"] then
 				dplayer = UnitName("player")
+				self:Say("Detonate Mana on me") -- verify
 			end
 			self:Sync(syncName.detonate .. " ".. dplayer)
 		end
+	end
+end
+
+function module:MindControlEvent(msg)
+	if string.find(msg, L["trigger_mindControl1"]) or string.find(msg, L["trigger_mindControl2"])then
+		BigWigs:DebugMessage("parser MindControlEvent")
+		self:Sync(syncName.mindcontrol)
 	end
 end
 
@@ -220,6 +231,8 @@ function module:Event(msg)
 	-- shadow fissure
 	if string.find(msg, L["trigger_fissure"]) then
 		self:Sync(syncName.fissure)
+	elseif string.find(msg, L["trigger_fissure_self"]) then
+		self:Say("Shadow Fissure on me") -- verify
 	end
 
 	-- frost bolt
