@@ -80,13 +80,13 @@ function module:MarkEvent(msg)
 			self:Sync(syncName.mark .. " " .. tostring(self.marks + 1))
 			module.times["mark"] = t
 			
-			local a = self.marks
+			--[[local a = self.marks
 			local b = 3
 			local c = a-math.floor(a/b)*b
 			if c == 0 then
 				c = 3
 			end
-			BigWigs:Print("Gruppe " .. c)
+			BigWigs:Print("Gruppe " .. c)]]
 		end
 	end
 end
