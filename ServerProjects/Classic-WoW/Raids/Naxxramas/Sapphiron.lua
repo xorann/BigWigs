@@ -23,7 +23,7 @@ module.revision = 20018 -- To be overridden by the module!
 -- override timers if necessary
 --timer.berserk = 300
 module.timer.deepbreathInc = 20
-
+module.timer.lifedrainAfterFlight = 24
 
 ------------------------------
 --      Initialization      --

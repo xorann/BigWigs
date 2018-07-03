@@ -115,7 +115,7 @@ end
 ------------------------------
 function module:Phase2()
 	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, BigWigsColors.db.profile.start)
-	self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
+	--self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
 	--self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
 	self:Bar(L["bar_mindControl"], timer.firstMindControl, icon.mindcontrol)
 	self:Bar(L["bar_frostBlast"], timer.firstFrostblast, icon.frostblast)
