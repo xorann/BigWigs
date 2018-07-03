@@ -11,7 +11,7 @@ local L = BigWigs.i18n[bossName]
 module.revision = 20018 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
 --module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
-module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "proximity", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", "detonateicon", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
+module.toggleoptions = {"frostbolt", "frostboltbar", -1, "frostblast", "proximity", "fissure", "mc", "ktmreset", -1, "fbvolley", -1, "detonate", -1 ,"guardians", -1, "addcount", "phase", "bosskill"}
 
 -- Proximity Plugin
 module.proximityCheck = function(unit) return CheckInteractDistance(unit, 2) end
@@ -67,6 +67,7 @@ module.syncName = {
 }
 local syncName = module.syncName
 
+local _, playerClass = UnitClass("player")
 
 module.timeLastFrostboltVolley = 0    -- saves time of first frostbolt 
 module.numFrostboltVolleyHits = 0	-- counts the number of people hit by frostbolt
@@ -92,15 +93,15 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 	elseif sync == syncName.frostblast then
 		self:FrostBlast()
 	elseif sync == syncName.detonate and rest then
-		self:Detonate()
+		self:Detonate(rest)
 	elseif sync == syncName.frostbolt then       -- changed from only frostbolt (thats only alert, if someone still wants to see the bar, it wouldnt work then)
 		self:Frostbolt()
 	elseif sync == syncName.frostboltOver then
 		self:FrostboltOver()
 	elseif sync == syncName.frostboltVolley then
 		self:FrostboltVolley()
-	elseif sync == syncName.fissure then
-		self:Fissure()
+	elseif sync == syncName.fissure and rest then
+		self:Fissure(rest)
 	elseif sync == syncName.abomination and rest then
 		self:AbominationDies(rest)
 	elseif sync == syncName.soulWeaver and rest then
@@ -145,8 +146,10 @@ function module:Phase3()
 end
 
 function module:MindControl()
-	self:Message(L["msg_mindControl"], "Urgent", nil, "Beware")
-	self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol, true, BigWigsColors.db.profile.mindControl)
+	if self.db.profile.mc then
+		self:Message(L["msg_mindControl"], "Urgent", nil, "Beware")
+		self:Bar(L["bar_mindControl"], timer.mindcontrol, icon.mindcontrol, true, BigWigsColors.db.profile.mindControl)
+	end	
 	
 	self:KTM_Reset()
 end
@@ -159,7 +162,11 @@ function module:Guardians()
 end
 
 function module:FrostBlast()
-	self:Message(L["msg_frostblast"], "Attention")
+	if playerClass == "PRIEST" or playerClass == "DRUID" or playerClass == "SHAMAN" then
+		self:Message(L["msg_frostblast"], "Attention", true, "Alarm")
+	else
+		self:Message(L["msg_frostblast"], "Attention")
+	end
 	--self:DelayedMessage(timer.frostblast - 5, L["msg_frostblastSoon"])
 	self:Bar(L["bar_frostBlast"], timer.frostblast, icon.frostblast)
 end
@@ -167,11 +174,11 @@ end
 function module:Detonate(name)
 	if name and self.db.profile.detonate then
 		self:Message(string.format(L["msg_detonateNow"], name), "Attention")
-		if self.db.profile.detonateicon then 
-			self:Icon(name, -1, timer.detonate) 
+		if name == UnitName("player") then
+			self:Say(L["misc_say_detonate"]) -- verify
 		end
-		self:Bar(string.format(L["bar_detonateNow"], name), timer.detonate, icon.detonate)
-		self:Bar(L["bar_detonateNext"], timer.nextDetonate, icon.detonate)
+		--self:Bar(string.format(L["bar_detonateNow"], name), timer.detonate, icon.detonate) -- useful or rather distracting?
+		--self:Bar(L["bar_detonateNext"], timer.nextDetonate, icon.detonate) -- useful or rather rdistracting?
 	end
 end
 
@@ -179,7 +186,11 @@ function module:Frostbolt()
 	if self.db.profile.frostbolt or self.db.profile.frostboltbar then
 		module.frostbolttime = GetTime()
 		if self.db.profile.frostbolt then
-			self:Message(L["msg_frostbolt"], "Personal")
+			if playerClass == "WARRIOR" or playerClass == "ROGUE" then
+				self:Message(L["msg_frostbolt"], "Personal", true, "Alarm")
+			else
+				self:Message(L["msg_frostbolt"], "Personal")
+			end
 		end
 		if self.db.profile.frostboltbar then
 			self:Bar(L["bar_frostbolt"], timer.frostbolt, icon.frostbolt, true, BigWigsColors.db.profile.interrupt)
@@ -210,19 +221,23 @@ function module:FrostboltVolley()
 	end
 end
 
-function module:Fissure()
-	if self.db.profile.fissure then
-		self:Message(L["msg_fissure"], "Urgent", true, "Alarm")
-		-- add bar?
+function module:Fissure(name)
+	if name and self.db.profile.fissure then
+		if name == UnitName("player") then
+			self:Message(string.format(L["msg_fissure"], name), "Urgent", true, "RunAway")
+			self:Say(L["misc_say_fissure"]) -- verify
+		else
+			self:Message(string.format(L["msg_fissure"], name), "Urgent")
+		end
 	end
 end
 
 function module:AbominationDies(name)
 	if name and self.db.profile.addcount then
-		self:RemoveBar(string.format(L["bar_add"], module.numAbominations, name))
+		--self:RemoveBar(string.format(L["bar_add"], module.numAbominations, name))
 		module.numAbominations = module.numAbominations + 1
 		if module.numAbominations < 14 then 
-			self:Bar(string.format(L["bar_add"], module.numAbominations, name), (module.timePhase1Start + timer.phase1 - GetTime()), icon.abomination) 
+			--self:Bar(string.format(L["bar_add"], module.numAbominations, name), (module.timePhase1Start + timer.phase1 - GetTime()), icon.abomination) 
 		end	
 	end
 	self:KTM_Reset()
@@ -230,10 +245,10 @@ end
 
 function module:WeaverDies(name)
 	if name and self.db.profile.addcount then
-		self:RemoveBar(string.format(L["bar_add"], module.numWeavers, name))
+		--self:RemoveBar(string.format(L["bar_add"], module.numWeavers, name))
 		module.numWeavers = module.numWeavers + 1
 		if module.numWeavers < 14 then 
-			self:Bar(string.format(L["bar_add"], module.numWeavers, name), (module.timePhase1Start + timer.phase1 - GetTime()), icon.soulWeaver) 
+			--self:Bar(string.format(L["bar_add"], module.numWeavers, name), (module.timePhase1Start + timer.phase1 - GetTime()), icon.soulWeaver) 
 		end
 	end
 end
@@ -248,11 +263,12 @@ function module:TestModuleCore()
 	-- check core functions	
 	module:WeaverDies("test")
 	module:AbominationDies("test")
-	module:Fissure()
+	module:Fissure(UnitName("player"))
+	module:Fissure("Test")
 	module:FrostboltVolley()
 	module:FrostboltOver()
 	module:Frostbolt()
-	module:Detonate("test")
+	module:Detonate(UnitName("player"))
 	module:FrostBlast()
 	module:Guardians()
 	module:MindControl()
@@ -268,7 +284,7 @@ function module:TestModuleCore()
 	module:BigWigs_RecvSync(syncName.frostbolt)
 	module:BigWigs_RecvSync(syncName.frostboltOver)
 	module:BigWigs_RecvSync(syncName.frostboltVolley)
-	module:BigWigs_RecvSync(syncName.fissure)
+	module:BigWigs_RecvSync(syncName.fissure, "test")
 	module:BigWigs_RecvSync(syncName.abomination, "test")
 	module:BigWigs_RecvSync(syncName.soulWeaver, "test")
 end

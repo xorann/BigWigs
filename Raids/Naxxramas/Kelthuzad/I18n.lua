@@ -38,10 +38,6 @@ L:RegisterTranslations("enUS", function() return {
 	detonate_name = "Detonate Mana Warning",
 	detonate_desc = "Warns about Detonate Mana soon.",
 
-	detonateicon_cmd = "detonateicon",
-	detonateicon_name = "Raid Icon on Detonate",
-	detonateicon_desc = "Place a raid icon on people with Detonate Mana.",
-
 	guardians_cmd = "guardians",
 	guardians_name = "Guardian Spawns",
 	guardians_desc = "Warn for incoming Icecrown Guardians in phase 3.",
@@ -65,8 +61,10 @@ L:RegisterTranslations("enUS", function() return {
 	-- triggers
 	trigger_mindControl1 = "Your soul, is bound to me now!",
 	trigger_mindControl2 = "There will be no escape!",
+	trigger_mindControl = "^([^%s]+) ([^%s]+) afflicted by Chains of Kel'Thuzad.",
 	trigger_engage1 = "Minions, servants, soldiers of the cold dark, obey the call of Kel'Thuzad!",   
 	trigger_engage2 = "Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!",
+	
 	trigger_attack1 = "Kel'Thuzad attacks",
 	trigger_attack2 = "Kel'Thuzad misses",
 	trigger_attack3 = "Kel'Thuzad hits",
@@ -82,17 +80,19 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_shieldBash3 = "Shield Bash was blocked by Kel'Thuzad",
 	trigger_earthShock1 = "Earth Shock hits Kel'Thuzad",
 	trigger_earthShock2 = "Earth Shock crits Kel'Thuzad",
+	
 	trigger_phase2_1 = "Pray for mercy!",
 	trigger_phase2_2 = "Scream your dying breath!",
 	trigger_phase2_3 = "The end is upon you!",
 	trigger_phase3 = "Master, I require aid!",
 	trigger_guardians = "Very well. Warriors of the frozen wastes, rise up! I command you to fight, kill and die for your master! Let none survive!",
-	trigger_fissure = "casts Shadow Fissure.",
+	trigger_fissure = "^([^%s]+) casts Shadow Fissure.",
 	trigger_fissure_self = "You cast Shadow Fissure.",
 	trigger_frostbolt = "Kel'Thuzad begins to cast Frostbolt.",
 	trigger_frostboltVolley = "afflicted by Frostbolt",
 	trigger_addDeath = "(.*) dies",
-	trigger_frostBlast = "I will freeze the blood in your veins!", 
+	trigger_frostBlast_yell = "I will freeze the blood in your veins!",
+	trigger_frostBlast = "^([^%s]+) ([^%s]+) afflicted by Frost Blast.",
 	trigger_detonate = "^([^%s]+) ([^%s]+) afflicted by Detonate Mana",
 	
 	-- messages
@@ -103,8 +103,8 @@ L:RegisterTranslations("enUS", function() return {
 	msg_phase3Soon = "Phase 3 soon!",
 	msg_phase3Now = "Phase 3, Guardians in ~15sec!",
 	msg_guardians = "Guardians incoming in ~10sec!",
-	msg_fissure = "Shadow Fissure!",
-	msg_frostbolt = "Frostbolt! Interrupt!",
+	msg_fissure = "Shadow Fissure - %s",
+	msg_frostbolt = "Frostbolt!",
 	msg_frostblast = "Frost Blast!",
 	msg_frostblastSoon = "Possible Frost Blast in ~5sec!",
 	msg_mindControlAndfrostblastSoon = "Possible Frost Blast and Mind Control in ~5sec!",
@@ -128,6 +128,8 @@ L:RegisterTranslations("enUS", function() return {
 	misc_zone = "Kel'Thuzad Chamber",
 	misc_you = "You",
 	misc_are = "are",
+	misc_say_detonate = "Detonate Mana on me",
+	misc_say_fissure = "Shadow Fissure",
 	
 } end )
 

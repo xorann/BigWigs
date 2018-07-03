@@ -27,8 +27,20 @@ module.revision = 20018 -- To be overridden by the module!
 module.timer.firstFrostboltVolley = 15
 module.timer.phase2 = 0
 module.timer.firstMindControl = 24
+module.timer.mindcontrol = {
+	min = 60,
+	max = 75
+}
 module.timer.firstFrostblast = 33
 
+
+--[[
+mc: 60-75s
+frostblast: 30s
+shadow fissure: 10s or 13s ??
+frost bolt: 8-10.2s
+detonate mana: 20s
+]]
 
 ------------------------------
 --      Initialization      --
@@ -43,29 +55,34 @@ function module:OnRegister()
 end
 
 -- called after module is enabled
-function module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE")
-	
-	self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "Event")
-	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "Event")
+function module:OnEnable()	
 	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_HITS", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_MISSES", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_HITS", "Event")
-	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_MISSES", "Event")
-
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_SELF_DAMAGE", "Affliction")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "Affliction")
-	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "Affliction")
+	
+	self:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_SPELL_PARTY_DAMAGE", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_SPELL_FRIENDLYPLAYER_DAMAGE", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_HITS", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_PARTY_MISSES", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_HITS", "FrostboltOverEvent")
+	self:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_CREATURE_MISSES", "FrostboltOverEvent")
 	
 	self:CombatlogFilter(L["trigger_detonate"], self.DetonateManaEvent, true)
 	self:CombatlogFilter(L["trigger_mindControl1"], self.MindControlEvent, true)
 	self:CombatlogFilter(L["trigger_mindControl2"], self.MindControlEvent, true)
+	self:CombatlogFilter(L["trigger_mindControl"], self.MindControlEvent, true)	
+	self:CombatlogFilter(L["trigger_fissure"], self.ShadowFissureEvent, true)
+	self:CombatlogFilter(L["trigger_fissure_self"], self.ShadowFissureEvent)
+	self:CombatlogFilter(L["trigger_frostboltVolley"], self.FrostboltVolleyEvent, true)
+	self:CombatlogFilter(L["trigger_frostBlast"], self.FrostBlastEvent, true)
+	self:CombatlogFilter(L["trigger_frostbolt"], self.FrostboltEvent, true)	
 	
+	self:CombatlogFilter(L["trigger_phase2_1"], self.PhaseTwoEvent)
+	self:CombatlogFilter(L["trigger_phase2_2"], self.PhaseTwoEvent)
+	self:CombatlogFilter(L["trigger_phase2_3"], self.PhaseTwoEvent)
+	self:CombatlogFilter(L["trigger_phase3"], self.PhaseThreeEvent)
+	self:CombatlogFilter(L["trigger_guardians"], self.GuardiansEvent)
 	
 	self:ThrottleSync(5, syncName.detonate)
 	self:ThrottleSync(5, syncName.frostblast)
@@ -88,16 +105,16 @@ end
 
 -- called after boss is engaged
 function module:OnEngage()
-	self:Message(L["msg_engage"], "Attention")
+	--self:Message(L["msg_engage"], "Attention")
 	self:Bar(L["bar_phase1"], timer.phase1, icon.phase1)
-	self:DelayedMessage(timer.phase1 - 20, L["msg_phase2Soon"], "Important")
+	--self:DelayedMessage(timer.phase1 - 20, L["msg_phase2Soon"], "Important")
 	
 	if self.db.profile.addcount then
 		module.timePhase1Start = GetTime() 	-- start of p1, used for tracking add counts
 		module.numAbominations = 0
 		module.numWeavers = 0
-		self:Bar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"), timer.phase1, icon.abomination)
-		self:Bar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"), timer.phase1, icon.soulWeaver)
+		--self:Bar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"), timer.phase1, icon.abomination)
+		--self:Bar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"), timer.phase1, icon.soulWeaver)
 		
 		self:KTM_SetTarget("Unstoppable Abomination")
 	end
@@ -107,8 +124,8 @@ end
 function module:OnDisengage()
     self:RemoveProximity()
 	
-	self:RemoveBar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"))
-	self:RemoveBar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"))
+	--self:RemoveBar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"))
+	--self:RemoveBar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"))
 	
 	BigWigsFrostBlast:FBClose()
 end
@@ -141,26 +158,6 @@ function module:UNIT_HEALTH(msg)
 	end
 end
 
-function module:CHAT_MSG_MONSTER_YELL(msg)
-	if ((msg == L["trigger_phase2_1"]) or (msg == L["trigger_phase2_2"]) or (msg == L["trigger_phase2_3"])) then
-		self:Sync(syncName.phase2)
-	elseif msg == L["trigger_phase3"] then
-		self:Sync(syncName.phase3)
-	elseif msg == L["trigger_mindControl1"] or msg == L["trigger_mindControl2"] then
-		self:Sync(syncName.mindcontrol)
-	elseif msg == L["trigger_guardians"] then
-		self:Sync(syncName.guardians)
-	elseif msg == L["trigger_frostBlast"] then
-		self:Sync(syncName.frostblast)
-	end
-end
-
-function module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(msg)
-	if string.find(msg, L["trigger_frostbolt"]) then
-		self:Sync(syncName.frostbolt)
-	end
-end
-
 function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	BigWigs:CheckForBossDeath(msg, self)
 
@@ -174,21 +171,65 @@ function module:CHAT_MSG_COMBAT_HOSTILE_DEATH(msg)
 	end
 end
 
+function module:FrostboltOverEvent(msg)
+	-- frost bolt
+	if GetTime() < module.frostbolttime + timer.frostbolt then
+		if string.find(msg, L["trigger_attack1"]) or string.find(msg, L["trigger_attack2"]) or string.find(msg, L["trigger_attack3"]) or string.find(msg, L["trigger_attack4"]) then
+			self:Sync(syncName.frostboltOver)
+		elseif string.find(msg, L["trigger_kick1"]) or string.find(msg, L["trigger_kick2"]) or string.find(msg, L["trigger_kick3"]) -- kicked
+			or string.find(msg, L["trigger_pummel1"]) or string.find(msg, L["trigger_pummel2"]) or string.find(msg, L["trigger_pummel3"]) -- pummeled
+			or string.find(msg, L["trigger_shieldBash1"]) or string.find(msg, L["trigger_shieldBash2"]) or string.find(msg, L["trigger_shieldBash3"]) -- shield bashed
+			or string.find(msg, L["trigger_earthShock1"]) or string.find(msg, L["trigger_earthShock2"]) then -- earth shocked
+			
+			self:Sync(syncName.frostboltOver)
+		end
+	end
+end
+
+function module:PhaseTwoEvent(msg)
+	if ((msg == L["trigger_phase2_1"]) or (msg == L["trigger_phase2_2"]) or (msg == L["trigger_phase2_3"])) then
+		self:Sync(syncName.phase2)
+	end
+end
+
+function module:PhaseThreeEvent(msg)
+	if string.find(msg, L["trigger_phase3"]) then
+		self:Sync(syncName.phase3)
+	end
+end
+
+function module:GuardiansEvent(msg)
+	if string.find(msg, L["trigger_guardians"]) then
+		self:Sync(syncName.guardians)
+	end
+end
+
+function module:FrostboltEvent(msg)
+	if string.find(msg, L["trigger_frostbolt"]) then
+		self:Sync(syncName.frostbolt)
+	end
+end
+
+function module:FrostBlastEvent(msg)
+	if string.find(msg, L["trigger_frostBlast"]) then
+		BigWigs:DebugMessage("new frost blast trigger")
+		local _,_, dplayer, dtype = string.find( msg, L["trigger_frostBlast"])
+		if dplayer and dtype then
+			self:Sync(syncName.frostblast)
+		end
+	end
+
+	-- fallback; yell event
+	if string.find(msg, L["trigger_frostBlast_yell"]) then
+		self:Sync(syncName.frostblast)
+	end
+end
+
 --[[function module:Volley()
 	self:Bar(L["bar_frostboltVolley"], 15, icon.frostboltVolley)
 end]]
-function module:Affliction(msg)
-	if string.find(msg, L["trigger_detonate"]) then
-		BigWigs:DebugMessage("Affliction detonate")
-		local _,_, dplayer, dtype = string.find( msg, L["trigger_detonate"])
-		if dplayer and dtype then
-			if dplayer == L["misc_you"] and dtype == L["misc_are"] then
-				dplayer = UnitName("player")
-			end
-			self:Sync(syncName.detonate .. " ".. dplayer)
-		end
-	end
-	
+
+function module:FrostboltVolleyEvent(msg)
 	if string.find(msg, L["trigger_frostboltVolley"]) then
 		local now = GetTime()
 		
@@ -208,46 +249,39 @@ end
 
 function module:DetonateManaEvent(msg)
 	if string.find(msg, L["trigger_detonate"]) then
-		BigWigs:DebugMessage("parser detonate")
 		local _,_, dplayer, dtype = string.find( msg, L["trigger_detonate"])
 		if dplayer and dtype then
 			if dplayer == L["misc_you"] and dtype == L["misc_are"] then
 				dplayer = UnitName("player")
-				self:Say("Detonate Mana on me") -- verify
 			end
-			self:Sync(syncName.detonate .. " ".. dplayer)
+			self:Sync(syncName.detonate .. " " .. dplayer)
 		end
 	end
 end
 
 function module:MindControlEvent(msg)
+	if string.find(msg, L["trigger_mindControl"]) then
+		BigWigs:DebugMessage("MindControlEvent trigger")
+		local _,_, dplayer, dtype = string.find(msg, L["trigger_mindControl"])
+		if dplayer and dtype then
+			self:Sync(syncName.mindcontrol)
+		end
+	end
+	
+	-- fallback; yell event
 	if string.find(msg, L["trigger_mindControl1"]) or string.find(msg, L["trigger_mindControl2"])then
-		BigWigs:DebugMessage("parser MindControlEvent")
+		BigWigs:DebugMessage("MindControlEvent yell")
 		self:Sync(syncName.mindcontrol)
 	end
 end
 
-function module:Event(msg)
+function module:ShadowFissureEvent(msg)
 	-- shadow fissure
 	if string.find(msg, L["trigger_fissure"]) then
-		self:Sync(syncName.fissure)
+		local _,_, dplayer = string.find(msg, L["trigger_fissure"])
+		self:Sync(syncName.fissure .. " " .. dplayer)
 	elseif string.find(msg, L["trigger_fissure_self"]) then
-		self:Say("Shadow Fissure on me") -- verify
-	end
-
-	-- frost bolt
-	if GetTime() < module.frostbolttime + timer.frostbolt then
-		if string.find(msg, L["trigger_attack1"]) or string.find(msg, L["trigger_attack2"]) or string.find(msg, L["trigger_attack3"]) or string.find(msg, L["trigger_attack4"]) then
-			self:Sync(syncName.frostboltOver)
-		elseif string.find(msg, L["trigger_kick1"]) or string.find(msg, L["trigger_kick2"]) or string.find(msg, L["trigger_kick3"]) -- kicked
-			or string.find(msg, L["trigger_pummel1"]) or string.find(msg, L["trigger_pummel2"]) or string.find(msg, L["trigger_pummel3"]) -- pummeled
-			or string.find(msg, L["trigger_shieldBash1"]) or string.find(msg, L["trigger_shieldBash2"]) or string.find(msg, L["trigger_shieldBash3"]) -- shield bashed
-			or string.find(msg, L["trigger_earthShock1"]) or string.find(msg, L["trigger_earthShock2"]) then -- earth shocked
-			
-			self:Sync(syncName.frostboltOver)
-		end
-	else
-		module.frostbolttime = 0
+		self:Sync(syncName.fissure .. " " .. UnitName("player"))
 	end
 end
 
@@ -265,35 +299,41 @@ function module:TestModule()
 	module:TestModuleCore()
 
 	-- check event handlers
-	module:Event(L["trigger_attack1"])
-	module:Event(L["trigger_attack2"])
-	module:Event(L["trigger_attack3"])
-	module:Event(L["trigger_attack4"])
-	module:Event(L["trigger_kick1"])
-	module:Event(L["trigger_kick2"])
-	module:Event(L["trigger_kick3"])
-	module:Event(L["trigger_pummel1"])
-	module:Event(L["trigger_pummel2"])
-	module:Event(L["trigger_pummel3"])
-	module:Event(L["trigger_shieldBash1"])
-	module:Event(L["trigger_shieldBash2"])
-	module:Event(L["trigger_shieldBash3"])
-	module:Event(L["trigger_earthShock1"])
-	module:Event(L["trigger_earthShock2"])
-	module:Event(L["trigger_fissure"])
+	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(L["trigger_addDeath"], BB["Unstoppable Abomination"]))
+	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(string.format(L["trigger_addDeath"], BB["Soul Weaver"]))
+	
+	module:PhaseTwoEvent(L["trigger_phase2_1"])
+	module:PhaseTwoEvent(L["trigger_phase2_2"])
+	module:PhaseTwoEvent(L["trigger_phase2_3"])
+	module:ShadowFissureEvent(L["trigger_fissure"])
+	module:ShadowFissureEvent(L["trigger_fissure_self"])
+	module:MindControlEvent(L["trigger_mindControl1"])
+	module:MindControlEvent(L["trigger_mindControl2"])
+	module:MindControlEvent(L["trigger_mindControl"])
 	module:DetonateManaEvent(L["trigger_detonate"])
-	module:Affliction(L["trigger_detonate"])
-	module:Affliction(L["trigger_frostboltVolley"])
-	module:CHAT_MSG_COMBAT_HOSTILE_DEATH(L["trigger_addDeath"])
-	module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["trigger_frostbolt"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_2"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_3"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_phase3"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_mindControl1"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_mindControl2"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_guardians"])
-	module:CHAT_MSG_MONSTER_YELL(L["trigger_frostBlast"])
+	module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
+	module:FrostBlastEvent(L["trigger_frostBlast"])
+	module:FrostBlastEvent(L["trigger_frostBlast_yell"])
+	module:FrostboltEvent(L["trigger_frostbolt"])
+	
+	module:FrostboltOverEvent(L["trigger_attack1"])
+	module:FrostboltOverEvent(L["trigger_attack2"])
+	module:FrostboltOverEvent(L["trigger_attack3"])
+	module:FrostboltOverEvent(L["trigger_attack4"])
+	module:FrostboltOverEvent(L["trigger_kick1"])
+	module:FrostboltOverEvent(L["trigger_kick2"])
+	module:FrostboltOverEvent(L["trigger_kick3"])
+	module:FrostboltOverEvent(L["trigger_pummel1"])
+	module:FrostboltOverEvent(L["trigger_pummel2"])
+	module:FrostboltOverEvent(L["trigger_pummel3"])
+	module:FrostboltOverEvent(L["trigger_shieldBash1"])
+	module:FrostboltOverEvent(L["trigger_shieldBash2"])
+	module:FrostboltOverEvent(L["trigger_shieldBash3"])
+	module:FrostboltOverEvent(L["trigger_earthShock1"])
+	module:FrostboltOverEvent(L["trigger_earthShock2"])
+	
+	module:PhaseThreeEvent(L["trigger_phase3"])
+	module:GuardiansEvent(L["trigger_guardians"])
 	
 	module:OnDisengage()
 	module:TestDisable()
@@ -311,15 +351,15 @@ function module:TestVisual()
 	end
 	
 	local function phase2()
-		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase2_1"])
+		module:PhaseTwoEvent(L["trigger_phase2_1"])
 	end
 	
 	local function frostbolt()
-		module:CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE(L["trigger_frostbolt"])
+		module:FrostboltEvent(L["trigger_frostbolt"])
 	end
 
 	local function interrupt()
-		module:Event(L["trigger_kick1"])
+		module:FrostboltOverEvent(L["trigger_kick1"])
 	end
 
 	local function detonate()
@@ -327,23 +367,27 @@ function module:TestVisual()
 	end
 
 	local function frostboltVolley()
-		module:Affliction(L["trigger_frostboltVolley"])
+		module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
+		module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
+		module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
+		module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
+		module:FrostboltVolleyEvent(L["trigger_frostboltVolley"])
 	end
 	
 	local function frostblast()
-		module:CHAT_MSG_MONSTER_YELL(L["trigger_frostBlast"])
+		module:FrostBlastEvent(L["trigger_frostBlast"])
 	end
 	
 	local function fissure()
-		module:Event(L["trigger_fissure"])
+		module:ShadowFissureEvent(L["trigger_fissure_self"])
 	end
 	
 	local function phase3()
-		module:CHAT_MSG_MONSTER_YELL(L["trigger_phase3"])
+		module:PhaseThreeEvent(L["trigger_phase3"])
 	end
 	
 	local function guardians()
-		module:CHAT_MSG_MONSTER_YELL(L["trigger_guardians"])
+		module:GuardiansEvent(L["trigger_guardians"])
 	end
 
 	local function deactivate()
