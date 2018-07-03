@@ -1,3 +1,21 @@
+r20018 Test3
+This is just a pre-release!
+
+Four Horsemen:
+	- Removed test message
+	
+Sapphiron:
+	- Life Drain: changed timer for first life drain after flight
+
+Kel'Thuzad:
+	- Improved Event Handling
+	- Detonate Mana: removed bar, message and skull icon and added say warning
+	- Shadow Fissure: added say warning and audio warning (run away sound)
+	- Frost Blast: added audio warning (alarm sound) for priests, druids and shamans
+	- Frostbolt: added audio warning (alarm sound) for warriors and rogues
+	- Mind Control: timer bar changed to 60-75s
+	- Add bars: removed
+
 r20018 Test2
 This is just a pre-release!
 

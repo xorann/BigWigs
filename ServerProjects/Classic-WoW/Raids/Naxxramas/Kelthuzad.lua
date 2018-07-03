@@ -32,7 +32,7 @@ module.timer.mindcontrol = {
 	max = 75
 }
 module.timer.firstFrostblast = 33
-
+module.timer.phase1 = 321
 
 --[[
 mc: 60-75s
@@ -116,7 +116,7 @@ function module:OnEngage()
 		--self:Bar(string.format(L["bar_add"], module.numAbominations, "Unstoppable Abomination"), timer.phase1, icon.abomination)
 		--self:Bar(string.format(L["bar_add"], module.numWeavers, "Soul Weaver"), timer.phase1, icon.soulWeaver)
 		
-		self:KTM_SetTarget("Unstoppable Abomination")
+		self:KTM_SetTarget(BB["Unstoppable Abomination"])
 	end
 end
 
