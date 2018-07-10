@@ -22,7 +22,10 @@ module.revision = 20018 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
-module.timer.meteor = 13
+module.timer.meteor = {
+	min = 12,
+	max = 17
+}
 module.timer.firstMark = 20
 
 ------------------------------
@@ -80,13 +83,13 @@ function module:MarkEvent(msg)
 			self:Sync(syncName.mark .. " " .. tostring(self.marks + 1))
 			module.times["mark"] = t
 			
-			--[[local a = self.marks
+			local a = self.marks
 			local b = 3
 			local c = a-math.floor(a/b)*b
 			if c == 0 then
 				c = 3
 			end
-			BigWigs:Print("Gruppe " .. c)]]
+			BigWigs:Print("Gruppe " .. c)
 		end
 	end
 end

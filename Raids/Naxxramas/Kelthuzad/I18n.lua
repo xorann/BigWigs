@@ -123,6 +123,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_mindControlAndFrostBlast = "First Frost Blast and MC",
 	bar_detonateNow = "Detonate Mana - %s",
 	bar_detonateNext = "Detonate Mana",
+	bar_fissure = "Shadow Fissure",
 	
 	-- misc
 	misc_zone = "Kel'Thuzad Chamber",

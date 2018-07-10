@@ -1,3 +1,13 @@
+r20018 Test4
+This is just a pre-release!
+
+Four Horsemen:
+	- Showing irregularity of the meteor on Nefarian
+	
+Kel'Thuzad:
+	- Bar for Shadow Fissure for the player afflicted by it
+	- Showing the irregularity of the phase1 timer on Nefarian
+	
 r20018 Test3
 This is just a pre-release!
 
@@ -14,7 +24,7 @@ Kel'Thuzad:
 	- Frost Blast: added audio warning (alarm sound) for priests, druids and shamans
 	- Frostbolt: added audio warning (alarm sound) for warriors and rogues
 	- Mind Control: timer bar changed to 60-75s
-	- Add bars: removed
+	- Abomination/Weaver bars: removed
 
 r20018 Test2
 This is just a pre-release!

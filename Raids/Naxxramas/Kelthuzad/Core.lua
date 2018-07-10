@@ -34,6 +34,7 @@ module.timer = {
 	frostblast = 30,
 	detonate = 5,
 	nextDetonate = 20,
+	fissureCast = 3,
 }
 local timer = module.timer
 
@@ -48,6 +49,7 @@ module.icon = {
 	frostblast = "Spell_Frost_FreezingBreath",
 	detonate = "Spell_Nature_WispSplode",
 	frostbolt = "Spell_Frost_FrostBolt02",
+	fissure = "spell_shadow_creepingplague",
 }
 local icon = module.icon
 
@@ -226,6 +228,7 @@ function module:Fissure(name)
 		if name == UnitName("player") then
 			self:Message(string.format(L["msg_fissure"], name), "Urgent", true, "RunAway")
 			self:Say(L["misc_say_fissure"]) -- verify
+			self:Bar(L["bar_fissure"], timer.fissureCast, icon.fissure)
 		else
 			self:Message(string.format(L["msg_fissure"], name), "Urgent")
 		end
