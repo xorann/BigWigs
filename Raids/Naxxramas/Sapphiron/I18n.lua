@@ -41,6 +41,7 @@ L:RegisterTranslations("enUS", function() return {
 	trigger_flight = "lifts off into the air!",
 	trigger_blizzardGain = "You are afflicted by Chill.",
 	trigger_blizzardGone = "Chill fades from you.",
+	trigger_iceboltHit = "Sapphiron's Icebolt",
 	
 	-- messages
 	msg_berserk10m = "10min to berserk!",

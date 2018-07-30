@@ -45,7 +45,8 @@ local icon = module.icon
 module.syncName = {
 	lifedrain = "SapphironLifeDrain",
 	flight = "SapphironFlight",
-	deepbreath = "SapphironDeepBreath"
+	deepbreath = "SapphironDeepBreath",
+	icebolt = "SapphironIcebolt",
 }
 local syncName = module.syncName
 
@@ -53,7 +54,7 @@ local syncName = module.syncName
 module.timeLifeDrain = nil
 module.cachedUnitId = nil
 module.lastTarget = nil
-
+local icebolt = 0
 
 ------------------------------
 --      Synchronization	    --
@@ -65,6 +66,8 @@ function module:BigWigs_RecvSync(sync, rest, nick)
 		self:Flight()
 	elseif sync == syncName.deepbreath then
 		self:DeepBreath()
+	elseif sync == syncName.icebolt then
+		self:Icebolt()
 	end
 end
 
@@ -107,7 +110,8 @@ end
 
 function module:DeepBreath()
 	self:RemoveBar(L["bar_deepBreathCast"])
-
+	icebolt = 0
+	
 	if self.db.profile.deepbreath then
 		self:Message(L["msg_deepBreathNow"], "Important", true, "Beware")
 		self:Bar(L["bar_deepBreath"], timer.deepbreath, icon.deepbreath)
@@ -119,6 +123,24 @@ function module:DeepBreath()
 	end
 	
 	self:RemoveProximity()
+end
+
+function module:Icebolt()
+	icebolt = icebolt + 1
+	
+	if self.db.profile.deepbreath then
+		if icebolt == 1 then
+			self:Sound("One")
+		elseif icebolt == 2 then
+			self:Sound("Two")
+		elseif icebolt == 3 then
+			self:Sound("Three")
+		elseif icebolt == 4 then
+			self:Sound("Four")
+		elseif icebolt == 5 then
+			self:Sound("Five")
+		end
+	end
 end
 
 

@@ -42,6 +42,7 @@ function module:OnEnable()
 	self:CombatlogFilter(L["trigger_flight"], self.FlightEvent, true)
 	self:CombatlogFilter(L["trigger_blizzardGain"], self.BlizzardGainEvent)
 	self:CombatlogFilter(L["trigger_blizzardGone"], self.BlizzardGoneEvent)
+	self:CombatlogFilter(L["trigger_iceboltHit"], self.IceboltEvent)
 	
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_PARTY_DAMAGE", "CheckForLifeDrain")
 	self:RegisterEvent("CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", "CheckForLifeDrain")
@@ -49,6 +50,7 @@ function module:OnEnable()
 	
 	self:ThrottleSync(4, syncName.lifedrain)
 	self:ThrottleSync(5, syncName.flight)
+	self:ThrottleSync(1, syncName.icebolt)
 end
 
 -- called after module is enabled and after each wipe
@@ -132,6 +134,12 @@ function module:BlizzardGoneEvent(msg)
 	end
 end
 
+function module:IceboltEvent(msg)
+	if string.find(msg, L["trigger_iceboltHit"]) then
+		self:Sync(syncName.icebolt)
+	end
+end
+
 ------------------------------
 -- Utility	Functions   	--
 ------------------------------
@@ -206,7 +214,8 @@ function module:TestVisual()
 	end
 
 	local function icebolt()
-		module:CheckForLifeDrain(L["trigger_icebolt"])
+		--module:CheckForLifeDrain(L["trigger_icebolt"])
+		module:IceboltEvent(L["trigger_iceboltHit"])
 	end
 	
 	local function blizzardGain()
