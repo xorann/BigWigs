@@ -66,6 +66,8 @@ L:RegisterTranslations("enUS", function() return {
 	misc_you = "You",
 	misc_are = "are",
 	misc_bombSay = "I am injected",
+	
+	misc_addName = "Sewage Slime",
 } end )
 
 L:RegisterTranslations("deDE", function() return {

@@ -6,11 +6,10 @@ local bossName = BigWigs.bossmods.naxx.grobbulus
 local module = BigWigs:GetModule(AceLibrary("Babble-Boss-2.2")[bossName])
 local L = BigWigs.i18n[bossName]
 
-
 -- module variables
 module.revision = 20015 -- To be overridden by the module!
 module.enabletrigger = module.translatedName -- string or table {boss, add1, add2}
---module.wipemobs = { L["add_name"] } -- adds which will be considered in CheckForEngage
+module.wipemobs = { L["misc_addName"] } -- adds which will be considered in CheckForEngage
 module.toggleoptions = {"youinjected", "otherinjected", "icon", "cloud", "slimespray", -1, "bombardSlime", -1, "enrage", "bosskill"}
 
 module.defaultDB = {
