@@ -30,7 +30,7 @@ module.timer = {
 	firstFrostblast = 45,
 	firstMindControl = 60,
 	mindcontrol = 60,
-	guardians = 16,
+	guardians = 15,
 	frostblast = 30,
 	detonate = 5,
 	nextDetonate = 20,
@@ -116,6 +116,8 @@ end
 -- Sync Handlers	    	--
 ------------------------------
 function module:Phase2()
+	self:RemoveBar(L["bar_phase1"])
+
 	self:Bar(L["bar_phase2"], timer.phase2, icon.phase2, true, BigWigsColors.db.profile.start)
 	--self:Bar(L["bar_detonateNext"], timer.firstDetonate, icon.detonate)
 	--self:Bar(L["bar_mindControlAndFrostBlast"], timer.firstFrostblast, icon.frostblast)
