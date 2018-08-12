@@ -1,3 +1,41 @@
+r20019
+
+Four Horsemen:
+    - Fixed Meteor Timer
+    - Changed the timer bars to show the slight irregularities
+    - Removed most messages to reduce spam
+
+Sapphiron
+    - Improved engage trigger for the first pull
+    - Improved trigger for flight phase and deep breath
+    - Added "beware" sound to the flight phase and deep breath warnings
+    - Show proximity plugin during the flight phase
+    - Added timer bars for next flight phase and next deep breath
+    - Added blizzard warning (warning sign, "run away" sound, and say warning)
+    - Added Icebolt warning (yell and minimap ping)
+    - Added Icebolt counter
+    - Life Drain: fixed timer for first life drain after flight
+
+Kel'Thuzad
+    - Improved Event Handling
+    - Added icons for all timer bars
+    - Changed timers of the Classic-WoW implementation
+    - Abomination/Weaver bars: removed
+    - Removing phase 1 timer bar at the beginning of phase 2
+    - Set KTM master target to Kel'Thuzad at the beginning of phase 2
+    - Activate frost blast plugin at the beginning of phase 2
+    - Detonate Mana: removed bar, message and skull icon and added say warning
+    - Shadow Fissure: added say warning and audio warning (run away sound)
+    - Frost Blast: added audio warning (alarm sound) for priests, druids and shamans
+    - Frostbolt: added audio warning (alarm sound) for warriors and rogues
+    - Mind Control: timer bar changed to 60-75s
+    - Phase 3 bar fix (untested)
+
+FrostBlast plugin:
+    - Fixed an error when someone gets afflicted by frost blast
+    - Changed the default position of the frost blast plugin (was the same as the proximity plugin)
+
+
 r20018 Test4
 This is just a pre-release!
 
