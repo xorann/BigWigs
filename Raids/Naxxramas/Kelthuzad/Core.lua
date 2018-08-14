@@ -162,6 +162,11 @@ function module:Guardians()
 	if self.db.profile.guardians then
 		self:Message(L["msg_guardians"], "Important")
 		self:Bar(L["bar_guardians"], timer.guardians, icon.guardians, true, BigWigsColors.db.profile.start)
+		
+		self:DelayedBar(timer.guardians + 0 * 5, string.format(L["bar_guardians2"], 2), 5, icon.guardians, true, BigWigsColors.db.profile.start) -- guardian 2
+		self:DelayedBar(timer.guardians + 1 * 5, string.format(L["bar_guardians2"], 3), 5, icon.guardians, true, BigWigsColors.db.profile.start) -- guardian 3
+		self:DelayedBar(timer.guardians + 2 * 5, string.format(L["bar_guardians2"], 4), 5, icon.guardians, true, BigWigsColors.db.profile.start) -- guardian 4
+		self:DelayedBar(timer.guardians + 3 * 5, string.format(L["bar_guardians2"], 5), 5, icon.guardians, true, BigWigsColors.db.profile.start) -- guardian 5
 	end
 end
 

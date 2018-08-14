@@ -116,6 +116,7 @@ L:RegisterTranslations("enUS", function() return {
 	bar_phase1 = "Phase 1 Timer",
 	bar_phase2 = "Kel'Thuzad Active!",
 	bar_guardians = "Guardians incoming!",
+    bar_guardians2 = "Guardian %s",
 	bar_frostbolt = "Frostbolt",
 	bar_frostboltVolley = "Possible volley",
 	bar_add = "%d/14 %s",
