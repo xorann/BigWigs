@@ -25,7 +25,6 @@ module.revision = 20018 -- To be overridden by the module!
 -- override timers if necessary
 --timer.berserk = 300
 module.timer.firstFrostboltVolley = 15
-module.timer.phase2 = 0
 module.timer.firstMindControl = 24
 module.timer.mindcontrol = {
 	min = 60,
@@ -456,5 +455,5 @@ function module:TestVisual()
 	self:ScheduleEvent(self:ToString() .. "Test_guardians", guardians, 31, self)
 	
 	-- deactivate after 40s
-	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 40, self)
+	self:ScheduleEvent(self:ToString() .. "Test_deactivate", deactivate, 90, self)
 end
