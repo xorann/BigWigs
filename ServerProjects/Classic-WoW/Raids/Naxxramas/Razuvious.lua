@@ -133,7 +133,6 @@ end
 
 -- workaround for the broken hp display of mind controlled npc's
 function module:UpdateUnderstudyHP()
-	BigWigs:DebugMessage("update")
 	local health = 0
 	local maxHP = 91124
 	local razuvious = AceLibrary("Babble-Boss-2.2")["Instructor Razuvious"]
@@ -157,7 +156,7 @@ function module:UpdateUnderstudyHP()
 	
 	if health > 0 then
 		health = health / maxHP * 100
-		BigWigs:DebugMessage(health)
+		--BigWigs:DebugMessage(health)
 		self:TriggerEvent("BigWigs_StartHPBar", self, "Understudy", 100)
 		self:TriggerEvent("BigWigs_SetHPBar", self, "Understudy", 100 - health)
 	else

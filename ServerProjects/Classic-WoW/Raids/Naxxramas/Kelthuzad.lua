@@ -26,14 +26,15 @@ module.revision = 20018 -- To be overridden by the module!
 --timer.berserk = 300
 module.timer.firstFrostboltVolley = 15
 module.timer.firstMindControl = 24
+module.timer.phase2 = 0
 module.timer.mindcontrol = {
 	min = 60,
 	max = 75
 }
 module.timer.firstFrostblast = 33
 module.timer.phase1 = {
-	min = 320,
-	max = 325
+	min = 320 +15,
+	max = 325 +15
 }
 
 --[[

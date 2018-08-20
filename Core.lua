@@ -491,7 +491,7 @@ function BigWigs:CheckForWipe(module)
 			end
 		end
 		if not isInZone then 
-			BigWigs:DebugMessage("not in the zone: wipe")
+			BigWigs:DebugMessage("CheckForWipe: not in the zone: wipe ("..module:ToString()..")")
 			-- reset if you are not in the zone
 			module:Wipe()
 			return
@@ -502,21 +502,35 @@ function BigWigs:CheckForWipe(module)
         -- start wipe check in regular intervals
         local running = module:IsEventScheduled(module:ToString().."_CheckWipe")
         if not running then
-            module:DebugMessage("CheckForWipe not running")
+            module:DebugMessage("CheckForWipe: not running, scheduling regular checks")
             module:ScheduleRepeatingEvent(module:ToString().."_CheckWipe", module.CheckForWipe, 5, module)
             return
         end
 
         local function RaidMemberInCombat()
             if UnitAffectingCombat("player") then
+				module:DebugMessage("CheckForWipe: you are in combat")
                 return true
             end
 
             local num = GetNumRaidMembers()
             for i = 1, num do
                 local raidUnit = string.format("raid%s", i)
+				
                 if UnitExists(raidUnit) and UnitAffectingCombat(raidUnit) then
-                    return true
+					-- make sure player is in the correct zone
+                    local _, _, _, _, _, _, zone = GetRaidRosterInfo(i)
+					if type(module.zonename) == "string" and module.zonename == zone then
+						module:DebugMessage("CheckForWipe: " .. raidUnit .. " in combat")
+						return true
+					elseif type(module.zonename) == "table" then
+						for _, v in pairs(module.zonename) do
+							if v == zone then
+								module:DebugMessage("CheckForWipe: " .. raidUnit .. " in combat")
+								return true
+							end
+						end
+					end
                 end
             end
 
@@ -525,7 +539,7 @@ function BigWigs:CheckForWipe(module)
 
         local inCombat = RaidMemberInCombat()
         if not inCombat then
-            module:DebugMessage("Wipe detected for module ["..module:ToString().."].")
+            module:DebugMessage("CheckForWipe: Wipe detected for module ["..module:ToString().."].")
             module:CancelScheduledEvent(module:ToString().."_CheckWipe")
             --self:TriggerEvent("BigWigs_RebootModule", module:ToString())
 			module:Wipe()
