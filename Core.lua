@@ -1,5 +1,5 @@
 
-local revision = 20019
+local revision = 20020
 local forkName = "Classic-WoW" -- please change this name if you forked this addon. must not contain spaces
 local isDeveloperVersion = false
 
