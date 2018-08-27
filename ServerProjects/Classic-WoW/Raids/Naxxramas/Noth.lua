@@ -22,6 +22,9 @@ module.revision = 20014 -- To be overridden by the module!
 
 -- override timers if necessary
 --timer.berserk = 300
+module.timer.secondToBalcony = 113 -5
+module.timer.thirdToBalcony = 185 -6
+module.timer.wave2_3 = 46 +17
 
 
 ------------------------------
