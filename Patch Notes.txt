@@ -1,3 +1,20 @@
+r20020
+
+Core:
+	- Improved wipe detection
+
+Noth:
+	- timer for second and third balcony tweaked
+	- timer for second wave during the third room phase tweaked
+	
+Maexxna:
+	- Webspray timer tweaked
+
+Kel'Thuzad:
+	- Changed P1 to P2 transition according to the server changes
+	- Changed the possible irregularity from 5s to 10s for the P1 to P2 transition
+	
+
 r20019
 
 Four Horsemen:
