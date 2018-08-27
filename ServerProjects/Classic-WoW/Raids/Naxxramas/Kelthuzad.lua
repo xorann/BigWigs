@@ -34,7 +34,7 @@ module.timer.mindcontrol = {
 module.timer.firstFrostblast = 33
 module.timer.phase1 = {
 	min = 320 +15,
-	max = 325 +15
+	max = 330 +15
 }
 
 --[[
