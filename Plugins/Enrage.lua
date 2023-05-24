@@ -20,7 +20,7 @@ local surface = AceLibrary("Surface-1.0")
 L:RegisterTranslations("enUS", function() return {
 	["Enrage"] = true, -- module name
 	["enrage"] = true, -- console command
-	
+
 	 -- console options
 	["Options for the enrage plugin."] = true,
 	["Show anchor"] = true,
@@ -32,9 +32,29 @@ L:RegisterTranslations("enUS", function() return {
 	["Texture"] = true,
 	["Set the texture for the timerbars."] = true,
     ["Health"] = true,
-            
+
     ["Test"] = true,
     ["Close"] = true,
+} end)
+
+L:RegisterTranslations("ruRU", function() return {
+	["Enrage"] = "Берсерк", -- module name
+	--["enrage"] = "enrage", -- console command
+
+	 -- console options
+	["Options for the enrage plugin."] = "Настройки плагина Берсерк.",
+	["Show anchor"] = "Показать якорь",
+	["Show the bar anchor frame."] = "Показать якорь окна полос",
+	["Reset position"] = "Сбросить положение",
+	["Reset the anchor position, moving it to the original position."] = "Сбросить положение якоря, переместив его в исходное положение.",
+	["Scale"] = "Маcштаб",
+	["Set the frame scale."] = "Установить масштаб окна.",
+	["Texture"] = "Текстура",
+	["Set the texture for the timerbars."] = "Установить текстуру для таймеров.",
+	["Health"] = "Здоровье",
+
+	["Test"] = "Тест",
+	["Close"] = "Закрыть",
 } end)
 
 L:RegisterTranslations("deDE", function() return {
@@ -50,10 +70,10 @@ BigWigsEnrage.revision = 20004
 BigWigsEnrage.defaultDB = {
 	scale = 1.0,
 	texture = "BantoBar",
-    
+
     posx = nil,
     posy = nil,
-	
+
 	bossName = nil,
 }
 BigWigsEnrage.consoleCmd = L["enrage"]
@@ -114,10 +134,10 @@ function BigWigsEnrage:OnRegister()
 end
 
 function BigWigsEnrage:OnEnable()
-	if not surface:Fetch(self.db.profile.texture) then 
-		self.db.profile.texture = "BantoBar" 
+	if not surface:Fetch(self.db.profile.texture) then
+		self.db.profile.texture = "BantoBar"
 	end
-	
+
 	self:SetupFrames()
     self:RegisterEvent("BigWigs_Enrage", "Start")
     self:RegisterEvent("BigWigs_EnrageStop", "Stop")
@@ -125,8 +145,8 @@ function BigWigsEnrage:OnEnable()
 	self:RegisterEvent("BigWigs_HideAnchors")
 	--self:RegisterEvent("BigWigs_StartBar")
 	--self:RegisterEvent("BigWigs_StopBar")
-	
-	if not self:IsEventRegistered("Surface_Registered") then 
+
+	if not self:IsEventRegistered("Surface_Registered") then
 	    self:RegisterEvent("Surface_Registered", function()
 			self.consoleOptions.args[L["Texture"]].validate = surface:List()
 	    end)
@@ -141,11 +161,11 @@ end
 function BigWigsEnrage:Start(enrageTimer, bossName)
 	if enrageTimer and bossName then
 		self.bossName = bossName
-		
+
 		self:TimerBar(enrageTimer)
 		self:HPBar(bossName)
         self:SetHPBar(100)
-        
+
         self:ScheduleRepeatingEvent("BigWigsEnrageUpdateHealth", self.UpdateHealth, 1, self)
 	end
 end
@@ -168,19 +188,19 @@ function BigWigsEnrage:HPBar(bossName)
 	if bossName then
 		local icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01"
 		local id = self:CreateBar(L["Health"], 100, icon, "Orange")
-		
+
 		self:PauseCandyBar(id)
-		self:SetCandyBarTimeFormat(id, function(t) 
-			local timetext 
-			if t == 100 then 
-				timetext = "100" 
-			elseif t == 0 then 
-				timetext = "0%%" 
-			else 
+		self:SetCandyBarTimeFormat(id, function(t)
+			local timetext
+			if t == 100 then
+				timetext = "100"
+			elseif t == 0 then
+				timetext = "0%%"
+			else
 				timetext = string.format("%d", t)  .. "%"
-			end 
-			return timetext 
-		end)	
+			end
+			return timetext
+		end)
 	end
 end
 
@@ -203,7 +223,7 @@ function BigWigsEnrage:CreateBar(text, time, icon, color)
 		if not icon then
 			icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01"
 		end
-		
+
 		-- yes we try and register every time, we also set the point every time since people can change their mind midbar.
 		self:RegisterCandyBarGroup("BigWigsEnrageGroup")
 		self:SetCandyBarGroupPoint("BigWigsEnrageGroup", "BOTTOM", self.frames.anchor, "TOP", 0, 0)
@@ -224,10 +244,10 @@ function BigWigsEnrage:CreateBar(text, time, icon, color)
 		self:SetCandyBarScale(id, self.db.profile.scale or 1)
 		self:SetCandyBarFade(id, .5)
 		self:StartCandyBar(id, true)
-		
+
 		return id
 	end
-	
+
 	return false
 end
 
@@ -246,7 +266,7 @@ function BigWigsEnrage:UpdateHealth()
     local health
     local newtarget = nil
     local token = ""
-    
+
 	if UnitName("playertarget") == self.bossName then
         token = "playertarget"
 	elseif UnitName("playertargettarget") == self.bossName then
@@ -259,7 +279,7 @@ function BigWigsEnrage:UpdateHealth()
 			end
 		end
 	end
-    
+
     health = UnitHealth(token) / UnitHealthMax(token) * 100
     self:SetHPBar(health)
 end
@@ -282,7 +302,7 @@ end
 ------------------------------
 
 function BigWigsEnrage:SetupFrames()
-	local f, t	
+	local f, t
 
 	f, _, _ = GameFontNormal:GetFont()
 
@@ -326,7 +346,7 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.cheader:SetTextColor(1, .8, 0)
 	self.frames.cheader:ClearAllPoints()
 	self.frames.cheader:SetPoint("TOP", self.frames.anchor, "TOP", 0, -10)
-	
+
 	self.frames.leftbutton = CreateFrame("Button", nil, self.frames.anchor)
 	self.frames.leftbutton.owner = self
 	self.frames.leftbutton:SetWidth(40)
@@ -334,7 +354,7 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.leftbutton:SetPoint("RIGHT", self.frames.anchor, "CENTER", -10, -15)
 	self.frames.leftbutton:SetScript( "OnClick", function()  self:TriggerEvent("BigWigs_Test") end )
 
-	
+
 	t = self.frames.leftbutton:CreateTexture()
 	t:SetWidth(50)
 	t:SetHeight(32)
@@ -348,7 +368,7 @@ function BigWigsEnrage:SetupFrames()
 	t:SetTexCoord(0, 0.625, 0, 0.6875)
 	t:SetAllPoints(self.frames.leftbutton)
 	self.frames.leftbutton:SetPushedTexture(t)
-	
+
 	t = self.frames.leftbutton:CreateTexture()
 	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 	t:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -359,16 +379,16 @@ function BigWigsEnrage:SetupFrames()
 	self.frames.leftbuttontext:SetFontObject(GameFontHighlight)
 	self.frames.leftbuttontext:SetText(L["Test"])
 	self.frames.leftbuttontext:SetAllPoints(self.frames.leftbutton)
-    
+
 	self.frames.rightbutton = CreateFrame("Button", nil, self.frames.anchor)
 	self.frames.rightbutton.owner = self
 	self.frames.rightbutton:SetWidth(40)
 	self.frames.rightbutton:SetHeight(25)
 	self.frames.rightbutton:SetPoint("LEFT", self.frames.anchor, "CENTER", 10, -15)
 	self.frames.rightbutton:SetScript( "OnClick", function() self:BigWigs_HideAnchors() end )
-    
 
-	
+
+
 	t = self.frames.rightbutton:CreateTexture()
 	t:SetWidth(50)
 	t:SetHeight(32)
@@ -382,7 +402,7 @@ function BigWigsEnrage:SetupFrames()
 	t:SetTexCoord(0, 0.625, 0, 0.6875)
 	t:SetAllPoints(self.frames.rightbutton)
 	self.frames.rightbutton:SetPushedTexture(t)
-	
+
 	t = self.frames.rightbutton:CreateTexture()
 	t:SetTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
 	t:SetTexCoord(0, 0.625, 0, 0.6875)
@@ -398,10 +418,10 @@ function BigWigsEnrage:SetupFrames()
 end
 
 function BigWigsEnrage:ResetAnchor()
-	if not self.frames.anchor then 
+	if not self.frames.anchor then
 		self:SetupFrames()
 	end
-	
+
 	self.frames.anchor:ClearAllPoints()
 	self.frames.anchor:SetPoint("TOP", UIParent, "TOP", 250, -100)
 	self.db.profile.posx = nil
@@ -411,17 +431,17 @@ end
 function BigWigsEnrage:SavePosition()
 	local f = self.frames.anchor
 	local s = f:GetEffectiveScale()
-		
+
 	self.db.profile.posx = f:GetLeft() * s
-	self.db.profile.posy = f:GetTop() * s	
+	self.db.profile.posy = f:GetTop() * s
 end
 
 function BigWigsEnrage:RestorePosition()
 	local x = self.db.profile.posx
 	local y = self.db.profile.posy
-		
+
 	if not x or not y then return end
-				
+
 	local f = self.frames.anchor
 	local s = f:GetEffectiveScale()
 
