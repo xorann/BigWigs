@@ -48,6 +48,31 @@ L:RegisterTranslations("enUS", function() return {
 }
 end)
 
+L:RegisterTranslations("ruRU", function() return {
+	-- plugin description
+	["AFKick"] = "КикАФК",
+	["Allows you to logout other players that are AFK. The player has 20s to react and cancel the request."] = "Позволяет вам кикать других игроков, которые АФК. У игрока есть 20 секунд, чтобы отреагировать и отменить запрос.",
+	
+	-- console
+	["Send Request"] = "Послать запрос",
+	["Send Request to log someone out."] = "Отправить запрос чтобы кто-то вышел.",
+	["<player name>"] = "<имя игрока>",
+	
+	-- request messages
+	["You have to be the raid leader or an assistant."] = "Вы должны быть лидером рейда или помощником.",
+	["<BigWigs> %s sent a request to logout %s."] = "<BigWigs> %s отправил запрос на выход %s.",
+	["%s is not in your raid"] = "%s не в рейде",
+	["Please provide a name."] = "Пожалуйста, укажите имя.",
+	["Your AFKick Request for %s was not acknowledged. %s is probably not using a compatible version of BigWigs."] = "Ваш запрос КикАФК для %s не был подтвержден. %s вероятно, не использует совместимую версию BigWigs.",
+	["%s is already offline."] = "%s уже не в сети.",
+	
+	-- dialog
+	["%s sent a request to log you out. Press \"Ok\" to logout or \"Cancel\" to stay logged in. You will logout automatically in 20 seconds."] = "%s отправил запрос на выход. Нажмите \"Ok\" чтобы выйти или \"Отмена\" чтобы остаться. Вы автоматически выйдете через 20 секунд.",
+	["Ok"] = "Ok",
+	["Cancel"] = "Отмена",
+}
+end)
+
 ----------------------------------
 --      Module Declaration      --
 ----------------------------------
