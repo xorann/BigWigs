@@ -37,6 +37,32 @@ L:RegisterTranslations("enUS", function() return {
 	["Options for RaidWarning."] = true,
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+	["RaidWarning"] = "Объявление рейда",
+
+	--["raidwarn"] = "raidwarn",
+	--["broadcast"] = "broadcast",
+	--["whisper"] = "whisper",
+	--["showwhispers"] = "showwhispers",
+	--["useraidchannel"] = "useraidchannel",
+
+	["Broadcast over RaidWarning"] = "Оповещать через Объявление рейда",
+	["Broadcast"] = "Оповещение",
+	["Toggle broadcasting over Raidwarning."] = "Вкл/Выкл оповещение через канал Объявлений Рейда остальным игрокам.",
+
+	["Whisper"] = "Шепот",
+	["Whisper warnings"] = "Предупреждения шепотом",
+	["Toggle whispering warnings to players."] = "Вкл/Выкл шепот предупреждений игрокам.",
+
+	["Show whispers"] = "Отображать шепот",
+	["Toggle showing whispers sent by BigWigs locally."] = "Вкл/Выкл отображение шепота посланных локально BigWigsом и, например когда у игроков чума или подобные отрицательные эффекты.",
+
+	["Use Raidchannel"] = "Использовать канал рейда",
+	["Toggle using the raid channel instead of the raid warning channel for boss messages."] = "Вкл/Выкл использование канала рейда вместо канала Объявлений рейда о действиях боссов.",
+
+	["Options for RaidWarning."] = "Настройки Объявлений Рейду",
+} end )
+
 L:RegisterTranslations("koKR", function() return {
 	["RaidWarning"] = "공격대 경고",
 
@@ -52,7 +78,6 @@ L:RegisterTranslations("koKR", function() return {
 	["Toggle using the raid channel instead of the raid warning channel for boss messages."] = "공격대 경고 혹은 채널 사용 토글",
 	
 	["Options for RaidWarning."] = "공격대 경고 설정",
-	
 } end )
 
 L:RegisterTranslations("zhCN", function() return {
