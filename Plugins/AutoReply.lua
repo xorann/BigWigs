@@ -52,6 +52,35 @@ L:RegisterTranslations("enUS", function() return {
 	["Hides all automatically generated outgoing whisper messages."] = true,
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+	-- commands
+	--statusRequest_cmd = "statusRequest",
+	statusRequest_name = "Запрос статуса",
+	statusRequest_desc = "Разрешает запрос статуса босса",
+	
+	-- messages
+	msg_statusRequest = "status",
+	msg_prefix = "<BigWigs> ", -- do not translate
+	msg_autoReply = "В настоящее время я занят борьбой с %s. Отправь \"status\" чтобы получить статус текущего задания.",
+    msg_victory = "Борьба с %s закончилась. Мы выиграли :)",
+	msg_wipe = "Борьба с %s закончилась. Мы проиграли :(",
+	
+	msg_percentage = "%s имеет %s%% здоровья.", -- first parameter is the boss name, second parameter is the health percentage
+	msg_percentageUnknown = "Здоровье %s неизвестно.",
+	msg_alive = "%d/%d игроки живы.",
+	msg_noStatus = "В настоящее время я не сражаюсь с боссами.",
+	
+	-- misc
+	misc_unknown = "Неизвестно",
+	
+	--["autoreply"] = "autoreply",
+	["AutoReply"] = "Автоответчик",
+	["Replies whispers during an encounter."] = "Отвечает шепотом во время данжа",
+	["Enabled"] = "Включить",
+	["Enable Plugin."] = "Включить плагин",
+	["Hide outgoing messages"] = "Скрыть исходящие сообщения",
+	["Hides all automatically generated outgoing whisper messages."] = "Скрывает все автоматически генерируемые исходящие сообщения шепотом.",
+} end )
 
 ----------------------------------
 --      Module Declaration      --
