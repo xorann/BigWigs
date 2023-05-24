@@ -57,6 +57,28 @@ L:RegisterTranslations("enUS", function() return {
 	["Enable pulltimer."] = true,
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+	["Pull Timer"] = "Таймер Пулла",
+
+	--["pulltimer"] = "pulltimer",
+	["Options for Pull Timer"] = "Настройки Таймера пулла",
+	pullstart_message = "Пулл через %d сек. (Отправлен %s)",
+	pullstop_message = "Пулл отменен (Отправлен %s)",
+	pull1_message = "Пулл через 1",
+	pull2_message = "Пулл через 2",
+	pull3_message = "Пулл через 3",
+	pull4_message = "Пулл через 4",
+	pull5_message = "Пулл через 5",
+	pull0_message = "Пулл!",
+
+	["Pull"] = "Пулл",
+
+	["You have to be the raid leader or an assistant"] = "Вы должны быть лидером рейда или помощником",
+
+	["Enable"] = "Включить",
+	["Enable pulltimer."] = "Включить таймер пулла",
+} end )
+
 -----------------------------------------------------------------------
 --      Module Declaration
 -----------------------------------------------------------------------
