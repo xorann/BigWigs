@@ -19,6 +19,18 @@ L:RegisterTranslations("enUS", function() return {
 	["Bars"] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	CHAT_MSG_SPELL_SELF_BUFF = "Вам не удалось развеять заклинание (.+) \"Исступление\".", -- CFM
+	CHAT_MSG_SPELL_SELF_DAMAGE = "Вы применяете заклинание \"Усмиряющий выстрел\" на (.+).",
+
+	["Tranq - %s"] = "Спокойствие - %s",
+	["%s's Tranq failed!"] = "%s'а спокойствие не подействовало!",
+	["Tranq"] = "Спокойствие",
+	["Options for the tranq module."] = "Настройки модуля Спокойствия",
+	["Toggle tranq bars on or off."] = "Вкл/Выкл полоски Спокойствия",
+	["Bars"] = "Полосы",
+} end)
+
 L:RegisterTranslations("koKR", function() return {
 	CHAT_MSG_SPELL_SELF_BUFF = "(.+)의 광기|1을;를; 무효화하지 못했습니다.", --"You fail to dispel (.+)'s Frenzy.",
 	CHAT_MSG_SPELL_SELF_DAMAGE = "(.+)에게 평정의 사격|1을;를; 시전합니다.", --"You cast Tranquilizing Shot on (.+).",
