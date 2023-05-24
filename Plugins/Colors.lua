@@ -68,6 +68,63 @@ L:RegisterTranslations("enUS", function() return {
 	["4th"] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Colors"] = "Цвета",
+
+	["Messages"] = "Сообщения",
+	["Bars"] = "Полосы",
+	["Shortbar"] = "Короткие",
+	["Longbar"] = "Длинные",
+	["Color %s"] = "Цвет %s",
+	["Color%s"] = "Цвет%s",
+	["Number of colors"] = "Число цветов",
+	["xColors"] = "хЦвета",
+	["Background"] = "Фон",
+	["Text"] = "Текст",
+	["Reset"] = "Сброс",
+
+	["Colors of messages and bars."] = "Цвета сообщений и полос",
+	["Colors of messages."] = "Цвета сообщений.",
+	["Change the color for \"%s\" messages."] = "Изменить цвет \"%s\" сообщений",
+	["Colors of bars."] = "Цвета полос",
+	["Colors for short bars (< 1 minute)."] = "Цвета для быстрых полос, менее минуты.",
+	["Colors for long bars (> 1 minute)."] = "Цвета для долгих полос, более минуты.",
+	["Change the %s color."] = "Изменить цвет %s.",
+	["Number of colors the bar has."] = "Число цветов успользуемых в полосах.",
+	["Change the background color."] = "Изменить цвет фона.",
+	["Change the text color."] = "Изменить цвет текста.",
+	["Resets all ranges to defaults."] = "Сброс всех цветов на стандартные значения.",
+
+	["Important"] = "Важные",
+	["Personal"] = "Личные",
+	["Twilight"] = "Неточные",
+	["Urgent"] = "Экстренные",
+	["Attention"] = "Внимание",
+	["Positive"] = "Позитивные",
+	["Bosskill"] = "УбийствоБосса",
+	["Core"] = "Основные",
+
+	["Special Events"] = "Специальные события",
+
+	["Colors special events bars."] = "Цвета полос специальных событий.",
+	["Change the color."] = "Изменить цвет.",
+	["Enrage"] = "Берсерк",
+	["Fear"] = "Страх",
+	["Frenzy"] = "Исступление",
+
+	["Next Frenzy"] = "Следующее исступление",
+	["Interrupt"] = "Прерывание",
+
+	["Mind Control"] = "Контроль над разумом",
+	["Start"] = "Начало",
+	["Significant"] = "Важное",
+		
+	["1st"] = "1й",
+	["2nd"] = "2ой",
+	["3rd"] = "3тий",
+	["4th"] = "4тый",
+} end)
+
 L:RegisterTranslations("koKR", function() return {
 	["Colors"] = "색상",
 
