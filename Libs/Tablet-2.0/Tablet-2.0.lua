@@ -1,16 +1,16 @@
 --[[
-Name: Tablet-2.0
-Revision: $Rev: 17873 $
-Author(s): ckknight (ckknight@gmail.com)
-Website: http://ckknight.wowinterface.com/
-Documentation: http://wiki.wowace.com/index.php/Tablet-2.0
-SVN: http://svn.wowace.com/root/trunk/TabletLib/Tablet-2.0
-Description: A library to provide an efficient, featureful tooltip-style display.
-Dependencies: AceLibrary, (optional) Dewdrop-2.0
+	Name: Tablet-2.0
+	Revision: $Rev: 20636 $
+	Author(s): ckknight (ckknight@gmail.com)
+	Website: http://ckknight.wowinterface.com/
+	Documentation: http://wiki.wowace.com/index.php/Tablet-2.0
+	SVN: http://svn.wowace.com/root/trunk/TabletLib/Tablet-2.0
+	Description: A library to provide an efficient, featureful tooltip-style display.
+	Dependencies: AceLibrary, (optional) Dewdrop-2.0
 ]]
 
 local MAJOR_VERSION = "Tablet-2.0"
-local MINOR_VERSION = "$Revision: 17873 $"
+local MINOR_VERSION = "$Revision: 20636 $"
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -430,15 +430,15 @@ do
 		end
 		return cat
 	end
-	
+
 	function TabletData:SetHint(hint)
 		self.hint = hint
 	end
-	
+
 	function TabletData:SetTitle(title)
 		self.title = title or "Title"
 	end
-	
+
 	function TabletData:SetTitleColor(r, g, b)
 		self.titleR = r
 		self.titleG = g
@@ -485,6 +485,8 @@ do
 				'textB', self.textB or 1,
 				'fakeChild', true,
 				'func', self.func,
+				'onEnterFunc', self.onEnterFunc,
+				'onLeaveFunc', self.onLeaveFunc,
 				'arg1', info.arg1,
 				'arg2', self.arg2,
 				'arg3', self.arg3,
@@ -1009,6 +1011,9 @@ local function button_OnEnter()
 		this.self:GetScript("OnEnter")()
 	end
 	this.highlight:Show()
+	if this.onEnterFunc then
+		this.onEnterFunc()
+	end
 end
 
 local function button_OnLeave()
@@ -1016,6 +1021,9 @@ local function button_OnLeave()
 		this.self:GetScript("OnLeave")()
 	end
 	this.highlight:Hide()
+	if this.onLeaveFunc then
+		this.onLeaveFunc()
+	end
 end
 
 local function NewLine(self)
@@ -1255,6 +1263,7 @@ local function AcquireFrame(self, registration, data, detachedData)
 		function tooltip:Hide(newOwner)
 			if self == tooltip or newOwner == nil then
 				old_tooltip_Hide(self)
+				return
 			end
 			self:ClearLines(true)
 			self.owner = nil
@@ -1653,6 +1662,80 @@ local function AcquireFrame(self, registration, data, detachedData)
 					end
 					Tablet:assert(type(func) == "function", "func must be a function or method")
 					button.func = func
+					local onEnterFunc = info.onEnterFunc
+					if onEnterFunc then
+						if type(onEnterFunc) == "string" then
+							if type(info.onEnterArg1) ~= "table" then
+								Tablet:error("Cannot call method " .. info.onEnterFunc .. " on a non-table")
+							end
+							onEventFunc = info.onEnterArg1[onEnterFunc]
+							if type(onEnterFunc) ~= "function" then
+								Tablet:error("Method " .. info.onEnterFunc .. " nonexistant")
+							end
+						else
+							if type(onEnterFunc) ~= "function" then
+								Tablet:error("func must be a function or method")
+							end
+						end
+						button.onEnterFunc = onEnterFunc
+						local i = 1
+						while true do
+							local k = 'onEnterArg' .. i
+							if button[k] ~= nil then
+								button[k] = nil
+							else
+								break
+							end
+							i = i + 1
+						end
+						i = 1
+						while true do
+							local k = 'onEnterArg' .. i
+							local v = info[k]
+							if v == nil then
+								break
+							end
+							button[k] = v
+							i = i + 1
+						end
+					end
+					local onLeaveFunc = info.onLeaveFunc
+					if onLeaveFunc then
+						if type(onLeaveFunc) == "string" then
+							if type(info.onLeaveArg1) ~= "table" then
+								Tablet:error("Cannot call method " .. info.onLeaveFunc .. " on a non-table")
+							end
+							onLeaveFunc = info.onLeaveArg1[onLeaveFunc]
+							if type(onLeaveFunc) ~= "function" then
+								Tablet:error("Method " .. info.onLeaveFunc .. " nonexistant")
+							end
+						else
+							if type(onLeaveFunc) ~= "function" then
+								Tablet:error("func must be a function or method")
+							end
+						end
+						button.onLeaveFunc = onLeaveFunc
+						local i = 1
+						while true do
+							local k = 'onLeaveArg' .. i
+							if button[k] ~= nil then
+								button[k] = nil
+							else
+								break
+							end
+							i = i + 1
+						end
+						i = 1
+						while true do
+							local k = 'onLeaveArg' .. i
+							local v = info[k]
+							if v == nil then
+								break
+							end
+							button[k] = v
+							i = i + 1
+						end
+					end
 					button.a1 = info.arg1
 					button.a2 = info.arg2
 					button.a3 = info.arg3
@@ -1693,7 +1776,7 @@ local function AcquireFrame(self, registration, data, detachedData)
 			end
 			self.fontSizePercent = percent
 			if data then
-				data.fontSizePercent = percent
+				data.fontSizePercent = percent ~= 1 and percent or nil
 			end
 			self.scrollUp:SetFont(font, normalSize * self.fontSizePercent, flags)
 			self.scrollDown:SetFont(font, normalSize * self.fontSizePercent, flags)
@@ -1909,12 +1992,15 @@ function AcquireDetachedFrame(self, registration, data, detachedData)
 	if not tooltip then
 		AcquireFrame(self, {})
 	end
-	local detached = CreateFrame("Frame", "Tablet20DetachedFrame" .. (table.getn(detachedTooltips) + 1), UIParent)
+	local frameName = "Tablet20DetachedFrame" .. (table.getn(detachedTooltips) + 1)
+	local detached = CreateFrame("Frame", frameName, UIParent)
 	table.insert(detachedTooltips, detached)
+	tinsert(UISpecialFrames, frameName);	
 	detached.notInUse = true
 	detached:EnableMouse(not data.locked)
 	detached:EnableMouseWheel(true)
 	detached:SetMovable(true)
+	-- tinsert(UISpecialFrames, frameName);
 	detached:SetPoint(data.anchor or "CENTER", UIParent, data.anchor or "CENTER", data.offsetx or 0, data.offsety or 0)
 
 	detached.numLines = 0

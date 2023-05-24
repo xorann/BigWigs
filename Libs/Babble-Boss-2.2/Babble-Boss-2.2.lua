@@ -1,6 +1,6 @@
-﻿--[[
+--[[
 Name: Babble-Boss-2.2
-Revision: 20004
+Revision: $Rev: 20006 $
 Author(s): ckknight (ckknight@gmail.com)
 Website: http://ckknight.wowinterface.com/
 Documentation: http://wiki.wowace.com/index.php/Babble-Boss-2.2
@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceLocale-2.2
 ]]
 
 local MAJOR_VERSION = "Babble-Boss-2.2"
-local MINOR_VERSION = 20009
+local MINOR_VERSION = tonumber(string.sub("$Revision: 20006 $", 12, -3))
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 
@@ -108,6 +108,7 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Eye of C'Thun"] = true,
 		["C'Thun"] = true,
 		["Anubisath Defender"] = true,
+		["Anubisath Warder"] = true,
 		["Fankriss the Unyielding"] = true,
 		["Princess Huhuran"] = true,
 		["Ouro"] = true,
@@ -238,7 +239,7 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Wolf Master Nandos"] = true,
 		["Rend Blackhand"] = true,
 		["Kurinnaxx"] = true,
-            
+
 		["Maur Grimtotem"] = true,
 		["Oggleflint"] = true,
 		["Taragaman the Hungerer"] = true,
@@ -251,7 +252,6 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Lord Pythas"] = true,
 		["Skum"] = true,
 		["Lord Serpentis"] = true,
-		["Verdan the Everliving"] = true,
 		["Verdan the Everliving"] = true,
 		["Mutanus the Devourer"] = true,
 		["Naralex"] = true,
@@ -364,20 +364,242 @@ BabbleBoss:RegisterTranslations("enUS", function()
 		["Rethilgore"] = true;
 		["Atiesh"] = true;
 		["Stratholme Courier"] = true;
-		
-        ["Elder Mottled Boar"] = true;
-        ["Stoneskin Gargoyle"] = true;
 		["Ancient Core Hound"] = true;
 		["Gurubashi Berserker"] = true;
-		["Anubisath Warder"] = true;
-		["Venom Stalker"] = true;
-		["Necro Stalker"] = true;
-		["Living Monstrosity"] = true;
-		["Death Knight Captain"] = true;
-		["Stitched Giant"] = true;
+		["Elder Mottled Boar"] = true,
+		["Stoneskin Gargoyle"] = true,
+		["Master Craftsman Omarion"] = true,
+		["Alterac Valley"] = true,
+		["Arathi Basin"] = true,
+				--BIGWIGS (lazy NPCDB)
+		["Venom Stalker"] = true,
+		["Necro Stalker"] = true,
+		["Living Monstrosity"] = true,
+		["Stitched Giant"] = true,
+		["Death Knight Captain"] = true,
 		["Unstoppable Abomination"] = true;
 		["Soul Weaver"] = true;
 	}
+end)
+
+BabbleBoss:RegisterTranslations("esES", function()
+	return {
+		["Avalanchion"] = "Avalanchion",
+		["The Windreaver"] = "El Atracavientos",
+		["Baron Charr"] = "Barón Charr",
+		["Princess Tempestria"] = "Princesa Tempestria",
+		["Grethok the Controller"] = "Grethok el Controlador",
+		["Patchwerk"] = "Remendejo",
+		["Grobbulus"] = "Grobbulus",
+		["Gluth"] = "Gluth",
+		["Feugen"] = "Feugen",
+		["Stalagg"] = "Stalagg",
+		["Thaddius"] = "Thaddius",
+		["Anub'Rekhan"] = "Anub'Rekhan",
+		["Grand Widow Faerlina"] = "Gran Viuda Faerlina",
+		["Maexxna"] = "Maexxna",
+		["Instructor Razuvious"] = "Instructor Razuvious",
+		["Deathknight Understudy"] = "Caballero de la Muerte suplente",
+		["Gothik the Harvester"] = "Gothik el Cosechador",
+		["Highlord Mograine"] = "Alto señor Mograine",
+		["Thane Korth'azz"] = "Thane Korth'azz",
+		["Lady Blaumeux"] = "Lady Blaumeux",
+		["Sir Zeliek"] = "Sir Zeliek",
+		["The Four Horsemen"] = "Los Cuatro Jinetes",
+		["Noth the Plaguebringer"] = "Noth el Pesteador",
+		["Heigan the Unclean"] = "Heigan el Impuro",
+		["Loatheb"] = "Loatheb",
+		["Sapphiron"] = "Sapphiron",
+		["Kel'Thuzad"] = "Kel'Thuzad",
+		["Lord Victor Nefarius"] = "Lord Victor Nefarius",
+		["Nefarian"] = "Nefarian",
+		["Vaelastrasz the Corrupt"] = "Vaelastrasz el Corrupto",
+		["Razorgore the Untamed"] = "Sangrevaja el Indomable",
+		["Broodlord Lashlayer"] = "Señor de linaje Capazote",
+		["Chromaggus"] = "Chromaggus",
+		["Ebonroc"] = "Ebanorroca",
+		["Firemaw"] = "Faucefogo",
+		["Flamegor"] = "Flamagor",
+		["Majordomo Executus"] = "Mayordomo Executus",
+		["Ragnaros"] = "Ragnaros",
+		["Baron Geddon"] = "Barón Geddon",
+		["Golemagg the Incinerator"] = "Golemagg el Incinerador",
+		["Garr"] = "Garr",
+		["Sulfuron Harbinger"] = "Presagista Sulfuron",
+		["Shazzrah"] = "Shazzrah",
+		["Lucifron"] = "Lucifron",
+		["Gehennas"] = "Gehennas",
+		["Magmadar"] = "Magmadar",
+		["Onyxia"] = "Onyxia",
+		["Azuregos"] = "Azuregos",
+		["Lord Kazzak"] = "Lord Kazzak",
+		["Ysondre"] = "Ysondre",
+		["Emeriss"] = "Emeriss",
+		["Taerar"] = "Taerar",
+		["Lethon"] = "Lethon",
+		["High Priestess Jeklik"] = "Suma sacerdotisa Jeklik",
+		["High Priest Venoxis"] = "Sumo sacerdote Venoxis",
+		["High Priest Thekal"] = "Sumo sacerdote Thekal",
+		["High Priestess Arlokk"] = "Suma sacerdotisa Arlokk",
+		["High Priestess Mar'li"] = "Suma sacerdotisa Mar'li",
+		["Jin'do the Hexxer"] = "Jin'do el Aojador",
+		["Bloodlord Mandokir"] = "Señor sangriento Mandokir",
+		["Gahz'ranka"] = "Gahz'ranka",
+		["Gri'lek"] = "Gri'lek",
+		["Hazza'rah"] = "Hazza'rah",
+		["Renataki"] = "Renataki",
+		["Wushoolay"] = "Wushoolay",
+		["Hakkar"] = "Hakkar",
+		["Ayamiss the Hunter"] = "Ayamiss el Cazador",
+		["Buru the Gorger"] = "Buru el Manducador",
+		["General Rajaxx"] = "General Rajaxx",
+		["Lieutenant General Andorov"] = "Teniente General Andorov",
+		["Moam"] = "Moam",
+		["Anubisath Guardian"] = "Guardián Anubisath",
+		["Ossirian the Unscarred"] = "Osirio el Sinmarcas",
+		["Lord Kri"] = "Lord Kri",
+		["Princess Yauj"] = "Princesa Yauj",
+		["Vem"] = "Vem",
+		["The Bug Family"] = "La Familia Insecto",
+		["Eye of C'Thun"] = "Ojo de C'Thun",
+		["C'Thun"] = "C'Thun",
+		["Anubisath Defender"] = "Defensor Anubisath",
+		["Anubisath Warder"] = "Depositario Anubisath",
+		["Fankriss the Unyielding"] = "Fankriss el Implacable",
+		["Princess Huhuran"] = "Princesa Huhuran",
+		["Ouro"] = "Ouro",
+		["Battleguard Sartura"] = "Guardia de batalla Sartura",
+		["The Prophet Skeram"] = "El profeta Skeram",
+		["Emperor Vek'lor"] = "Emperador Vek'lor",
+		["Emperor Vek'nilash"] = "Emperador Vek'nilash",
+		["The Twin Emperors"] = "Los Emperadores Gemelos",
+		["Viscidus"] = "Viscidus",
+		["Alzzin the Wildshaper"] = "Alzzin el Formaferal",
+		["Ambassador Flamelash"] = "Embajador Latifuego",
+		["Anger'rel"] = "Inquina'rel",
+		["Archivist Galford"] = "Instructor Galford",
+		["Atal'alarion"] = "Atal'alarion",
+		["Avatar of Hakkar"] = "Avatar de Hakkar",
+		["Bael'Gar"] = "Bael'Gar",
+		["Balnazzar"] = "Balnazzar",
+		["Baroness Anastari"] = "Baronesa Anastari",
+		["Baron Rivendare"] = "Barón Osahendido",
+		["Cannon Master Willey"] = "Willey Rompeesperanzas",
+		["Captain Kromcrush"] = "Capitán Kromcrush",
+		["Celebras the Cursed"] = "Celebras el Maldito",
+		["Crystal Fang"] = "Colmillo de Cristal",
+		["Darkmaster Gandling"] = "Maestro oscuro Gandling",
+		["Doctor Theolen Krastinov"] = "Doctor Theolen Krastinov",
+		["Doom'rel"] = "Condena'rel",
+		["Dope'rel"] = "Drog'rel",
+		["Dreamscythe"] = "Segasueños",
+		["Emperor Dagran Thaurissan"] = "Emperador Dagran Thaurissan",
+		["Fineous Darkvire"] = "Finoso Virunegro",
+		["Gasher"] = "Gasher",
+		["General Angerforge"] = "General Forjainquina",
+		["General Drakkisath"] = "General Drakkisath",
+		["Gloom'rel"] = "Penumbra'rel",
+		["Golem Lord Argelmach"] = "Señor Gólem Argelmach",
+		["Goraluk Anvilcrack"] = "Goraluk Yunquegrieta",
+		["Guard Fengus"] = "Guardia Fengus",
+		["Guard Mol'dar"] = "Guardia Mol'dar",
+		["Guard Slip'kik"] = "Guardia Slip'kik",
+		["Gyth"] = "Gyth",
+		["Halycon"] = "Halycon",
+		["Hate'rel"] = "Odio'rel",
+		["Hazzas"] = "Hazzas",
+		["Hearthsinger Forresten"] = "Cantachimeneas Forresten",
+		["High Interrogator Gerstahn"] = "Alta interrogadora Gerstahn",
+		["Highlord Omokk"] = "Alto señor Omokk",
+		["Hukku"] = "Hukku",
+		["Hurley Blackbreath"] = "Hurley Negrálito",
+		["Hydrospawn"] = "Hidromilecio",
+		["Illyanna Ravenoak"] = "Illyanna Roblecuervo",
+		["Immol'thar"] = "Immol'thar",
+		["Instructor Malicia"] = "Instructora Malicia",
+		["Jammal'an the Prophet"] = "Jammal'an el Profeta",
+		["Jandice Barov"] = "Jandice Barov",
+		["King Gordok"] = "Rey Gordok",
+		["Kirtonos the Herald"] = "Kirtonos el Heraldo",
+		["Lady Illucia Barov"] = "Lady Illucia Barov",
+		["Landslide"] = "Derrumblo",
+		["Lethtendris"] = "Lethtendris",
+		["Lord Alexei Barov"] = "Lord Alexei Barov",
+		["Lord Incendius"] = "Lord Incendius",
+		["Lord Vyletongue"] = "Lord Lenguavil",
+		["Lorekeeper Polkelt"] = "Tradicionalista Polkelt",
+		["Loro"] = "Loro",
+		["Magister Kalendris"] = "Magister Kalendris",
+		["Magistrate Barthilas"] = "Magistrado Barthilas",
+		["Magmus"] = "Magmus",
+		["Maleki the Pallid"] = "Maleki el Pálido",
+		["Marduk Blackpool"] = "Marduk Pozonegro",
+		["Meshlok the Harvester"] = "Meshlok el Cosechador",
+		["Mijan"] = "Mijan",
+		["Morphaz"] = "Morphaz",
+		["Mother Smolderweb"] = "Madre Telabrasada",
+		["Nerub'enkan"] = "Nerub'enkan",
+		["Noxxion"] = "Noxxion",
+		["Ogom the Wretched"] = "Ogom el Desdichado",
+		["Overlord Wyrmthalak"] = "Señor supremo Vermiothalak",
+		["Phalanx"] = "Falange",
+		["Plugger Spazzring"] = "Plugger Aropatoso",
+		["Postmaster Malown"] = "Jefe de correos Gassol",
+		["Princess Moira Bronzebeard"] = "Princesa Moira Barbabronce",
+		["Princess Theradras"] = "Princesa Theradras",
+		["Prince Tortheldrin"] = "Príncipe Tortheldrin",
+		["Pusillin"] = "Pusillín",
+		["Pyroguard Emberseer"] = "Piroguardia Brasadivino",
+		["Ramstein the Gorger"] = "Ramstein el Empachador",
+		["Ras Frostwhisper"] = "Ras Murmuhielo",
+		["Rattlegore"] = "Traquesangre",
+		["Razorlash"] = "Latisable",
+		["Warchief Rend Blackhand"] = "Jefe de Guerra Rend Puño Negro",
+		["Ribbly Screwspigot"] = "Ribbly Llavenrosca",
+		["Rotgrip"] = "Escamapodrida",
+		["Seeth'rel"] = "Furia'rel",
+		["Shade of Eranikus"] = "Sombra de Eranikus",
+		["Shadow Hunter Vosh'gajin"] = "Cazadora de las Sombras Vosh'gajin",
+		["Solakar Flamewreath"] = "Solakar Corona de Fuego",
+		["Stomper Kreeg"] = "Vapuleador Kreeg",
+		["Tendris Warpwood"] = "Tendris Alabeo",
+		["The Beast"] = "La Bestia",
+		["The Ravenian"] = "El Devorador",
+		["Timmy the Cruel"] = "Timmy el Cruel",
+		["Tinkerer Gizlock"] = "Manitas Gizlock",
+		["Tsu'zee"] = "Tsu'zee",
+		["Vectus"] = "Vectus",
+		["Vile'rel"] = "Vil'rel",
+		["War Master Voone"] = "Maestro de guerra Voone",
+		["Weaver"] = "Sastrón",
+		["Zevrim Thornhoof"] = "Zevrim Pezuñahendida",
+		["Zolo"] = "Zolo",
+		["Zul'Lor"] = "Zul'Lor",
+		
+		-- From Mendeleev
+		["Cho'Rush the Observer"] = "Cho'Rush el Observador",
+		["Lord Hel'nurath"] = "Lord Hel'nurath",
+		["Pimgib"] = "Pimgib",
+		["Knot Thimblejack's Cache"] = "Alijo de Knot Thimblejack",
+		["Cannonmaster Willey"] = "Cañonero Jefe Willey",
+		["Emperor Dagran Thaurissian"] = "Emperador Dagran Thaurissan",
+		["Archmage Arugal"] = "Archimago Arugal",
+		["Archmage Arugal's Voidwalker"] = "Abisario de Archimago Arugal",
+		["Baron Silverlaine"] = "Barón Filargenta",
+		["Commander Springvale"] = "Comandante Vallefont",
+		["Deathsworn Captain"] = "Capitán Juramorte",
+		["Fenrus the Devourer"] = "Fenrus el Devorador",
+		["Odo the Blindwatcher"] = "Odo el Vigía Ciego",
+		["Razorclaw the Butcher"] = "Zarpador el Carnicero",
+		["Wolf Master Nandos"] = "Maestro de lobos Nandos",
+		["Rend Blackhand"] = "Rend Puño Negro",
+		["Kurinnaxx"] = "Kurinnaxx",
+		["Ancient Core Hound"] = "Can del Núcleo",
+		["Gurubashi Berserker"] = "Rabioso Gurubashi",
+                ["Elder Mottled Boar"] = "Jabalí jaspeado mayor",
+                ["Stoneskin Gargoyle"] = "Gárgola piel de piedra",
+	}
+
 end)
 
 BabbleBoss:RegisterTranslations("ruRU", function()
@@ -462,6 +684,7 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		["Eye of C'Thun"] = "Око К'Туна",
 		["C'Thun"] = "К'Тун",
 		["Anubisath Defender"] = "Анубисат-защитник",
+		["Anubisath Warder"] = "Анубисат-хранитель",
 		["Fankriss the Unyielding"] = "Фанкрисс Неприклонный",
 		["Princess Huhuran"] = "Принцесса Хухуран",
 		["Ouro"] = "Оуро",
@@ -485,7 +708,7 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		["Captain Kromcrush"] = "Капитан Давигром",
 		["Celebras the Cursed"] = "Келебрас Проклятый",
 		["Crystal Fang"] = "Хрустальный Клык",
-                ["Darkmaster Gandling"] = "Темный магистр Гандлинг",
+		["Darkmaster Gandling"] = "Темный магистр Гандлинг",
 		["Doctor Theolen Krastinov"] = "Доктор Теолен Крастинов",
 		["Doom'rel"] = "Рок'рел",
 		["Dope'rel"] = "Праздн'рел",
@@ -592,8 +815,9 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		["Wolf Master Nandos"] = "Командир воргенов Нандос",
 		["Rend Blackhand"] = "Ренд Чернорук",
 		["Kurinnaxx"] = "Куриннакс",
-            
+		
 		["Maur Grimtotem"] = "Маур Зловещий Тотем",
+		["Oggleflint"] = "Огглфлинт",
 		["Taragaman the Hungerer"] = "Тарагаман Ненасытный",
 		["Jergosh the Invoker"] = "Жергош Призыватель Духов",
 		["Bazzalan"] = "Баззалан",
@@ -716,47 +940,29 @@ BabbleBoss:RegisterTranslations("ruRU", function()
 		["Rethilgore"] = "Ретилгор";
 		["Atiesh"] = "Атиеш";
 		["Stratholme Courier"] = "Стратхольмский курьер";
-		
-        --["Elder Mottled Boar"] = true; -- test module
-        --["Stoneskin Gargoyle"] = true;
-		--["Ancient Core Hound"] = true;
-		--["Gurubashi Berserker"] = true;
-		--["Anubisath Warder"] = true;
-		--["Venom Stalker"] = true;
-		--["Necro Stalker"] = true;
-		--["Living Monstrosity"] = true;
-		
-		["Unstoppable Abomination"] = "";
-		["Soul Weaver"] = "";
+		["Ancient Core Hound"] = "Древняя гончая Недр";
+		["Gurubashi Berserker"] = "Берсерк из племени Гурубаши";
+		["Elder Mottled Boar"] = "Старый крапчатый вепрь",
+		["Stoneskin Gargoyle"] = "Каменная горгулья",
+		["Master Craftsman Omarion"] = "Мастер-ремесленник Омарион",
+				--BIGWIGS (lazy NPCDB)
+		["Venom Stalker"] = "Ядовитый паук-скакун",
+		["Necro Stalker"] = "Некропаук-скакун",
+		["Living Monstrosity"] = "Живое чудовище",
+		["Stitched Giant"] = "Лоскутный изрыгатель",
+		["Death Knight Captain"] = "Капитан рыцарей Смерти",
+		["Unstoppable Abomination"] = "Неудержимое поганище",
+		["Soul Weaver"] = "Прядильщица душ",
 	}
 end)
 
-
 BabbleBoss:RegisterTranslations("deDE", function()
 	return {
-		-- BWL
+		["Avalanchion"] = "Avalanchion",
+		["The Windreaver"] = "Der Windpl\195\188nderer",
+		["Baron Charr"] = "Baron Charr",
+		["Princess Tempestria"] = "Prinzessin Tempestria",
 		["Grethok the Controller"] = "Grethok der Aufseher",
-		["Lord Victor Nefarius"] = "Lord Victor Nefarius",
-		["Nefarian"] = "Nefarian",
-		["Vaelastrasz the Corrupt"] = "Vaelastrasz der Verdorbene",
-		["Razorgore the Untamed"] = "Feuerkralle der Ungezähmte",
-		["Broodlord Lashlayer"] = "Brutwächter Dreschbringer", -- should be "Brutwächter Dreschbringer" but Nefarian is a strange realm; 2016-09-23: they finally fixed it
-		["Chromaggus"] = "Chromaggus",
-		["Ebonroc"] = "Schattenschwinge",
-		["Firemaw"] = "Feuerschwinge",
-		["Flamegor"] = "Flammenmaul",
-		-- MC
-		["Majordomo Executus"] = "Majordomus Exekutus",
-		["Ragnaros"] = "Ragnaros",
-		["Baron Geddon"] = "Baron Geddon",
-		["Golemagg the Incinerator"] = "Golemagg der Verbrenner",
-		["Garr"] = "Garr",
-		["Sulfuron Harbinger"] = "Sulfuronherold",
-		["Shazzrah"] = "Shazzrah", 
-		["Lucifron"] = "Lucifron",
-		["Gehennas"] = "Gehennas",
-		["Magmadar"] = "Magmadar",
-		-- Naxxramas
 		["Patchwerk"] = "Flickwerk",
 		["Grobbulus"] = "Grobbulus",
 		["Gluth"] = "Gluth",
@@ -764,7 +970,7 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Feugen"] = "Feugen",
 		["Stalagg"] = "Stalagg",
 		["Anub'Rekhan"] = "Anub'Rekhan",
-		["Grand Widow Faerlina"] = "Gro\195\159witwe Faerlina",
+		["Grand Widow Faerlina"] = "Großwitwe Faerlina",
 		["Maexxna"] = "Maexxna",
 		["Instructor Razuvious"] = "Instrukteur Razuvious",
 		["Deathknight Understudy"] = "Reservist der Todesritter",
@@ -775,22 +981,39 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Sir Zeliek"] = "Sire Zeliek",
 		["The Four Horsemen"]= "Die Vier Reiter",
 		["Noth the Plaguebringer"] = "Noth der Seuchenfürst",
-		["Heigan the Unclean"] = "Heigan der Unsaubere",
+		["Heigan the Unclean"] = "Heigan der Unreine",
 		["Loatheb"] = "Loatheb",
-		["Sapphiron"] = "Sapphiron",
+		["Sapphiron"] = "Saphiron",
 		["Kel'Thuzad"] = "Kel'Thuzad",
-		-- Worldboss
+		["Lord Victor Nefarius"] = "Lord Victor Nefarius",
+		["Nefarian"] = "Nefarian",
+		["Vaelastrasz the Corrupt"] = "Vaelastrasz der Verdorbene",
+		["Razorgore the Untamed"] = "Razorgore der Ungezähmte",
+		["Broodlord Lashlayer"] = "Brutwächter Dreschbringer",
+		["Chromaggus"] = "Chromaggus",
+		["Ebonroc"] = "Schattenschwinge",
+		["Firemaw"] = "Feuerschwinge",
+		["Flamegor"] = "Flammenmaul",
+		["Majordomo Executus"] = "Majordomus Exekutus",
+		["Ragnaros"] = "Ragnaros",
+		["Baron Geddon"] = "Baron Geddon",
+		["Golemagg the Incinerator"] = "Golemagg der Verbrenner",
+		["Garr"] = "Garr",
+		["Sulfuron Harbinger"] = "Sulfuronherold",
+		["Shazzrah"] = "Shazzrah",
+		["Lucifron"] = "Lucifron",
+		["Gehennas"] = "Gehennas",
+		["Magmadar"] = "Magmadar",
 		["Onyxia"] = "Onyxia",
 		["Azuregos"] = "Azuregos",
 		["Emeriss"] = "Smariss",
 		["Taerar"] = "Taerar",
 		["Lethon"] = "Lethon",
-		["Lord Kazzak"] = "Lord Kazzak",
-		["Ysondre"] = "Ysondre",
-		-- Zul'Gurub
 		["Jin'do the Hexxer"] = "Jin'do der Verhexer",
 		["Bloodlord Mandokir"] = "Blutfürst Mandokir",
 		["Hakkar"] = "Hakkar",
+		["Lord Kazzak"] = "Lord Kazzak",
+		["Ysondre"] = "Ysondre",
 		["High Priestess Jeklik"] = "Hohepriesterin Jeklik",
 		["High Priest Venoxis"] = "Hohepriester Venoxis",
 		["High Priest Thekal"] = "Hohepriester Thekal",
@@ -808,15 +1031,13 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Moam"] = "Moam",
 		["Anubisath Guardian"] = "Beschützer des Anubisath",
 		["Ossirian the Unscarred"] = "Ossirian der Narbenlose",
-		["Kurinnaxx"] = "Kurinnaxx",
-		-- AQ40
 		["Lord Kri"] = "Lord Kri",
 		["Princess Yauj"] = "Prinzessin Yauj",
 		["Vem"] = "Vem",
-		["The Bug Family"] = "Das Käfertrio",
+		["The Bug Family"] = "Die Käferfamilie",
 		["Eye of C'Thun"] = "Auge von C'Thun",
 		["C'Thun"] = "C'Thun",
-		["Anubisath Defender"] = "Verteidiger der Anubisath",
+		["Anubisath Defender"] = "Verteidiger des Anubisath",
 		["Fankriss the Unyielding"] = "Fankriss der Unnachgiebige",
 		["Princess Huhuran"] = "Prinzessin Huhuran",
 		["Ouro"] = "Ouro",
@@ -824,14 +1045,9 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["The Prophet Skeram"] = "Der Prophet Skeram",
 		["Emperor Vek'lor"] = "Imperator Vek'lor",
 		["Emperor Vek'nilash"] = "Imperator Vek'nilash",
-		["The Twin Emperors"] = "Die Zwillingsimperatoren",
+		["The Twin Emperors"] = "Die Zwillings-Imperatoren",
 		["Viscidus"] = "Viscidus",
-		-- Other
-		["Avalanchion"] = "Avalanchion",
-		["The Windreaver"] = "Der Windpl\195\188nderer",
-		["Baron Charr"] = "Baron Charr",
-		["Princess Tempestria"] = "Prinzessin Tempestria",
-                ["Alzzin the Wildshaper"] = "Alzzin der Wildformer",
+		["Alzzin the Wildshaper"] = "Alzzin der Wildformer",
 		["Ambassador Flamelash"] = "Botschafter Flamelash",
 		["Anger'rel"] = "Anger'rel",
 		["Archivist Galford"] = "Archivar Galford",
@@ -950,19 +1166,11 @@ BabbleBoss:RegisterTranslations("deDE", function()
 		["Razorclaw the Butcher"] = "Rasiermesserklaue der Metzger",
 		["Wolf Master Nandos"] = "Wolfmeister Nados",
 		["Rend Blackhand"] = "Rend Blackhand",
-		
-        ["Elder Mottled Boar"] = "Alter scheckiger Eber";
-        ["Stoneskin Gargoyle"] = "Steinhautgargoyle";
-		["Ancient Core Hound"] = "Uralter Kernhund";
-		["Gurubashi Berserker"] = "Berserker der Gurubashi";
-		["Anubisath Warder"] = "Aufseher des Anubisath";
-		["Venom Stalker"] = "Giftpirscher";
-		["Necro Stalker"] = "Nekropirscher";
-		["Living Monstrosity"] = "Lebende Monströsität";
-		["Death Knight Captain"] = "Hauptmann der Todesritter";
-		["Stitched Giant"] = "Narbenspeier";		
-		["Unstoppable Abomination"] = "Unaufhaltsame Monströsität";
-		["Soul Weaver"] = "Seelenwirker";
+		["Kurinnaxx"] = "Kurinnaxx",
+		["Ancient Core Hound"] = "";
+		["Gurubashi Berserker"] = "";
+		["Stoneskin Gargoyle"] = "Steinhautgargoyle",
+		["Elder Mottled Boar"] = "Alter scheckiger Eber",
 	}
 end)
 
@@ -1173,19 +1381,7 @@ BabbleBoss:RegisterTranslations("frFR", function()
 		["Odo the Blindwatcher"] = "Odo l'Aveugle",
 		["Razorclaw the Butcher"] = "Tranchegriffe le Boucher",
 		["Wolf Master Nandos"] = "Ma\195\174tre-loup Nandos",
-		["Kurinnaxx"] = "Kurinnaxx",		
-		
-        --["Elder Mottled Boar"] = true; -- test module
-        --["Stoneskin Gargoyle"] = true;
-		--["Ancient Core Hound"] = true;
-		--["Gurubashi Berserker"] = true;
-		--["Anubisath Warder"] = true;
-		--["Venom Stalker"] = true;
-		--["Necro Stalker"] = true;
-		--["Living Monstrosity"] = true;
-		
-		["Unstoppable Abomination"] = "";
-		["Soul Weaver"] = "";
+		["Kurinnaxx"] = "Kurinnaxx",
 	}
 end)
 
@@ -1400,18 +1596,6 @@ BabbleBoss:RegisterTranslations("zhCN", function()
 		["Wolf Master Nandos"] = "狼王南杜斯", 
 		["Rend Blackhand"] = "雷德·黑手", 
 		["Kurinnaxx"] = "库林纳克斯",
-		
-        --["Elder Mottled Boar"] = true; -- test module
-        --["Stoneskin Gargoyle"] = true;
-		--["Ancient Core Hound"] = true;
-		--["Gurubashi Berserker"] = true;
-		--["Anubisath Warder"] = true;
-		--["Venom Stalker"] = true;
-		--["Necro Stalker"] = true;
-		--["Living Monstrosity"] = true;
-		
-		["Unstoppable Abomination"] = "";
-		["Soul Weaver"] = "";
 	}
 end)
 
@@ -1625,24 +1809,11 @@ BabbleBoss:RegisterTranslations("zhTW", function()
 		["Wolf Master Nandos"] = "狼王南杜斯",
 		["Rend Blackhand"] = "大酋長雷德‧黑手",
 		["Kurinnaxx"] = "庫林納克斯",
-                
-        --["Elder Mottled Boar"] = true; -- test module
-        --["Stoneskin Gargoyle"] = true;
-		--["Ancient Core Hound"] = true;
-		--["Gurubashi Berserker"] = true;
-		--["Anubisath Warder"] = true;
-		--["Venom Stalker"] = true;
-		--["Necro Stalker"] = true;
-		--["Living Monstrosity"] = true;
-		
-		["Unstoppable Abomination"] = "";
-		["Soul Weaver"] = "";
 	}
 end)
 
 BabbleBoss:RegisterTranslations("koKR", function()
 	return {
-		["Stoneskin Gargoyle"] = true,
 		["Avalanchion"] = "아발란치온",
 		["The Windreaver"] = "칼날바람",
 		["Baron Charr"] = "남작 차르",
@@ -1852,18 +2023,6 @@ BabbleBoss:RegisterTranslations("koKR", function()
 		["Wolf Master Nandos"] = "늑대왕 난도스",
 		["Rend Blackhand"] = "대족장 렌드 블랙핸드",
 		["Kurinnaxx"] = "쿠린낙스",
-		
-        --["Elder Mottled Boar"] = true; -- test module
-        --["Stoneskin Gargoyle"] = true;
-		--["Ancient Core Hound"] = true;
-		--["Gurubashi Berserker"] = true;
-		--["Anubisath Warder"] = true;
-		--["Venom Stalker"] = true;
-		--["Necro Stalker"] = true;
-		--["Living Monstrosity"] = true;
-		
-		["Unstoppable Abomination"] = "";
-		["Soul Weaver"] = "";
 	}
 end)
 
