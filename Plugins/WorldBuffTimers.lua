@@ -47,6 +47,33 @@ L:RegisterTranslations("enUS", function() return {
 	misc_EnableDesc = "Enable timers",
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+	-- commands
+
+	worldbuffs_name = "Таймеры Мировых баффов",
+	worldbuffs_desc = "Дает таймеры, чтобы видеть, когда появляются мировые баффы.",
+
+	-- triggers (dbcscript_string)
+	trigger_onyHeadHorde = "Народы Орды, жители Оргриммара! Приходите, собирайтесь и поздравляйте героя Орды! В этот день", --vmangos\locales_broadcast_text\9491 (.additem 19003 .additem 18422 .go creature 4770 .modify faction 2 1 .go creature 6499)
+	trigger_nefHeadHorde = "НЕФАРИАН УБИТ! Жители Оргриммара", --vmangos\locales_broadcast_text\9867
+
+	trigger_onyHeadAlliance = "Граждане и союзники Штормграда, в этот день вершилась история.", --vmangos\locales_broadcast_text\9495 (.additem 18423 .additem 19003 .go creature Bolvar .go creature 79656)
+	trigger_nefHeadAlliance = "Граждане Альянса! Владыка Черной горы повержен!", --vmangos\locales_broadcast_text\9870
+
+	trigger_zgHeart = "Теперь остался лишь один шаг до избавления от Свежевателя Душ...", --vmangos\locales_broadcast_text\10473 (.additem 19802 .go creature Molthor .modify faction 1 0 2 .quest remove 8183)
+	trigger_zgHeart2 = "Начинайте ритуал, слуги мои. Мы должны отправить сердце Хаккара обратно в Пустоту!", --vmangos\locales_broadcast_text\10474
+	trigger_rendHead = "Чествуйте своих героев! Сегодня они нанесли сокрушающий удар нашим самым ненавистным врагам! Самозванец Ренд Чернорук мертв!", --vmangos\locales_broadcast_text\6013 (.additem 12630)
+
+	-- bars (spell_template)\(Spell.dbc)
+	bar_dragonslayer = "Ободряющий клич Драконоборца", --22888
+	bar_zandalar = "Дух Зандалара", --24425
+	bar_blessing = "Благословление вождя", --16609
+
+	-- misc
+	misc_EnableName = "Включить",
+	misc_EnableDesc = "Включить таймеры",
+} end )
+
 L:RegisterTranslations("deDE", function() return {
 	-- commands
 	worldbuffs_cmd = "worldbuffs",
