@@ -23,6 +23,14 @@ L:RegisterTranslations("enUS", function() return {
     ["Activate the plugin."] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Farclip"] = "Дальность отрисовки",
+	--["farclip"] = "farclip",
+	["Reduces the terrain distance to the minimum in Naxxramas to avoid screen freezes."] = "Уменьшает дальность отрисовки на минимум в Наксрамасе, чтобы избежать подвисания экрана.",
+	["Active"] = "Включен",
+	["Activate the plugin."] = "Активировать плагин",
+} end)
+
 --[[L:RegisterTranslations("deDE", function() return {
     
 } end)
