@@ -28,6 +28,19 @@ L:RegisterTranslations("enUS", function() return {
 	["Nefarians Lair"] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Onyxia Scale Cloak"] = "Плащ из чешуи Ониксии", -- plugin name
+	-- ["onyxiaCloak"] = "onyxiaCloak", -- console command
+	["Equips Onyxia Scale Cloak when you enter Nefarians Lair and switches back when you leave the area again."] = "Надевает плащ из чешуи Ониксии, когда вы входите в Логово Нефариана, и переключается обратно, когда вы снова покидаете область.", -- Логово Крыла Тьмы
+	["Active"] = "Включить", -- option name
+	["Activate the plugin."] = "Включить плагин", -- option description
+	["Onyxia Scale Cloak"] = "Плащ из чешуи Ониксии", -- item name
+	["Could not find %s"] = "Не могу найти %s",
+	["Equipping %s"] = "Экипирую %s", 
+	trigger_engage = "В этом мире, где время – ваш враг, оно – мой величайший союзник.", -- nefarian yell before the fight starts -- script_texts --vmangos\locales_broadcast_text\9907
+	["Nefarians Lair"] = "Логово Нефариана",
+} end)
+
 L:RegisterTranslations("deDE", function() return {
     ["Onyxia Scale Cloak"] = "Onyxiaschuppenumhang", -- plugin name
     --["onyxiaCloak"] = true, -- console command
