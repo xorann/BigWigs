@@ -39,6 +39,44 @@ L:RegisterTranslations("enUS", function() return {
 	["skull"] = true,
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+	["Raid Icons"] = "Значки рейда",
+
+	--["raidicon"] = "raidicon",
+	--["place"] = "place",
+	--["icon"] = "icon",
+
+	["Place"] = "Место",
+	["Place Raid Icons"] = "Позиция значков рейда",
+	["Toggle placing of Raid Icons on players."] = "Вкл/Выкл размещение значков рейда на игроках.",
+
+	["Icon"] = "Значок",
+	["Set Icon"] = "Установить значок",
+	["Set which icon to place on players."] = "Установить значок для размещения на игроках.",
+
+	["Options for Raid Icons."] = "Настройки для значков рейда.",
+
+	["star"] = "Звезда",
+	["circle"] = "Круг",
+	["diamond"] = "Ромб",
+	["triangle"] = "Треугольник",
+	["moon"] = "Луна",
+	["square"] = "Квадрат",
+	["cross"] = "Крест",
+	["skull"] = "Череп",
+--[[
+	["star"] = "звезда",
+	["circle"] = "круг",
+	["diamond"] = "ромб",
+	["triangle"] = "треугольник",
+	["moon"] = "месяц",
+	["square"] = "квадрат",
+	["cross"] = "крест",
+	["skull"] = "череп",
+--]]
+
+} end )
+
 L:RegisterTranslations("koKR", function() return {
 	["Raid Icons"] = "공격대 아이콘",
 
