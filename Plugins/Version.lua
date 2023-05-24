@@ -59,6 +59,49 @@ L:RegisterTranslations("enUS", function() return {
 	["notifyOldVersions"] = true,
 } end )
 
+L:RegisterTranslations("ruRU", function() return {
+
+	["Version Query"] = "Запрос версии",
+	["Commands for querying the raid for Big Wigs versions."] = "Команда для проверки игроков в рейде на версию Big Wigs",
+	["Query already running, please wait 5 seconds before trying again."] = "Выполняется проверка версии, пожалуйста, подождите 5 сек. и попробуйте еще раз.",
+	["Querying versions for "] = "Запрос версии для ",
+	["Big Wigs Version Query"] = "Запрос версии Big Wigs",
+	["Close window"] = "Закрыть окно", -- I know, it's really a Tablet.
+	["Showing version for "] = "Отображение версии для ",
+	["Green versions are newer than yours, red are older, and white are the same."] = "\nЗеленый - версия новее вашей.\nКрасный - старее вашей.\nБелый - идентична вашей.",
+	["Player"] = "Игрок",
+	["Version"] = "Версия",
+	["Current zone"] = "Текущая зона",
+	["<zone>"] = "<зона>",
+	["Version query done."] = "Запрос версии завершен.",
+	["Runs a version query on your current zone."] = "Запускает запрос версии в текущей зоне.",
+	["Closes the version query window."] = "Закрыть окно запроса версии.",
+	["current"] = "current",
+	["Runs a version query on the given zone."] = "Запускает запрос версии в данной зоне.",
+	["Zone"] = "Зона",
+	-- ["zone"] = "zone",
+	["N/A"] = "Н/Д",
+	["BigWigs"] = "BigWigs",
+	["Runs a version query on the BigWigs core."] = "Запускает запрос версии в ядре BigWigs.",
+	["Nr Replies"] = "Без Ответа",
+	["Ancient"] = "Старая",
+
+	["Your version of Big Wigs Classic-WoW is out of date!\nPlease visit https://github.com/xorann/BigWigs/releases to get the latest version."] = "Ваша версия Big Wigs Classic-WoW устарела!\nПожалуйста, посетите https://github.com/xorann/BigWigs/releases чтобы получить последнюю версию.",
+	["Close"] = "Закрыть",
+	["Cancel"] = "Отмена",
+
+	["Gathering Data, please wait..."] = "Сбор данных, пожалуйста, подождите ...",
+	["<BigWigs> Everyone has the current version of BigWigs Classic-WoW. I'm proud of you!"] = "<BigWigs> У всех есть актуальная версия BigWigs Classic-WoW. Я горжусь тобой!",
+	["<BigWigs> Players without BigWigs Classic-WoW:"] = "<BigWigs> Игроки без BigWigs Classic-WoW:",
+	["<BigWigs> no one"] = "<BigWigs> ни у кого",
+	["<BigWigs> Players with an outdated version of BigWigs Classic-WoW:"] = "<BigWigs> Игроки с устаревшей версией BigWigs Classic-WoW:",
+	["<BigWigs> Players using a version of BigWigs intended for a different server:"] = "<BigWigs> Игроки, использующие версию BigWigs, предназначенную для другого сервера:",
+	["<BigWigs> Please download the newest version of BigWigs Classic-WoW from https://github.com/xorann/BigWigs/releases"] = "<BigWigs> Пожалуйста, загрузите новейшую версию BigWigs Classic-WoW с https://github.com/xorann/BigWigs/releases",
+	["Notify old versions"] = "Уведомить старые версии",
+	["Lists players with an old version in raid chat."] = "Список игроков со старой версией в рейдовом чате.",
+
+} end )
+
 L:RegisterTranslations("deDE", function() return {
 	["versionquery"] = "Versionsabfrage",
 	["Version Query"] = "Versionsabfrage",
