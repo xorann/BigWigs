@@ -95,6 +95,29 @@ L:RegisterTranslations("enUS", function() return {
 	["Reset the anchor position, moving it to the center of your screen."] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Proximity"] = "Близость",
+	["Close Players"] = "Ближайшие игроки",
+	["Options for the Proximity Display."] = "Настройки отображения cближения",
+	["|cff777777Nobody|r"] = "|cff777777Никого|r",
+	["Sound"] = "Звук",
+	["Play sound on proximity."] = "Проиграть звук при cближении",
+	["Disabled"] = "Выключить",
+	["Disable the proximity display for all modules that use it."] = "Выключить отображение cближения для всех модулей, которые его используют.",
+	["The proximity display has been disabled for %s, please use the boss modules options to enable it again."] = "Отображение cближения отключено для %s, используйте настройки модулей босса, чтобы включить его снова.",
+
+	proximity = "Отображение близости",
+	proximity_desc = "Показать окно близости, когда это уместно для этого подземелья, со списоком игроков, которые стоят слишком близко к вам.",
+
+	font = "Fonts\\FRIZQT__.TTF",
+
+	["Test"] = "Проверка",
+	["Perform a Proximity test."] = "Выполнить проверку близости.",
+
+	["Reset position"] = "Сброс расположения",
+	["Reset the anchor position, moving it to the center of your screen."] = "Сброс расположения якоря, переместив его в центр экрана.",
+} end)
+
 L:RegisterTranslations("deDE", function() return {
 	["Proximity"] = "Nähe",
 	["Close Players"] = "Zu nahe Spieler",
