@@ -60,6 +60,21 @@ L:RegisterTranslations("enUS", function() return {
 	importantMessage = "Aaaaaughibbrgubugbugrguburgle! The Murlocs seize power. Type /murlocswin to acknowledge your new overlords.",
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Sounds"] = "Звуки",
+
+	["Options for sounds."] = "Настройки звуков",
+
+
+	["Use sounds"] = "Использовать звуки",
+	["Toggle sounds on or off."] = "Вкл/Выкл все звуки",
+
+	["Default only"] = "Только стандартные",
+	["Use only the default sound."] = "Использовать только стандартные звуки.",
+
+	importantMessage = "Aaaaaughibbrgubugbugrguburgle! Мурлоки захватывают власть. Введите /murlocswin чтобы признать ваших новых повелителей.",
+} end)
+
 L:RegisterTranslations("koKR", function() return {
 	["Sounds"] = "효과음",
 	["Options for sounds."] = "효과음 옵션.",
