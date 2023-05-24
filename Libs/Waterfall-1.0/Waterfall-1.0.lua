@@ -12,7 +12,7 @@ Dependencies: AceOO-2.0
 ]]
 
 local MAJOR_VERSION = "Waterfall-1.0"
-local MINOR_VERSION = "$Revision: 78663 $"
+local MINOR_VERSION = "$Revision: 78664 $"
 
 local CONTROL_LIMIT = 250
 local _
@@ -4607,7 +4607,7 @@ local function SectionItem_OnEnter()
 	if not this.disabled then
 		this.highlight:SetAlpha(1)
 		this.highlight:Show()
-		showGameTooltip()
+		showGameTooltip(this)
 	end
 end
 

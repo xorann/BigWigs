@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceDebug-2.0, AceEvent-2.0, AceHook-2.1, Deformat-2.0,
 ]]
 
 local MAJOR_VERSION = "SpellStatus-1.0"
-local MINOR_VERSION = "$Revision: 14589 $"
+local MINOR_VERSION = "$Revision: 14590 $"
 
 if (not AceLibrary) then 
 	error(MAJOR_VERSION .. " requires AceLibrary.") 
@@ -512,6 +512,18 @@ function SpellStatus:UseAction(slotId, checkCursor, onSelf)
 	end
 
 	self:LevelDebug(1, "<<<< UseAction", slotId, checkCursor, onSelf)
+end
+
+function SpellStatus:CastPetAction(slotId, onUnit)
+	self:LevelDebug(1, ">>>> CastPetAction", slotId, onUnit)
+	gratuity:SetAction(slotId)
+	local sId, sName, sRank, sFullName = GetGratuitySpellData(self, slotId)
+	if (sName) then
+		CastOriginal(self, "CastPetAction", slotId, onUnit, nil, sId, sName, sRank, sFullName)
+	else
+		self.hooks["CastPetAction"](slotId, onUnit)
+	end
+	self:LevelDebug(1, "<<<< CastPetAction", slotId, onUnit)
 end
 
 function SpellStatus:CastShapeshiftForm(index)

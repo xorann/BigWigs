@@ -10,7 +10,7 @@ Dependencies: AceLibrary
 ]]
 
 local MAJOR_VERSION = "Dewdrop-2.0"
-local MINOR_VERSION = "$Revision: 17882 $"
+local MINOR_VERSION = "$Revision: 17900 $"
 
 if not AceLibrary then error(MAJOR_VERSION .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then return end
@@ -592,16 +592,16 @@ local function AcquireLevel(self, level)
 						return found
 					end
 				else
-					local old_CloseWindows = CloseWindows
-					function CloseWindows(ignoreCenter)
-						local found = old_CloseWindows(ignoreCenter)
-						if levels[1]:IsShown() then
-							self:Close()
-							return 1
-						end
-						return found
+				local old_CloseWindows = CloseWindows
+				function CloseWindows(ignoreCenter)
+					local found = old_CloseWindows(ignoreCenter)
+					if levels[1]:IsShown() then
+						self:Close()
+						return 1
 					end
+					return found
 				end
+			end
 			end
 			levels[i] = frame
 			frame.num = i
@@ -1054,6 +1054,7 @@ function Dewdrop:FeedAceOptionsTable(options, difference)
 				end
 				local name = (v.guiIconOnly and v.icon) and "" or (v.guiName or v.name)
 				local desc = v.desc
+				local passValue = v.passValue
 				local iconHeight = v.iconHeight or 16
 				local iconWidth = v.iconWidth or 16
 				local iconCoordLeft = v.iconCoordLeft
@@ -1268,7 +1269,7 @@ function Dewdrop:FeedAceOptionsTable(options, difference)
 							editBoxArg1 = handler
 							editBoxArg2 = passValue
 						end
-						
+
 						local editBoxValidateFunc, editBoxValidateArg1
 
 						if v.validate and v.validate ~= "keybinding" then
@@ -1288,7 +1289,7 @@ function Dewdrop:FeedAceOptionsTable(options, difference)
 								tooltipText = RESET_KEYBINDING_DESC
 							end
 						end
-						
+
 						self:AddLine(
 							'text', name,
 							'hasArrow', true,
@@ -1359,6 +1360,7 @@ function Dewdrop:FeedAceOptionsTable(options, difference)
 		end
 	elseif options.type == "text" and type(options.validate) == "table" then
 		local current
+		local passValue = options.passValue
 		if type(options.get) == "function" then
 			current = options.get(passValue)
 		elseif options.get ~= false then
@@ -1829,7 +1831,7 @@ function OpenEditBox(self, parent)
 		editBox:SetScript("OnEnterPressed", function()
 			if editBoxFrame.parent and editBoxFrame.parent.editBoxValidateFunc then
 				local a1,a2,a3,a4 = editBoxFrame.parent.editBoxValidateArg1, editBoxFrame.parent.editBoxValidateArg2, editBoxFrame.parent.editBoxValidateArg3, editBoxFrame.parent.editBoxValidateArg4
-				
+
 				local t = editBox.realText or editBox:GetText() or ""
 				local result
 				if a1 == nil then
@@ -2014,7 +2016,7 @@ function OpenEditBox(self, parent)
 			editBoxFrame.editBox:SpecialSetText(NONE or "NONE")
 		end
 	else
-		editBoxFrame.editBox:SpecialSetText(parent.editBoxText)
+	editBoxFrame.editBox:SpecialSetText(parent.editBoxText)
 	end
 	
 	editBoxFrame.editBox.keybinding = parent.editBoxIsKeybinding
