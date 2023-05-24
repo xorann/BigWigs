@@ -83,6 +83,45 @@ L:RegisterTranslations("enUS", function() return {
 }
 end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Bars"] = "Полосы",
+	-- ["bars"] = "bars",
+	["Options for the timer bars."] = "Опции полос времени.",
+	["Show the bar anchor frame."] = "Отображать якорь полос.",
+	["Set the bar scale."] = "Настройка масштаба полос.",
+	["Group upwards"] = "Рост вверх",
+	["Toggle bars grow upwards/downwards from anchor."] = "Переключение роста полос от якоря вверх или вниз.",
+	["Timer bars"] = "Полосы времени",
+	["Show anchor"] = "Отображать якорь",
+	["Grow bars upwards"] = "Рост вверх",
+	["Scale"] = "Масштаб",
+	["Bar scale"] = "Масштаб полос",
+	["Bars now grow %2$s"] = "Полосы увеличились на %2$s",
+	["Scale is set to %2$s"] = "Масштаб установлен на %2$s",
+	["Up"] = "Вверх",
+	["Down"] = "Вниз",
+	["Test"] = "Тест",
+	["Close"] = "Закрыть",
+	["Texture"] = "Текстуры",
+	["Set the texture for the timerbars."] = "Установка текстур для полос времени.",
+	["Reset position"] = "Сбросить расположение",
+	["Reset the anchor position, moving it to the center of your screen."] = "Сбросить расположение якоря, передвигает в центр экрана.",
+	["Reverse"] = "В обратную сторону",
+	["Toggles if bars are reversed (fill up instead of emptying)."] = "Переключить, полосы в обратную сторону (заполнять вместо опустошения).",
+	["Emphasize"] = "Выделять",
+	["Emphasize bars that are close to completion (<10sec). Also note that bars started at less than 15 seconds initially will be emphasized right away."] = "Выделять полосы, которые скоро завершатся (<10сек). Также обратите внимание, что полосы менее 15 секунд будут выделены сразу.",
+	["Enable"] = "Включить",
+	["Enables emphasizing bars."] = "Включить выделение полос.",
+	["Flash"] = "Мигать",
+	["Flashes the background red for bars that are emphasized."] = "Мигает красным фоном для выделенных полос.",
+	["Move"] = "Переместить",
+	["Move bars that are emphasized to a second anchor."] = "Переместить полосы, которые выделены на второй якорь».",
+	["Set the scale for emphasized bars."] = "Установить масштаб выделенных полос",
+	["Emphasize Bars"] = "Выделить полосы",
+	["HP Bars"] = "Полосы Здоровья",
+}
+end)
+
 L:RegisterTranslations("deDE", function() return {
 	["Bars"] = "Anzeigebalken",
 	["bars"] = "balken",
