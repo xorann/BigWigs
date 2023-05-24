@@ -34,6 +34,13 @@ L:RegisterTranslations("enUS", function() return {
     BOSS_DOWN_NR	= "%s down after %s! This is a new record! (Old record was %s). You have %d total victories.",
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	BOSS_ENGAGED	= "%s вступил в бой. Удачи и приятного времяпровождения! :)",
+		BOSS_DOWN		= "%s мёртв спустя %s!",
+	BOSS_DOWN_L		= "%s мёртв спустя %s! Ваше последнее убийство длилось %s и ваше самое быстрое убийство длилось %s. У вас %d побед(ы).",
+		BOSS_DOWN_NR	= "%s мёртв спустя %s! Это новый рекорд! (Старый рекорд был %s).  У вас %d побед(ы).",
+} end)
+
 ----------------------------------
 --      Module Declaration      --
 ----------------------------------
