@@ -62,6 +62,56 @@ L:RegisterTranslations("enUS", function() return {
 	["Resets all ranges to defaults."] = true,
 } end)
 
+L:RegisterTranslations("ruRU", function() return {
+	["Range"] = "Дальность",
+
+	["Options for the combat log's range."] = "Настройка дальн. журнала боя.",
+
+--~~ 	["party"] = true,
+--~~ 	["Party"] = true,
+--~~ 	["Party combat log range."] = true,
+
+--~~ 	["friend"] = true,
+--~~ 	["Friendlies"] = true,
+--~~ 	["Friendly players combat log range."] = true,
+
+
+	["Creatures"] = "Существо",
+	["Creature combat log range."] = "Дальн. журнала боя существа.",
+
+
+	["Deaths"] = "Мертвый",
+	["Death message range."] = "Дальн. сообщений будучи мертвым.",
+
+
+	["Party"] = "Группа",
+	["Party message range."] = "Дальн. сообщений группы.",
+
+
+	["Party pet"] = "Группа питомцев",
+	["Party pet message range."] = "Дальн. сообщений группы питомцев.",
+
+
+	["Friendly Player"] = "Дружеский игрок",
+	["Friendly Player message range."] = "Дальн. сообщений дружеских игроков.",
+
+
+	["Friendly pet"] = "Дружеский питомец",
+	["Friendly pet message range."] = "Дальн. сообщений дружеских питомцев.",
+
+
+	["Hostile Player"] = "Враждебный игрок",
+	["Hostile Player message range."] = "Дальн. сообщений враждебных игроков.",
+
+
+	["Hostile pet"] = "Враждебный питомец",
+	["Hostile pet message range."] = "Дальн. сообщений враждебных питомцев.",
+
+
+	["Reset to defaults"] = "Сброс до стандартных",
+	["Resets all ranges to defaults."] = "Сброс все дальности на стандартные.",
+} end)
+
 L:RegisterTranslations("koKR", function() return {
 	["Range"] = "범위",
 	["Options for the combat log's range."] = "전투 로그의 범위에 대한 설정",
